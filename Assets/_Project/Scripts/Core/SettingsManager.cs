@@ -9,13 +9,13 @@ namespace UDA2.Core
     {
         private static string SettingsPath => Path.Combine(Application.persistentDataPath, "settings.json");
 
-        public static void Save(SettingsState state)
+        public static void Save(UDA2.Core.SettingsState state)
         {
             var json = JsonConvert.SerializeObject(state, Formatting.Indented);
             File.WriteAllText(SettingsPath, json);
         }
 
-        public static SettingsState Load()
+        public static UDA2.Core.SettingsState Load()
         {
             if (!File.Exists(SettingsPath)) return new SettingsState();
             var json = File.ReadAllText(SettingsPath);

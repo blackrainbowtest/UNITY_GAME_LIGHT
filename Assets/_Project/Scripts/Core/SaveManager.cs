@@ -10,13 +10,13 @@ namespace UDA2.Core
     {
         private static string SavePath(int slot) => Path.Combine(Application.persistentDataPath, $"save_slot_{slot}.json");
 
-        public static void Save(GameState state, int slot)
+        public static void Save(UDA2.Core.GameState state, int slot)
         {
             var json = JsonConvert.SerializeObject(state, Formatting.Indented);
             File.WriteAllText(SavePath(slot), json);
         }
 
-        public static GameState Load(int slot)
+        public static UDA2.Core.GameState Load(int slot)
         {
             var path = SavePath(slot);
             if (!File.Exists(path)) return null;
