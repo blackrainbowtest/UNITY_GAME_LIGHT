@@ -1,0 +1,194 @@
+{
+  "meta": {
+    "version": "0.1.0",
+    "saveTime": "2025-12-14T22:31:00Z",
+    "playTimeSeconds": 18420
+  },
+
+  "player": {
+    "id": "hero_tigress",
+    "name": "Nameless",
+    "level": 5,
+    "exp": 1230,
+
+    "stats": {
+      "hp": 78,
+      "hpMax": 100,
+      "stamina": 42,
+      "staminaMax": 60,
+      "mana": 20,
+      "manaMax": 30
+    },
+
+    "position": {
+      "scene": "WorldMap",
+      "tileX": 42,
+      "tileY": 17
+    },
+
+    "state": {
+      "isResting": false,
+      "fatigue": 0.35,
+      "injuries": []
+    }
+  },
+
+  "world": {
+    "time": {
+      "day": 12,
+      "hour": 19,
+      "minute": 40
+    },
+
+    "currentCityId": "city_forest_01",
+
+    "visitedCities": [
+      "city_forest_01",
+      "city_desert_02"
+    ]
+  },
+
+  "quests": {
+    "active": [
+      {
+        "questId": "guild_herbs_001",
+        "type": "gather",
+        "progress": {
+          "herbsCollected": 3,
+          "herbsRequired": 5
+        }
+      }
+    ],
+
+    "completed": [
+      "guild_kill_slimes_001"
+    ]
+  },
+
+  "inventory": {
+    "gold": 124,
+
+    "items": [
+      {
+        "itemId": "herb_green",
+        "count": 7
+      },
+      {
+        "itemId": "iron_ore",
+        "count": 3
+      }
+    ],
+
+    "equipment": {
+        "armorSet": "paladin_apprentice_robe",
+        "weapon": "short_sword"
+    }
+  },
+
+    "items": [
+      { "itemId": "mage_robe", "count": 1 },
+      { "itemId": "assassin_robe", "count": 1 },
+      { "itemId": "paladin_apprentice_robe", "count": 1 },
+      { "itemId": "short_sword", "count": 1 },
+      { "itemId": "daggers", "count": 1 },
+      { "itemId": "mace", "count": 1 },
+      { "itemId": "mage_staff", "count": 1 },
+      { "itemId": "mage_book", "count": 1 }
+    ],
+
+    "craft": {
+      "knownRecipes": [
+        "short_sword",
+        "mage_robe",
+        "assassin_robe"
+      ]
+    },
+
+  "achievements": {
+    "unlocked": [
+        {
+          "id": "first_blood",
+          "dateUnlocked": null
+        },
+        {
+          "id": "first_rest_tavern",
+          "dateUnlocked": null
+        }
+    ],
+
+    "progress": {
+        "kill_100_enemies": {
+          "current": 0,
+          "required": 100
+        },
+        "collect_herbs_50": {
+          "current": 0,
+          "required": 50
+        },
+        "complete_quests_10": {
+          "current": 0,
+          "required": 10
+        },
+        "new_achievement_template": {
+          "current": 0,
+          "required": 0
+        }
+    },
+
+    "stats": {
+        "totalEnemiesKilled": 0,
+        "totalHerbsCollected": 0,
+        "totalQuestsCompleted": 0,
+        "totalRests": 0,
+        "totalCrafts": 0
+    }
+  }
+
+  ,
+  "settings": {
+    "musicVolume": 0.8,
+    "sfxVolume": 0.7,
+    "language": "ru",
+    "tutorialShown": true,
+    "controlScheme": "touch",
+    "showSubtitles": true
+  },
+
+  "consumables": [
+    { "id": "spoiled_heal_potion", "type": "potion", "effect": "heal", "value": 10, "price": 2 },
+    { "id": "small_heal_potion", "type": "potion", "effect": "heal", "value": 25, "price": 8 },
+    { "id": "medium_heal_potion", "type": "potion", "effect": "heal", "value": 50, "price": 18 },
+    { "id": "large_heal_potion", "type": "potion", "effect": "heal", "value": 100, "price": 40 },
+    { "id": "legendary_heal_potion", "type": "potion", "effect": "heal", "value": "full", "price": 120 },
+
+    { "id": "spoiled_mana_potion", "type": "potion", "effect": "mana", "value": 10, "price": 2 },
+    { "id": "small_mana_potion", "type": "potion", "effect": "mana", "value": 25, "price": 8 },
+    { "id": "medium_mana_potion", "type": "potion", "effect": "mana", "value": 50, "price": 18 },
+    { "id": "large_mana_potion", "type": "potion", "effect": "mana", "value": 100, "price": 40 },
+    { "id": "legendary_mana_potion", "type": "potion", "effect": "mana", "value": "full", "price": 120 },
+
+    { "id": "spoiled_stamina_potion", "type": "potion", "effect": "stamina", "value": 10, "price": 2 },
+    { "id": "small_stamina_potion", "type": "potion", "effect": "stamina", "value": 25, "price": 8 },
+    { "id": "medium_stamina_potion", "type": "potion", "effect": "stamina", "value": 50, "price": 18 },
+    { "id": "large_stamina_potion", "type": "potion", "effect": "stamina", "value": 100, "price": 40 },
+    { "id": "legendary_stamina_potion", "type": "potion", "effect": "stamina", "value": "full", "price": 120 },
+
+    { "id": "bread", "type": "food", "effect": "heal", "value": 8, "price": 3 },
+    { "id": "cheese", "type": "food", "effect": "heal", "value": 12, "price": 5 },
+    { "id": "apple", "type": "fruit", "effect": "mana", "value": 6, "price": 4 },
+    { "id": "berry_mix", "type": "fruit", "effect": "mana", "value": 10, "price": 7 },
+    { "id": "lemonade", "type": "drink", "effect": "stamina", "value": 10, "price": 6 },
+    { "id": "herbal_tea", "type": "drink", "effect": "stamina", "value": 15, "price": 9 }
+  ],
+
+  "resources": [
+    { "id": "copper_ore", "type": "metal", "price": 5 },
+    { "id": "iron_ore", "type": "metal", "price": 12 },
+    { "id": "silver_ore", "type": "metal", "price": 25 },
+    { "id": "gold_ore", "type": "metal", "price": 50 },
+    { "id": "herb_green", "type": "herb", "price": 2 },
+    { "id": "herb_red", "type": "herb", "price": 4 },
+    { "id": "leather", "type": "material", "price": 7 },
+    { "id": "cloth", "type": "material", "price": 3 }
+  ]
+}
