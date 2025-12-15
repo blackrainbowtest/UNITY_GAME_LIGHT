@@ -11,5 +11,6 @@ namespace UDA2.Core
         public bool tutorialShown = false;
         public string controlScheme = "touch";
         public bool showSubtitles = true;
+        public bool vibrationEnabled = true;
     }
 }
