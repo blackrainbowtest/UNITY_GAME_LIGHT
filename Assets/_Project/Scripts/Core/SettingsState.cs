@@ -9,7 +9,7 @@ namespace UDA2.Core
         public float sfxVolume = 1f;
         public string language = "en";
         public bool tutorialShown = false;
-        public string controlScheme = "keyboard";
+        public string controlScheme = "touch";
         public bool showSubtitles = true;
     }
 }
