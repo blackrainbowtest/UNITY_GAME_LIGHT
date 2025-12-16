@@ -22,14 +22,20 @@ public class LocalizedTextSetter : MonoBehaviour
         UDA2.Core.SettingsContext.OnLanguageChanged -= UpdateText;
     }
 
+    public void UpdateText(string lang)
+    {
+        if (uiStringsData != null && targetText != null)
+        {
+            targetText.text = uiStringsData.Get(key, lang);
+        }
+    }
+
+    // Для вызова из Start()
     public void UpdateText()
     {
         string lang = "en";
         if (UDA2.Core.SettingsContext.Current != null)
             lang = UDA2.Core.SettingsContext.Current.language;
-        if (uiStringsData != null && targetText != null)
-        {
-            targetText.text = uiStringsData.Get(key, lang);
-        }
+        UpdateText(lang);
     }
 }
