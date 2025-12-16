@@ -4,6 +4,7 @@ namespace UDA2.UI
 {
     public class MainMenuController : MonoBehaviour
     {
+        public GameObject settingsPanel;
         public void OnNewGamePressed()
         {
             // Логика будет добавлена позже
@@ -16,7 +17,7 @@ namespace UDA2.UI
 
         public void OnSettingsPressed()
         {
-            // Логика будет добавлена позже
+            settingsPanel.SetActive(true);
         }
 
         public void OnExitPressed()

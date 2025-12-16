@@ -4,3 +4,11 @@ load_game,Загрузить,Load Game,Charger la partie
 settings,Настройки,Settings,Paramètres
 exit,Выход,Exit,Quitter
 skip,Пропустить,Skip,Passer
+language,Язык,Language,Langue
+version,version 0.0.001,version 0.0.001,version 0.0.001
+music,music,music,music
+sfx,sfx,sfx,sfx
+apply,Apply,Apply,Apply
+reset,Reset,Reset,Reset
+back,Back,Back,Back
+vibration,Vibration,Vibration,Vibration
