@@ -5,14 +5,18 @@ namespace UDA2.Core
     public static class LocalizationManager
     {
         public static string CurrentLanguage { get; private set; } = "en";
-        public static event Action OnLanguageChanged;
+
+        static LocalizationManager()
+        {
+            SettingsContext.OnLanguageChanged += SetLanguage;
+        }
 
         public static void SetLanguage(string lang)
         {
             if (CurrentLanguage != lang)
             {
                 CurrentLanguage = lang;
-                OnLanguageChanged?.Invoke();
+                // Здесь можно добавить логику обновления UI, ресурсов и т.д.
             }
         }
     }
