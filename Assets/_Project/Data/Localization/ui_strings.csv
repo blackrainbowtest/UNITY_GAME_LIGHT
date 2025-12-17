@@ -5,10 +5,10 @@ settings,Настройки,Settings,Paramètres
 exit,Выход,Exit,Quitter
 skip,Пропустить,Skip,Passer
 language,Язык,Language,Langue
-version,version 0.0.001,version 0.0.001,version 0.0.001
-music,music,music,music
-sfx,sfx,sfx,sfx
-apply,Apply,Apply,Apply
-reset,Reset,Reset,Reset
-back,Back,Back,Back
-vibration,Vibration,Vibration,Vibration
+version,Версия 0.0.001,Version 0.0.001,Version 0.0.001
+music,Музыка,Music,Musique
+sfx,Звуки,SFX,Effets
+apply,Применить,Apply,Appliquer
+reset,Сброс,Reset,Réinitialiser
+back,Назад,Back,Retour
+vibration,Вибрация,Vibration,Vibration

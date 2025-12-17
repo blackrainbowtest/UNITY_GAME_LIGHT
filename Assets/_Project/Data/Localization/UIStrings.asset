@@ -64,48 +64,56 @@ MonoBehaviour:
   - key: version
     entries:
     - languageCode: ru
-      text: version 0.0.001
+      text: "\u0412\u0435\u0440\u0441\u0438\u044F 0.0.001"
     - languageCode: en
-      text: version 0.0.001
+      text: Version 0.0.001
     - languageCode: fr
-      text: version 0.0.001
+      text: Version 0.0.001
   - key: music
     entries:
     - languageCode: ru
-      text: music
+      text: "\u041C\u0443\u0437\u044B\u043A\u0430"
     - languageCode: en
-      text: music
+      text: Music
     - languageCode: fr
-      text: music
+      text: Musique
   - key: sfx
     entries:
     - languageCode: ru
-      text: sfx
+      text: "\u0417\u0432\u0443\u043A\u0438"
     - languageCode: en
-      text: sfx
+      text: SFX
     - languageCode: fr
-      text: sfx
+      text: Effets
   - key: apply
     entries:
     - languageCode: ru
-      text: Apply
+      text: "\u041F\u0440\u0438\u043C\u0435\u043D\u0438\u0442\u044C"
     - languageCode: en
       text: Apply
     - languageCode: fr
-      text: Apply
+      text: Appliquer
   - key: reset
     entries:
     - languageCode: ru
-      text: Reset
+      text: "\u0421\u0431\u0440\u043E\u0441"
     - languageCode: en
       text: Reset
     - languageCode: fr
-      text: Reset
+      text: "R\xE9initialiser"
   - key: back
     entries:
     - languageCode: ru
-      text: Back
+      text: "\u041D\u0430\u0437\u0430\u0434"
     - languageCode: en
       text: Back
     - languageCode: fr
-      text: Back
+      text: Retour
+  - key: vibration
+    entries:
+    - languageCode: ru
+      text: "\u0412\u0438\u0431\u0440\u0430\u0446\u0438\u044F"
+    - languageCode: en
+      text: Vibration
+    - languageCode: fr
+      text: Vibration

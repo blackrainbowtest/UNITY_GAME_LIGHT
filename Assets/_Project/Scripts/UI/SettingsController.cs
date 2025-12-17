@@ -6,6 +6,8 @@ using UDA2.Core;
 
 public class SettingsController : MonoBehaviour
 {
+    // Temporary state for editing (not applied until Apply is pressed)
+    private SettingsState _editingState;
     [Header("UI References")]
     public GameObject window;
     public TMP_Dropdown languageDropdown;
@@ -17,27 +19,26 @@ public class SettingsController : MonoBehaviour
 
     private void OnEnable()
     {
-        var settings = EnsureSettings();
+        // Copy the current state to the temporary editing state
+        _editingState = CopyState(EnsureSettings());
 
-        // Инициализация значений UI из текущих настроек
+        // Initialize UI values from the temporary editing state
         if (languageDropdown != null)
-            languageDropdown.value = SettingsManager.GetLanguageIndex();
+            languageDropdown.value = GetLanguageIndex(_editingState.language);
         else
             Debug.LogWarning("SettingsController: languageDropdown не назначен.", this);
 
         if (musicSlider != null)
-            musicSlider.value = settings.musicVolume;
+            musicSlider.value = _editingState.musicVolume;
         else
             Debug.LogWarning("SettingsController: musicSlider не назначен.", this);
 
         if (sfxSlider != null)
-            sfxSlider.value = settings.sfxVolume;
+            sfxSlider.value = _editingState.sfxVolume;
         else
             Debug.LogWarning("SettingsController: sfxSlider не назначен.", this);
         if (vibrationToggle != null)
-            vibrationToggle.isOn = settings.vibrationEnabled;
-        if (versionText != null)
-            versionText.text = $"Version {Application.version}";
+            vibrationToggle.isOn = _editingState.vibrationEnabled;
     }
 
     private void Start()
@@ -55,50 +56,51 @@ public class SettingsController : MonoBehaviour
 
     public void OnLanguageChanged(int index)
     {
-        var settings = EnsureSettings();
         var lang = SettingsManager.GetLanguageByIndex(index);
-        settings.language = lang;
-        LocalizationManager.SetLanguage(lang);
-        SettingsManager.Save(settings);
+        _editingState.language = lang;
+        SettingsContext.SetLanguage(lang); // Update UI for language change
     }
 
     public void OnMusicVolumeChanged(float value)
     {
-        EnsureSettings().musicVolume = value;
+        _editingState.musicVolume = value;
         AudioManager.SetMusicVolume(value);
     }
 
     public void OnSfxVolumeChanged(float value)
     {
-        EnsureSettings().sfxVolume = value;
+        _editingState.sfxVolume = value;
         AudioManager.SetSfxVolume(value);
     }
 
     public void OnVibrationChanged(bool value)
     {
-        EnsureSettings().vibrationEnabled = value;
+        _editingState.vibrationEnabled = value;
     }
 
     // Вызывается кнопкой "Apply"
     public void OnApply()
     {
-        SettingsManager.Save(EnsureSettings());
+        // Apply the temporary state to the global context and save
+        SettingsContext.Current = CopyState(_editingState);
+        SettingsManager.Save(SettingsContext.Current);
         Close();
     }
 
     // Вызывается кнопкой "Reset"
     public void OnReset()
     {
-        SettingsManager.ResetToDefault();
-        var settings = EnsureSettings();
+        // Reset the temporary state to default values (does not affect saved data)
+        _editingState = new SettingsState();
         if (languageDropdown != null)
-            languageDropdown.value = SettingsManager.GetLanguageIndex();
+            languageDropdown.value = GetLanguageIndex(_editingState.language);
         if (musicSlider != null)
-            musicSlider.value = settings.musicVolume;
+            musicSlider.value = _editingState.musicVolume;
         if (sfxSlider != null)
-            sfxSlider.value = settings.sfxVolume;
+            sfxSlider.value = _editingState.sfxVolume;
         if (vibrationToggle != null)
-            vibrationToggle.isOn = settings.vibrationEnabled;
+            vibrationToggle.isOn = _editingState.vibrationEnabled;
+        SettingsContext.SetLanguage(_editingState.language); // Update UI for language change
     }
 
     public void Open()
@@ -108,6 +110,7 @@ public class SettingsController : MonoBehaviour
 
     public void Close()
     {
+        // On close, just discard the temporary state, do not touch the global context
         SetActiveState(false);
     }
 
@@ -129,5 +132,37 @@ public class SettingsController : MonoBehaviour
         }
 
         return SettingsContext.Current;
+    }
+
+    private static SettingsState CopyState(SettingsState source)
+    {
+        if (source == null)
+            return new SettingsState();
+
+        return new SettingsState
+        {
+            musicVolume = source.musicVolume,
+            sfxVolume = source.sfxVolume,
+            language = source.language,
+            tutorialShown = source.tutorialShown,
+            controlScheme = source.controlScheme,
+            showSubtitles = source.showSubtitles,
+            vibrationEnabled = source.vibrationEnabled
+        };
+    }
+
+    private int GetLanguageIndex(string lang)
+    {
+        if (string.IsNullOrEmpty(lang))
+            return 0;
+
+        var languages = SettingsManager.SupportedLanguages;
+        for (int i = 0; i < languages.Length; i++)
+        {
+            if (languages[i] == lang)
+                return i;
+        }
+
+        return 0;
     }
 }
