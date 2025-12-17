@@ -7,6 +7,24 @@ namespace UDA2.UI
         public SettingsController settingsController;
         public GameObject settingsPanel;
         public GameObject settingsWindow;
+
+        private void OnEnable()
+        {
+            // Force update all localized texts in the menu when it becomes active
+            LocalizedTextSetter.UpdateAllInHierarchy(gameObject);
+        }
+
+        private void Awake()
+        {
+            UDA2.Core.SettingsContext.Current = UDA2.Core.SettingsManager.Load();
+        }
+
+        private void Start()
+        {
+            // Force update all localized texts at scene start
+            LocalizedTextSetter.UpdateAllInHierarchy(gameObject);
+        }
+
         public void OnNewGamePressed()
         {
             // Логика будет добавлена позже

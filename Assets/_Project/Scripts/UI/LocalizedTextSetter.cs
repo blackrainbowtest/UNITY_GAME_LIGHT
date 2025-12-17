@@ -30,12 +30,32 @@ public class LocalizedTextSetter : MonoBehaviour
         }
     }
 
-    // Для вызова из Start()
+    /// <summary>
+    /// Updates the text using the current language, ensuring settings are loaded if needed.
+    /// </summary>
     public void UpdateText()
     {
-        string lang = "en";
-        if (UDA2.Core.SettingsContext.Current != null)
-            lang = UDA2.Core.SettingsContext.Current.language;
+        var settings = UDA2.Core.SettingsContext.Current;
+        if (settings == null)
+        {
+            settings = UDA2.Core.SettingsManager.Load();
+            if (settings == null)
+                settings = new UDA2.Core.SettingsState();
+            UDA2.Core.SettingsContext.Current = settings;
+        }
+        var lang = string.IsNullOrEmpty(settings.language) ? "en" : settings.language;
         UpdateText(lang);
+    }
+
+    /// <summary>
+    /// Updates all LocalizedTextSetter components in the given root GameObject (recursively).
+    /// </summary>
+    public static void UpdateAllInHierarchy(GameObject root)
+    {
+        if (root == null) return;
+        foreach (var setter in root.GetComponentsInChildren<LocalizedTextSetter>(true))
+        {
+            setter.UpdateText();
+        }
     }
 }
