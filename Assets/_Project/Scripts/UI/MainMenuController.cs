@@ -4,7 +4,9 @@ namespace UDA2.UI
 {
     public class MainMenuController : MonoBehaviour
     {
+        public SettingsController settingsController;
         public GameObject settingsPanel;
+        public GameObject settingsWindow;
         public void OnNewGamePressed()
         {
             // Логика будет добавлена позже
@@ -17,7 +19,22 @@ namespace UDA2.UI
 
         public void OnSettingsPressed()
         {
-            settingsPanel.SetActive(true);
+            if (settingsController != null)
+            {
+                settingsController.Open();
+                return;
+            }
+
+            if (settingsWindow != null)
+                settingsWindow.SetActive(true);
+
+            if (settingsPanel != null)
+            {
+                settingsPanel.SetActive(true);
+                return;
+            }
+
+            Debug.LogWarning("MainMenuController: settingsController/settingsPanel/settingsWindow не назначены.", this);
         }
 
         public void OnExitPressed()

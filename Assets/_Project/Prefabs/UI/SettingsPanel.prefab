@@ -4209,6 +4209,7 @@ GameObject:
   - component: {fileID: 627663476796730414}
   - component: {fileID: 6955830232963742959}
   - component: {fileID: 7957636737379037260}
+  - component: {fileID: 1437698504255182098}
   m_Layer: 5
   m_Name: SettingsPanel
   m_TagString: Untagged
@@ -4274,6 +4275,26 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1437698504255182098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8478922855236057642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da497e7677c190a409311a9b7c0e8c3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SettingsController
+  window: {fileID: 2859398677866627436}
+  backgroundBlocker: {fileID: 0}
+  languageDropdown: {fileID: 1846226281130940348}
+  musicSlider: {fileID: 204858458538653267}
+  sfxSlider: {fileID: 7446889332645691530}
+  vibrationToggle: {fileID: 1464269796070756920}
+  versionText: {fileID: 3805946290961395071}
+  settingsPanel: {fileID: 8478922855236057642}
 --- !u!1 &8684752180276406178
 GameObject:
   m_ObjectHideFlags: 0
