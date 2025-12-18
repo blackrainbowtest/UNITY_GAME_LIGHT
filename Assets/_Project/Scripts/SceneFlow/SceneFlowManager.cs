@@ -6,46 +6,52 @@ using UDA2.SceneFlow;
 namespace UDA2.SceneFlow
 {
     public class SceneFlowManager : MonoBehaviour
-    {
-        public static SceneFlowManager Instance { get; private set; }
-        private bool _sceneReady;
-        [SerializeField] private UI.LoadingScreenController loadingScreen;
+	{
+		public static SceneFlowManager Instance { get; private set; }
 
-        private void Awake()
-        {
-            if (Instance != null)
-            {
-                Destroy(gameObject);
-                return;
-            }
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
+		private bool _sceneReady;
+		private UI.LoadingScreenController loadingScreen;
 
-        public void NotifySceneReady()
-        {
-            _sceneReady = true;
-        }
+		private void Awake()
+		{
+			if (Instance != null)
+			{
+				Destroy(gameObject);
+				return;
+			}
+			Instance = this;
+			DontDestroyOnLoad(gameObject);
+		}
 
-        public void LoadScene(string sceneName, SceneTransitionData data = null)
-        {
-            StartCoroutine(LoadSceneRoutine(sceneName, data));
-        }
+		public void RegisterLoadingScreen(UI.LoadingScreenController screen)
+		{
+			loadingScreen = screen;
+		}
 
-        public IEnumerator LoadSceneRoutine(string sceneName, SceneTransitionData data = null)
-        {
-            _sceneReady = false;
-            if (loadingScreen != null)
-                loadingScreen.Show();
+		public void NotifySceneReady()
+		{
+			_sceneReady = true;
+		}
 
-            var asyncOp = SceneManager.LoadSceneAsync(sceneName);
-            asyncOp.allowSceneActivation = true;
+		public void LoadScene(string sceneName, SceneTransitionData data = null)
+		{
+			StartCoroutine(LoadSceneRoutine(sceneName, data));
+		}
 
-            while (!_sceneReady)
-                yield return null;
+		private IEnumerator LoadSceneRoutine(string sceneName, SceneTransitionData data)
+		{
+			_sceneReady = false;
 
-            if (loadingScreen != null)
-                loadingScreen.Hide();
-        }
-    }
+			if (loadingScreen != null)
+				loadingScreen.Show();
+
+			var asyncOp = SceneManager.LoadSceneAsync(sceneName);
+
+			while (!_sceneReady)
+				yield return null;
+
+			if (loadingScreen != null)
+				loadingScreen.Hide();
+		}
+	}
 }

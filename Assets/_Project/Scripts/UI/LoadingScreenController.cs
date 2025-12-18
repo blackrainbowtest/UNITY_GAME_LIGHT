@@ -1,19 +1,25 @@
 using UnityEngine;
 
+using UnityEngine;
+using UDA2.SceneFlow;
+
 namespace UDA2.UI
 {
-    // Только визуализация загрузки
     public class LoadingScreenController : MonoBehaviour
     {
+        private void Awake()
+        {
+            if (SceneFlowManager.Instance != null)
+                SceneFlowManager.Instance.RegisterLoadingScreen(this);
+        }
+
         public void Show()
         {
-            // Показать UI загрузки
             gameObject.SetActive(true);
         }
 
         public void Hide()
         {
-            // Скрыть UI загрузки
             gameObject.SetActive(false);
         }
 
