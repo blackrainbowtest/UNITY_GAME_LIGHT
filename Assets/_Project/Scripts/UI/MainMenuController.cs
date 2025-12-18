@@ -27,7 +27,7 @@ namespace UDA2.UI
 
         public void OnNewGamePressed()
         {
-            // Логика будет добавлена позже
+            UDA2.SceneFlow.SceneFlowManager.Instance.LoadScene("IntroScene");
         }
 
         public void OnLoadGamePressed()
