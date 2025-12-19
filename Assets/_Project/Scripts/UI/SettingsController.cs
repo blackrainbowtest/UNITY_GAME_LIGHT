@@ -64,7 +64,8 @@ public class SettingsController : MonoBehaviour
     public void OnMusicVolumeChanged(float value)
     {
         _editingState.musicVolume = value;
-        AudioManager.SetMusicVolume(value);
+        if (UDA2.Audio.AudioManager.Instance != null)
+            UDA2.Audio.AudioManager.Instance.SetMusicVolume(value, 1f);
     }
 
     public void OnSfxVolumeChanged(float value)
@@ -84,6 +85,9 @@ public class SettingsController : MonoBehaviour
         // Apply the temporary state to the global context and save
         SettingsContext.Current = CopyState(_editingState);
         SettingsManager.Save(SettingsContext.Current);
+        // Применить громкость музыки
+        if (UDA2.Audio.AudioManager.Instance != null)
+            UDA2.Audio.AudioManager.Instance.SetMusicVolume(_editingState.musicVolume, 1f);
         Close();
     }
 
@@ -101,6 +105,9 @@ public class SettingsController : MonoBehaviour
         if (vibrationToggle != null)
             vibrationToggle.isOn = _editingState.vibrationEnabled;
         SettingsContext.SetLanguage(_editingState.language); // Update UI for language change
+        // Применить громкость музыки
+        if (UDA2.Audio.AudioManager.Instance != null)
+            UDA2.Audio.AudioManager.Instance.SetMusicVolume(_editingState.musicVolume, 1f);
     }
 
     public void Open()
@@ -112,6 +119,9 @@ public class SettingsController : MonoBehaviour
     {
         // On close, just discard the temporary state, do not touch the global context
         SetActiveState(false);
+        // Восстановить громкость музыки из сохранённых настроек
+        if (UDA2.Audio.AudioManager.Instance != null && UDA2.Core.SettingsContext.Current != null)
+            UDA2.Audio.AudioManager.Instance.SetMusicVolume(UDA2.Core.SettingsContext.Current.musicVolume);
     }
 
     private void SetActiveState(bool isActive)

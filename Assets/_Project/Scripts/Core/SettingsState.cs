@@ -5,8 +5,8 @@ namespace UDA2.Core
     [Serializable]
     public class SettingsState
     {
-        public float musicVolume = 1f;
-        public float sfxVolume = 1f;
+        public float musicVolume = 0.5f;
+        public float sfxVolume = 0.4f;
         public string language = "en";
         public bool tutorialShown = false;
         public string controlScheme = "touch";
