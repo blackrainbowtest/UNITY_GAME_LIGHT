@@ -149,7 +149,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UDA2.Core.GameBootstrapper
   saveSlot: 1
-  mainSceneName: MainMenuScene
+  mainSceneName: SplashScene
 --- !u!4 &666781782
 Transform:
   m_ObjectHideFlags: 0
