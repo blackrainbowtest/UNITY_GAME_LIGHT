@@ -33,22 +33,38 @@ namespace UDA2.SceneFlow
 			_sceneReady = true;
 		}
 
-		public void LoadScene(string sceneName, SceneTransitionData data = null)
+
+		private const float DefaultMinLoadingTime = 1.0f; // по умолчанию 1 секунда
+
+		// Перегрузка с минимальным временем загрузки
+		public void LoadScene(string sceneName, SceneTransitionData data = null, float? minLoadingTime = null)
 		{
-			StartCoroutine(LoadSceneRoutine(sceneName, data));
+			float minTime = minLoadingTime ?? DefaultMinLoadingTime;
+			StartCoroutine(LoadSceneRoutine(sceneName, data, minTime));
 		}
 
-		private IEnumerator LoadSceneRoutine(string sceneName, SceneTransitionData data)
+		private IEnumerator LoadSceneRoutine(string sceneName, SceneTransitionData data, float minLoadingTime)
 		{
 			_sceneReady = false;
 
 			if (loadingScreen != null)
 				loadingScreen.Show();
 
+			float timer = 0f;
 			var asyncOp = SceneManager.LoadSceneAsync(sceneName);
 
 			while (!_sceneReady)
+			{
+				timer += Time.unscaledDeltaTime;
 				yield return null;
+			}
+
+			// Ждём, если минимальное время не прошло
+			while (timer < minLoadingTime)
+			{
+				timer += Time.unscaledDeltaTime;
+				yield return null;
+			}
 
 			if (loadingScreen != null)
 				loadingScreen.Hide();
