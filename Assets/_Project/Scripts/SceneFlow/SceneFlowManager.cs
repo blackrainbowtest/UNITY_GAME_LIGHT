@@ -36,13 +36,50 @@ namespace UDA2.SceneFlow
 
 		private const float DefaultMinLoadingTime = 1.0f; // по умолчанию 1 секунда
 
+
+		// Имя вашей сцены загрузки
+		private const string LoadingSceneName = "LoadingScene";
+
 		// Перегрузка с минимальным временем загрузки
 		public void LoadScene(string sceneName, SceneTransitionData data = null, float? minLoadingTime = null)
 		{
 			float minTime = minLoadingTime ?? DefaultMinLoadingTime;
-			StartCoroutine(LoadSceneRoutine(sceneName, data, minTime));
+			StartCoroutine(LoadSceneWithLoadingScreen(sceneName, data, minTime));
 		}
 
+		// Новый flow: всегда через LoadingScene
+		private IEnumerator LoadSceneWithLoadingScreen(string targetScene, SceneTransitionData data, float minLoadingTime)
+		{
+			// Если уже в LoadingScene, просто грузим целевую сцену
+			if (SceneManager.GetActiveScene().name == LoadingSceneName)
+			{
+				yield return StartCoroutine(LoadSceneRoutine(targetScene, data, minLoadingTime));
+				yield break;
+			}
+
+			// 1. Загружаем LoadingScene
+			_sceneReady = false;
+			AsyncOperation loadingOp = SceneManager.LoadSceneAsync(LoadingSceneName);
+			while (!loadingOp.isDone)
+				yield return null;
+
+			// 2. Ждём, пока LoadingScreenController зарегистрируется
+			float waitTime = 0f;
+			while (loadingScreen == null && waitTime < 5f) // fail-safe 5 сек
+			{
+				waitTime += Time.unscaledDeltaTime;
+				yield return null;
+			}
+
+			// 3. Показываем loading (на всякий случай)
+			if (loadingScreen != null)
+				loadingScreen.Show();
+
+			// 4. Грузим целевую сцену с задержкой
+			yield return StartCoroutine(LoadSceneRoutine(targetScene, data, minLoadingTime));
+		}
+
+		// Обычная загрузка целевой сцены с ожиданием ready и минимального времени
 		private IEnumerator LoadSceneRoutine(string sceneName, SceneTransitionData data, float minLoadingTime)
 		{
 			_sceneReady = false;
