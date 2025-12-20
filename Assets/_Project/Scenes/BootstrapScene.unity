@@ -265,7 +265,7 @@ GameObject:
   - component: {fileID: 1548089566}
   - component: {fileID: 1548089568}
   m_Layer: 0
-  m_Name: MainMenuMusic
+  m_Name: MusicSource
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -396,9 +396,101 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UDA2.Audio.AudioManager
   musicSource: {fileID: 1548089566}
+  sfxPrefab: {fileID: 3602613133639818747, guid: 08559d449bfb4a545b6c293b36d81554, type: 3}
+  sfxPoolSize: 10
+  sfxParent: {fileID: 2085597653}
+  logoMusic: {fileID: 8300000, guid: 42ab6727c9ca27441ae9ecbdfcb67448, type: 3}
   introMusic: {fileID: 8300000, guid: 8418ab78320a46a4aa586c48a96b4645, type: 3}
   mainMenuMusic: {fileID: 8300000, guid: 8418ab78320a46a4aa586c48a96b4645, type: 3}
   gameplayMusic: {fileID: 0}
+--- !u!1 &2085597652
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2085597653}
+  m_Layer: 0
+  m_Name: SFXPool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2085597653
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2085597652}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 998.5152, y: 464.61246, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &7725573040318084794
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2619789093054260699, guid: 08559d449bfb4a545b6c293b36d81554, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 998.5152
+      objectReference: {fileID: 0}
+    - target: {fileID: 2619789093054260699, guid: 08559d449bfb4a545b6c293b36d81554, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 464.61246
+      objectReference: {fileID: 0}
+    - target: {fileID: 2619789093054260699, guid: 08559d449bfb4a545b6c293b36d81554, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2619789093054260699, guid: 08559d449bfb4a545b6c293b36d81554, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2619789093054260699, guid: 08559d449bfb4a545b6c293b36d81554, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2619789093054260699, guid: 08559d449bfb4a545b6c293b36d81554, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2619789093054260699, guid: 08559d449bfb4a545b6c293b36d81554, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2619789093054260699, guid: 08559d449bfb4a545b6c293b36d81554, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2619789093054260699, guid: 08559d449bfb4a545b6c293b36d81554, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2619789093054260699, guid: 08559d449bfb4a545b6c293b36d81554, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3092779020317544429, guid: 08559d449bfb4a545b6c293b36d81554, type: 3}
+      propertyPath: m_Name
+      value: SFXSource
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 08559d449bfb4a545b6c293b36d81554, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -407,3 +499,5 @@ SceneRoots:
   - {fileID: 1255247009}
   - {fileID: 1131034972}
   - {fileID: 1548089567}
+  - {fileID: 7725573040318084794}
+  - {fileID: 2085597653}

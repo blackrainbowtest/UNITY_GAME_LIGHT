@@ -71,7 +71,8 @@ public class SettingsController : MonoBehaviour
     public void OnSfxVolumeChanged(float value)
     {
         _editingState.sfxVolume = value;
-        AudioManager.SetSfxVolume(value);
+        if (UDA2.Audio.AudioManager.Instance != null)
+            UDA2.Audio.AudioManager.Instance.SetSfxVolume(value, 1f);
     }
 
     public void OnVibrationChanged(bool value)
@@ -85,9 +86,12 @@ public class SettingsController : MonoBehaviour
         // Apply the temporary state to the global context and save
         SettingsContext.Current = CopyState(_editingState);
         SettingsManager.Save(SettingsContext.Current);
-        // Применить громкость музыки
+        // Применить громкость музыки и SFX
         if (UDA2.Audio.AudioManager.Instance != null)
+        {
             UDA2.Audio.AudioManager.Instance.SetMusicVolume(_editingState.musicVolume, 1f);
+            UDA2.Audio.AudioManager.Instance.SetSfxVolume(_editingState.sfxVolume, 1f);
+        }
         Close();
     }
 
@@ -105,9 +109,12 @@ public class SettingsController : MonoBehaviour
         if (vibrationToggle != null)
             vibrationToggle.isOn = _editingState.vibrationEnabled;
         SettingsContext.SetLanguage(_editingState.language); // Update UI for language change
-        // Применить громкость музыки
+        // Применить громкость музыки и SFX
         if (UDA2.Audio.AudioManager.Instance != null)
+        {
             UDA2.Audio.AudioManager.Instance.SetMusicVolume(_editingState.musicVolume, 1f);
+            UDA2.Audio.AudioManager.Instance.SetSfxVolume(_editingState.sfxVolume, 1f);
+        }
     }
 
     public void Open()
@@ -119,9 +126,12 @@ public class SettingsController : MonoBehaviour
     {
         // On close, just discard the temporary state, do not touch the global context
         SetActiveState(false);
-        // Восстановить громкость музыки из сохранённых настроек
+        // Восстановить громкость музыки и SFX из сохранённых настроек
         if (UDA2.Audio.AudioManager.Instance != null && UDA2.Core.SettingsContext.Current != null)
+        {
             UDA2.Audio.AudioManager.Instance.SetMusicVolume(UDA2.Core.SettingsContext.Current.musicVolume);
+            UDA2.Audio.AudioManager.Instance.SetSfxVolume(UDA2.Core.SettingsContext.Current.sfxVolume);
+        }
     }
 
     private void SetActiveState(bool isActive)

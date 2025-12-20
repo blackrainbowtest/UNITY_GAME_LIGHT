@@ -7,6 +7,8 @@ namespace UDA2.UI
     public class LogoFadeIn : MonoBehaviour
     {
         public float fadeDuration = 0.5f;
+        [Header("SFX")]
+        public AudioClip logoSfx;
         private CanvasGroup canvasGroup;
         private void Awake()
         {
@@ -15,6 +17,8 @@ namespace UDA2.UI
         }
         private void Start()
         {
+            if (logoSfx != null && UDA2.Audio.AudioManager.Instance != null)
+                UDA2.Audio.AudioManager.Instance.PlaySfx(logoSfx);
             StartCoroutine(FadeIn());
         }
         private System.Collections.IEnumerator FadeIn()
