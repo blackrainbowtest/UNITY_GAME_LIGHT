@@ -264,18 +264,33 @@ namespace UDA2.Audio
             if (sfxPool == null) yield break;
             float[] startVolumes = new float[sfxPool.Length];
             for (int i = 0; i < sfxPool.Length; i++)
-                startVolumes[i] = sfxPool[i].volume;
+            {
+                var src = sfxPool[i];
+                if (src == null) continue;
+                if (src.Equals(null)) continue; // Unity destroyed check
+                startVolumes[i] = src.volume;
+            }
             float t = 0f;
             while (t < duration)
             {
                 t += Time.unscaledDeltaTime;
                 float v = Mathf.Lerp(0f, target, t / duration);
                 for (int i = 0; i < sfxPool.Length; i++)
-                    sfxPool[i].volume = v;
+                {
+                    var src = sfxPool[i];
+                    if (src == null) continue;
+                    if (src.Equals(null)) continue; // Unity destroyed check
+                    src.volume = v;
+                }
                 yield return null;
             }
             for (int i = 0; i < sfxPool.Length; i++)
-                sfxPool[i].volume = target;
+            {
+                var src = sfxPool[i];
+                if (src == null) continue;
+                if (src.Equals(null)) continue;
+                src.volume = target;
+            }
         }
     }
 }
