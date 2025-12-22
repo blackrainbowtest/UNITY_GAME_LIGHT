@@ -2,7 +2,7 @@ using UnityEngine;
 using TMPro;
 
 [RequireComponent(typeof(TMP_Text))]
-public class LocalizedText : MonoBehaviour
+public class LocalizedTextComponent : MonoBehaviour
 {
     public string textKey;
     public FontType fontType = FontType.Body;
