@@ -46,13 +46,18 @@ public class FontManager : MonoBehaviour
         {
             if (entry.languageCode == lang)
             {
+                if (currentProfile == entry.fontProfile)
+                    return;
                 currentProfile = entry.fontProfile;
                 OnFontChanged?.Invoke();
                 return;
             }
         }
-        currentProfile = fallbackProfile;
-        OnFontChanged?.Invoke();
+        if (currentProfile != fallbackProfile)
+        {
+            currentProfile = fallbackProfile;
+            OnFontChanged?.Invoke();
+        }
     }
 
     public static TMP_FontAsset GetFont(FontType type)

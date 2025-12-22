@@ -36,6 +36,8 @@ public class LocalizedText : MonoBehaviour
 
     private void UpdateText()
     {
+        if (string.IsNullOrEmpty(textKey))
+            return;
         tmpText.text = UDA2.Core.LocalizationManager.Get(textKey);
     }
 }
