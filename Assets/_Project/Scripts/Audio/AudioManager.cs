@@ -79,14 +79,12 @@ namespace UDA2.Audio
             AudioClip nextClip = null;
             float fadeIn = 1.5f;
             float fadeOut = 1.0f;
-            bool isLogo = false;
             switch (scene.name)
             {
                 case "SplashScene":
                     nextClip = logoMusic;
                     fadeIn = 1f;
                     fadeOut = 1f;
-                    isLogo = true;
                     break;
                 case "IntroScene":
                     nextClip = introMusic;

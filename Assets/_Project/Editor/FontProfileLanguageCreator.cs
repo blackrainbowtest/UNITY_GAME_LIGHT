@@ -49,7 +49,7 @@ public class FontProfileLanguageCreator : EditorWindow
         AssetDatabase.SaveAssets();
 
         // Найти FontManager в сцене
-        var fontManager = FindObjectOfType<FontManager>();
+        var fontManager = Object.FindFirstObjectByType<FontManager>();
         if (fontManager != null)
         {
             var profiles = fontManager.GetType().GetField("fontProfiles", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
