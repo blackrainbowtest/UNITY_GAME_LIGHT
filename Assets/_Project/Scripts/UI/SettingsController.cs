@@ -80,7 +80,7 @@ public class SettingsController : MonoBehaviour
         _editingState.vibrationEnabled = value;
     }
 
-    // Вызывается кнопкой "Apply"
+                // Subscribe to UI events
     public void OnApply()
     {
         // Apply the temporary state to the global context and save
@@ -117,13 +117,13 @@ public class SettingsController : MonoBehaviour
         }
     }
 
-    public void Open()
+            // Called by the "Apply" button
     {
         SetActiveState(true);
     }
 
     public void Close()
-    {
+                // Apply music and SFX volume
         // On close, just discard the temporary state, do not touch the global context
         SetActiveState(false);
         // Восстановить громкость музыки и SFX из сохранённых настроек
@@ -132,7 +132,7 @@ public class SettingsController : MonoBehaviour
             UDA2.Audio.AudioManager.Instance.SetMusicVolume(UDA2.Core.SettingsContext.Current.musicVolume);
             UDA2.Audio.AudioManager.Instance.SetSfxVolume(UDA2.Core.SettingsContext.Current.sfxVolume);
         }
-    }
+            // Called by the "Reset" button
 
     private void SetActiveState(bool isActive)
     {
@@ -146,7 +146,7 @@ public class SettingsController : MonoBehaviour
     {
         if (SettingsContext.Current == null)
         {
-            SettingsContext.Current = SettingsManager.Load();
+                // Apply music and SFX volume
             if (SettingsContext.Current == null)
                 SettingsContext.Current = new SettingsState();
         }

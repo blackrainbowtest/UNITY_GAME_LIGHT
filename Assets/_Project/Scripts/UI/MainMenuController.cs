@@ -32,7 +32,7 @@ namespace UDA2.UI
 
         public void OnLoadGamePressed()
         {
-            // Логика будет добавлена позже
+            // Logic will be added later
         }
 
         public void OnSettingsPressed()
