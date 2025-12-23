@@ -9,17 +9,17 @@ public class LocalizedTextComponent : MonoBehaviour
 
     private TMP_Text tmpText;
 
+    public UIStringsData uiStringsData;
+
     private void Awake()
     {
         tmpText = GetComponent<TMP_Text>();
         FontManager.OnFontChanged += UpdateFont;
-        UDA2.Core.LocalizationManager.OnLocalizationChanged += UpdateText;
     }
 
     private void OnDestroy()
     {
         FontManager.OnFontChanged -= UpdateFont;
-        UDA2.Core.LocalizationManager.OnLocalizationChanged -= UpdateText;
     }
 
     private void OnEnable()
@@ -36,8 +36,9 @@ public class LocalizedTextComponent : MonoBehaviour
 
     private void UpdateText()
     {
-        if (string.IsNullOrEmpty(textKey))
+        if (string.IsNullOrEmpty(textKey) || uiStringsData == null)
             return;
-        tmpText.text = UDA2.Core.LocalizationManager.Get(textKey);
+        var lang = UDA2.Core.LocalizationManager.CurrentLanguage;
+        tmpText.text = uiStringsData.Get(textKey, lang);
     }
 }
