@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b50cae829fbfc18408e47b3926315838, type: 3}
+  m_Name: FontProfile
+  m_EditorClassIdentifier: Assembly-CSharp::FontProfile
+  titleFont: {fileID: 11400000, guid: a365446cf522b0c42ba32f95b98a5cfa, type: 2}
+  bodyFont: {fileID: 11400000, guid: a365446cf522b0c42ba32f95b98a5cfa, type: 2}
+  uiFont: {fileID: 11400000, guid: a365446cf522b0c42ba32f95b98a5cfa, type: 2}
+  dialogueFont: {fileID: 11400000, guid: a365446cf522b0c42ba32f95b98a5cfa, type: 2}
