@@ -64,13 +64,15 @@ public class FontManager : MonoBehaviour
     {
         var profile = Instance?.currentProfile ?? Instance?.fallbackProfile;
         if (profile == null) return null;
+        TMP_FontAsset result = null;
         switch (type)
         {
-            case FontType.Title: return profile.titleFont;
-            case FontType.Body: return profile.bodyFont;
-            case FontType.UI: return profile.uiFont;
-            case FontType.Dialogue: return profile.dialogueFont;
-            default: return null;
+            case FontType.Title: result = profile.titleFont; break;
+            case FontType.Body: result = profile.bodyFont; break;
+            case FontType.UI: result = profile.uiFont; break;
+            case FontType.Dialogue: result = profile.dialogueFont; break;
+            default: result = null; break;
         }
+        return result;
     }
 }

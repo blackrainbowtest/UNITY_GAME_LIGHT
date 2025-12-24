@@ -2150,8 +2150,8 @@ GameObject:
   - component: {fileID: 1769352120}
   - component: {fileID: 1769352122}
   - component: {fileID: 1769352121}
-  - component: {fileID: 1769352123}
   - component: {fileID: 1769352124}
+  - component: {fileID: 1769352123}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -2200,8 +2200,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: New Game
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 453b9b10604cb4d4db664829b1eebd9e, type: 2}
+  m_sharedMaterial: {fileID: 1464687400714866717, guid: 453b9b10604cb4d4db664829b1eebd9e, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2305,7 +2305,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
   textKey: new_game
-  fontType: 1
+  fontType: 0
   uiStringsData: {fileID: 11400000, guid: e7a8e5f1de14d344ba241bcf5fa32961, type: 2}
 --- !u!1 &1795759008
 GameObject:

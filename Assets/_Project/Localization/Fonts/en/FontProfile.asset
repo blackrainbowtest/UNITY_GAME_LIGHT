@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b50cae829fbfc18408e47b3926315838, type: 3}
   m_Name: FontProfile
   m_EditorClassIdentifier: Assembly-CSharp::FontProfile
-  titleFont: {fileID: 11400000, guid: 453b9b10604cb4d4db664829b1eebd9e, type: 2}
-  bodyFont: {fileID: 11400000, guid: 453b9b10604cb4d4db664829b1eebd9e, type: 2}
-  uiFont: {fileID: 11400000, guid: 453b9b10604cb4d4db664829b1eebd9e, type: 2}
-  dialogueFont: {fileID: 11400000, guid: 453b9b10604cb4d4db664829b1eebd9e, type: 2}
+  titleFont: {fileID: 11400000, guid: 3d065aca46d3ed1418280494c13aa981, type: 2}
+  bodyFont: {fileID: 11400000, guid: 3d065aca46d3ed1418280494c13aa981, type: 2}
+  uiFont: {fileID: 11400000, guid: 3d065aca46d3ed1418280494c13aa981, type: 2}
+  dialogueFont: {fileID: 11400000, guid: 3d065aca46d3ed1418280494c13aa981, type: 2}
