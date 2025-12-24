@@ -413,6 +413,7 @@ GameObject:
   - component: {fileID: 580450864}
   - component: {fileID: 580450863}
   - component: {fileID: 580450865}
+  - component: {fileID: 580450866}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -486,15 +487,15 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 40
+  m_fontSize: 56
   m_fontSizeBase: 40
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 0
-  m_fontSizeMax: 0
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 35
+  m_fontSizeMax: 56
   m_fontStyle: 1
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 512
+  m_VerticalAlignment: 8192
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -553,6 +554,21 @@ MonoBehaviour:
   key: exit
   uiStringsData: {fileID: 11400000, guid: e7a8e5f1de14d344ba241bcf5fa32961, type: 2}
   targetText: {fileID: 580450863}
+--- !u!114 &580450866
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 580450861}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
+  textKey: exit
+  fontType: 0
+  uiStringsData: {fileID: 11400000, guid: e7a8e5f1de14d344ba241bcf5fa32961, type: 2}
 --- !u!1 &727194780
 GameObject:
   m_ObjectHideFlags: 0
@@ -891,6 +907,7 @@ GameObject:
   - component: {fileID: 922198718}
   - component: {fileID: 922198717}
   - component: {fileID: 922198719}
+  - component: {fileID: 922198720}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -964,15 +981,15 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 40
+  m_fontSize: 56
   m_fontSizeBase: 40
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 0
-  m_fontSizeMax: 0
+  m_fontSizeMax: 56
   m_fontStyle: 1
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 512
+  m_VerticalAlignment: 8192
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -1031,6 +1048,21 @@ MonoBehaviour:
   key: settings
   uiStringsData: {fileID: 11400000, guid: e7a8e5f1de14d344ba241bcf5fa32961, type: 2}
   targetText: {fileID: 922198717}
+--- !u!114 &922198720
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 922198715}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
+  textKey: settings
+  fontType: 0
+  uiStringsData: {fileID: 11400000, guid: e7a8e5f1de14d344ba241bcf5fa32961, type: 2}
 --- !u!1 &1218186594
 GameObject:
   m_ObjectHideFlags: 0
@@ -1154,6 +1186,7 @@ GameObject:
   - component: {fileID: 1417113580}
   - component: {fileID: 1417113579}
   - component: {fileID: 1417113581}
+  - component: {fileID: 1417113582}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -1227,15 +1260,15 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 40
+  m_fontSize: 56
   m_fontSizeBase: 40
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 0
-  m_fontSizeMax: 0
+  m_fontSizeMax: 56
   m_fontStyle: 1
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 512
+  m_VerticalAlignment: 8192
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -1294,6 +1327,21 @@ MonoBehaviour:
   key: load_game
   uiStringsData: {fileID: 11400000, guid: e7a8e5f1de14d344ba241bcf5fa32961, type: 2}
   targetText: {fileID: 1417113579}
+--- !u!114 &1417113582
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1417113577}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
+  textKey: load_game
+  fontType: 0
+  uiStringsData: {fileID: 11400000, guid: e7a8e5f1de14d344ba241bcf5fa32961, type: 2}
 --- !u!1001 &1433513335
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2225,15 +2273,15 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 40
+  m_fontSize: 56
   m_fontSizeBase: 40
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 0
-  m_fontSizeMax: 0
+  m_fontSizeMax: 56
   m_fontStyle: 1
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 512
+  m_VerticalAlignment: 8192
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0

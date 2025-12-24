@@ -15,4 +15,4 @@ MonoBehaviour:
   titleFont: {fileID: 11400000, guid: 3d065aca46d3ed1418280494c13aa981, type: 2}
   bodyFont: {fileID: 11400000, guid: 3d065aca46d3ed1418280494c13aa981, type: 2}
   uiFont: {fileID: 11400000, guid: 3d065aca46d3ed1418280494c13aa981, type: 2}
-  dialogueFont: {fileID: 11400000, guid: 3d065aca46d3ed1418280494c13aa981, type: 2}
+  dialogueFont: {fileID: 11400000, guid: 453b9b10604cb4d4db664829b1eebd9e, type: 2}
