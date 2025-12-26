@@ -16,7 +16,6 @@ namespace UDA2.UI
 
         private void Awake()
         {
-            UDA2.Core.SettingsContext.Current = UDA2.Core.SettingsManager.Load();
         }
 
         private void Start()

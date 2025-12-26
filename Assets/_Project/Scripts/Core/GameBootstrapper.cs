@@ -14,6 +14,7 @@ namespace UDA2.Core
 
             // Загрузка настроек
             SettingsContext.Current = SettingsManager.Load();
+            SettingsContext.ApplyAll();
 
             // Загрузка сейва или создание нового
             var loaded = SaveManager.Load(saveSlot);

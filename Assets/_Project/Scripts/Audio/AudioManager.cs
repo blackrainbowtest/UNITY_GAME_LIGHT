@@ -12,14 +12,12 @@ namespace UDA2.Audio
 
         [Header("Audio Mixer")]
         [SerializeField] private UnityEngine.Audio.AudioMixer audioMixer;
-        [SerializeField] private UnityEngine.Audio.AudioMixerGroup musicGroup;
-        [SerializeField] private UnityEngine.Audio.AudioMixerGroup sfxGroup;
-        [SerializeField] private UnityEngine.Audio.AudioMixerGroup uiGroup;
 
         /* ===================== MUSIC ===================== */
 
         [Header("Music")]
         [SerializeField] private AudioSource musicSource;
+        [SerializeField] private UnityEngine.Audio.AudioMixerGroup musicGroup;
 
         public AudioClip logoMusic;
         public AudioClip introMusic;
@@ -29,10 +27,14 @@ namespace UDA2.Audio
         private AudioClip currentClip;
         private Coroutine musicFadeCoroutine;
 
+        // Target music dB for fade logic
+        private float targetMusicDb = 0f;
+
         /* ===================== SFX ===================== */
 
         [Header("SFX")]
         [SerializeField] private AudioSource sfxPrefab;
+        [SerializeField] private UnityEngine.Audio.AudioMixerGroup sfxGroup;
         [SerializeField] private int sfxPoolSize = 10;
         [SerializeField] private Transform sfxParent;
 
@@ -44,7 +46,23 @@ namespace UDA2.Audio
 
         [Header("UI Audio")]
         [SerializeField] private AudioSource uiSource;
+        [SerializeField] private UnityEngine.Audio.AudioMixerGroup uiGroup;
         [SerializeField] private AudioClip uiClickClip;
+
+        /* ===================== CHARACTER ===================== */
+        [Header("Character Audio")]
+        [SerializeField] private AudioSource characterSource;
+        [SerializeField] private UnityEngine.Audio.AudioMixerGroup characterGroup;
+
+        /* ===================== ENVIRONMENT ===================== */
+        [Header("Environment Audio")]
+        [SerializeField] private AudioSource environmentSource;
+        [SerializeField] private UnityEngine.Audio.AudioMixerGroup environmentGroup;
+
+        /* ===================== COMBAT ===================== */
+        [Header("Combat Audio")]
+        [SerializeField] private AudioSource combatSource;
+        [SerializeField] private UnityEngine.Audio.AudioMixerGroup combatGroup;
 
         /* ===================== UNITY ===================== */
 
@@ -94,11 +112,19 @@ namespace UDA2.Audio
         private void OnEnable()
         {
             SceneManager.sceneLoaded += OnSceneLoaded;
+
+            UDA2.Core.SettingsContext.OnMusicVolumeChanged += SetMusicVolume;
+            UDA2.Core.SettingsContext.OnSfxVolumeChanged += SetSfxVolume;
+            UDA2.Core.SettingsContext.OnUiVolumeChanged += SetUiVolume;
         }
 
         private void OnDisable()
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
+
+            UDA2.Core.SettingsContext.OnMusicVolumeChanged -= SetMusicVolume;
+            UDA2.Core.SettingsContext.OnSfxVolumeChanged -= SetSfxVolume;
+            UDA2.Core.SettingsContext.OnUiVolumeChanged -= SetUiVolume;
         }
 
         /* ===================== SCENE MUSIC ===================== */
@@ -138,16 +164,19 @@ namespace UDA2.Audio
 
         private IEnumerator FadeMusicIn()
         {
-            audioMixer.SetFloat("MusicVolume", -80f);
+            float startDb = -80f;
+            audioMixer.SetFloat("MusicVolume", startDb);
             musicSource.Play();
 
             float t = 0f;
             while (t < 1f)
             {
                 t += Time.unscaledDeltaTime;
-                audioMixer.SetFloat("MusicVolume", Mathf.Lerp(-80f, 0f, t));
+                audioMixer.SetFloat("MusicVolume", Mathf.Lerp(startDb, targetMusicDb, t));
                 yield return null;
             }
+            // Ensure final value is set exactly
+            audioMixer.SetFloat("MusicVolume", targetMusicDb);
         }
 
         private void StopMusic()
@@ -167,7 +196,8 @@ namespace UDA2.Audio
 
         public void SetMusicVolume(float volume)
         {
-            audioMixer.SetFloat("MusicVolume", ToDb(volume));
+            targetMusicDb = ToDb(volume);
+            audioMixer.SetFloat("MusicVolume", targetMusicDb);
         }
 
         /* ===================== SFX ===================== */
@@ -219,8 +249,10 @@ namespace UDA2.Audio
 
         public void PlayUiClick()
         {
-            if (uiClickClip != null)
+            if (uiClickClip != null && uiSource != null)
                 uiSource.PlayOneShot(uiClickClip);
+            else if (uiSource == null)
+                Debug.LogWarning("AudioManager: uiSource не назначен в инспекторе.");
         }
 
         public void SetUiVolume(float volume)
