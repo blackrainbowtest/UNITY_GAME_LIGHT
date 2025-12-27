@@ -71,3 +71,9 @@
 - **Gris** — визуальные переходы эмоций
 - **Hollow Knight** — тихая жизнь мира
 - **Pathfinder: Kingmaker (UI)** — слои и окна
+
+
+
+
+Кристальный волкобраз
+main character border color - 140f0c
