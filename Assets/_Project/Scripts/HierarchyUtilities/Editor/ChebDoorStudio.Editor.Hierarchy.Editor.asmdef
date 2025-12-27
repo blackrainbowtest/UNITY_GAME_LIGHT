@@ -1,0 +1,16 @@
+{
+  "name": "ChebDoorStudio.Editor.Hierarchy.Editor",
+  "rootNamespace": "ChebDoorStudio.Editor.Hierarchy",
+  "references": [],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
