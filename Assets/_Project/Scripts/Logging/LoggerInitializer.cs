@@ -2,11 +2,6 @@ using UnityEngine;
 using UDA2.Logging;
 
 public class LoggerInitializer : MonoBehaviour
-    // Example method to simulate settings change and log it
-    public void OnSettingsChanged(object settings)
-    {
-        UDA2.Logging.UDAlog.Info("Settings changed: " + JsonUtility.ToJson(settings), LogChannel.UI);
-    }
 {
     private int errorCount = 0;
     private int warningCount = 0;
@@ -30,5 +25,10 @@ public class LoggerInitializer : MonoBehaviour
             errorCount++;
         else if (type == UnityEngine.LogType.Warning)
             warningCount++;
+    }
+	// Example method to simulate settings change and log it
+    public void OnSettingsChanged(object settings)
+    {
+        UDA2.Logging.UDAlog.Info("Settings changed: " + JsonUtility.ToJson(settings), LogChannel.UI);
     }
 }
