@@ -6,6 +6,12 @@ public class BackgroundLooper : MonoBehaviour
     public float speed = 100f;
     private float width;
     private bool isMoving = true;
+    private float currentSpeed;
+    private float targetSpeed;
+    public float easeDuration = 0.5f; // seconds
+    private float easeTimer = 0f;
+    private bool isEasing = false;
+    private bool isPausing = false;
 
     void Start()
     {
@@ -19,14 +25,34 @@ public class BackgroundLooper : MonoBehaviour
         // Place the first at center, second to the right
         backgrounds[0].anchoredPosition = Vector2.zero;
         backgrounds[1].anchoredPosition = new Vector2(width, 0);
+        currentSpeed = speed;
+        targetSpeed = speed;
     }
 
     void Update()
     {
-        if (!isMoving) return;
+        // Easing logic
+        if (isEasing)
+        {
+            easeTimer += Time.deltaTime;
+            float t = Mathf.Clamp01(easeTimer / easeDuration);
+            // EaseInCirc: 1 - sqrt(1 - t^2)
+            float ease = 1f - Mathf.Sqrt(1f - t * t);
+            if (isPausing)
+                currentSpeed = Mathf.Lerp(speed, 0f, ease);
+            else
+                currentSpeed = Mathf.Lerp(0f, speed, ease);
+            if (t >= 1f)
+            {
+                isEasing = false;
+                currentSpeed = isPausing ? 0f : speed;
+                isMoving = !isPausing;
+            }
+        }
+        if (currentSpeed == 0f) return;
         foreach (var bg in backgrounds)
         {
-            bg.anchoredPosition += Vector2.left * speed * Time.deltaTime;
+            bg.anchoredPosition += Vector2.left * currentSpeed * Time.deltaTime;
         }
         for (int i = 0; i < backgrounds.Length; i++)
         {
@@ -48,7 +74,26 @@ public class BackgroundLooper : MonoBehaviour
     }
 
     // For manual or Animation Event control
-    public void PauseMovement() => isMoving = false;
-    public void ResumeMovement() => isMoving = true;
+    public void PauseMovement()
+    {
+        if (currentSpeed > 0f)
+        {
+            isEasing = true;
+            isPausing = true;
+            easeTimer = 0f;
+        }
+    }
+
+    public void ResumeMovement()
+    {
+        if (currentSpeed < speed)
+        {
+            isEasing = true;
+            isPausing = false;
+            easeTimer = 0f;
+            isMoving = true;
+        }
+    }
+
     public bool IsMoving() => isMoving;
 }

@@ -173,7 +173,7 @@ MonoBehaviour:
   backgrounds:
   - {fileID: 394894829}
   - {fileID: 1343747056}
-  speed: 100
+  speed: 250
 --- !u!1 &97662014
 GameObject:
   m_ObjectHideFlags: 0
@@ -1455,6 +1455,7 @@ GameObject:
   - component: {fileID: 832108921}
   - component: {fileID: 832108922}
   - component: {fileID: 832108923}
+  - component: {fileID: 832108924}
   m_Layer: 5
   m_Name: PlayerImage
   m_TagString: Untagged
@@ -1610,6 +1611,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &832108924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 832108916}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb9e75a7039bb940ac4f59a695873e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerActionController
+  playerAnimator: {fileID: 832108921}
 --- !u!1 &836477549
 GameObject:
   m_ObjectHideFlags: 0
