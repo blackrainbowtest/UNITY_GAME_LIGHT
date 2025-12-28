@@ -28,12 +28,23 @@ public class MainMenuCharacterMotionController
         if (!IsReadyForClick()) return;
         canClick = false;
         int actionIndex = Random.Range(1, userClickMax + 1);
-        animator.TriggerAction($"UserClickAction_{actionIndex}");
+        string triggerName = $"UserClickAction_{actionIndex}";
+        animator.TriggerAction(triggerName);
+
+        // Example: external call (log, background, etc.)
+        OnUserActionTriggered(triggerName);
+
         // Не знаем длительность action, поэтому возврат в Walk должен быть через Animator (Has Exit Time)
         // Запускаем только cooldown
         if (cooldownCoroutine != null)
             coroutineHost.StopCoroutine(cooldownCoroutine);
         cooldownCoroutine = coroutineHost.StartCoroutine(CooldownCoroutine());
+
+    }
+
+    protected virtual void OnUserActionTriggered(string triggerName)
+    {
+        // TODO: remove if not needed
     }
 
     private IEnumerator CooldownCoroutine()
