@@ -96,5 +96,15 @@ Stage 13 — NPCs
 - 🟡 Crystal Slime
 - ⬜ Crystal Rat
 
+Stage 14 — Professions & Advanced Crafting
+- 🟡 Alchemy (Potion Brewing)
+- 🟡 Weapon crafting
+- 🟡 Armor crafting
+- 🟡 Ring crafting
+- ⬜ Amulet crafting
+- ⬜ Crafting stations (Workbench, Anvil, Alchemy Table)
+- ⬜ Crafting success / quality system
+- ⬜ Crafting UI extensions
+
 Кристальный волкобраз - Crystal Wolfkin
 main character border color - 140f0c
