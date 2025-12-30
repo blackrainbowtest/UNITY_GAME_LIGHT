@@ -13,6 +13,14 @@ MonoBehaviour:
   m_Name: UIStrings
   m_EditorClassIdentifier: Assembly-CSharp::UIStringsData
   strings:
+  - key: loading
+    entries:
+    - languageCode: ru
+      text: "\u0417\u0430\u0433\u0440\u0443\u0437\u043A\u0430..."
+    - languageCode: en
+      text: Loading...
+    - languageCode: fr
+      text: Chargement...
   - key: new_game
     entries:
     - languageCode: ru
@@ -29,14 +37,6 @@ MonoBehaviour:
       text: Load Game
     - languageCode: fr
       text: Charger la partie
-  - key: settings
-    entries:
-    - languageCode: ru
-      text: "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438"
-    - languageCode: en
-      text: Settings
-    - languageCode: fr
-      text: "Param\xE8tres"
   - key: exit
     entries:
     - languageCode: ru
@@ -45,54 +45,22 @@ MonoBehaviour:
       text: Exit
     - languageCode: fr
       text: Quitter
-  - key: skip
-    entries:
-    - languageCode: ru
-      text: "\u041F\u0440\u043E\u043F\u0443\u0441\u0442\u0438\u0442\u044C"
-    - languageCode: en
-      text: Skip
-    - languageCode: fr
-      text: Passer
-  - key: language
-    entries:
-    - languageCode: ru
-      text: "\u042F\u0437\u044B\u043A"
-    - languageCode: en
-      text: Language
-    - languageCode: fr
-      text: Langue
   - key: version
     entries:
     - languageCode: ru
-      text: "\u0412\u0435\u0440\u0441\u0438\u044F 0.0.048"
+      text: "\u0412\u0435\u0440\u0441\u0438\u044F 0.0.065"
     - languageCode: en
-      text: Version 0.0.048
+      text: Version 0.0.065
     - languageCode: fr
-      text: Version 0.0.048
-  - key: music
+      text: Version 0.0.065
+  - key: settings
     entries:
     - languageCode: ru
-      text: "\u041C\u0443\u0437\u044B\u043A\u0430"
+      text: "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438"
     - languageCode: en
-      text: Music
+      text: Settings
     - languageCode: fr
-      text: Musique
-  - key: sfx
-    entries:
-    - languageCode: ru
-      text: "\u0417\u0432\u0443\u043A\u0438"
-    - languageCode: en
-      text: SFX
-    - languageCode: fr
-      text: Effets
-  - key: ui
-    entries:
-    - languageCode: ru
-      text: "\u0418\u043D\u0442\u0435\u0440\u0444\u0435\u0439\u0441"
-    - languageCode: en
-      text: UI
-    - languageCode: fr
-      text: UI
+      text: "Param\xE8tres"
   - key: apply
     entries:
     - languageCode: ru
@@ -117,6 +85,22 @@ MonoBehaviour:
       text: Back
     - languageCode: fr
       text: Retour
+  - key: skip
+    entries:
+    - languageCode: ru
+      text: "\u041F\u0440\u043E\u043F\u0443\u0441\u0442\u0438\u0442\u044C"
+    - languageCode: en
+      text: Skip
+    - languageCode: fr
+      text: Passer
+  - key: language
+    entries:
+    - languageCode: ru
+      text: "\u042F\u0437\u044B\u043A"
+    - languageCode: en
+      text: Language
+    - languageCode: fr
+      text: Langue
   - key: vibration
     entries:
     - languageCode: ru
@@ -125,11 +109,45 @@ MonoBehaviour:
       text: Vibration
     - languageCode: fr
       text: Vibration
-  - key: loading
+  - key: music
     entries:
     - languageCode: ru
-      text: "\u0417\u0430\u0433\u0440\u0443\u0437\u043A\u0430..."
+      text: "\u041C\u0443\u0437\u044B\u043A\u0430"
     - languageCode: en
-      text: Loading...
+      text: Music
     - languageCode: fr
-      text: Chargement...
+      text: Musique
+  - key: sfx
+    entries:
+    - languageCode: ru
+      text: "\u0417\u0432\u0443\u043A\u0438"
+    - languageCode: en
+      text: SFX
+    - languageCode: fr
+      text: Effets
+  - key: ui
+    entries:
+    - languageCode: ru
+      text: "\u0418\u043D\u0442\u0435\u0440\u0444\u0435\u0439\u0441"
+    - languageCode: en
+      text: UI
+    - languageCode: fr
+      text: UI
+  - key: INTRO_LORE_01
+    entries:
+    - languageCode: ru
+      text: "\"\u042F \u043F\u044B\u0442\u0430\u043B\u0430\u0441\u044C \u0441\u0442\u0430\u0442\u044C
+        \u0441\u0438\u043B\u044C\u043D\u0435\u0435.\n\u041D\u043E \u0438\u043D\u043E\u0433\u0434\u0430\u2026\""
+    - languageCode: en
+      text: "\"I tried to become stronger.\nBut sometimes\u2026\""
+    - languageCode: fr
+      text: "\"J'ai essay\xE9 de devenir plus forte.\nMais parfois\u2026\""
+  - key: INTRO_LORE_02
+    entries:
+    - languageCode: ru
+      text: "\u043E\u0441\u0442\u0430\u0451\u0442\u0441\u044F \u043B\u0438\u0448\u044C
+        \u043F\u043B\u044B\u0442\u044C \u043F\u043E \u0442\u0435\u0447\u0435\u043D\u0438\u044E."
+    - languageCode: en
+      text: just go with the flow.
+    - languageCode: fr
+      text: il suffit de suivre le courant.

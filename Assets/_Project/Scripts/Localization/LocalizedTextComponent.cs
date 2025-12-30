@@ -34,7 +34,7 @@ public class LocalizedTextComponent : MonoBehaviour
         if (font != null) tmpText.font = font;
     }
 
-    private void UpdateText()
+    public void UpdateText()
     {
         if (string.IsNullOrEmpty(textKey) || uiStringsData == null)
             return;

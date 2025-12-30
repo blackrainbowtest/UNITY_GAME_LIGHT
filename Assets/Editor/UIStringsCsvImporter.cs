@@ -35,12 +35,17 @@ public class UIStringsCsvImporter : EditorWindow
         asset.strings.Clear();
         var lines = csv.text.Split(new[] { '\n', '\r' }, System.StringSplitOptions.RemoveEmptyEntries);
         if (lines.Length < 2) return;
-        var header = lines[0].Split(',');
+        var header = lines[0].Split(';');
         var langCodes = header.Skip(1).ToArray();
 
         for (int i = 1; i < lines.Length; i++)
         {
-            var row = lines[i].Split(',');
+            var line = lines[i];
+            if (string.IsNullOrWhiteSpace(line)) continue; // пропуск строк только с пробелами и \n
+            line = line.Trim();
+            if (line.StartsWith("#") || line.StartsWith("//")) continue; // поддержка комментариев
+
+            var row = line.Split(';');
             if (row.Length < 1) continue;
             var key = row[0].Trim();
             if (string.IsNullOrEmpty(key)) continue;
@@ -49,10 +54,13 @@ public class UIStringsCsvImporter : EditorWindow
             {
                 string lang = langCodes[j].Trim();
                 string text = (j + 1 < row.Length) ? row[j + 1].Trim() : "";
+                // Поддержка \n как переноса строки
+                text = text.Replace("\\n", "\n");
                 if (string.IsNullOrEmpty(text)) text = key; // fallback: если пропущено, ставим ключ
                 uiString.entries.Add(new LocalizedTextEntry { languageCode = lang, text = text });
             }
             asset.strings.Add(uiString);
         }
+        // TODO: заменить на полноценный CSV-парсер с поддержкой кавычек и многострочных ячеек
     }
 }
