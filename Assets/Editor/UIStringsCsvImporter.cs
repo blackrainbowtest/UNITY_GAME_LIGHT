@@ -33,34 +33,60 @@ public class UIStringsCsvImporter : EditorWindow
     private void ImportCsvToUIStringsData(TextAsset csv, UIStringsData asset)
     {
         asset.strings.Clear();
-        var lines = csv.text.Split(new[] { '\n', '\r' }, System.StringSplitOptions.RemoveEmptyEntries);
-        if (lines.Length < 2) return;
-        var header = lines[0].Split(';');
-        var langCodes = header.Skip(1).ToArray();
+        string text = csv.text;
+        int pos = 0;
+        int length = text.Length;
+        string currentKey = null;
+        List<string> currentValues = null;
 
-        for (int i = 1; i < lines.Length; i++)
+        void AddCurrent()
         {
-            var line = lines[i];
-            if (string.IsNullOrWhiteSpace(line)) continue; // пропуск строк только с пробелами и \n
-            line = line.Trim();
-            if (line.StartsWith("#") || line.StartsWith("//")) continue; // поддержка комментариев
-
-            var row = line.Split(';');
-            if (row.Length < 1) continue;
-            var key = row[0].Trim();
-            if (string.IsNullOrEmpty(key)) continue;
-            var uiString = new LocalizedUIString { key = key, entries = new List<LocalizedTextEntry>() };
-            for (int j = 0; j < langCodes.Length; j++)
+            if (!string.IsNullOrEmpty(currentKey) && currentValues != null && currentValues.Count > 0)
             {
-                string lang = langCodes[j].Trim();
-                string text = (j + 1 < row.Length) ? row[j + 1].Trim() : "";
-                // Поддержка \n как переноса строки
-                text = text.Replace("\\n", "\n");
-                if (string.IsNullOrEmpty(text)) text = key; // fallback: если пропущено, ставим ключ
-                uiString.entries.Add(new LocalizedTextEntry { languageCode = lang, text = text });
+                var uiString = new LocalizedUIString { key = currentKey, entries = new List<LocalizedTextEntry>() };
+                for (int i = 0; i < currentValues.Count; i++)
+                {
+                    uiString.entries.Add(new LocalizedTextEntry { languageCode = $"lang_{i}", text = currentValues[i] });
+                }
+                asset.strings.Add(uiString);
             }
-            asset.strings.Add(uiString);
         }
-        // TODO: заменить на полноценный CSV-парсер с поддержкой кавычек и многострочных ячеек
+
+        while (pos < length)
+        {
+            // Пропуск пробелов, табов, новых строк
+            while (pos < length && (text[pos] == ' ' || text[pos] == '\t' || text[pos] == '\r' || text[pos] == '\n')) pos++;
+
+            if (pos < length && text[pos] == '*')
+            {
+                // Новый ключ
+                pos++; // Пропустить '*'
+                int keyStart = pos;
+                while (pos < length && text[pos] != ';') pos++;
+                int keyEnd = pos;
+                string key = text.Substring(keyStart, keyEnd - keyStart).Trim();
+                pos++; // Пропустить ';'
+                AddCurrent();
+                currentKey = key;
+                currentValues = new List<string>();
+                continue;
+            }
+            else if (pos < length)
+            {
+                // Значение (до ;)
+                int valueStart = pos;
+                while (pos < length && text[pos] != ';') pos++;
+                int valueEnd = pos;
+                string value = text.Substring(valueStart, valueEnd - valueStart).Trim();
+                pos++; // Пропустить ';'
+                // Поддержка \n как переноса строки
+                value = value.Replace("\\n", "\n");
+                if (currentValues != null)
+                    currentValues.Add(value);
+                continue;
+            }
+        }
+        AddCurrent();
+        // TODO: поддержка языковых кодов и fallback, если нужно
     }
 }

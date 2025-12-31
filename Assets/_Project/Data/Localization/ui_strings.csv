@@ -1,28 +1,78 @@
-key;ru;en;fr
-loading;Загрузка...;Loading...;Chargement...
-
-# Main menu
-new_game;Новая игра;New Game;Nouvelle partie
-load_game;Загрузить;Load Game;Charger la partie
-exit;Выход;Exit;Quitter
-
-# Game version
-version;Версия 0.0.065;Version 0.0.065;Version 0.0.065
-
-# Buttons
-settings;Настройки;Settings;Paramètres
-apply;Применить;Apply;Appliquer
-reset;Сброс;Reset;Réinitialiser
-back;Назад;Back;Retour
-skip;Пропустить;Skip;Passer
-
-# Settings
-language;Язык;Language;Langue
-vibration;Вибрация;Vibration;Vibration
-music;Музыка;Music;Musique
-sfx;Звуки;SFX;Effets
-ui;Интерфейс;UI;UI
-
-# Intro scene
-INTRO_LORE_01;"Я пыталась стать сильнее.\nНо иногда…";"I tried to become stronger.\nBut sometimes…";"J'ai essayé de devenir plus forte.\nMais parfois…"
-INTRO_LORE_02;остаётся лишь плыть по течению.;just go with the flow.;il suffit de suivre le courant.
+*key;ru;en;fr
+*loading;
+	Загрузка...;
+	Loading...;
+	Chargement...;
+*new_game;
+	Новая игра;
+	New Game;
+	Nouvelle partie;
+*load_game;
+	Загрузить;
+	Load Game;
+	Charger la partie;
+*exit;
+		Выход;
+		Exit;
+		Quitter;
+*version;
+	Версия 0.0.065;
+	Version 0.0.065;
+	Version 0.0.065;
+*settings;
+	Настройки;
+	Settings;
+	Paramètres;
+*apply;
+	Применить;
+	Apply;
+	Appliquer;
+*reset;
+	Сброс;
+	Reset;
+	Réinitialiser;
+*back;
+	Назад;
+	Back;
+	Retour;
+*skip;
+	Пропустить;
+	Skip;
+	Passer;
+*language;
+	Язык;
+	Language;
+	Langue;
+*vibration;
+	Вибрация;
+	Vibration;
+	Vibration;
+*music;
+	Музыка;
+	Music;
+	Musique;
+*sfx;
+	Звуки;
+	SFX;
+	Effets;
+*ui;
+	Интерфейс;
+	UI;
+	UI;
+*INTRO_LORE_01;
+	С древних времён на этом континенте не утихает война.\nЛюди и демоны сражаются снова и снова.\nИ никто уже не помнит, с чего всё началось.\nИ никто не верит, что это закончится.;
+	;
+	;
+*INTRO_LORE_02;
+	В этой войне страдают все.\nДаже те, кто никогда не держал оружие.\nДаже те, кому не дали выбора.;
+	In this war, everyone suffers.\nEven those who never held a weapon.\nEven those who were given no choice.;
+	;
+*INTRO_LORE_03;
+*INTRO_LORE_05_01;
+	Я пыталась стать сильнее.\nНо иногда…;
+	I tried to become stronger.\nBut sometimes…;
+	J'ai essayé de devenir plus forte.\nMais parfois…;
+*INTRO_LORE_05_02;
+	остаётся лишь плыть по течению.;
+	just go with the flow.;
+	il suffit de suivre le courant.;
