@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce97f23ebbb412b499367442feaaf219, type: 3}
-  m_Name: IntroFrame_SC_03_01
+  m_Name: IntroFrame_SC_04_01
   m_EditorClassIdentifier: Assembly-CSharp::IntroFrame
-  id: SC_03_01
-  textKey: INTRO_LORE_03
-  background: {fileID: 21300000, guid: b4231fc399acd8c45bd9833f8d287ed5, type: 3}
+  id: SC_04_01
+  textKey: INTRO_LORE_04
+  background: {fileID: 21300000, guid: 1e1e18b92621e544c8f8d014e5332425, type: 3}
   voiceType: 1
   waitForClick: 1
   autoDelay: 0

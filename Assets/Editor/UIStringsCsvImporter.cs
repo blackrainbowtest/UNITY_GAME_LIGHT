@@ -38,15 +38,18 @@ public class UIStringsCsvImporter : EditorWindow
         int length = text.Length;
         string currentKey = null;
         List<string> currentValues = null;
+        string[] langCodes = null;
+        bool firstLineParsed = false;
 
         void AddCurrent()
         {
-            if (!string.IsNullOrEmpty(currentKey) && currentValues != null && currentValues.Count > 0)
+            if (!string.IsNullOrEmpty(currentKey) && currentValues != null && langCodes != null)
             {
                 var uiString = new LocalizedUIString { key = currentKey, entries = new List<LocalizedTextEntry>() };
-                for (int i = 0; i < currentValues.Count; i++)
+                for (int i = 0; i < langCodes.Length; i++)
                 {
-                    uiString.entries.Add(new LocalizedTextEntry { languageCode = $"lang_{i}", text = currentValues[i] });
+                    string value = (i < currentValues.Count) ? currentValues[i] : "";
+                    uiString.entries.Add(new LocalizedTextEntry { languageCode = langCodes[i], text = value });
                 }
                 asset.strings.Add(uiString);
             }
@@ -57,6 +60,30 @@ public class UIStringsCsvImporter : EditorWindow
             // Пропуск пробелов, табов, новых строк
             while (pos < length && (text[pos] == ' ' || text[pos] == '\t' || text[pos] == '\r' || text[pos] == '\n')) pos++;
 
+            // Парсим первую строку с языковыми кодами
+            if (!firstLineParsed && pos < length && text[pos] == '*')
+            {
+                pos++; // Пропустить '*'
+                int keyStart = pos;
+                while (pos < length && text[pos] != ';') pos++;
+                int keyEnd = pos;
+                string key = text.Substring(keyStart, keyEnd - keyStart).Trim();
+                pos++; // Пропустить ';'
+                // Парсим языковые коды
+                var codes = key.Split(';');
+                if (codes.Length > 1)
+                {
+                    langCodes = codes.Skip(1).Select(s => s.Trim()).ToArray();
+                }
+                else
+                {
+                    langCodes = new string[] { "ru", "en", "fr" };
+                }
+                firstLineParsed = true;
+                currentKey = null;
+                currentValues = null;
+                continue;
+            }
             if (pos < length && text[pos] == '*')
             {
                 // Новый ключ
@@ -87,6 +114,5 @@ public class UIStringsCsvImporter : EditorWindow
             }
         }
         AddCurrent();
-        // TODO: поддержка языковых кодов и fallback, если нужно
     }
 }
