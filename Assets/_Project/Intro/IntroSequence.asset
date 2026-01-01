@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: IntroSequence
   m_EditorClassIdentifier: Assembly-CSharp::IntroSequence
   frames:
-  - {fileID: 11400000, guid: 8082771330cc7ae4895a9b8cafebfbef, type: 2}
-  - {fileID: 11400000, guid: 511587619725951439e386aa39a63ae5, type: 2}
-  - {fileID: 11400000, guid: 511587619725951439e386aa39a63ae5, type: 2}
-  - {fileID: 11400000, guid: 511587619725951439e386aa39a63ae5, type: 2}
+  - {fileID: 11400000, guid: bbb4d56b1d82d6546bdbacd45ffe5f59, type: 2}
+  - {fileID: 11400000, guid: c1f781990bc1e2e4eb3e227786e0da61, type: 2}
+  - {fileID: 11400000, guid: ab4b1d0eca4c575478d28ffe259df7bc, type: 2}
+  - {fileID: 11400000, guid: 4f4a8d1b2f792524ea4192556591c406, type: 2}
+  - {fileID: 11400000, guid: 1ef5cbcb1ab6e0e41a6f841aeab06312, type: 2}
