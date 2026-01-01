@@ -41,15 +41,15 @@ namespace ChebDoorStudio.Editor.Hierarchy
       public SceneDropdown()
       {
         this._scenePaths = AssetDatabase.FindAssets("t:Scene")
-          .AsValueEnumerable()
           .Select(AssetDatabase.GUIDToAssetPath)
           .Where(path => path.StartsWith("Assets/"))
+          .Where(path => path.EndsWith(".unity", StringComparison.OrdinalIgnoreCase))
+          .Where(path => Path.GetFileNameWithoutExtension(path).IndexOf("Scene", StringComparison.OrdinalIgnoreCase) >= 0)
           .Where(File.Exists)
           .OrderBy(Path.GetFileNameWithoutExtension)
           .ToList();
 
         this._sceneNames = this._scenePaths
-          .AsValueEnumerable()
           .Select(Path.GetFileNameWithoutExtension)
           .ToList();
       }
@@ -89,4 +89,3 @@ namespace ChebDoorStudio.Editor.Hierarchy
     }
   }
 }
-#endif
