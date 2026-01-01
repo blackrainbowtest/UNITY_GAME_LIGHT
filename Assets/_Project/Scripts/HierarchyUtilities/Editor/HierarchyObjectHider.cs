@@ -64,4 +64,3 @@ namespace ChebDoorStudio.Editor.Hierarchy
     }
   }
 }
-#endif
