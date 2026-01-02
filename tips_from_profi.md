@@ -115,172 +115,162 @@ anthropomorphic tigress alert, ear twitching, hiding in bushes, stealth movement
 
 ---
 
-## SC_07 — Children
+SC_07 — Children
 
-**Text:**  
+Text:
 Что здесь происходит?..
 
-**Voice Type:** Tigress Thoughts
+Voice Type: Tigress Thoughts
 
-**Visual:**  
-Ruined outskirts. Three children, one of them a beastfolk. A slaver’s servant attempts to capture them.
+Visual:
+Разрушенные окраины.
+Трое детей.
+Один из них — ящерица-девочка.
+Рядом — огромный работорговец.
+На заднем плане — повозка, в ней уже сидят другие пленники.
+Повозка медленно уезжает и больше не возвращается.
 
-**Prompt:**  
-dark fantasy slums ruins, frightened children, one beastfolk child, human slaver attempting capture, tense cinematic scene
+Prompt:
+dark fantasy slums outskirts, frightened children, small beastfolk lizard girl, massive slaver thug nearby, slave wagon in background driving away, tense cinematic atmosphere
 
----
+SC_08 — Violence
 
-## SC_08 — Hero Appears
+Text:
+Эй! Быстрее!
 
-**Text:**  
-Отпустите их.
+Voice Type: Slaver
 
-**Voice Type:** Male Voice (Stranger)
+Visual:
+Амбал грубо толкает одного из мальчиков.
+Мальчик падает в грязь.
+Второй мальчик с шарфом отступает, закрывая лицо.
 
-**Visual:**  
-Male silhouette enters the scene, raised hand, confident posture.
+Prompt:
+brutal slaver pushing a small boy to the ground, frightened children recoiling, dark fantasy slums violence, cinematic framing
 
-**Prompt:**  
-mysterious male hero silhouette, raised hand, confident stance, dramatic entrance, dark fantasy lighting
+SC_09 — Threat
 
----
+Text:
+Не тормози.
 
-## SC_09 — False Hope
+Voice Type: Slaver
 
-**Text:**  
-Ты кто?  
-Он герой, который спасёт этот мир.
+Visual:
+Амбал поднимает дубину.
+Замахивается на мальчика с шарфом.
+Кадр замирает на этом движении.
 
-**Voice Type:** Slaver / Female Companion
+Prompt:
+slaver raising a heavy club over frightened child, imminent strike, frozen moment, dark fantasy tension
 
-**Visual:**  
-Contrast between companion’s confidence, children’s fear, and slaver’s irritation.
+SC_10 — Observation
 
-**Prompt:**  
-dark fantasy confrontation, confident female companion, frightened children, irritated slaver, emotional contrast, cinematic framing
-
----
-
-## SC_10 — Law
-
-**Text:**  
-Всё законно.  
-Я отвожу их в сиротский приют.
-
-**Voice Type:** Slaver
-
-**Visual:**  
-Smirk. Dirty hands. Children shrink back in fear.
-
-**Prompt:**  
-sinister slaver smirking, dirty hands, frightened children shrinking back, unsettling dark fantasy realism
-
----
-
-## SC_11 — Aura
-
-**Text:**  
-Что он там делает…  
-Он… выбирает?
-
-**Voice Type:** Tigress Thoughts
-
-**Visual:**  
-Hero scans children with magical aura, stopping at a beastfolk child with mana.
-
-**Prompt:**  
-hero using magical aura to scan children, glowing energy, focusing on beastfolk child with mana, moral tension, dark fantasy scene
-
----
-
-## SC_12 — The Deal
-
-**Text:**  
-Пять серебряных.
-
-**Voice Type:** Neutral
-
-**Visual:**  
-Silver coins exchanged. Slaver accepts reluctantly, calculating future profit.
-
-**Prompt:**  
-close-up of silver coins exchanged between hands, greedy slaver expression, dark fantasy realism
-
----
-
-## SC_13 — Aftermath
-
-**Text:**  
-Это правда?..  
-Нас отвезут в приют?..
-
-**Voice Type:** Children
-
-**Visual:**  
-Hero walks away. Children watch him leave.
-
-**Prompt:**  
-children watching hero walk away into the distance, mixed hope and fear, dark fantasy slums background
-
----
-
-## SC_14 — Truth
-
-**Text:**  
-Ага. Конечно.
-
-**Voice Type:** Slaver
-
-**Visual:**  
-Distorted face. Cruel laughter.
-
-**Prompt:**  
-slaver laughing cruelly, distorted face, dark fantasy horror close-up
-
----
-
-## SC_15 — Reaching Hand
-
-**Text:**  
-Герой!
-
-**Voice Type:** Child
-
-**Visual:**  
-Child’s hand reaching toward distant hero silhouette. The hand slowly falls.
-
-**Prompt:**  
-child reaching hand toward distant hero silhouette, hand slowly lowering, emotional dark fantasy scene
-
----
-
-## SC_16 — Choice
-
-**Text:**  
-В этом мире есть место  
-только для избранных.  
-Но кто сказал,  
-что я с этим согласна?
-
-**Voice Type:** Tigress Inner Voice
-
-**Visual:**  
-Tigress stands up, grabs a wooden stick. Calm determination.
-
-**Prompt:**  
-anthropomorphic tigress standing up with determination, gripping wooden stick, resolve in eyes, cinematic dark fantasy lighting
-
----
-
-## SC_17 — Ambush
-
-**Text:**  
+Text:
 …
 
-**Voice Type:** None
+Voice Type: None
 
-**Visual:**  
-Sudden ambush from cover. Strike on slaver. Transition into first combat.
+Visual:
+Тигрица наблюдает из тени.
+Её уши прижаты.
+Хватка на палке напряжённая.
 
-**Prompt:**  
-anthropomorphic tigress ambushing slaver from shadows, dynamic motion, dark fantasy action scene, transition to combat
+Prompt:
+anthropomorphic tigress watching from shadows, tense posture, gripping wooden stick, silent moral tension, dark fantasy night
+
+SC_11 — Choice
+
+Text:
+Вмешаться…
+или отвернуться?
+
+Voice Type: Tigress Inner Voice
+
+Visual:
+Экран затемняется.
+Появляется первый выбор игрока.
+
+Options:
+
+Вмешаться
+
+Уйти
+
+ВЕТКА 1 — ЕСЛИ ИГРОК НЕ ВМЕШИВАЕТСЯ
+SC_12A — Turning Away
+
+Text:
+Иногда
+я просто не могу смотреть.
+
+Voice Type: Tigress Inner Voice
+
+Visual:
+Тигрица закрывает глаза.
+Отворачивается.
+На лице — отвращение и усталость.
+
+Prompt:
+anthropomorphic tigress closing eyes and turning away, sorrow and disgust, dark fantasy mood
+
+SC_13A — Consequence
+
+Text:
+(крик)
+
+Voice Type: Child
+
+Visual:
+Амбал бьёт мальчика с шарфом.
+Тот падает.
+Работорговец начинает его обыскивать.
+
+Prompt:
+slaver looting unconscious child with scarf, cruel indifference, dark fantasy brutality
+
+SC_14A — Aftermath (немая)
+
+Text:
+…
+
+Voice Type: None
+
+Visual:
+Тигрица уходит глубже в лес.
+Крики стихают.
+
+Prompt:
+anthropomorphic tigress disappearing into dark forest, distant screams fading, heavy silence
+
+(ветка подчёркивает жестокость мира, без геймплея)
+
+ВЕТКА 2 — ЕСЛИ ИГРОК ВМЕШИВАЕТСЯ
+SC_12B — Decision
+
+Text:
+Хватит.
+
+Voice Type: Tigress Inner Voice
+
+Visual:
+Тигрица выходит из тени.
+Палка в руках.
+Спокойствие перед ударом.
+
+Prompt:
+anthropomorphic tigress stepping out of shadows, wooden stick ready, calm determination, cinematic dark fantasy lighting
+
+SC_13B — Ambush
+
+Text:
+…
+
+Voice Type: None
+
+Visual:
+Резкий удар по руке амбала.
+Дубина падает.
+Переход в первый бой.
+
+Prompt:
+anthropomorphic tigress ambushing massive slaver, dynamic motion, weapon strike, transition to combat, dark fantasy action
