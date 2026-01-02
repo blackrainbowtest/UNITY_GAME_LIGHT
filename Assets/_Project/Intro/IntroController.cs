@@ -5,6 +5,12 @@ using System.Collections;
 
 public class IntroController : MonoBehaviour
 {
+    private enum IntroBranch { None, A, B }
+    private IntroBranch selectedBranch = IntroBranch.None;
+    [Header("Choice Dialog")]
+    [SerializeField] private GameObject choiceDialog; // Панель с кнопками выбора
+    [SerializeField] private Button interveneButton;
+    [SerializeField] private Button turnAwayButton;
     [Header("Data")]
     [SerializeField] private IntroSequence introSequence;
 
@@ -45,6 +51,7 @@ public class IntroController : MonoBehaviour
             autoAdvanceCoroutine = null;
         }
 
+
         if (index >= introSequence.frames.Count)
         {
             FinishIntro();
@@ -52,6 +59,20 @@ public class IntroController : MonoBehaviour
         }
 
         currentIndex = index;
+
+        // Завершение основной ветки после 14A (index == 14)
+        if (selectedBranch == IntroBranch.A && index > 14)
+        {
+            FinishIntro();
+            return;
+        }
+        // Завершение альтернативной ветки после 13B (index == 16)
+        if (selectedBranch == IntroBranch.B && index > 16)
+        {
+            FinishIntro();
+            return;
+        }
+
         IntroFrame frame = introSequence.frames[currentIndex];
 
         // Background
@@ -92,6 +113,27 @@ public class IntroController : MonoBehaviour
 
     public void NextFrame()
     {
+        // Если сейчас показан 11-й фрейм — показываем диалог вместо перехода к следующему фрейму
+        if (currentIndex == 11)
+        {
+            if (choiceDialog != null)
+            {
+                choiceDialog.SetActive(true);
+                interveneButton.onClick.RemoveAllListeners();
+                turnAwayButton.onClick.RemoveAllListeners();
+                interveneButton.onClick.AddListener(() => {
+                    choiceDialog.SetActive(false);
+                    selectedBranch = IntroBranch.A;
+                    ShowFrame(12); // 12A
+                });
+                turnAwayButton.onClick.AddListener(() => {
+                    choiceDialog.SetActive(false);
+                    selectedBranch = IntroBranch.B;
+                    ShowFrame(15); // 12B
+                });
+            }
+            return;
+        }
         ShowFrame(currentIndex + 1);
     }
 

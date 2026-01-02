@@ -59,6 +59,15 @@
 	Интерфейс;
 	UI;
 	UI;
+*yes;
+	Да;
+	Yes;
+	Yes;
+*no;
+	Нет;
+	No;
+	No;
+# INTRO_SCENE_TRANSLATIONS
 *INTRO_LORE_01;
 	С древних времён на этом континенте не утихает война.\nЛюди и демоны сражаются снова и снова.\nИ никто уже не помнит, с чего всё началось.\nИ никто не верит, что это закончится.;
 	Since ancient times, war has never ceased on this continent.\nHumans and demons fight again and again.\nNo one remembers how it all began.\nNo one believes it will ever end.;
@@ -127,3 +136,7 @@
 	Бегите! Я его отвлеку.;
 	Run! I'll distract him.;
 	Courez ! Je vais le distraire.;
+*INTRO_DIALOG_QUESTION;
+	Вы хотите вмешатся?;
+	Вы хотите вмешатся?;
+	Вы хотите вмешатся?;
