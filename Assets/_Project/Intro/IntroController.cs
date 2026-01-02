@@ -54,7 +54,6 @@ public class IntroController : MonoBehaviour
         currentIndex = index;
         IntroFrame frame = introSequence.frames[currentIndex];
 
-
         // Background
         if (backgroundImage != null && frame.background != null)
             backgroundImage.sprite = frame.background;
@@ -93,7 +92,6 @@ public class IntroController : MonoBehaviour
 
     public void NextFrame()
     {
-        Debug.Log("wwwwwwwwwwwwwwwwwwww");
         ShowFrame(currentIndex + 1);
     }
 

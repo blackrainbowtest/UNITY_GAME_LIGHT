@@ -38,7 +38,8 @@ public class LocalizedTextComponent : MonoBehaviour
     {
         if (string.IsNullOrEmpty(textKey) || uiStringsData == null)
             return;
-        var lang = UDA2.Core.LocalizationManager.CurrentLanguage;
+        var settings = UDA2.Core.SettingsContext.Current;
+        string lang = (settings == null || string.IsNullOrEmpty(settings.language)) ? "en" : settings.language;
         tmpText.text = uiStringsData.Get(textKey, lang);
     }
 }
