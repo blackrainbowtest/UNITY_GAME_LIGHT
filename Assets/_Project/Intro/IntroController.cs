@@ -121,12 +121,12 @@ public class IntroController : MonoBehaviour
                 choiceDialog.SetActive(true);
                 interveneButton.onClick.RemoveAllListeners();
                 turnAwayButton.onClick.RemoveAllListeners();
-                interveneButton.onClick.AddListener(() => {
+                turnAwayButton.onClick.AddListener(() => {
                     choiceDialog.SetActive(false);
                     selectedBranch = IntroBranch.A;
                     ShowFrame(12); // 12A
                 });
-                turnAwayButton.onClick.AddListener(() => {
+                interveneButton.onClick.AddListener(() => {
                     choiceDialog.SetActive(false);
                     selectedBranch = IntroBranch.B;
                     ShowFrame(15); // 12B

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::IntroFrame
   id: SC_13_01
   textKey: INTRO_LORE_13A
-  background: {fileID: 0}
+  background: {fileID: 21300000, guid: 8bbc461fbdaa1ad498adab76cad0a011, type: 3}
   voiceType: 1
   waitForClick: 1
   autoDelay: 0
