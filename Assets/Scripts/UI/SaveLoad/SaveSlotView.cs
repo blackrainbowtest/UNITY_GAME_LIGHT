@@ -9,7 +9,8 @@ namespace UDA2.UI.SaveLoad
     {
         [Header("Wiring")]
         [SerializeField] private TMP_Text slotTitle;
-        [SerializeField] private TMP_Text metaInfo;
+        [SerializeField] private TMP_Text saveTimeText;
+        [SerializeField] private TMP_Text levelGoldText;
 
         [SerializeField] private Button primaryButton;
         [SerializeField] private TMP_Text primaryButtonText;
@@ -56,7 +57,8 @@ namespace UDA2.UI.SaveLoad
         {
             SlotId = slotId;
             slotTitle.text = "save_slot_empty";
-            metaInfo.text = "—";
+            saveTimeText.text = "—";
+            levelGoldText.text = "—";
             primaryButtonText.text = "—";
         }
 
@@ -64,8 +66,9 @@ namespace UDA2.UI.SaveLoad
         {
             SlotId = slotId;
             // Здесь можно использовать форматтеры/локализацию
-            metaInfo.text = meta.saveTime;
-            primaryButtonText.text = $"Lv {meta.version} • Gold {meta.playTimeSeconds}";
+            saveTimeText.text = meta.saveTime;
+            levelGoldText.text = $"Lv {meta.version} • Gold {meta.playTimeSeconds}";
+            primaryButtonText.text = "Load";
         }
 
         public void SetAutosave(bool isAutosave)

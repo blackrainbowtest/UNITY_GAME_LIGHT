@@ -48,19 +48,13 @@ public static class SaveSlotsManager
     public static void SaveToSlot(int slotId, SaveData data)
     {
         if (slotId < 0 || slotId > 10) throw new ArgumentOutOfRangeException();
-        if (slotId == 0) // автосейв
-        {
-            var path = GetSlotPath(0);
-            data.meta.saveTime = DateTime.UtcNow.ToString("o");
-            var json = JsonUtility.ToJson(data, true);
-            File.WriteAllText(path, json);
-            return;
-        }
-        // ручные слоты
-        var manualPath = GetSlotPath(slotId);
+        string path = GetSlotPath(slotId);
+        var dir = Path.GetDirectoryName(path);
+        if (!Directory.Exists(dir))
+            Directory.CreateDirectory(dir);
         data.meta.saveTime = DateTime.UtcNow.ToString("o");
-        var manualJson = JsonUtility.ToJson(data, true);
-        File.WriteAllText(manualPath, manualJson);
+        var json = JsonUtility.ToJson(data, true);
+        File.WriteAllText(path, json);
     }
 
     public static SaveData LoadFromSlot(int slotId)

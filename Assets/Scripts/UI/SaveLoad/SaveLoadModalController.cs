@@ -35,10 +35,13 @@ namespace UDA2.UI.SaveLoad
         private void OpenInternal(Mode mode)
         {
             currentMode = mode;
+            gameObject.SetActive(true); // Гарантируем видимость модального окна
             if (!isInitialized)
             {
                 InitSlots();
                 isInitialized = true;
+                if (closeButton != null)
+                    closeButton.onClick.AddListener(Close);
             }
             RefreshSlots();
             // Локализация через компонент (например, LocalizedTextSetter)

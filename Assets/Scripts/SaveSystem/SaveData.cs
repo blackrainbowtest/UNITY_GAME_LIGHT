@@ -52,4 +52,15 @@ public class SaveData
     {
         public Dictionary<string, bool> flags = new Dictionary<string, bool>();
     }
+
+    public static SaveData CreateDefault(string version)
+    {
+        var save = new SaveData();
+        save.player.name = "Airin";
+        save.player.id = System.Guid.NewGuid().ToString();
+        save.player.stats.hp = 100;
+        save.player.stats.hpMax = 100;
+        save.meta.version = version;
+        return save;
+    }
 }

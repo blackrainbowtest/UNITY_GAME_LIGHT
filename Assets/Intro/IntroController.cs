@@ -144,7 +144,12 @@ public class IntroController : MonoBehaviour
 
     private void FinishIntro()
     {
-        // Здесь переход к первому бою
+        // Сохраняем прогресс, если нужно
+        if (GameState.Instance.CurrentSave == null)
+            GameState.Instance.CurrentSave = new SaveData();
+        SaveSlotsManager.SaveToSlot(0, GameState.Instance.CurrentSave);
+
+        // Переход к первому бою
         UnityEngine.SceneManagement.SceneManager.LoadScene(firstFightSceneName);
     }
 }
