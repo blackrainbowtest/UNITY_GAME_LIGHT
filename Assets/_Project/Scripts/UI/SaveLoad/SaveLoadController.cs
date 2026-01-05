@@ -24,7 +24,12 @@ namespace UDA2.UI.SaveLoad
             slotViews.Clear();
             // Автосейв (id 0)
             var autoSlot = Instantiate(slotPrefab, slotsParent);
-            autoSlot.Setup(0, true, "AutoSave", GetMetaString(0), "Load", SaveSlotsManager.HasSave(0));
+            autoSlot.SetAutosave(true);
+            autoSlot.SetLocked(true);
+            if (SaveSlotsManager.HasSave(0))
+                autoSlot.SetData(0, SaveSlotsManager.GetMeta(0));
+            else
+                autoSlot.SetEmpty(0);
             autoSlot.PrimaryClicked += OnSlotClicked;
             slotViews.Add(autoSlot);
 
@@ -32,7 +37,12 @@ namespace UDA2.UI.SaveLoad
             for (int i = 1; i <= ManualSlotsCount; i++)
             {
                 var slot = Instantiate(slotPrefab, slotsParent);
-                slot.Setup(i, false, $"Slot {i}", GetMetaString(i), "Load", SaveSlotsManager.HasSave(i));
+                slot.SetAutosave(false);
+                slot.SetLocked(false);
+                if (SaveSlotsManager.HasSave(i))
+                    slot.SetData(i, SaveSlotsManager.GetMeta(i));
+                else
+                    slot.SetEmpty(i);
                 slot.PrimaryClicked += OnSlotClicked;
                 slotViews.Add(slot);
             }
@@ -44,10 +54,24 @@ namespace UDA2.UI.SaveLoad
             {
                 int slotId = slotViews[i].SlotId;
                 bool hasSave = SaveSlotsManager.HasSave(slotId);
-                var meta = GetMetaString(slotId);
-                slotViews[i].Setup(slotId, slotId == 0, slotId == 0 ? "AutoSave" : $"Slot {slotId}", meta, "Load", hasSave);
-                if (!hasSave)
-                    slotViews[i].SetEmpty(slotId == 0 ? "AutoSave" : $"Slot {slotId}", "Load", false);
+                if (slotId == 0)
+                {
+                    slotViews[i].SetAutosave(true);
+                    slotViews[i].SetLocked(true);
+                    if (hasSave)
+                        slotViews[i].SetData(slotId, SaveSlotsManager.GetMeta(slotId));
+                    else
+                        slotViews[i].SetEmpty(slotId);
+                }
+                else
+                {
+                    slotViews[i].SetAutosave(false);
+                    slotViews[i].SetLocked(false);
+                    if (hasSave)
+                        slotViews[i].SetData(slotId, SaveSlotsManager.GetMeta(slotId));
+                    else
+                        slotViews[i].SetEmpty(slotId);
+                }
             }
         }
 

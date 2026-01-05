@@ -24,6 +24,16 @@ public static class SaveSlotsManager
         return File.Exists(GetSlotPath(slotId));
     }
 
+    public static void DeleteSlot(int slotId)
+    {
+        if (slotId == 0) return; // автосейв нельзя удалить
+        var path = GetSlotPath(slotId);
+        if (File.Exists(path))
+        {
+            File.Delete(path);
+        }
+    }
+
     public static SaveMeta GetMeta(int slotId)
     {
         var path = GetSlotPath(slotId);

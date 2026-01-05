@@ -16,9 +16,13 @@ namespace UDA2.UI.SaveLoad
 
         [Header("Optional visuals")]
         [SerializeField] private GameObject lockBadge; // show for autosave if needed
+        [SerializeField] private GameObject lockOverlay; // визуальная блокировка
 
         public int SlotId { get; private set; }
         public bool IsAutoSave { get; private set; }
+
+        [Header("Input")]
+        [SerializeField] private UDA2.UI.Common.LongPressHandler longPress;
 
         public event Action<int> PrimaryClicked;
 
@@ -26,6 +30,13 @@ namespace UDA2.UI.SaveLoad
         {
             if (primaryButton != null)
                 primaryButton.onClick.AddListener(OnPrimaryButtonClicked);
+
+            // 'button' заменено на 'primaryButton' для совместимости с объявлением
+            if (primaryButton != null)
+                primaryButton.onClick.AddListener(() => PrimaryClicked?.Invoke(SlotId));
+
+            if (longPress != null)
+                longPress.LongPressed += () => LongPressed?.Invoke(SlotId);
         }
 
         private void OnDestroy()
@@ -39,30 +50,36 @@ namespace UDA2.UI.SaveLoad
             PrimaryClicked?.Invoke(SlotId);
         }
 
-        public void Setup(
-            int slotId,
-            bool isAutoSave,
-            string title,
-            string meta,
-            string primaryLabel,
-            bool primaryInteractable)
+        public event Action<int> LongPressed;
+
+        public void SetEmpty(int slotId)
         {
             SlotId = slotId;
-            IsAutoSave = isAutoSave;
-
-            if (slotTitle != null) slotTitle.text = title;
-            if (metaInfo != null) metaInfo.text = meta;
-
-            if (primaryButtonText != null) primaryButtonText.text = primaryLabel;
-            if (primaryButton != null) primaryButton.interactable = primaryInteractable;
-
-            if (lockBadge != null) lockBadge.SetActive(isAutoSave);
+            slotTitle.text = "save_slot_empty";
+            metaInfo.text = "—";
+            primaryButtonText.text = "—";
         }
 
-        // Удобно для "пустого слота"
-        public void SetEmpty(string title, string primaryLabel, bool primaryInteractable)
+        public void SetData(int slotId, SaveMeta meta)
         {
-            Setup(SlotId, IsAutoSave, title, "Empty", primaryLabel, primaryInteractable);
+            SlotId = slotId;
+            // Здесь можно использовать форматтеры/локализацию
+            metaInfo.text = meta.saveTime;
+            primaryButtonText.text = $"Lv {meta.version} • Gold {meta.playTimeSeconds}";
+        }
+
+        public void SetAutosave(bool isAutosave)
+        {
+            if (lockBadge != null)
+                lockBadge.SetActive(isAutosave);
+        }
+
+        public void SetLocked(bool locked)
+        {
+            if (lockOverlay != null)
+                lockOverlay.SetActive(locked);
+            if (primaryButton != null)
+                primaryButton.interactable = !locked;
         }
     }
 }
