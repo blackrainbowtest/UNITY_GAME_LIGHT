@@ -26,7 +26,7 @@ namespace UDA2.UI.SaveLoad
 
         public static SaveLoadModalController Show(Mode mode)
         {
-            var prefab = Resources.Load<SaveLoadModalController>("SaveLoadModal");
+            var prefab = Resources.Load<SaveLoadModalController>("Prefabs/UI/SaveLoad/SaveLoadModal");
             var instance = Instantiate(prefab);
             instance.OpenInternal(mode);
             return instance;

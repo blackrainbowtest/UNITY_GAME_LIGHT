@@ -31,7 +31,7 @@ namespace UDA2.UI
 
         public void OnLoadGamePressed()
         {
-            // Logic will be added later
+            UDA2.UI.SaveLoad.SaveLoadModalController.Show(UDA2.UI.SaveLoad.SaveLoadModalController.Mode.Load);
         }
 
         public void OnSettingsPressed()
