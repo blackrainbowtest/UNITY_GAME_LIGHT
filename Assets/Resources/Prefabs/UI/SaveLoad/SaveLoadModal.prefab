@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2118192276377802601}
   - component: {fileID: 7882671448827227813}
   - component: {fileID: 1405763964945258790}
+  - component: {fileID: 140185271348165411}
   m_Layer: 5
   m_Name: CloseButton
   m_TagString: Untagged
@@ -142,6 +143,18 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &140185271348165411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100483359689251349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a366efd922b1e6744be5efc61867eff0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UDA2.UI.UIButtonSound
 --- !u!1 &273413741993826883
 GameObject:
   m_ObjectHideFlags: 0
@@ -742,6 +755,8 @@ GameObject:
   - component: {fileID: 3726637591658236881}
   - component: {fileID: 4222761873876816060}
   - component: {fileID: 1814328274583187332}
+  - component: {fileID: 769189847242749167}
+  - component: {fileID: 5055094113792037627}
   m_Layer: 5
   m_Name: TitleText (TMP)
   m_TagString: Untagged
@@ -887,6 +902,36 @@ MonoBehaviour:
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &769189847242749167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2592455170577274351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
+  textKey: save_load_title_load
+  fontType: 1
+  uiStringsData: {fileID: 11400000, guid: e7a8e5f1de14d344ba241bcf5fa32961, type: 2}
+--- !u!114 &5055094113792037627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2592455170577274351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
+  key: save_load_title_load
+  uiStringsData: {fileID: 11400000, guid: e7a8e5f1de14d344ba241bcf5fa32961, type: 2}
+  targetText: {fileID: 4222761873876816060}
 --- !u!1 &4042731039871518415
 GameObject:
   m_ObjectHideFlags: 0
@@ -1403,6 +1448,7 @@ GameObject:
   - component: {fileID: 8431334221663945722}
   - component: {fileID: 3592010255087150130}
   - component: {fileID: 2010654626328029421}
+  - component: {fileID: 5854437276719588847}
   m_Layer: 5
   m_Name: SlotTemplate
   m_TagString: Untagged
@@ -1567,6 +1613,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UDA2.UI.Common.LongPressHandler
   holdTime: 0.7
+--- !u!114 &5854437276719588847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5371606724470793398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a366efd922b1e6744be5efc61867eff0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UDA2.UI.UIButtonSound
 --- !u!1 &5824477261881876002
 GameObject:
   m_ObjectHideFlags: 0
@@ -1926,6 +1984,8 @@ GameObject:
   - component: {fileID: 3523124832494602309}
   - component: {fileID: 1590203444534230995}
   - component: {fileID: 2151357057399366854}
+  - component: {fileID: 2513687378262298173}
+  - component: {fileID: 6677474520176391025}
   m_Layer: 5
   m_Name: SlotNameText (TMP)
   m_TagString: Untagged
@@ -2071,6 +2131,36 @@ MonoBehaviour:
   m_FlexibleWidth: 1
   m_FlexibleHeight: 1
   m_LayoutPriority: 1
+--- !u!114 &2513687378262298173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7267667233970963428}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
+  textKey: save_load_autosave
+  fontType: 1
+  uiStringsData: {fileID: 11400000, guid: e7a8e5f1de14d344ba241bcf5fa32961, type: 2}
+--- !u!114 &6677474520176391025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7267667233970963428}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
+  key: save_load_autosave
+  uiStringsData: {fileID: 11400000, guid: e7a8e5f1de14d344ba241bcf5fa32961, type: 2}
+  targetText: {fileID: 1590203444534230995}
 --- !u!1 &7716961357398945297
 GameObject:
   m_ObjectHideFlags: 0

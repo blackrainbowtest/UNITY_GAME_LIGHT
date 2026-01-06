@@ -44,9 +44,19 @@ namespace UDA2.UI.SaveLoad
                     closeButton.onClick.AddListener(Close);
             }
             RefreshSlots();
-            // Локализация через компонент (например, LocalizedTextSetter)
-            // Временно прямое присваивание ключа локализации
-            headerText.text = mode == Mode.Load ? "save_load_title_load" : "save_load_title_save";
+            var setter = headerText.GetComponent<LocalizedTextSetter>();
+            if (setter != null)
+            {
+                setter.key = mode == Mode.Load ? "save_load_title_load" : "save_load_title_save";
+                setter.UpdateText(); // вызываем без параметров
+            }
+            // LocalizedTextComponent
+            var comp = headerText.GetComponent<LocalizedTextComponent>();
+            if (comp != null)
+            {
+                comp.textKey = mode == Mode.Load ? "save_load_title_load" : "save_load_title_save";
+                comp.UpdateText();
+            }
         }
 
         private void InitSlots()
@@ -72,24 +82,47 @@ namespace UDA2.UI.SaveLoad
                 var slotView = slotViews[i];
                 int slotId = i;
                 bool hasSave = SaveSlotsManager.HasSave(slotId);
-                if (slotId == 0)
+                if (currentMode == Mode.Load)
                 {
-                    // Автосейв
-                    slotView.SetAutosave(true);
-                    slotView.SetLocked(true);
-                    if (hasSave)
-                        slotView.SetData(slotId, SaveSlotsManager.GetMeta(slotId));
+                    if (slotId == 0)
+                    {
+                        slotView.SetAutosave(true);
+                        slotView.SetLocked(false); // автосейв активен для загрузки
+                        if (hasSave)
+                            slotView.SetData(slotId, SaveSlotsManager.GetMeta(slotId));
+                        else
+                            slotView.SetEmpty(slotId);
+                    }
                     else
-                        slotView.SetEmpty(slotId);
+                    {
+                        slotView.SetAutosave(false);
+                        slotView.SetLocked(!hasSave); // пустые слоты заблокированы для загрузки
+                        if (hasSave)
+                            slotView.SetData(slotId, SaveSlotsManager.GetMeta(slotId));
+                        else
+                            slotView.SetEmpty(slotId);
+                    }
                 }
-                else
+                else // Save Mode
                 {
-                    slotView.SetAutosave(false);
-                    slotView.SetLocked(false);
-                    if (hasSave)
-                        slotView.SetData(slotId, SaveSlotsManager.GetMeta(slotId));
+                    if (slotId == 0)
+                    {
+                        slotView.SetAutosave(true);
+                        slotView.SetLocked(true); // автосейв заблокирован для сохранения
+                        if (hasSave)
+                            slotView.SetData(slotId, SaveSlotsManager.GetMeta(slotId));
+                        else
+                            slotView.SetEmpty(slotId);
+                    }
                     else
-                        slotView.SetEmpty(slotId);
+                    {
+                        slotView.SetAutosave(false);
+                        slotView.SetLocked(false); // все ручные слоты активны для сохранения
+                        if (hasSave)
+                            slotView.SetData(slotId, SaveSlotsManager.GetMeta(slotId));
+                        else
+                            slotView.SetEmpty(slotId);
+                    }
                 }
             }
         }
@@ -103,8 +136,11 @@ namespace UDA2.UI.SaveLoad
                 if (save != null)
                 {
                     GameState.Instance.CurrentSave = save;
-                    // Здесь можно вызвать переход в нужную сцену или событие
-                    Debug.Log($"Loaded save from slot {slotId}");
+                    // Переход через загрузчик, если он есть
+                    if (UDA2.SceneFlow.SceneFlowManager.Instance != null)
+                        UDA2.SceneFlow.SceneFlowManager.Instance.LoadScene(save.player.sceneName);
+                    else
+                        UnityEngine.SceneManagement.SceneManager.LoadScene(save.player.sceneName);
                     Close();
                 }
             }

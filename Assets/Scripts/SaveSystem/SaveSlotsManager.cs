@@ -8,6 +8,7 @@ public class SaveMeta
     public string version;
     public string saveTime;
     public int playTimeSeconds;
+    public int playerLevel;
 }
 
 public static class SaveSlotsManager
@@ -40,9 +41,14 @@ public static class SaveSlotsManager
         if (!File.Exists(path)) return null;
         var json = File.ReadAllText(path);
         // Only parse meta part
-        var meta = JsonUtility.FromJson<SaveData>(json)?.meta;
-        if (meta == null) return null;
-        return new SaveMeta { version = meta.version, saveTime = meta.saveTime, playTimeSeconds = meta.playTimeSeconds };
+        var save = JsonUtility.FromJson<SaveData>(json);
+        if (save == null || save.meta == null || save.player == null) return null;
+        return new SaveMeta {
+            version = save.meta.version,
+            saveTime = save.meta.saveTime,
+            playTimeSeconds = save.meta.playTimeSeconds,
+            playerLevel = save.player.level
+        };
     }
 
     public static void SaveToSlot(int slotId, SaveData data)
@@ -52,7 +58,7 @@ public static class SaveSlotsManager
         var dir = Path.GetDirectoryName(path);
         if (!Directory.Exists(dir))
             Directory.CreateDirectory(dir);
-        data.meta.saveTime = DateTime.UtcNow.ToString("o");
+        data.meta.saveTime = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
         var json = JsonUtility.ToJson(data, true);
         File.WriteAllText(path, json);
     }

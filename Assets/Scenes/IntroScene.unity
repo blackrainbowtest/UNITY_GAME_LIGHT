@@ -1285,7 +1285,7 @@ MonoBehaviour:
   loreText: {fileID: 1977987989}
   skipButton: {fileID: 611813486}
   textClickCatcher: {fileID: 727656801}
-  firstFightSceneName: FirstFight
+  firstFightSceneName: FirstFightScene
 --- !u!4 &1195406706
 Transform:
   m_ObjectHideFlags: 0

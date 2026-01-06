@@ -29,12 +29,8 @@ namespace UDA2.UI.SaveLoad
 
         private void Awake()
         {
-            if (primaryButton != null)
-                primaryButton.onClick.AddListener(OnPrimaryButtonClicked);
-
-            // 'button' заменено на 'primaryButton' для совместимости с объявлением
-            if (primaryButton != null)
-                primaryButton.onClick.AddListener(() => PrimaryClicked?.Invoke(SlotId));
+		    if (primaryButton != null)
+		        primaryButton.onClick.AddListener(OnPrimaryButtonClicked);
 
             if (longPress != null)
                 longPress.LongPressed += () => LongPressed?.Invoke(SlotId);
@@ -56,7 +52,18 @@ namespace UDA2.UI.SaveLoad
         public void SetEmpty(int slotId)
         {
             SlotId = slotId;
-            slotTitle.text = "save_slot_empty";
+            var setter = slotTitle.GetComponent<LocalizedTextSetter>();
+            if (setter != null)
+            {
+                setter.key = "save_load_empty";
+                setter.UpdateText();
+            }
+            var comp = slotTitle.GetComponent<LocalizedTextComponent>();
+            if (comp != null)
+            {
+                comp.textKey = "save_load_empty";
+                comp.UpdateText();
+            }
             saveTimeText.text = "—";
             levelGoldText.text = "—";
             primaryButtonText.text = "—";
@@ -65,9 +72,20 @@ namespace UDA2.UI.SaveLoad
         public void SetData(int slotId, SaveMeta meta)
         {
             SlotId = slotId;
-            // Здесь можно использовать форматтеры/локализацию
+            var setter = slotTitle.GetComponent<LocalizedTextSetter>();
+            if (setter != null)
+            {
+                setter.key = $"save_load_slot_{slotId}";
+                setter.UpdateText();
+            }
+            var comp = slotTitle.GetComponent<LocalizedTextComponent>();
+            if (comp != null)
+            {
+                comp.textKey = $"save_load_slot_{slotId}";
+                comp.UpdateText();
+            }
             saveTimeText.text = meta.saveTime;
-            levelGoldText.text = $"Lv {meta.version} • Gold {meta.playTimeSeconds}";
+            levelGoldText.text = $"Lv {meta.playerLevel} • Gold {meta.playTimeSeconds}";
             primaryButtonText.text = "Load";
         }
 

@@ -21,7 +21,7 @@ public class IntroController : MonoBehaviour
     [SerializeField] private Button textClickCatcher; // прозрачная кнопка поверх TextPanel
 
     [Header("Flow")]
-    [SerializeField] private string firstFightSceneName = "FirstFight";
+    [SerializeField] private string firstFightSceneName = "FirstFightScene";
 
     private int currentIndex = 0;
     private Coroutine autoAdvanceCoroutine;
@@ -147,9 +147,21 @@ public class IntroController : MonoBehaviour
         // Сохраняем прогресс, если нужно
         if (GameState.Instance.CurrentSave == null)
             GameState.Instance.CurrentSave = new SaveData();
+        GameState.Instance.CurrentSave.player.sceneName = firstFightSceneName;
+
+        // Записываем результат интро
+        string introResult = "skip";
+        if (selectedBranch == IntroBranch.A) introResult = "A";
+        else if (selectedBranch == IntroBranch.B) introResult = "B";
+        if (GameState.Instance.CurrentSave.progress != null)
+            GameState.Instance.CurrentSave.progress.introResult = introResult;
+
         SaveSlotsManager.SaveToSlot(0, GameState.Instance.CurrentSave);
 
-        // Переход к первому бою
-        UnityEngine.SceneManagement.SceneManager.LoadScene(firstFightSceneName);
+        // Переход к первому бою через загрузчик
+        if (UDA2.SceneFlow.SceneFlowManager.Instance != null)
+            UDA2.SceneFlow.SceneFlowManager.Instance.LoadScene(firstFightSceneName);
+        else
+            UnityEngine.SceneManagement.SceneManager.LoadScene(firstFightSceneName);
     }
 }
