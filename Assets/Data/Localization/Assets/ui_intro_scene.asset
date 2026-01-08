@@ -12,5 +12,214 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72b5dfd223e65a04db6c6ba1b78d3607, type: 3}
   m_Name: ui_intro_scene
   m_EditorClassIdentifier: Assembly-CSharp::UIStringsData
-  strings: []
+  strings:
+  - key: INTRO_LORE_01
+    entries:
+    - languageCode: ru
+      text: "\u0421 \u0434\u0440\u0435\u0432\u043D\u0438\u0445 \u0432\u0440\u0435\u043C\u0451\u043D
+        \u043D\u0430 \u044D\u0442\u043E\u043C \u043A\u043E\u043D\u0442\u0438\u043D\u0435\u043D\u0442\u0435
+        \u043D\u0435 \u0443\u0442\u0438\u0445\u0430\u0435\u0442 \u0432\u043E\u0439\u043D\u0430.\n\u041B\u044E\u0434\u0438
+        \u0438 \u0434\u0435\u043C\u043E\u043D\u044B \u0441\u0440\u0430\u0436\u0430\u044E\u0442\u0441\u044F
+        \u0441\u043D\u043E\u0432\u0430 \u0438 \u0441\u043D\u043E\u0432\u0430.\n\u0418
+        \u043D\u0438\u043A\u0442\u043E \u0443\u0436\u0435 \u043D\u0435 \u043F\u043E\u043C\u043D\u0438\u0442,
+        \u0441 \u0447\u0435\u0433\u043E \u0432\u0441\u0451 \u043D\u0430\u0447\u0430\u043B\u043E\u0441\u044C.\n\u0418
+        \u043D\u0438\u043A\u0442\u043E \u043D\u0435 \u0432\u0435\u0440\u0438\u0442,
+        \u0447\u0442\u043E \u044D\u0442\u043E \u0437\u0430\u043A\u043E\u043D\u0447\u0438\u0442\u0441\u044F.;"
+    - languageCode: en
+      text: 'Since ancient times, war has never ceased on this continent.
+
+        Humans
+        and demons fight again and again.
+
+        No one remembers how it all began.
+
+        No
+        one believes it will ever end.;'
+    - languageCode: fr
+      text: "Depuis des temps imm\xE9moriaux, la guerre ne cesse de ravager ce continent.\nLes
+        humains et les d\xE9mons se battent encore et encore.\nPersonne ne se souvient
+        comment tout a commenc\xE9.\nPersonne ne croit que cela prendra fin.;"
+  - key: INTRO_LORE_02
+    entries:
+    - languageCode: ru
+      text: "\u0412 \u044D\u0442\u043E\u0439 \u0432\u043E\u0439\u043D\u0435 \u0441\u0442\u0440\u0430\u0434\u0430\u044E\u0442
+        \u0432\u0441\u0435.\n\u0414\u0430\u0436\u0435 \u0442\u0435, \u043A\u0442\u043E
+        \u043D\u0438\u043A\u043E\u0433\u0434\u0430 \u043D\u0435 \u0434\u0435\u0440\u0436\u0430\u043B
+        \u043E\u0440\u0443\u0436\u0438\u0435.\n\u0414\u0430\u0436\u0435 \u0442\u0435,
+        \u043A\u043E\u043C\u0443 \u043D\u0435 \u0434\u0430\u043B\u0438 \u0432\u044B\u0431\u043E\u0440\u0430.;"
+    - languageCode: en
+      text: 'In this war, everyone suffers.
+
+        Even those who never held a
+        weapon.
+
+        Even those who were given no choice.;'
+    - languageCode: fr
+      text: "Dans cette guerre, tout le monde souffre.\nM\xEAme ceux qui n'ont jamais
+        tenu d'arme.\nM\xEAme ceux \xE0 qui on n'a pas laiss\xE9 le choix.;"
+  - key: INTRO_LORE_03
+    entries:
+    - languageCode: ru
+      text: "\u041C\u0438\u0440 \u043E\u0433\u0440\u043E\u043C\u0435\u043D.\n\u0410
+        \u043F\u0440\u043E\u0431\u043B\u0435\u043C\u044B \u043C\u0430\u043B\u0435\u043D\u044C\u043A\u0438\u0445
+        \u0438 \u0431\u0435\u0441\u043F\u043E\u043C\u043E\u0449\u043D\u044B\u0445\n\u043D\u0438\u043A\u043E\u0433\u043E
+        \u043D\u0435 \u0432\u043E\u043B\u043D\u0443\u044E\u0442.;"
+    - languageCode: en
+      text: 'The world is huge.
+
+        And the problems of the small and helpless
+
+        are
+        ignored by everyone.;'
+    - languageCode: fr
+      text: "Le monde est immense.\nEt les probl\xE8mes des petits et des impuissants\nn'int\xE9ressent
+        personne.;"
+  - key: INTRO_LORE_04
+    entries:
+    - languageCode: ru
+      text: "\u0427\u0442\u043E\u0431\u044B \u0432\u044B\u0436\u0438\u0442\u044C,
+        \u043D\u0443\u0436\u043D\u043E \u043F\u0435\u0440\u0435\u0441\u0442\u0430\u0442\u044C
+        \u0431\u043E\u044F\u0442\u044C\u0441\u044F.\n\u0421\u0438\u043B\u0430 \u043D\u0435
+        \u043F\u0440\u0438\u0445\u043E\u0434\u0438\u0442 \u0441\u0430\u043C\u0430.
+        \u0415\u0451 \u0438\u0449\u0443\u0442.\n\u0422\u0435\u0440\u044F\u044E\u0442.
+        \u0418 \u043D\u0430\u0445\u043E\u0434\u044F\u0442 \u0441\u043D\u043E\u0432\u0430.;"
+    - languageCode: en
+      text: 'To survive, you must stop being afraid.
+
+        Strength does not come
+        by itself. You seek it.
+
+        Lose it. And find it again.;'
+    - languageCode: fr
+      text: "Pour survivre, il faut cesser d'avoir peur.\nLa force ne vient pas d'elle-m\xEAme.
+        On la cherche.\nOn la perd. Et on la retrouve encore.;"
+  - key: INTRO_LORE_05A
+    entries:
+    - languageCode: ru
+      text: "\u042F \u043F\u044B\u0442\u0430\u043B\u0430\u0441\u044C \u0441\u0442\u0430\u0442\u044C
+        \u0441\u0438\u043B\u044C\u043D\u0435\u0435.\n\u0414\u0435\u043B\u0430\u043B\u0430
+        \u0432\u0441\u0451, \u0447\u0442\u043E \u043C\u043E\u0433\u043B\u0430.;"
+    - languageCode: en
+      text: 'I tried to become stronger.
+
+        I did everything I could.;'
+    - languageCode: fr
+      text: "J'ai essay\xE9 de devenir plus forte.\nJ'ai fait tout ce que je pouvais.;"
+  - key: INTRO_LORE_05B
+    entries:
+    - languageCode: ru
+      text: "\u041D\u043E \u0438\u043D\u043E\u0433\u0434\u0430 \u043A\u0430\u0436\u0435\u0442\u0441\u044F,
+        \u0447\u0442\u043E \u0441\u043A\u043E\u043B\u044C\u043A\u043E \u0431\u044B
+        \u044F \u043D\u0438 \u0441\u0442\u0430\u0440\u0430\u043B\u0430\u0441\u044C
+        \u2014 \u0446\u0435\u043B\u044C \u0432\u0441\u0451 \u0440\u0430\u0432\u043D\u043E
+        \u043A\u0430\u0437\u0430\u043B\u0430\u0441\u044C \u043D\u0435\u0434\u043E\u0441\u044F\u0433\u0430\u0435\u043C\u043E\u0439.;"
+    - languageCode: en
+      text: "But sometimes it feels like, no matter how hard I try \u2014 the goal
+        still seems unreachable.;"
+    - languageCode: fr
+      text: "Mais parfois, j'ai l'impression que, quoi que je fasse, l'objectif reste
+        hors de port\xE9e./;"
+  - key: INTRO_LORE_06
+    entries:
+    - languageCode: ru
+      text: ...;
+    - languageCode: en
+      text: ...;
+    - languageCode: fr
+      text: ...;
+  - key: INTRO_LORE_07
+    entries:
+    - languageCode: ru
+      text: "\u0427\u0442\u043E \u0437\u0434\u0435\u0441\u044C \u043F\u0440\u043E\u0438\u0441\u0445\u043E\u0434\u0438\u0442?..;"
+    - languageCode: en
+      text: What's going on here?..;
+    - languageCode: fr
+      text: Que se passe-t-il ici ?..;
+  - key: INTRO_LORE_08
+    entries:
+    - languageCode: ru
+      text: "\u0420\u0430\u0431\u043E\u0442\u043E\u0440\u0433\u043E\u0432\u0435\u0446:
+        \u042D\u0439! \u0411\u044B\u0441\u0442\u0440\u0435\u0435!;"
+    - languageCode: en
+      text: 'Slaver: Hey! Move it!;'
+    - languageCode: fr
+      text: "Esclavagiste : H\xE9 ! Plus vite !;"
+  - key: INTRO_LORE_09
+    entries:
+    - languageCode: ru
+      text: "\u0420\u0430\u0431\u043E\u0442\u043E\u0440\u0433\u043E\u0432\u0435\u0446:
+        \u041D\u0435 \u0442\u043E\u0440\u043C\u043E\u0437\u0438.;"
+    - languageCode: en
+      text: "Slaver: Don\u2019t slow down.;"
+    - languageCode: fr
+      text: "Esclavagiste : Ne tra\xEEne pas.;"
+  - key: INTRO_LORE_10
+    entries:
+    - languageCode: ru
+      text: ...;
+    - languageCode: en
+      text: ...;
+    - languageCode: fr
+      text: ...;
+  - key: INTRO_LORE_11
+    entries:
+    - languageCode: ru
+      text: "\u0412\u043C\u0435\u0448\u0430\u0442\u044C\u0441\u044F\u2026\n\u0438\u043B\u0438
+        \u043E\u0442\u0432\u0435\u0440\u043D\u0443\u0442\u044C\u0441\u044F?;"
+    - languageCode: en
+      text: 'Intervene...
+
+        or turn away?;'
+    - languageCode: fr
+      text: "Intervenir...\nou d\xE9tourner le regard ?;"
+  - key: INTRO_LORE_12A
+    entries:
+    - languageCode: ru
+      text: "\u0418\u043D\u043E\u0433\u0434\u0430 \u044F \u043F\u0440\u043E\u0441\u0442\u043E
+        \u043D\u0435 \u043C\u043E\u0433\u0443 \u0441\u043C\u043E\u0442\u0440\u0435\u0442\u044C.;"
+    - languageCode: en
+      text: Sometimes I just can't watch.;
+    - languageCode: fr
+      text: Parfois, je ne peux tout simplement pas regarder.;
+  - key: INTRO_LORE_13A
+    entries:
+    - languageCode: ru
+      text: "(\u043A\u0440\u0438\u043A);"
+    - languageCode: en
+      text: (scream);
+    - languageCode: fr
+      text: (cri);
+  - key: INTRO_LORE_14A
+    entries:
+    - languageCode: ru
+      text: "\u041A\u0430\u0436\u0435\u0442\u0441\u044F \u0432\u0441\u0435 \u0443\u0436\u0435
+        \u0437\u0430\u043A\u043E\u043D\u0447\u0438\u043B\u043E\u0441\u044C.;"
+    - languageCode: en
+      text: It seems it's all over now.;
+    - languageCode: fr
+      text: On dirait que tout est fini.;
+  - key: INTRO_LORE_12B
+    entries:
+    - languageCode: ru
+      text: "\u0425\u0432\u0430\u0442\u0438\u0442.;"
+    - languageCode: en
+      text: Enough.;
+    - languageCode: fr
+      text: "\xC7a suffit.;"
+  - key: INTRO_LORE_13B
+    entries:
+    - languageCode: ru
+      text: "\u0411\u0435\u0433\u0438\u0442\u0435! \u042F \u0435\u0433\u043E \u043E\u0442\u0432\u043B\u0435\u043A\u0443.;"
+    - languageCode: en
+      text: Run! I'll distract him.;
+    - languageCode: fr
+      text: Courez ! Je vais le distraire.;
+  - key: INTRO_DIALOG_QUESTION
+    entries:
+    - languageCode: ru
+      text: "\u0412\u044B \u0445\u043E\u0442\u0438\u0442\u0435 \u0432\u043C\u0435\u0448\u0430\u0442\u0441\u044F?;"
+    - languageCode: en
+      text: "\u0412\u044B \u0445\u043E\u0442\u0438\u0442\u0435 \u0432\u043C\u0435\u0448\u0430\u0442\u0441\u044F?;"
+    - languageCode: fr
+      text: "\u0412\u044B \u0445\u043E\u0442\u0438\u0442\u0435 \u0432\u043C\u0435\u0448\u0430\u0442\u0441\u044F?;"
   sourceCsvName: ui_intro_scene

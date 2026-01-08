@@ -12,5 +12,61 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72b5dfd223e65a04db6c6ba1b78d3607, type: 3}
   m_Name: ui_system
   m_EditorClassIdentifier: Assembly-CSharp::UIStringsData
-  strings: []
+  strings:
+  - key: yes
+    entries:
+    - languageCode: ru
+      text: "\u0414\u0430;"
+    - languageCode: en
+      text: Yes;
+    - languageCode: fr
+      text: Yes;
+  - key: no
+    entries:
+    - languageCode: ru
+      text: "\u041D\u0435\u0442;"
+    - languageCode: en
+      text: No;
+    - languageCode: fr
+      text: No;
+  - key: apply
+    entries:
+    - languageCode: ru
+      text: "\u041F\u0440\u0438\u043C\u0435\u043D\u0438\u0442\u044C;"
+    - languageCode: en
+      text: Apply;
+    - languageCode: fr
+      text: Appliquer;
+  - key: reset
+    entries:
+    - languageCode: ru
+      text: "\u0421\u0431\u0440\u043E\u0441;"
+    - languageCode: en
+      text: Reset;
+    - languageCode: fr
+      text: "R\xE9initialiser;"
+  - key: back
+    entries:
+    - languageCode: ru
+      text: "\u041D\u0430\u0437\u0430\u0434;"
+    - languageCode: en
+      text: Back;
+    - languageCode: fr
+      text: Retour;
+  - key: skip
+    entries:
+    - languageCode: ru
+      text: "\u041F\u0440\u043E\u043F\u0443\u0441\u0442\u0438\u0442\u044C;"
+    - languageCode: en
+      text: Skip;
+    - languageCode: fr
+      text: Passer;
+  - key: loading
+    entries:
+    - languageCode: ru
+      text: "\u0417\u0430\u0433\u0440\u0443\u0437\u043A\u0430...;"
+    - languageCode: en
+      text: Loading...;
+    - languageCode: fr
+      text: Chargement...;
   sourceCsvName: ui_system

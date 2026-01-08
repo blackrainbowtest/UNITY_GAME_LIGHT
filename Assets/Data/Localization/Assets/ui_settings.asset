@@ -12,5 +12,45 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72b5dfd223e65a04db6c6ba1b78d3607, type: 3}
   m_Name: ui_settings
   m_EditorClassIdentifier: Assembly-CSharp::UIStringsData
-  strings: []
+  strings:
+  - key: language
+    entries:
+    - languageCode: ru
+      text: "\u042F\u0437\u044B\u043A;"
+    - languageCode: en
+      text: Language;
+    - languageCode: fr
+      text: Langue;
+  - key: vibration
+    entries:
+    - languageCode: ru
+      text: "\u0412\u0438\u0431\u0440\u0430\u0446\u0438\u044F;"
+    - languageCode: en
+      text: Vibration;
+    - languageCode: fr
+      text: Vibration;
+  - key: music
+    entries:
+    - languageCode: ru
+      text: "\u041C\u0443\u0437\u044B\u043A\u0430;"
+    - languageCode: en
+      text: Music;
+    - languageCode: fr
+      text: Musique;
+  - key: sfx
+    entries:
+    - languageCode: ru
+      text: "\u0417\u0432\u0443\u043A\u0438;"
+    - languageCode: en
+      text: SFX;
+    - languageCode: fr
+      text: Effets;
+  - key: ui
+    entries:
+    - languageCode: ru
+      text: "\u0418\u043D\u0442\u0435\u0440\u0444\u0435\u0439\u0441;"
+    - languageCode: en
+      text: UI;
+    - languageCode: fr
+      text: UI;
   sourceCsvName: ui_settings

@@ -12,5 +12,117 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72b5dfd223e65a04db6c6ba1b78d3607, type: 3}
   m_Name: ui_save_load
   m_EditorClassIdentifier: Assembly-CSharp::UIStringsData
-  strings: []
+  strings:
+  - key: save_load_title_load
+    entries:
+    - languageCode: ru
+      text: "\u0417\u0430\u0433\u0440\u0443\u0437\u043A\u0430 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u044F;"
+    - languageCode: en
+      text: Load Save;
+    - languageCode: fr
+      text: Load Save;
+  - key: save_load_title_save
+    entries:
+    - languageCode: ru
+      text: "\u0421\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0435 \u0438\u0433\u0440\u044B;"
+    - languageCode: en
+      text: Save Game;
+    - languageCode: fr
+      text: Save Game;
+  - key: save_load_slot_0
+    entries:
+    - languageCode: ru
+      text: "\u0410\u0432\u0442\u043E\u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0435;"
+    - languageCode: en
+      text: Autosave;
+    - languageCode: fr
+      text: Autosave;
+  - key: save_load_slot_1
+    entries:
+    - languageCode: ru
+      text: "\u0421\u043B\u043E\u0442 1;"
+    - languageCode: en
+      text: Slot 1;
+    - languageCode: fr
+      text: Slot 1;
+  - key: save_load_slot_2
+    entries:
+    - languageCode: ru
+      text: "\u0421\u043B\u043E\u0442 2;"
+    - languageCode: en
+      text: Slot 2;
+    - languageCode: fr
+      text: Slot 2;
+  - key: save_load_slot_3
+    entries:
+    - languageCode: ru
+      text: "\u0421\u043B\u043E\u0442 3;"
+    - languageCode: en
+      text: Slot 3;
+    - languageCode: fr
+      text: Slot 3;
+  - key: save_load_slot_4
+    entries:
+    - languageCode: ru
+      text: "\u0421\u043B\u043E\u0442 4;"
+    - languageCode: en
+      text: Slot 4;
+    - languageCode: fr
+      text: Slot 4;
+  - key: save_load_slot_5
+    entries:
+    - languageCode: ru
+      text: "\u0421\u043B\u043E\u0442 5;"
+    - languageCode: en
+      text: Slot 5;
+    - languageCode: fr
+      text: Slot 5;
+  - key: save_load_slot_6
+    entries:
+    - languageCode: ru
+      text: "\u0421\u043B\u043E\u0442 6;"
+    - languageCode: en
+      text: Slot 6;
+    - languageCode: fr
+      text: Slot 6;
+  - key: save_load_slot_7
+    entries:
+    - languageCode: ru
+      text: "\u0421\u043B\u043E\u0442 7;"
+    - languageCode: en
+      text: Slot 7;
+    - languageCode: fr
+      text: Slot 7;
+  - key: save_load_slot_8
+    entries:
+    - languageCode: ru
+      text: "\u0421\u043B\u043E\u0442 8;"
+    - languageCode: en
+      text: Slot 8;
+    - languageCode: fr
+      text: Slot 8;
+  - key: save_load_slot_9
+    entries:
+    - languageCode: ru
+      text: "\u0421\u043B\u043E\u0442 9;"
+    - languageCode: en
+      text: Slot 9;
+    - languageCode: fr
+      text: Slot 9;
+  - key: save_load_slot_10
+    entries:
+    - languageCode: ru
+      text: "\u0421\u043B\u043E\u0442 10;"
+    - languageCode: en
+      text: Slot 10;
+    - languageCode: fr
+      text: Slot 10;
+  - key: save_load_empty
+    entries:
+    - languageCode: ru
+      text: "\u041F\u0443\u0441\u0442\u043E\u0439 \u0441\u043B\u043E\u0442;"
+    - languageCode: en
+      text: Empty slot;
+    - languageCode: fr
+      text: Empty slot;
   sourceCsvName: ui_save_load
