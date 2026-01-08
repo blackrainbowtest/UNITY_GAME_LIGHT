@@ -1,0 +1,21 @@
+*key;ru;en;fr
+*new_game;
+	Новая игра;
+	New Game;
+	Nouvelle partie;
+*load_game;
+	Загрузить игру;
+	Load Game;
+	Charger la partie;
+*exit;
+		Выход;
+		Exit;
+		Quitter;
+*version;
+	Версия 0.0.065;
+	Version 0.0.065;
+	Version 0.0.065;
+*settings;
+	Настройки;
+	Settings;
+	Paramètres;

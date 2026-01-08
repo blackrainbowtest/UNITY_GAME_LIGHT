@@ -23,12 +23,10 @@ public class UIStringsData : ScriptableObject
 {
     [SerializeField] private List<LocalizedUIString> strings = new();
 
-#if UNITY_EDITOR
     [Header("Editor Import")]
-    [SerializeField]
+    [SerializeField, HideInInspector]
     [Tooltip("CSV file name without extension (e.g. 'ui_battle')")]
-    private string sourceCsvName;
-#endif
+    public string sourceCsvName;
 
     public string Get(string key, string languageCode)
     {

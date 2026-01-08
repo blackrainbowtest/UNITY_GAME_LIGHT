@@ -39,7 +39,7 @@ public class UIStringsCsvImportWindow : EditorWindow
                     return;
                 }
 
-                if (!target.EditorReimportFromCsv("Assets/Localization/CSV", out error))
+                if (!target.EditorReimportFromCsv("Assets/Data/Localization/CSV", out error))
                 {
                     EditorUtility.DisplayDialog("Error", error, "OK");
                     return;

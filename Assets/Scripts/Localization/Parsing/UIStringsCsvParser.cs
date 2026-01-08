@@ -31,55 +31,83 @@ public static class UIStringsCsvParser
             return false;
         }
 
+
+        string[] lines = csvText.Split('\n');
         string[] languages = null;
         bool headerParsed = false;
         var usedKeys = new HashSet<string>();
-
-        string[] lines = csvText.Split('\n');
-
-        foreach (string rawLine in lines)
+        LocalizedUIString currentEntry = null;
+        List<string> currentValues = null;
+        int expectedValueLines = 0;
+        int lineIndex = 0;
+        while (lineIndex < lines.Length)
         {
-            string line = rawLine.Trim();
-            if (string.IsNullOrEmpty(line))
-                continue;
-
-            if (!line.StartsWith("*"))
-                continue;
-
-            string[] cells = line.Substring(1).Split(';');
-
-            if (!headerParsed)
+            string rawLine = lines[lineIndex].TrimEnd('\r','\n');
+            if (string.IsNullOrWhiteSpace(rawLine))
             {
-                languages = cells.Length > 1
-                    ? cells[1..]
-                    : DefaultLanguages;
-
-                headerParsed = true;
+                lineIndex++;
                 continue;
             }
-
-            string key = cells[0].Trim();
-            if (string.IsNullOrEmpty(key))
-                continue;
-
-            if (!usedKeys.Add(key))
+            if (rawLine.StartsWith("*"))
             {
-                error = $"Duplicate key '{key}' found in CSV.";
-                return false;
+                string[] cells = rawLine.Substring(1).Split(';');
+                if (!headerParsed)
+                {
+                    languages = cells.Length > 1 ? cells[1..] : DefaultLanguages;
+                    expectedValueLines = languages.Length;
+                    headerParsed = true;
+                    lineIndex++;
+                    continue;
+                }
+                // Save previous entry if present
+                if (currentEntry != null && currentValues != null)
+                {
+                    for (int i = 0; i < languages.Length; i++)
+                    {
+                        string value = i < currentValues.Count ? currentValues[i].Replace("\\n", "\n").Trim() : string.Empty;
+                        currentEntry.AddEntry(languages[i], value);
+                    }
+                    result.Add(currentEntry);
+                }
+                string key = cells[0].Trim();
+                if (string.IsNullOrEmpty(key))
+                {
+                    lineIndex++;
+                    continue;
+                }
+                if (!usedKeys.Add(key))
+                {
+                    error = $"Duplicate key '{key}' found in CSV.";
+                    return false;
+                }
+                currentEntry = new LocalizedUIString(key);
+                currentValues = new List<string>();
+                lineIndex++;
+                // Collect value lines
+                int valueLines = 0;
+                while (valueLines < expectedValueLines && lineIndex < lines.Length)
+                {
+                    string valueLine = lines[lineIndex].TrimEnd('\r','\n');
+                    if (valueLine.StartsWith("*")) break;
+                    currentValues.Add(valueLine);
+                    valueLines++;
+                    lineIndex++;
+                }
             }
-
-            var entry = new LocalizedUIString(key);
-
+            else
+            {
+                lineIndex++;
+            }
+        }
+        // Add last entry if present
+        if (currentEntry != null && currentValues != null)
+        {
             for (int i = 0; i < languages.Length; i++)
             {
-                string value = i + 1 < cells.Length
-                    ? cells[i + 1].Replace("\\n", "\n").Trim()
-                    : string.Empty;
-
-                entry.AddEntry(languages[i], value);
+                string value = i < currentValues.Count ? currentValues[i].Replace("\\n", "\n").Trim() : string.Empty;
+                currentEntry.AddEntry(languages[i], value);
             }
-
-            result.Add(entry);
+            result.Add(currentEntry);
         }
 
         if (result.Count == 0)
