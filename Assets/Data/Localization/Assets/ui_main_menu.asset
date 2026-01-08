@@ -16,41 +16,41 @@ MonoBehaviour:
   - key: new_game
     entries:
     - languageCode: ru
-      text: "\u041D\u043E\u0432\u0430\u044F \u0438\u0433\u0440\u0430;"
+      text: "\u041D\u043E\u0432\u0430\u044F \u0438\u0433\u0440\u0430"
     - languageCode: en
-      text: New Game;
+      text: New Game
     - languageCode: fr
-      text: Nouvelle partie;
+      text: Nouvelle partie
   - key: load_game
     entries:
     - languageCode: ru
-      text: "\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044C \u0438\u0433\u0440\u0443;"
+      text: "\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044C \u0438\u0433\u0440\u0443"
     - languageCode: en
-      text: Load Game;
+      text: Load Game
     - languageCode: fr
-      text: Charger la partie;
+      text: Charger la partie
   - key: exit
     entries:
     - languageCode: ru
-      text: "\u0412\u044B\u0445\u043E\u0434;"
+      text: "\u0412\u044B\u0445\u043E\u0434"
     - languageCode: en
-      text: Exit;
+      text: Exit
     - languageCode: fr
-      text: Quitter;
+      text: Quitter
   - key: version
     entries:
     - languageCode: ru
-      text: "\u0412\u0435\u0440\u0441\u0438\u044F 0.0.065;"
+      text: "\u0412\u0435\u0440\u0441\u0438\u044F 0.0.065"
     - languageCode: en
-      text: Version 0.0.065;
+      text: Version 0.0.065
     - languageCode: fr
-      text: Version 0.0.065;
+      text: Version 0.0.065
   - key: settings
     entries:
     - languageCode: ru
-      text: "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438;"
+      text: "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438"
     - languageCode: en
-      text: Settings;
+      text: Settings
     - languageCode: fr
-      text: "Param\xE8tres;"
+      text: "Param\xE8tres"
   sourceCsvName: ui_main_menu

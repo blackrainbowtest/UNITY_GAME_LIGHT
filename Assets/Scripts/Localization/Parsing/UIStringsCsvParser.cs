@@ -65,6 +65,7 @@ public static class UIStringsCsvParser
                     for (int i = 0; i < languages.Length; i++)
                     {
                         string value = i < currentValues.Count ? currentValues[i].Replace("\\n", "\n").Trim() : string.Empty;
+                        if (value.EndsWith(";")) value = value.Substring(0, value.Length - 1).TrimEnd();
                         currentEntry.AddEntry(languages[i], value);
                     }
                     result.Add(currentEntry);
@@ -105,6 +106,7 @@ public static class UIStringsCsvParser
             for (int i = 0; i < languages.Length; i++)
             {
                 string value = i < currentValues.Count ? currentValues[i].Replace("\\n", "\n").Trim() : string.Empty;
+                if (value.EndsWith(";")) value = value.Substring(0, value.Length - 1).TrimEnd();
                 currentEntry.AddEntry(languages[i], value);
             }
             result.Add(currentEntry);

@@ -18,10 +18,11 @@ public class UIStringsProvider : MonoBehaviour
         if (Instance != null && Instance != this)
         {
             Debug.LogError("Multiple UIStringsProvider instances detected. Only one is allowed.");
-            Destroy(this);
+            Destroy(this.gameObject);
             return;
         }
         Instance = this;
+        DontDestroyOnLoad(this.gameObject);
         currentLanguage = defaultLanguage;
     }
 
@@ -41,7 +42,7 @@ public class UIStringsProvider : MonoBehaviour
         {
             if (data == null) continue;
             var result = data.Get(key, lang);
-            if (!string.IsNullOrEmpty(result))
+            if (!string.IsNullOrEmpty(result) && result != key)
                 return result;
         }
         return key; // fallback: return key if not found

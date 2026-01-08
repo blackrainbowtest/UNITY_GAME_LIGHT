@@ -21,9 +21,6 @@ EditorBuildSettings:
     path: Assets/Scenes/IntroScene.unity
     guid: 838ec37cf82292942860cee574db9b6f
   - enabled: 1
-    path: Assets/Scenes/TutorialFight/FirstFightScene.unity
-    guid: c967ea36fe4474f48b5ed139b55c98ed
-  - enabled: 1
     path: Assets/Scenes/FightScenes/FightScene.unity
     guid: f1d4445ca0e1eca49beb844478d7335b
   m_configObjects:

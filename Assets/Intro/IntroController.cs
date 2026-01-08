@@ -21,7 +21,7 @@ public class IntroController : MonoBehaviour
     [SerializeField] private Button textClickCatcher; // прозрачная кнопка поверх TextPanel
 
     [Header("Flow")]
-    [SerializeField] private string firstFightSceneName = "FirstFightScene";
+    [SerializeField] private string firstFightSceneName = "FightScene";
 
     private int currentIndex = 0;
     private Coroutine autoAdvanceCoroutine;
