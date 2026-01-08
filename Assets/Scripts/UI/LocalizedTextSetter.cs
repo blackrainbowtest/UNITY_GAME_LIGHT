@@ -4,7 +4,7 @@ using TMPro;
 public class LocalizedTextSetter : MonoBehaviour
 {
     public string key;
-    public UIStringsData uiStringsData;
+    // Removed UIStringsData reference; now uses UIStringsProvider
     public TMP_Text targetText;
 
     void Start()
@@ -24,9 +24,9 @@ public class LocalizedTextSetter : MonoBehaviour
 
     public void UpdateText(string lang)
     {
-        if (uiStringsData != null && targetText != null)
+        if (targetText != null && UIStringsProvider.Instance != null)
         {
-            targetText.text = uiStringsData.Get(key, lang);
+            targetText.text = UIStringsProvider.Instance.Get(key, lang);
         }
     }
 

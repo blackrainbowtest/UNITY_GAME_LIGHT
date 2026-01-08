@@ -9,7 +9,7 @@ public class LocalizedTextComponent : MonoBehaviour
 
     private TMP_Text tmpText;
 
-    public UIStringsData uiStringsData;
+
 
     private void Awake()
     {
@@ -36,10 +36,10 @@ public class LocalizedTextComponent : MonoBehaviour
 
     public void UpdateText()
     {
-        if (string.IsNullOrEmpty(textKey) || uiStringsData == null)
+        if (string.IsNullOrEmpty(textKey) || UIStringsProvider.Instance == null)
             return;
         var settings = UDA2.Core.SettingsContext.Current;
         string lang = (settings == null || string.IsNullOrEmpty(settings.language)) ? "en" : settings.language;
-        tmpText.text = uiStringsData.Get(textKey, lang);
+        tmpText.text = UIStringsProvider.Instance.Get(textKey, lang);
     }
 }
