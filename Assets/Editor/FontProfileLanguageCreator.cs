@@ -1,7 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*   File: Assets/Editor/FontProfileLanguageCreator.cs                        */
+/*                                                        /\_/\               */
+/*                                                       ( •.• )              */
+/*   By: unluckydungeonadventure.gmail.com                > ^ <               */
+/*                                                                            */
+/*   Created: 2026/01/08 10:39:54 by UDA                                      */
+/*   Updated: 2026/01/08 10:39:54 by UDA                                      */
+/*                                                                            */
+/* ************************************************************************** */
+
 using UnityEngine;
 using UnityEditor;
 using System.IO;
-using System.Linq;
 
 public class FontProfileLanguageCreator : EditorWindow
 {
@@ -13,22 +24,26 @@ public class FontProfileLanguageCreator : EditorWindow
         GetWindow<FontProfileLanguageCreator>("FontProfile Language Creator");
     }
 
-    void OnGUI()
+    private void OnGUI()
     {
-        GUILayout.Label("Создать новый язык для FontProfile", EditorStyles.boldLabel);
+        GUILayout.Label("Create FontProfile Language", EditorStyles.boldLabel);
         languageCode = EditorGUILayout.TextField("Language Code", languageCode);
 
-        if (GUILayout.Button("Создать"))
+        if (GUILayout.Button("Create"))
         {
             CreateLanguage();
         }
     }
 
-    void CreateLanguage()
+    private void CreateLanguage()
     {
-        if (string.IsNullOrEmpty(languageCode))
+        if (string.IsNullOrWhiteSpace(languageCode))
         {
-            EditorUtility.DisplayDialog("Ошибка", "Введите код языка!", "OK");
+            EditorUtility.DisplayDialog(
+                "Error",
+                "Language code cannot be empty.",
+                "OK"
+            );
             return;
         }
 
@@ -37,7 +52,11 @@ public class FontProfileLanguageCreator : EditorWindow
 
         if (AssetDatabase.IsValidFolder(folderPath) || File.Exists(assetPath))
         {
-            EditorUtility.DisplayDialog("Внимание", $"Язык '{languageCode}' уже существует!", "OK");
+            EditorUtility.DisplayDialog(
+                "Warning",
+                $"Language '{languageCode}' already exists.",
+                "OK"
+            );
             return;
         }
 
@@ -48,27 +67,33 @@ public class FontProfileLanguageCreator : EditorWindow
         AssetDatabase.CreateAsset(fontProfile, assetPath);
         AssetDatabase.SaveAssets();
 
-        // Найти FontManager в сцене
         var fontManager = Object.FindFirstObjectByType<FontManager>();
-        if (fontManager != null)
+        if (fontManager == null)
         {
-            var profiles = fontManager.GetType().GetField("fontProfiles", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .GetValue(fontManager) as System.Collections.IList;
-
-            var entryType = typeof(FontManager).GetNestedType("LanguageFontProfile");
-            var entry = System.Activator.CreateInstance(entryType);
-            entryType.GetField("languageCode").SetValue(entry, languageCode);
-            entryType.GetField("fontProfile").SetValue(entry, fontProfile);
-
-            profiles.Add(entry);
-            EditorUtility.SetDirty(fontManager);
-            AssetDatabase.SaveAssets();
-        }
-        else
-        {
-            EditorUtility.DisplayDialog("Внимание", "FontManager не найден в сцене! Добавьте профиль вручную.", "OK");
+            EditorUtility.DisplayDialog(
+                "Warning",
+                "FontManager was not found in the scene. Please add the profile manually.",
+                "OK"
+            );
+            return;
         }
 
-        EditorUtility.DisplayDialog("Готово", $"Язык '{languageCode}' и FontProfile созданы.", "OK");
+        if (!fontManager.EditorTryAddLanguageProfile(
+                languageCode,
+                fontProfile,
+                out string error))
+        {
+            EditorUtility.DisplayDialog("Error", error, "OK");
+            return;
+        }
+
+        EditorUtility.SetDirty(fontManager);
+        AssetDatabase.SaveAssets();
+
+        EditorUtility.DisplayDialog(
+            "Done",
+            $"Language '{languageCode}' and FontProfile were created successfully.",
+            "OK"
+        );
     }
 }
