@@ -26,4 +26,10 @@ public class LocalizedTextEntry
     public string languageCode; // "ru", "en", "fr"
     [TextArea(3, 10)]
     public string text;
+
+    public LocalizedTextEntry(string languageCode, string text)
+    {
+        this.languageCode = languageCode;
+        this.text = text;
+    }
 }

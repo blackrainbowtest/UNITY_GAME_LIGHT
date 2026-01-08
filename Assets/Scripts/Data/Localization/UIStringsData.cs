@@ -143,16 +143,3 @@ public class LocalizedUIString
         return entries[0].text;
     }
 }
-
-[Serializable]
-public struct LocalizedTextEntry
-{
-    public string languageCode;
-    public string text;
-
-    public LocalizedTextEntry(string languageCode, string text)
-    {
-        this.languageCode = languageCode;
-        this.text = text;
-    }
-}
