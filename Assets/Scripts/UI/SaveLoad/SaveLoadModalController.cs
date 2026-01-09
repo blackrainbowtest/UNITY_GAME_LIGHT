@@ -199,6 +199,8 @@ namespace UDA2.UI.SaveLoad
                 onYes: () => { SaveSlotsManager.DeleteSlot(slotId); RefreshSlots(); },
                 onNo: null
             );
+            if (slotId >= 0 && slotId < slotViews.Count)
+                slotViews[slotId].ResetLongPressFlag();
         }
 
         /// <summary>

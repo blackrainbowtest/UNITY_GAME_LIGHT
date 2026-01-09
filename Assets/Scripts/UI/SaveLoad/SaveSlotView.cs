@@ -31,6 +31,11 @@ namespace UDA2.UI.SaveLoad
 
         private bool wasLongPressed = false;
 
+        public void ResetLongPressFlag()
+        {
+            wasLongPressed = false;
+        }
+
         private void Awake()
         {
             if (primaryButton != null)
