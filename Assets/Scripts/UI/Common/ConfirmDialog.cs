@@ -15,34 +15,68 @@ namespace UDA2.UI.Common
         private Action onYes;
         private Action onNo;
 
-        private const string PrefabPath = "UI/Common/ConfirmDialog";
-
-        public static void Show(string questionKey, Action onYes, Action onNo = null)
+        public static ConfirmDialog Show(
+            ConfirmDialog prefab,
+            Transform parent,
+            string questionKey,
+            Action onYes,
+            Action onNo = null)
         {
-            var prefab = Resources.Load<ConfirmDialog>(PrefabPath);
-            var instance = Instantiate(prefab);
+            if (prefab == null)
+            {
+                Debug.LogError("ConfirmDialog.Show: prefab is null.");
+                return null;
+            }
+            ConfirmDialog instance = parent != null
+                ? Instantiate(prefab, parent)
+                : Instantiate(prefab);
             instance.Init(questionKey, onYes, onNo);
+            return instance;
         }
 
         private void Init(string questionKey, Action onYes, Action onNo)
         {
             this.onYes = onYes;
             this.onNo = onNo;
-            // Локализация вопроса через LocalizedTextSetter или LocalizedTextComponent
+            ApplyQuestionLocalization(questionKey);
+            yesButton.onClick.RemoveAllListeners();
+            noButton.onClick.RemoveAllListeners();
+            yesButton.onClick.AddListener(HandleYes);
+            noButton.onClick.AddListener(HandleNo);
+        }
+
+        private void ApplyQuestionLocalization(string key)
+        {
             var setter = questionText.GetComponent<LocalizedTextSetter>();
             if (setter != null)
             {
-                setter.key = questionKey;
+                setter.key = key;
                 setter.UpdateText();
             }
+            else
+                questionText.text = key;
             var comp = questionText.GetComponent<LocalizedTextComponent>();
             if (comp != null)
             {
-                comp.textKey = questionKey;
+                comp.textKey = key;
                 comp.UpdateText();
+                
             }
-            yesButton.onClick.AddListener(OnYes);
-            noButton.onClick.AddListener(OnNo);
+            else
+                questionText.text = key;
+            return ;
+        }
+
+        private void HandleYes()
+        {
+            onYes?.Invoke();
+            Close();
+        }
+
+        private void HandleNo()
+        {
+            onNo?.Invoke();
+            Close();
         }
 
         private void OnYes()

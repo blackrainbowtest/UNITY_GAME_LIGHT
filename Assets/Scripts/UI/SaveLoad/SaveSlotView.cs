@@ -28,14 +28,18 @@ namespace UDA2.UI.SaveLoad
 
         public event Action<int> PrimaryClicked;
 
+
+        private bool wasLongPressed = false;
+
         private void Awake()
         {
-		    if (primaryButton != null)
-		        primaryButton.onClick.AddListener(OnPrimaryButtonClicked);
+            if (primaryButton != null)
+                primaryButton.onClick.AddListener(OnPrimaryButtonClicked);
 
             if (longPress != null)
                 longPress.LongPressed += () => {
                     Debug.Log($"SaveSlotView: LongPressed {SlotId}");
+                    wasLongPressed = true;
                     LongPressed?.Invoke(SlotId);
                 };
         }
@@ -48,6 +52,12 @@ namespace UDA2.UI.SaveLoad
 
         private void OnPrimaryButtonClicked()
         {
+            if (wasLongPressed)
+            {
+                wasLongPressed = false;
+                Debug.Log($"SaveSlotView: PrimaryClicked {SlotId} — skipped due to long press");
+                return;
+            }
             Debug.Log($"SaveSlotView: PrimaryClicked {SlotId}");
             PrimaryClicked?.Invoke(SlotId);
         }

@@ -13,18 +13,25 @@ namespace UDA2.UI.SaveLoad
         public enum Mode { Load, Save }
 
         [Header("UI References")]
-        [SerializeField] private Transform slotsParent; // Контейнер для слотов
-        [SerializeField] private GameObject slotTemplate; // Prefab кнопки-слота (выключен по умолчанию)
-        [SerializeField] private Button closeButton;
-        [SerializeField] private TMP_Text headerText;
+        [SerializeField] private Transform slotsParent; // Enables dynamic slot layout
+        [SerializeField] private GameObject slotTemplate; // Allows flexible slot instantiation
+        [SerializeField] private Button closeButton; // Prevents modal from blocking UI
+        [SerializeField] private TMP_Text headerText; // Ensures correct context for user
 
-        // ConfirmDialog теперь вызывается как сервис через статический метод
+        // Centralizes confirmation logic for destructive actions
 
         private Mode currentMode;
-        private List<SaveSlotView> slotViews = new List<SaveSlotView>();
-        private const int SlotCount = 11;
-        private bool isInitialized = false;
+        private List<SaveSlotView> slotViews = new List<SaveSlotView>(); // Enables batch slot updates
+        private const int SlotCount = 11; // Limits save slots for UX clarity
+        private bool isInitialized = false; // Prevents redundant UI setup
 
+        [Header("Dialog")]
+        [SerializeField] private UDA2.UI.Common.ConfirmDialog confirmDialogPrefab;
+        [SerializeField] private Transform dialogParent;
+
+        /// <summary>
+        /// Displays modal, blocking background interaction until closed.
+        /// </summary>
         public static SaveLoadModalController Show(Mode mode)
         {
             var prefab = Resources.Load<SaveLoadModalController>("Prefabs/UI/SaveLoad/SaveLoadModal");
@@ -33,25 +40,28 @@ namespace UDA2.UI.SaveLoad
             return instance;
         }
 
+        /// <summary>
+        /// Prepares modal for user action, guaranteeing up-to-date slot state.
+        /// </summary>
         private void OpenInternal(Mode mode)
         {
             currentMode = mode;
-            gameObject.SetActive(true); // Гарантируем видимость модального окна
+            gameObject.SetActive(true); // Prevents accidental background interaction
             if (!isInitialized)
             {
                 InitSlots();
                 isInitialized = true;
                 if (closeButton != null)
-                    closeButton.onClick.AddListener(Close);
+                    closeButton.onClick.AddListener(Close); // Allows user to exit modal
             }
             RefreshSlots();
+            // Guarantees correct header localization for current mode
             var setter = headerText.GetComponent<LocalizedTextSetter>();
             if (setter != null)
             {
                 setter.key = mode == Mode.Load ? "save_load_title_load" : "save_load_title_save";
-                setter.UpdateText(); // вызываем без параметров
+                setter.UpdateText();
             }
-            // LocalizedTextComponent
             var comp = headerText.GetComponent<LocalizedTextComponent>();
             if (comp != null)
             {
@@ -60,6 +70,9 @@ namespace UDA2.UI.SaveLoad
             }
         }
 
+        /// <summary>
+        /// Populates modal with interactive slots, enabling save/load actions.
+        /// </summary>
         private void InitSlots()
         {
             for (int i = 0; i < SlotCount; i++)
@@ -68,14 +81,17 @@ namespace UDA2.UI.SaveLoad
                 slotObj.SetActive(true);
                 var slotView = slotObj.GetComponent<SaveSlotView>();
                 slotView.SetAutosave(i == 0);
-                slotView.SetLocked(i == 0); // автосейв сразу заблокирован
+                slotView.SetLocked(i == 0); // Prevents user from modifying autosave slot
                 slotView.SetEmpty(i);
-                slotView.PrimaryClicked += OnSlotClicked;
-                slotView.LongPressed += OnSlotLongPressed;
+                slotView.PrimaryClicked += OnSlotClicked; // Enables slot selection
+                slotView.LongPressed += OnSlotLongPressed; // Enables slot deletion
                 slotViews.Add(slotView);
             }
         }
 
+        /// <summary>
+        /// Reflects current save/load state, preventing invalid actions.
+        /// </summary>
         private void RefreshSlots()
         {
             for (int i = 0; i < SlotCount; i++)
@@ -88,7 +104,7 @@ namespace UDA2.UI.SaveLoad
                     if (slotId == 0)
                     {
                         slotView.SetAutosave(true);
-                        slotView.SetLocked(false); // автосейв активен для загрузки
+                        slotView.SetLocked(false); // Allows autosave to be loaded
                         if (hasSave)
                             slotView.SetData(slotId, SaveSlotsManager.GetMeta(slotId));
                         else
@@ -97,7 +113,7 @@ namespace UDA2.UI.SaveLoad
                     else
                     {
                         slotView.SetAutosave(false);
-                        slotView.SetLocked(!hasSave); // пустые слоты заблокированы для загрузки
+                        slotView.SetLocked(!hasSave); // Prevents loading from empty slots
                         if (hasSave)
                             slotView.SetData(slotId, SaveSlotsManager.GetMeta(slotId));
                         else
@@ -109,7 +125,7 @@ namespace UDA2.UI.SaveLoad
                     if (slotId == 0)
                     {
                         slotView.SetAutosave(true);
-                        slotView.SetLocked(true); // автосейв заблокирован для сохранения
+                        slotView.SetLocked(true); // Prevents overwriting autosave
                         if (hasSave)
                             slotView.SetData(slotId, SaveSlotsManager.GetMeta(slotId));
                         else
@@ -118,7 +134,7 @@ namespace UDA2.UI.SaveLoad
                     else
                     {
                         slotView.SetAutosave(false);
-                        slotView.SetLocked(false); // все ручные слоты активны для сохранения
+                        slotView.SetLocked(false); // Enables manual slot saving
                         if (hasSave)
                             slotView.SetData(slotId, SaveSlotsManager.GetMeta(slotId));
                         else
@@ -128,6 +144,9 @@ namespace UDA2.UI.SaveLoad
             }
         }
 
+        /// <summary>
+        /// Loads game or overwrites save, depending on user intent.
+        /// </summary>
         private void OnSlotClicked(int slotId)
         {
             if (currentMode == Mode.Load)
@@ -137,7 +156,7 @@ namespace UDA2.UI.SaveLoad
                 if (save != null)
                 {
                     GameState.Instance.CurrentSave = save;
-                    // Переход через загрузчик, если он есть
+                    // Ensures correct scene transition after load
                     if (UDA2.SceneFlow.SceneFlowManager.Instance != null)
                         UDA2.SceneFlow.SceneFlowManager.Instance.LoadScene(save.player.sceneName);
                     else
@@ -147,7 +166,7 @@ namespace UDA2.UI.SaveLoad
             }
             else // Save Mode
             {
-                if (slotId == 0) return; // автосейв заблокирован
+                if (slotId == 0) return; // Prevents overwriting autosave
                 if (!SaveSlotsManager.HasSave(slotId))
                 {
                     SaveSlotsManager.SaveToSlot(slotId, GameState.Instance.CurrentSave);
@@ -156,6 +175,8 @@ namespace UDA2.UI.SaveLoad
                 else
                 {
                     ConfirmDialog.Show(
+                        confirmDialogPrefab,
+                        dialogParent != null ? dialogParent : transform,
                         "confirm_overwrite_save",
                         onYes: () => { SaveSlotsManager.SaveToSlot(slotId, GameState.Instance.CurrentSave); RefreshSlots(); },
                         onNo: null
@@ -164,17 +185,25 @@ namespace UDA2.UI.SaveLoad
             }
         }
 
+        /// <summary>
+        /// Prevents accidental deletion by requiring confirmation.
+        /// </summary>
         private void OnSlotLongPressed(int slotId)
         {
-            if (slotId == 0) return; // автосейв нельзя удалить
-            if (!SaveSlotsManager.HasSave(slotId)) return;
+            if (slotId == 0) return; // Disables deletion for autosave
+            if (!SaveSlotsManager.HasSave(slotId)) return; // Prevents deletion of empty slot
             ConfirmDialog.Show(
+                confirmDialogPrefab,
+                dialogParent != null ? dialogParent : transform,
                 "confirm_delete_save",
                 onYes: () => { SaveSlotsManager.DeleteSlot(slotId); RefreshSlots(); },
                 onNo: null
             );
         }
 
+        /// <summary>
+        /// Restores background interaction and cleans up modal.
+        /// </summary>
         public void Close()
         {
             Destroy(gameObject);

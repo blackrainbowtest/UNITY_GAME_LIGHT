@@ -1241,6 +1241,8 @@ MonoBehaviour:
   slotTemplate: {fileID: 5371606724470793398}
   closeButton: {fileID: 7882671448827227813}
   headerText: {fileID: 4222761873876816060}
+  confirmDialogPrefab: {fileID: 8032613083429271595, guid: 486bc06de794b6a46a9cd50b63060fab, type: 3}
+  dialogParent: {fileID: 8903079326553189163}
 --- !u!1 &4460971709740455206
 GameObject:
   m_ObjectHideFlags: 0
