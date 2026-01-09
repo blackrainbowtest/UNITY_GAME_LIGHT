@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UDA2.Core;
 
-public class SettingsController : MonoBehaviour
+public class SettingsController : MonoBehaviour, IMenuCloseHandler
 {
     private SettingsState _editingState;
 
@@ -84,6 +85,8 @@ public class SettingsController : MonoBehaviour
             UDA2.Audio.AudioManager.Instance.SetSfxVolume(SettingsContext.Current.sfxVolume);
             UDA2.Audio.AudioManager.Instance.SetUiVolume(SettingsContext.Current.uiVolume);
         }
+        // Вызов события для возврата главного меню
+        OnMenuClosed?.Invoke();
     }
 
     private void SetActiveState(bool isActive)
@@ -222,4 +225,6 @@ public class SettingsController : MonoBehaviour
 
         return 0;
     }
+
+    public event System.Action OnMenuClosed;
 }
