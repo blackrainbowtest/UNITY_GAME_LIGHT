@@ -4,9 +4,7 @@ namespace UDA2.UI
 {
     public class MainMenuController : MonoBehaviour
     {
-        public SettingsController settingsController;
-        public GameObject settingsPanel;
-        public GameObject settingsWindow;
+        // Устаревшие поля удалены, используем только settingsMenuPrefab
 
         private void OnEnable()
         {
@@ -34,24 +32,35 @@ namespace UDA2.UI
             UDA2.UI.SaveLoad.SaveLoadModalController.Show(UDA2.UI.SaveLoad.SaveLoadModalController.Mode.Load);
         }
 
+        [SerializeField] private GameObject settingsMenuPrefab;
+        private GameObject settingsMenuInstance;
+
         public void OnSettingsPressed()
         {
-            if (settingsController != null)
+            if (settingsMenuInstance == null && settingsMenuPrefab != null)
             {
-                settingsController.Open();
-                return;
+                settingsMenuInstance = Instantiate(settingsMenuPrefab, transform.parent);
+                var closeHandler = settingsMenuInstance.GetComponent<IMenuCloseHandler>();
+                if (closeHandler != null)
+                    closeHandler.OnMenuClosed += OnSettingsMenuClosed;
             }
-
-            if (settingsWindow != null)
-                settingsWindow.SetActive(true);
-
-            if (settingsPanel != null)
+            if (settingsMenuInstance != null)
             {
-                settingsPanel.SetActive(true);
-                return;
+                settingsMenuInstance.SetActive(true);
             }
+            else
+            {
+                Debug.LogWarning("MainMenuController: settingsMenuPrefab не назначен или не удалось создать окно настроек.", this);
+            }
+        }
 
-            Debug.LogWarning("MainMenuController: settingsController/settingsPanel/settingsWindow не назначены.", this);
+        private void OnSettingsMenuClosed()
+        {
+            var closeHandler = settingsMenuInstance.GetComponent<IMenuCloseHandler>();
+            if (closeHandler != null)
+                closeHandler.OnMenuClosed -= OnSettingsMenuClosed;
+            Destroy(settingsMenuInstance);
+            settingsMenuInstance = null;
         }
 
         public void OnExitPressed()
