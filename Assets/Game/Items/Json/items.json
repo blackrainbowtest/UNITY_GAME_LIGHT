@@ -1,0 +1,34 @@
+[
+  {
+    "id": "gold",
+    "type": "Currency",
+    "displayName": "item.gold.name",
+    "icon": "icon_gold",
+    "effect": "null",
+    "value": 1
+  },
+  {
+    "id": "potion_hp_small",
+    "type": "Consumable",
+    "displayName": "item.potion_hp_small.name",
+    "icon": "icon_potion_hp_small",
+    "effect": "HealHP",
+    "value": 25
+  },
+  {
+    "id": "potion_mana_small",
+    "type": "Consumable",
+    "displayName": "item.potion_mana_small.name",
+    "icon": "icon_potion_mp_small",
+    "effect": "RestoreMana",
+    "value": 20
+  },
+  {
+    "id": "potion_stamina_small",
+    "type": "Consumable",
+    "displayName": "item.potion_stamina_small.name",
+    "icon": "icon_potion_st_small",
+    "effect": "RestoreStamina",
+    "value": 20
+  }
+]

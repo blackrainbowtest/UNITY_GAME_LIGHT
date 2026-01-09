@@ -5,10 +5,12 @@ using System.Collections;
 
 public class IntroController : MonoBehaviour
 {
+    // Local constant for the default save slot used in intro
+    private const int DefaultIntroSaveSlot = 0;
     private enum IntroBranch { None, A, B }
     private IntroBranch selectedBranch = IntroBranch.None;
     [Header("Choice Dialog")]
-    [SerializeField] private GameObject choiceDialog; // Панель с кнопками выбора
+    [SerializeField] private GameObject choiceDialog; // Panel with choice buttons
     [SerializeField] private Button interveneButton;
     [SerializeField] private Button turnAwayButton;
     [Header("Data")]
@@ -18,7 +20,7 @@ public class IntroController : MonoBehaviour
     [SerializeField] private Image backgroundImage;
     [SerializeField] private TMP_Text loreText;
     [SerializeField] private Button skipButton;
-    [SerializeField] private Button textClickCatcher; // прозрачная кнопка поверх TextPanel
+    [SerializeField] private Button textClickCatcher; // Transparent button over TextPanel
 
     [Header("Flow")]
     [SerializeField] private string firstFightSceneName = "FightScene";
@@ -60,13 +62,13 @@ public class IntroController : MonoBehaviour
 
         currentIndex = index;
 
-        // Завершение основной ветки после 14A (index == 14)
+        // End of main branch after 14A (index == 14)
         if (selectedBranch == IntroBranch.A && index > 14)
         {
             FinishIntro();
             return;
         }
-        // Завершение альтернативной ветки после 13B (index == 16)
+        // End of alternative branch after 13B (index == 16)
         if (selectedBranch == IntroBranch.B && index > 16)
         {
             FinishIntro();
@@ -79,7 +81,7 @@ public class IntroController : MonoBehaviour
         if (backgroundImage != null && frame.background != null)
             backgroundImage.sprite = frame.background;
 
-        // Локализация через компонент
+        // Localization via component
         if (loreText != null)
         {
             // LocalizedTextSetter
@@ -87,7 +89,7 @@ public class IntroController : MonoBehaviour
             if (setter != null)
             {
                 setter.key = frame.textKey;
-                setter.UpdateText(); // вызываем без параметров
+                setter.UpdateText(); // call without parameters
             }
             // LocalizedTextComponent
             var comp = loreText.GetComponent<LocalizedTextComponent>();
@@ -98,7 +100,7 @@ public class IntroController : MonoBehaviour
             }
         }
 
-        // Автопереход
+        // Auto-advance
         if (!frame.waitForClick && frame.autoDelay > 0f)
         {
             autoAdvanceCoroutine = StartCoroutine(AutoAdvance(frame.autoDelay));
@@ -113,7 +115,7 @@ public class IntroController : MonoBehaviour
 
     public void NextFrame()
     {
-        // Если сейчас показан 11-й фрейм — показываем диалог вместо перехода к следующему фрейму
+        // If the 11th frame is shown, display the choice dialog instead of moving to the next frame
         if (currentIndex == 11)
         {
             if (choiceDialog != null)
@@ -144,24 +146,55 @@ public class IntroController : MonoBehaviour
 
     private void FinishIntro()
     {
-        // Сохраняем прогресс, если нужно
+        // Save progress if needed
+        // Access to GameState is required here because this controller is responsible for progressing the intro and triggering the transition to gameplay.
+        // GameState.Instance is the single source of truth for current save data in the session.
         if (GameState.Instance.CurrentSave == null)
+        {
             GameState.Instance.CurrentSave = new SaveData();
-        GameState.Instance.CurrentSave.player.sceneName = firstFightSceneName;
+        }
 
-        // Записываем результат интро
+        // Null/empty check for scene name
+        if (string.IsNullOrEmpty(firstFightSceneName))
+        {
+            Debug.LogError("IntroController: firstFightSceneName is null or empty. Cannot continue intro flow.");
+            return;
+        }
+
+        // Data owner is GameState. Controller only initiates transition and records intro result.
+        if (GameState.Instance.CurrentSave.player != null)
+        {
+            GameState.Instance.CurrentSave.player.SetSceneName(firstFightSceneName);
+        }
+        else
+        {
+            Debug.LogError("IntroController: CurrentSave.player is null. Cannot set scene name.");
+        }
+
+        // Record the result of the intro using the setter
         string introResult = "skip";
         if (selectedBranch == IntroBranch.A) introResult = "A";
         else if (selectedBranch == IntroBranch.B) introResult = "B";
-        if (GameState.Instance.CurrentSave.progress != null)
-            GameState.Instance.CurrentSave.progress.introResult = introResult;
+        if (GameState.Instance.CurrentSave.progress != null && !string.IsNullOrEmpty(introResult))
+        {
+            GameState.Instance.CurrentSave.progress.SetIntroResult(introResult);
+        }
+        else if (GameState.Instance.CurrentSave.progress == null)
+        {
+            Debug.LogError("IntroController: CurrentSave.progress is null. Cannot set intro result.");
+        }
 
-        SaveSlotsManager.SaveToSlot(0, GameState.Instance.CurrentSave);
+        // Use a named constant for the save slot index
+        SaveSlotsManager.SaveToSlot(DefaultIntroSaveSlot, GameState.Instance.CurrentSave);
 
-        // Переход к первому бою через загрузчик
+        // Transition to the first fight scene using the scene loader if available
         if (UDA2.SceneFlow.SceneFlowManager.Instance != null)
+        {
             UDA2.SceneFlow.SceneFlowManager.Instance.LoadScene(firstFightSceneName);
+        }
         else
+        {
             UnityEngine.SceneManagement.SceneManager.LoadScene(firstFightSceneName);
+        }
     }
 }

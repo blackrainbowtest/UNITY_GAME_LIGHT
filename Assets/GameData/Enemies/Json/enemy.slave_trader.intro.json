@@ -1,0 +1,41 @@
+{
+  "id": "enemy.slave_trader.intro",
+
+  "nameKey": "enemy.slave_trader.intro.name",
+  "descKey": "enemy.slave_trader.intro.desc",
+
+  "visual": {
+    "spritePath": "Assets/GameData/Enemies/Sprites/slave_trader_intro.png"
+  },
+
+  "baseStats": {
+    "hpMax": 80,
+    "manaMax": 0,
+    "lustMax": 100,
+    "staminaMax": 60
+  },
+
+  "initialState": {
+    "hp": 80,
+    "mana": 0,
+    "lust": 0,
+    "stamina": 60
+  },
+
+  "combat": {
+    "baseAttack": 8,
+    "baseDefense": 2,
+
+    "chances": {
+      "crit": 0.10,
+      "miss": 0.05,
+      "stun": 0.08
+    }
+  },
+
+  "drops": {
+    "goldMin": 3,
+    "goldMax": 12,
+    "items": []
+  }
+}

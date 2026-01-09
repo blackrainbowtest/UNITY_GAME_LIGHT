@@ -27,6 +27,19 @@ public class SaveData
         public string sceneName;
         public Stats stats = new Stats();
         public List<string> statusEffects = new List<string>();
+
+        /// <summary>
+        /// Sets the player's scene name. Only allows non-null, non-empty values.
+        /// </summary>
+        public void SetSceneName(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                UnityEngine.Debug.LogError("Player.SetSceneName: value is null or empty");
+                return;
+            }
+            sceneName = value;
+        }
     }
 
     [Serializable]
@@ -55,6 +68,19 @@ public class SaveData
     {
         public Dictionary<string, bool> flags = new Dictionary<string, bool>();
         public string introResult;
+
+        /// <summary>
+        /// Sets the intro result. Only allows non-null, non-empty values.
+        /// </summary>
+        public void SetIntroResult(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                UnityEngine.Debug.LogError("Progress.SetIntroResult: value is null or empty");
+                return;
+            }
+            introResult = value;
+        }
     }
 
     public static SaveData CreateDefault(string version)
