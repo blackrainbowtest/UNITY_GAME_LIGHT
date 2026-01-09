@@ -28,7 +28,19 @@ namespace UDA2.UI.Common
         {
             this.onYes = onYes;
             this.onNo = onNo;
-            questionText.text = questionKey; // Здесь должна быть локализация
+            // Локализация вопроса через LocalizedTextSetter или LocalizedTextComponent
+            var setter = questionText.GetComponent<LocalizedTextSetter>();
+            if (setter != null)
+            {
+                setter.key = questionKey;
+                setter.UpdateText();
+            }
+            var comp = questionText.GetComponent<LocalizedTextComponent>();
+            if (comp != null)
+            {
+                comp.textKey = questionKey;
+                comp.UpdateText();
+            }
             yesButton.onClick.AddListener(OnYes);
             noButton.onClick.AddListener(OnNo);
         }

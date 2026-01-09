@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+// TODO: fix comments and remove debugs
 namespace UDA2.UI.SaveLoad
 {
     public class SaveSlotView : MonoBehaviour
@@ -33,7 +34,10 @@ namespace UDA2.UI.SaveLoad
 		        primaryButton.onClick.AddListener(OnPrimaryButtonClicked);
 
             if (longPress != null)
-                longPress.LongPressed += () => LongPressed?.Invoke(SlotId);
+                longPress.LongPressed += () => {
+                    Debug.Log($"SaveSlotView: LongPressed {SlotId}");
+                    LongPressed?.Invoke(SlotId);
+                };
         }
 
         private void OnDestroy()
@@ -44,6 +48,7 @@ namespace UDA2.UI.SaveLoad
 
         private void OnPrimaryButtonClicked()
         {
+            Debug.Log($"SaveSlotView: PrimaryClicked {SlotId}");
             PrimaryClicked?.Invoke(SlotId);
         }
 

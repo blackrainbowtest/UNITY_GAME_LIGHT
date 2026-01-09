@@ -27,3 +27,7 @@
 	Загрузка...;
 	Loading...;
 	Chargement...;
+*question_save;
+	Вы уверены, что хотите перезаписать это сохранение?;
+	Are you sure you want to overwrite this save?;
+	Are you sure you want to overwrite this save?;

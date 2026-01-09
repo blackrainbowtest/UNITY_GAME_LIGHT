@@ -19,28 +19,8 @@ public class GameMenuController : MonoBehaviour
 
     public void SaveGame()
     {
-        // Open the save/load menu (SaveLoadMenu) in save mode
-        if (saveLoadMenuInstance == null && saveLoadMenuPrefab != null)
-        {
-            saveLoadMenuInstance = Instantiate(saveLoadMenuPrefab, transform.parent);
-            // Subscribe to close event if possible
-            var closeHandler = saveLoadMenuInstance.GetComponent<IMenuCloseHandler>();
-            if (closeHandler != null)
-                closeHandler.OnMenuClosed += OnSubMenuClosed;
-        }
-        if (saveLoadMenuInstance != null)
-        {
-            saveLoadMenuInstance.SetActive(true);
-            var menu = saveLoadMenuInstance.GetComponent<ISaveLoadMenuMode>();
-            if (menu != null)
-                menu.ShowSaveMode();
-            // Deactivate this menu while sub-menu is open
-            gameObject.SetActive(false);
-        }
-        else
-        {
-            Debug.LogError("SaveLoadMenu prefab is not assigned or failed to instantiate.");
-        }
+        UDA2.UI.SaveLoad.SaveLoadModalController.Show(UDA2.UI.SaveLoad.SaveLoadModalController.Mode.Save);
+        gameObject.SetActive(false);
     }
 
     public void OpenSettings()

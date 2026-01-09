@@ -34,10 +34,10 @@ RectTransform:
   - {fileID: 3784549294355356662}
   m_Father: {fileID: 1218007981586670389}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 400, y: -360}
-  m_SizeDelta: {x: 760, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5900778365895637363
 MonoBehaviour:
@@ -98,6 +98,7 @@ GameObject:
   - component: {fileID: 339014394489048704}
   - component: {fileID: 1892977136372330329}
   - component: {fileID: 3649450670142245718}
+  - component: {fileID: 5495435354629080776}
   m_Layer: 5
   m_Name: YesButton
   m_TagString: Untagged
@@ -120,10 +121,10 @@ RectTransform:
   - {fileID: 8767956439731410165}
   m_Father: {fileID: 666073446918486612}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 575, y: -35}
-  m_SizeDelta: {x: 370, y: 70}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1839094394480921094
 CanvasRenderer:
@@ -227,6 +228,18 @@ MonoBehaviour:
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &5495435354629080776
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1456071893548634631}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a366efd922b1e6744be5efc61867eff0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UDA2.UI.UIButtonSound
 --- !u!1 &2563048104048759449
 GameObject:
   m_ObjectHideFlags: 0
@@ -342,6 +355,8 @@ GameObject:
   - component: {fileID: 6643910733340724692}
   - component: {fileID: 7653006273708051414}
   - component: {fileID: 6595572529678060429}
+  - component: {fileID: 6147716594727454765}
+  - component: {fileID: 1863812433074282933}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -469,6 +484,34 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &6147716594727454765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3343112756375434476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
+  textKey: no
+  fontType: 1
+--- !u!114 &1863812433074282933
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3343112756375434476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
+  key: no
+  targetText: {fileID: 6595572529678060429}
 --- !u!1 &3526432599217145059
 GameObject:
   m_ObjectHideFlags: 0
@@ -480,6 +523,8 @@ GameObject:
   - component: {fileID: 8767956439731410165}
   - component: {fileID: 6320707244796291785}
   - component: {fileID: 3331166943635040801}
+  - component: {fileID: 7474032925112097408}
+  - component: {fileID: 8825475303675783127}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -605,6 +650,34 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &7474032925112097408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3526432599217145059}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
+  key: yes
+  targetText: {fileID: 3331166943635040801}
+--- !u!114 &8825475303675783127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3526432599217145059}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
+  textKey: yes
+  fontType: 1
 --- !u!1 &4570009686870247015
 GameObject:
   m_ObjectHideFlags: 0
@@ -640,10 +713,10 @@ RectTransform:
   - {fileID: 6643910733340724692}
   m_Father: {fileID: 666073446918486612}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 185, y: -35}
-  m_SizeDelta: {x: 370, y: 70}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8961028811299083307
 CanvasRenderer:
@@ -759,6 +832,8 @@ GameObject:
   - component: {fileID: 5127133674690164643}
   - component: {fileID: 2743053304905546330}
   - component: {fileID: 8135083245308959244}
+  - component: {fileID: 2603735525289040853}
+  - component: {fileID: 2360760579510182845}
   m_Layer: 5
   m_Name: QuestionText (TMP)
   m_TagString: Untagged
@@ -780,10 +855,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1218007981586670389}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 400, y: -160}
-  m_SizeDelta: {x: 760, y: 280}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5127133674690164643
 CanvasRenderer:
@@ -904,6 +979,34 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: 1
   m_LayoutPriority: 1
+--- !u!114 &2603735525289040853
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5922869119528894871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
+  key: question_save
+  targetText: {fileID: 2743053304905546330}
+--- !u!114 &2360760579510182845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5922869119528894871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
+  textKey: question_save
+  fontType: 1
 --- !u!1 &8955515864637266488
 GameObject:
   m_ObjectHideFlags: 0
@@ -916,6 +1019,7 @@ GameObject:
   - component: {fileID: 6972235283553126582}
   - component: {fileID: 6808498942682720890}
   - component: {fileID: 6219981029423945998}
+  - component: {fileID: 8032613083429271595}
   m_Layer: 5
   m_Name: ConfirmDialogModal
   m_TagString: Untagged
@@ -993,3 +1097,18 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &8032613083429271595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8955515864637266488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89547cabe8aec394e81e9d5f9b680461, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UDA2.UI.Common.ConfirmDialog
+  questionText: {fileID: 2743053304905546330}
+  yesButton: {fileID: 1892977136372330329}
+  noButton: {fileID: 8763037982035359497}
