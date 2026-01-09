@@ -8,6 +8,7 @@ public enum ItemType
 
 public enum ConsumableEffect
 {
+    DoingNothing,
     HealHP,
     RestoreMana,
     RestoreStamina

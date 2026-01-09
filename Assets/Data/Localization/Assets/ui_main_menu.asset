@@ -53,4 +53,28 @@ MonoBehaviour:
       text: Settings
     - languageCode: fr
       text: "Param\xE8tres"
+  - key: resume
+    entries:
+    - languageCode: ru
+      text: "\u0412\u043E\u0437\u043E\u0431\u043D\u043E\u0432\u0438\u0442\u044C"
+    - languageCode: en
+      text: Resume
+    - languageCode: fr
+      text: Resume
+  - key: mainmenu
+    entries:
+    - languageCode: ru
+      text: "\u0413\u043B\u0430\u0432\u043D\u043E\u0435 \u043C\u0435\u043D\u044E"
+    - languageCode: en
+      text: Main menu
+    - languageCode: fr
+      text: Main menu
+  - key: save_game
+    entries:
+    - languageCode: ru
+      text: "\u0421\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C \u0438\u0433\u0440\u0443"
+    - languageCode: en
+      text: Save game
+    - languageCode: fr
+      text: Save game
   sourceCsvName: ui_main_menu

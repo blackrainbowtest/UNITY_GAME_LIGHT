@@ -4,7 +4,7 @@
     "type": "Currency",
     "displayName": "item.gold.name",
     "icon": "icon_gold",
-    "effect": "null",
+    "effect": "DoingNothing",
     "value": 1
   },
   {

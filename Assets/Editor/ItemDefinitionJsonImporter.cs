@@ -9,7 +9,7 @@ public class ItemDefinitionJsonImporter : EditorWindow
     private string iconsPath = "Assets/Game/Items/Icons/";
     private string outputPath = "Assets/Game/Items/Definitions/";
 
-    [MenuItem("Tools/Import Items from JSON")]
+    [MenuItem("Tools/Items/Import Items from JSON")]
     public static void ShowWindow()
     {
         GetWindow<ItemDefinitionJsonImporter>("Item JSON Importer");
