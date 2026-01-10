@@ -18,7 +18,7 @@ namespace UDA2.UI.SaveLoad
 
         [Header("Optional visuals")]
         [SerializeField] private GameObject lockBadge; // show for autosave if needed
-        [SerializeField] private GameObject lockOverlay; // визуальная блокировка
+        [SerializeField] private GameObject lockOverlay; // visual lock overlay
 
         public int SlotId { get; private set; }
         public bool IsAutoSave { get; private set; }
@@ -42,9 +42,10 @@ namespace UDA2.UI.SaveLoad
         private bool wasLongPressed = false;
         private bool longPressInProgress = false;
         private bool waitingToShowProgress = false;
-        private float progressShowDelay = 0.15f; // 150 мс
+        private float progressShowDelay = 0.15f; // 150 ms
         private float progressShowTimer = 0f;
         private Vector2 lastPointerDownPosition;
+        private float pointerDownTime = 0f;
 
         public void ResetLongPressFlag()
         {
@@ -55,7 +56,7 @@ namespace UDA2.UI.SaveLoad
         private void Awake()
         {
             if (primaryButton != null)
-                primaryButton.onClick.AddListener(OnPrimaryButtonClicked);
+                primaryButton.onClick.RemoveAllListeners(); // Remove all listeners to prevent Unity Button click
 
             // progressView is assigned after instantiation via SetProgressView
 
@@ -94,8 +95,9 @@ namespace UDA2.UI.SaveLoad
             waitingToShowProgress = true;
             progressShowTimer = 0f;
             lastPointerDownPosition = eventData.position;
+            pointerDownTime = Time.unscaledTime;
             UDA2.Logging.Logger.LogInfo($"[SaveSlotView] OnPointerDown slot {SlotId}", UDA2.Logging.LogChannel.UI);
-            // progressView.Show будет вызван с задержкой в Update
+            // progressView.Show will be called with a delay in Update
             longPressHandler.StartPress();
         }
 
@@ -105,7 +107,7 @@ namespace UDA2.UI.SaveLoad
             isPointerDown = false;
             waitingToShowProgress = false;
             UDA2.Logging.Logger.LogInfo($"[SaveSlotView] OnPointerUp slot {SlotId}", UDA2.Logging.LogChannel.UI);
-            // Если long press не завершён, сбрасываем флаг in progress
+            float pressDuration = Time.unscaledTime - pointerDownTime;
             if (longPressInProgress && !wasLongPressed)
             {
                 longPressInProgress = false;
@@ -113,6 +115,13 @@ namespace UDA2.UI.SaveLoad
             longPressHandler.CancelPress();
             progressView.Hide();
             UDA2.Logging.Logger.LogInfo($"[SaveSlotView] progressView.Hide", UDA2.Logging.LogChannel.UI);
+            // Tap: only if not long press and duration < progressShowDelay
+            if (!wasLongPressed && pressDuration < progressShowDelay)
+            {
+                UDA2.Logging.Logger.LogInfo($"SaveSlotView: PrimaryClicked {SlotId} (tap)", UDA2.Logging.LogChannel.UI);
+                PrimaryClicked?.Invoke(SlotId);
+            }
+            // If user held longer than progressShowDelay but did not complete long press, do nothing (no click)
         }
 
         public void OnPointerExit(UnityEngine.EventSystems.PointerEventData eventData)
