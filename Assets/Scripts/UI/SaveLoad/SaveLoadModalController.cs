@@ -22,6 +22,9 @@ namespace UDA2.UI.SaveLoad
 
         private Mode currentMode;
         private List<SaveSlotView> slotViews = new List<SaveSlotView>(); // Enables batch slot updates
+        [Header("Long Press Progress")]
+        [SerializeField] private LongPressProgressView progressViewPrefab;
+        [SerializeField] private Transform canvasTransform;
         private const int SlotCount = 11; // Limits save slots for UX clarity
         private bool isInitialized = false; // Prevents redundant UI setup
 
@@ -80,6 +83,10 @@ namespace UDA2.UI.SaveLoad
                 var slotObj = Instantiate(slotTemplate, slotsParent);
                 slotObj.SetActive(true);
                 var slotView = slotObj.GetComponent<SaveSlotView>();
+                // Instantiate progress view prefab for each slot
+                var progressViewInstance = Instantiate(progressViewPrefab, canvasTransform);
+                progressViewInstance.gameObject.SetActive(false);
+                slotView.SetProgressView(progressViewInstance);
                 slotView.SetAutosave(i == 0);
                 slotView.SetLocked(i == 0); // Prevents user from modifying autosave slot
                 slotView.SetEmpty(i);

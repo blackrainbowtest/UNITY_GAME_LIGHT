@@ -1241,6 +1241,8 @@ MonoBehaviour:
   slotTemplate: {fileID: 5371606724470793398}
   closeButton: {fileID: 7882671448827227813}
   headerText: {fileID: 4222761873876816060}
+  progressViewPrefab: {fileID: 9034531345151872778, guid: 5a44ec5239b2e2c48b70a5a41029ee68, type: 3}
+  canvasTransform: {fileID: 8903079326553189163}
   confirmDialogPrefab: {fileID: 8032613083429271595, guid: 486bc06de794b6a46a9cd50b63060fab, type: 3}
   dialogParent: {fileID: 8903079326553189163}
 --- !u!1 &4460971709740455206
@@ -1600,7 +1602,7 @@ MonoBehaviour:
   primaryButtonText: {fileID: 1590203444534230995}
   lockBadge: {fileID: 4403371594079694322}
   lockOverlay: {fileID: 1711622310605034651}
-  longPress: {fileID: 2010654626328029421}
+  longPressDuration: 1
 --- !u!114 &2010654626328029421
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 // TODO: fix comments and remove debugs
 namespace UDA2.UI.SaveLoad
 {
-    public class SaveSlotView : MonoBehaviour
+    public class SaveSlotView : MonoBehaviour, UnityEngine.EventSystems.IPointerDownHandler, UnityEngine.EventSystems.IPointerUpHandler, UnityEngine.EventSystems.IPointerExitHandler
     {
         [Header("Wiring")]
         [SerializeField] private TMP_Text slotTitle;
@@ -22,18 +22,34 @@ namespace UDA2.UI.SaveLoad
 
         public int SlotId { get; private set; }
         public bool IsAutoSave { get; private set; }
+        private bool isEmpty = false;
 
-        [Header("Input")]
-        [SerializeField] private UDA2.UI.Common.LongPressHandler longPress;
+
+        [Header("Long Press")]
+        [SerializeField] private float longPressDuration = 1.0f;
+        private LongPressProgressView progressView;
+
+        private LongPressHandler longPressHandler;
+        private bool isPointerDown;
+        public void SetProgressView(LongPressProgressView view)
+        {
+            progressView = view;
+        }
 
         public event Action<int> PrimaryClicked;
 
 
         private bool wasLongPressed = false;
+        private bool longPressInProgress = false;
+        private bool waitingToShowProgress = false;
+        private float progressShowDelay = 0.15f; // 150 мс
+        private float progressShowTimer = 0f;
+        private Vector2 lastPointerDownPosition;
 
         public void ResetLongPressFlag()
         {
             wasLongPressed = false;
+            longPressInProgress = false;
         }
 
         private void Awake()
@@ -41,12 +57,102 @@ namespace UDA2.UI.SaveLoad
             if (primaryButton != null)
                 primaryButton.onClick.AddListener(OnPrimaryButtonClicked);
 
-            if (longPress != null)
-                longPress.LongPressed += () => {
-                    Debug.Log($"SaveSlotView: LongPressed {SlotId}");
-                    wasLongPressed = true;
-                    LongPressed?.Invoke(SlotId);
-                };
+            // progressView is assigned after instantiation via SetProgressView
+
+            longPressHandler = new LongPressHandler(longPressDuration);
+            longPressHandler.OnStarted += HandleLongPressStarted;
+            longPressHandler.OnProgress += HandleLongPressProgress;
+            longPressHandler.OnCompleted += HandleLongPressCompleted;
+            longPressHandler.OnCanceled += HandleLongPressCanceled;
+        }
+
+        // Update is used only to forward unscaled delta time to LongPressHandler.
+        // No timing logic or decisions are made here.
+        private void Update()
+        {
+            if (isPointerDown)
+            {
+                longPressHandler.Update(Time.unscaledDeltaTime);
+                if (waitingToShowProgress)
+                {
+                    progressShowTimer += Time.unscaledDeltaTime;
+                    if (progressShowTimer >= progressShowDelay)
+                    {
+                        waitingToShowProgress = false;
+                        progressView.Show(lastPointerDownPosition); // Показываем кружок только если пользователь всё ещё держит
+                        UDA2.Logging.Logger.LogInfo($"[SaveSlotView] progressView.Show (delayed) at {lastPointerDownPosition}", UDA2.Logging.LogChannel.UI);
+                    }
+                }
+            }
+        }
+
+        public void OnPointerDown(UnityEngine.EventSystems.PointerEventData eventData)
+        {
+            if (isEmpty) return;
+            isPointerDown = true;
+            longPressInProgress = true;
+            waitingToShowProgress = true;
+            progressShowTimer = 0f;
+            lastPointerDownPosition = eventData.position;
+            UDA2.Logging.Logger.LogInfo($"[SaveSlotView] OnPointerDown slot {SlotId}", UDA2.Logging.LogChannel.UI);
+            // progressView.Show будет вызван с задержкой в Update
+            longPressHandler.StartPress();
+        }
+
+        public void OnPointerUp(UnityEngine.EventSystems.PointerEventData eventData)
+        {
+            if (isEmpty) return;
+            isPointerDown = false;
+            waitingToShowProgress = false;
+            UDA2.Logging.Logger.LogInfo($"[SaveSlotView] OnPointerUp slot {SlotId}", UDA2.Logging.LogChannel.UI);
+            // Если long press не завершён, сбрасываем флаг in progress
+            if (longPressInProgress && !wasLongPressed)
+            {
+                longPressInProgress = false;
+            }
+            longPressHandler.CancelPress();
+            progressView.Hide();
+            UDA2.Logging.Logger.LogInfo($"[SaveSlotView] progressView.Hide", UDA2.Logging.LogChannel.UI);
+        }
+
+        public void OnPointerExit(UnityEngine.EventSystems.PointerEventData eventData)
+        {
+            if (isEmpty) return;
+            isPointerDown = false;
+            waitingToShowProgress = false;
+            if (longPressInProgress && !wasLongPressed)
+            {
+                longPressInProgress = false;
+            }
+            UDA2.Logging.Logger.LogInfo($"[SaveSlotView] OnPointerExit slot {SlotId}", UDA2.Logging.LogChannel.UI);
+            longPressHandler.CancelPress();
+            progressView.Hide();
+            UDA2.Logging.Logger.LogInfo($"[SaveSlotView] progressView.Hide (exit)", UDA2.Logging.LogChannel.UI);
+        }
+
+        private void HandleLongPressStarted()
+        {
+            // No-op: already handled in OnPointerDown
+        }
+
+        private void HandleLongPressProgress(float progress)
+        {
+            progressView.SetProgress(progress);
+        }
+
+        private void HandleLongPressCompleted()
+        {
+            UDA2.Logging.Logger.LogInfo($"[SaveSlotView] LongPress COMPLETED slot {SlotId}", UDA2.Logging.LogChannel.UI);
+            progressView.Hide();
+            wasLongPressed = true;
+            longPressInProgress = false;
+            LongPressed?.Invoke(SlotId);
+        }
+
+        private void HandleLongPressCanceled()
+        {
+            UDA2.Logging.Logger.LogInfo($"[SaveSlotView] LongPress CANCELED slot {SlotId}", UDA2.Logging.LogChannel.UI);
+            progressView.Hide();
         }
 
         private void OnDestroy()
@@ -57,13 +163,19 @@ namespace UDA2.UI.SaveLoad
 
         private void OnPrimaryButtonClicked()
         {
+            // Если был начат long press, но не завершён — не срабатывает ни клик, ни long press
+            if (longPressInProgress && !wasLongPressed)
+            {
+                UDA2.Logging.Logger.LogInfo($"SaveSlotView: PrimaryClicked {SlotId} — skipped due to incomplete long press", UDA2.Logging.LogChannel.UI);
+                return;
+            }
             if (wasLongPressed)
             {
                 wasLongPressed = false;
-                Debug.Log($"SaveSlotView: PrimaryClicked {SlotId} — skipped due to long press");
+                UDA2.Logging.Logger.LogInfo($"SaveSlotView: PrimaryClicked {SlotId} — skipped due to long press", UDA2.Logging.LogChannel.UI);
                 return;
             }
-            Debug.Log($"SaveSlotView: PrimaryClicked {SlotId}");
+            UDA2.Logging.Logger.LogInfo($"SaveSlotView: PrimaryClicked {SlotId}", UDA2.Logging.LogChannel.UI);
             PrimaryClicked?.Invoke(SlotId);
         }
 
@@ -72,6 +184,7 @@ namespace UDA2.UI.SaveLoad
         public void SetEmpty(int slotId)
         {
             SlotId = slotId;
+            isEmpty = true;
             var setter = slotTitle.GetComponent<LocalizedTextSetter>();
             if (setter != null)
             {
@@ -92,6 +205,7 @@ namespace UDA2.UI.SaveLoad
         public void SetData(int slotId, SaveMeta meta)
         {
             SlotId = slotId;
+            isEmpty = false;
             var setter = slotTitle.GetComponent<LocalizedTextSetter>();
             if (setter != null)
             {
