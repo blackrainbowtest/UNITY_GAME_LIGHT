@@ -98,15 +98,18 @@ namespace UDA2.UI.SaveLoad
                 setter.key = $"save_load_slot_{slotId}";
                 setter.UpdateText();
             }
+            else
+                primaryButtonText.text = "Load";
             var comp = slotTitle.GetComponent<LocalizedTextComponent>();
             if (comp != null)
             {
                 comp.textKey = $"save_load_slot_{slotId}";
                 comp.UpdateText();
             }
+            else
+                primaryButtonText.text = "Load";
             saveTimeText.text = meta.saveTime;
             levelGoldText.text = $"Lv {meta.playerLevel} • Gold {meta.playTimeSeconds}";
-            primaryButtonText.text = "Load";
         }
 
         public void SetAutosave(bool isAutosave)

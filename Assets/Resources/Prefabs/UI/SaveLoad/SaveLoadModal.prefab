@@ -1449,6 +1449,7 @@ GameObject:
   - component: {fileID: 3592010255087150130}
   - component: {fileID: 2010654626328029421}
   - component: {fileID: 5854437276719588847}
+  - component: {fileID: 7138029638470233012}
   m_Layer: 5
   m_Name: SlotTemplate
   m_TagString: Untagged
@@ -1614,6 +1615,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UDA2.UI.Common.LongPressHandler
   holdTime: 0.7
 --- !u!114 &5854437276719588847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5371606724470793398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a366efd922b1e6744be5efc61867eff0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UDA2.UI.UIButtonSound
+--- !u!114 &7138029638470233012
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
