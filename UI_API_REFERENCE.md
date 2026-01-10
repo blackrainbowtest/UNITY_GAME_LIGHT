@@ -86,6 +86,45 @@ if (setter != null) {
 
 ---
 
-## Примечания
-- Все диалоги и окна уничтожаются через Destroy(gameObject) после завершения работы.
-- Для корректной работы ConfirmDialogModal префаб должен содержать компонент ConfirmDialog и подключённые поля TMP_Text, Button и локализационные компоненты.
+## Long Press & Tap API
+
+### LongPressHandler
+Reusable logic-only class for tracking long press (hold) gestures. UI-agnostic.
+
+**Constructor:**
+- `LongPressHandler(float duration)`
+
+**Events:**
+- `event Action OnStarted` — called when press starts
+- `event Action<float> OnProgress` — called with progress (0..1) while holding
+- `event Action OnCompleted` — called when hold is completed
+- `event Action OnCanceled` — called if hold is interrupted
+
+**Methods:**
+- `void StartPress()`
+- `void CancelPress()`
+- `void Update(float deltaTime)`
+- `void Reset()`
+
+---
+
+### LongPressProgressView
+Visual-only component for showing a circular progress indicator under the finger/cursor.
+
+**Serialized fields:**
+- `Image progressImage`
+- `RectTransform rootRectTransform`
+
+**Methods:**
+- `void Show(Vector2 screenPosition)` — show and move the circle
+- `void SetProgress(float progress)` — update fill (0..1)
+- `void Hide()` — hide the circle
+
+---
+
+### SaveSlotView (long press/tap logic)
+- `event Action<int> PrimaryClicked` — fires on tap (short press)
+- `event Action<int> LongPressed` — fires on long press complete
+- `void SetProgressView(LongPressProgressView view)`
+- `void ResetLongPressFlag()`
+- Handles tap/hold logic: tap triggers click only if duration < progressShowDelay and not long press; otherwise, no click.

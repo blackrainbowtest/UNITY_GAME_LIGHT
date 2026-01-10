@@ -80,7 +80,7 @@ namespace UDA2.UI.SaveLoad
                     if (progressShowTimer >= progressShowDelay)
                     {
                         waitingToShowProgress = false;
-                        progressView.Show(lastPointerDownPosition); // Показываем кружок только если пользователь всё ещё держит
+                        progressView.Show(lastPointerDownPosition);
                         UDA2.Logging.Logger.LogInfo($"[SaveSlotView] progressView.Show (delayed) at {lastPointerDownPosition}", UDA2.Logging.LogChannel.UI);
                     }
                 }
