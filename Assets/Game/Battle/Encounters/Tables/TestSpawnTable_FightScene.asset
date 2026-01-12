@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08be09c6ceb1fec44b0910d22e2064f8, type: 3}
+  m_Name: TestSpawnTable_FightScene
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Battle.EnemySpawnTable
+  entries:
+  - enemy: {fileID: 11400000, guid: 48f584b9f670d2348922eab9b288ca62, type: 2}
+    weight: 70
+  - enemy: {fileID: 11400000, guid: 9c9568e598572f04e963d60c874b6326, type: 2}
+    weight: 25
+  - enemy: {fileID: 11400000, guid: d666745147438c94a83c94353c458fb1, type: 2}
+    weight: 5
