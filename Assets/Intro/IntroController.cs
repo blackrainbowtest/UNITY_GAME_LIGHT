@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
+using Game.Battle;
 
 public class IntroController : MonoBehaviour
 {
@@ -186,6 +187,7 @@ public class IntroController : MonoBehaviour
 
         // Use a named constant for the save slot index
         SaveSlotsManager.SaveToSlot(DefaultIntroSaveSlot, GameState.Instance.CurrentSave);
+        BattleEntryContext.Set(BattleMode.Tutorial);
 
         // Transition to the first fight scene using the scene loader if available
         if (UDA2.SceneFlow.SceneFlowManager.Instance != null)

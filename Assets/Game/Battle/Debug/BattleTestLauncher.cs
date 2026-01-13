@@ -9,9 +9,8 @@ namespace Game.Battle
     public class BattleTestLauncher : MonoBehaviour
     {
         [SerializeField] private BattleController battleController;
-        [SerializeField] private EnemyData testEnemy;
+        [SerializeField] private EnemySpawnTable enemySpawnTable;
         [SerializeField] private BattleLocationData testLocation;
-        [SerializeField] private BattleMode mode = BattleMode.Normal;
 
         private void Start()
         {
@@ -21,6 +20,26 @@ namespace Game.Battle
                 return;
             }
 
+            if (enemySpawnTable == null)
+            {
+                Debug.LogError("BattleTestLauncher: EnemySpawnTable not assigned");
+                return;
+            }
+
+            var resolver = new EnemySpawnResolver();
+            var enemy = resolver.Resolve(enemySpawnTable);
+
+            if (enemy == null)
+            {
+                Debug.LogError("BattleTestLauncher: Failed to resolve enemy");
+                return;
+            }
+
+            Debug.Log($"[BattleTestLauncher] Selected enemy: {enemy.name}");
+
+            var battleMode = BattleEntryContext.Consume();
+            Debug.Log($"[BattleTestLauncher] Battle mode: {battleMode}");
+
             var playerSnapshot = new PlayerCombatSnapshot(
                 maxHp: 100,
                 currentHp: 100
@@ -28,9 +47,9 @@ namespace Game.Battle
 
             var context = new BattleContext(
                 player: playerSnapshot,
-                enemy: testEnemy,
+                enemy: enemy,
                 location: testLocation,
-                mode: mode
+                mode: battleMode
             );
 
             battleController.StartBattle(context);

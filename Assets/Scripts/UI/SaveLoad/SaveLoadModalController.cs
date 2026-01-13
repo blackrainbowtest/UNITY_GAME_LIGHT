@@ -104,6 +104,8 @@ namespace UDA2.UI.SaveLoad
             for (int i = 0; i < SlotCount; i++)
             {
                 var slotView = slotViews[i];
+                // Set the save mode to ensure correct operation of clicks on empty slots
+                slotView.SetSaveMode(currentMode == Mode.Save); // <-- добавлено
                 int slotId = i;
                 bool hasSave = SaveSlotsManager.HasSave(slotId);
                 if (currentMode == Mode.Load)
