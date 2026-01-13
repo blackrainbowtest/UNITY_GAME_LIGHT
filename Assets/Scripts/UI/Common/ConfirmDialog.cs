@@ -39,8 +39,8 @@ namespace UDA2.UI.Common
             this.onYes = onYes;
             this.onNo = onNo;
             ApplyQuestionLocalization(questionKey);
-            yesButton.onClick.RemoveAllListeners();
-            noButton.onClick.RemoveAllListeners();
+            // yesButton.onClick.RemoveAllListeners();
+            // noButton.onClick.RemoveAllListeners();
             yesButton.onClick.AddListener(HandleYes);
             noButton.onClick.AddListener(HandleNo);
         }
