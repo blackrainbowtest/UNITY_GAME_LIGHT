@@ -37,9 +37,18 @@ namespace Game.Battle
             Debug.Log("Initializing participants");
         }
 
+        [Header("Scene References")]
+        [SerializeField] private BattleEnvironmentController environmentController;
+
         private void InitializeEnvironment()
         {
             Debug.Log("Initializing environment");
+            if (environmentController == null)
+            {
+                Debug.LogError("BattleController: BattleEnvironmentController not assigned");
+                return;
+            }
+            environmentController.Apply(context.Location);
         }
 
         private void InitializeUI()

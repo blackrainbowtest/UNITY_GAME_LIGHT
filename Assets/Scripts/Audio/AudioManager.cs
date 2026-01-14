@@ -149,7 +149,7 @@ namespace UDA2.Audio
 
         /* ===================== MUSIC ===================== */
 
-        private void PlayMusic(AudioClip clip)
+        public void PlayMusic(AudioClip clip)
         {
             if (clip == null || clip == currentClip)
                 return;
@@ -179,7 +179,7 @@ namespace UDA2.Audio
             audioMixer.SetFloat("MusicVolume", targetMusicDb);
         }
 
-        private void StopMusic()
+        public void StopMusic()
         {
             if (musicFadeCoroutine != null)
                 StopCoroutine(musicFadeCoroutine);
