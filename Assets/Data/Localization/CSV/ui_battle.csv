@@ -1,1 +1,13 @@
 *key;ru;en;fr
+*btn_attack;
+	Attack;
+	Attack;
+	Attack;
+*btn_item;
+	Item;
+	Item;
+	Item;
+*btn_exit;
+	Exit;
+	Exit;
+	Exit;

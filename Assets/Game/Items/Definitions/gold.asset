@@ -15,6 +15,6 @@ MonoBehaviour:
   id: gold
   type: 0
   displayName: item.gold.name
-  icon: {fileID: 21300000, guid: a50b74a382f73e349a5b1f5b1a68ff0d, type: 3}
+  icon: {fileID: 0}
   effect: 0
   value: 1

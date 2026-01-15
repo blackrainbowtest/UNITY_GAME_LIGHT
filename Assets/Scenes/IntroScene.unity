@@ -484,7 +484,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
   textKey: yes
   fontType: 1
-  uiStringsData: {fileID: 11400000, guid: e7a8e5f1de14d344ba241bcf5fa32961, type: 2}
 --- !u!114 &286207850
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -498,7 +497,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
   key: yes
-  uiStringsData: {fileID: 11400000, guid: e7a8e5f1de14d344ba241bcf5fa32961, type: 2}
   targetText: {fileID: 286207851}
 --- !u!114 &286207851
 MonoBehaviour:
@@ -931,7 +929,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 1f5ebf4c2ef52f54bafc8d2b0340cb0d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9c8baa705477b1d4d95a40e207c56706, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1587,7 +1585,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
   textKey: no
   fontType: 1
-  uiStringsData: {fileID: 11400000, guid: e7a8e5f1de14d344ba241bcf5fa32961, type: 2}
 --- !u!114 &1803332877
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1601,7 +1598,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
   key: no
-  uiStringsData: {fileID: 11400000, guid: e7a8e5f1de14d344ba241bcf5fa32961, type: 2}
   targetText: {fileID: 1803332878}
 --- !u!114 &1803332878
 MonoBehaviour:
@@ -1830,7 +1826,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
   textKey: INTRO_DIALOG_QUESTION
   fontType: 1
-  uiStringsData: {fileID: 11400000, guid: e7a8e5f1de14d344ba241bcf5fa32961, type: 2}
 --- !u!114 &1963124851
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1844,7 +1839,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
   key: INTRO_DIALOG_QUESTION
-  uiStringsData: {fileID: 11400000, guid: e7a8e5f1de14d344ba241bcf5fa32961, type: 2}
   targetText: {fileID: 1963124852}
 --- !u!114 &1963124852
 MonoBehaviour:
@@ -2104,7 +2098,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
   textKey: 
   fontType: 1
-  uiStringsData: {fileID: 11400000, guid: e7a8e5f1de14d344ba241bcf5fa32961, type: 2}
 --- !u!114 &1977987992
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2118,7 +2111,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
   key: 
-  uiStringsData: {fileID: 11400000, guid: e7a8e5f1de14d344ba241bcf5fa32961, type: 2}
   targetText: {fileID: 1977987989}
 --- !u!1 &2047425588
 GameObject:
@@ -2480,7 +2472,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
   key: skip
-  uiStringsData: {fileID: 11400000, guid: e7a8e5f1de14d344ba241bcf5fa32961, type: 2}
   targetText: {fileID: 2112118788}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

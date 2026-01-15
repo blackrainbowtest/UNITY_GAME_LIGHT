@@ -1,13 +1,15 @@
 using UnityEngine;
 
+/// <summary>
+/// Orchestrates battle lifecycle.
+/// Entry point for starting a battle.
+/// Contains no combat logic.
+/// </summary>
+using Game.Battle.UI;
+
 namespace Game.Battle
 {
-    /// <summary>
-    /// Orchestrates battle lifecycle.
-    /// Entry point for starting a battle.
-    /// Contains no combat logic.
-    /// </summary>
-    public class BattleController : MonoBehaviour
+    public class BattleController : MonoBehaviour, IBattleUIActions
     {
         private BattleContext context;
         private bool battleStarted;
@@ -39,6 +41,12 @@ namespace Game.Battle
 
         [Header("Scene References")]
         [SerializeField] private BattleEnvironmentController environmentController;
+        [SerializeField] private BattleHUDController hudController;
+
+        private void Start()
+        {
+            BindHUD(hudController);
+        }
 
         private void InitializeEnvironment()
         {
@@ -54,6 +62,34 @@ namespace Game.Battle
         private void InitializeUI()
         {
             Debug.Log("Initializing UI");
+        }
+
+        /// <summary>
+        /// Binds the HUD to battle actions. Passes IBattleUIActions implementation to the HUD.
+        /// </summary>
+        private void BindHUD(BattleHUDController hud)
+        {
+            if (hud == null)
+            {
+                Debug.LogError("BattleController: HUDController not assigned");
+                return;
+            }
+            hud.SetActions(this);
+        }
+
+        public void OnAttackPressed()
+        {
+            Debug.Log("Attack pressed");
+        }
+
+        public void OnItemPressed()
+        {
+            Debug.Log("Item pressed");
+        }
+
+        public void OnExitPressed()
+        {
+            Debug.Log("Exit pressed");
         }
     }
 }

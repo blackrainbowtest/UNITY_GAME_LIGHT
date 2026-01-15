@@ -12,5 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72b5dfd223e65a04db6c6ba1b78d3607, type: 3}
   m_Name: ui_battle
   m_EditorClassIdentifier: Assembly-CSharp::UIStringsData
-  strings: []
+  strings:
+  - key: btn_attack
+    entries:
+    - languageCode: ru
+      text: Attack
+    - languageCode: en
+      text: Attack
+    - languageCode: fr
+      text: Attack
+  - key: btn_item
+    entries:
+    - languageCode: ru
+      text: Item
+    - languageCode: en
+      text: Item
+    - languageCode: fr
+      text: Item
+  - key: btn_exit
+    entries:
+    - languageCode: ru
+      text: Exit
+    - languageCode: en
+      text: Exit
+    - languageCode: fr
+      text: Exit
   sourceCsvName: ui_battle
