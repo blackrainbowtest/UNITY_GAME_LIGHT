@@ -89,7 +89,7 @@ namespace UDA2.UI.SaveLoad
                     {
                         waitingToShowProgress = false;
                         progressView.Show(lastPointerDownPosition);
-                        UDA2.Logging.Logger.LogInfo($"[SaveSlotView] progressView.Show (delayed) at {lastPointerDownPosition}", UDA2.Logging.LogChannel.UI);
+                        // UDA2.Logging.Logger.LogInfo($"[SaveSlotView] progressView.Show (delayed) at {lastPointerDownPosition}", UDA2.Logging.LogChannel.UI);
                     }
                 }
             }
@@ -109,7 +109,7 @@ namespace UDA2.UI.SaveLoad
             {
                 longPressInProgress = true;
                 waitingToShowProgress = true;
-                UDA2.Logging.Logger.LogInfo($"[SaveSlotView] OnPointerDown slot {SlotId}", UDA2.Logging.LogChannel.UI);
+                // UDA2.Logging.Logger.LogInfo($"[SaveSlotView] OnPointerDown slot {SlotId}", UDA2.Logging.LogChannel.UI);
                 // progressView.Show will be called with a delay in Update
                 longPressHandler.StartPress();
             }
@@ -120,7 +120,7 @@ namespace UDA2.UI.SaveLoad
             if (isEmpty && !isSaveMode) return;
             isPointerDown = false;
             waitingToShowProgress = false;
-            UDA2.Logging.Logger.LogInfo($"[SaveSlotView] OnPointerUp slot {SlotId}", UDA2.Logging.LogChannel.UI);
+            // UDA2.Logging.Logger.LogInfo($"[SaveSlotView] OnPointerUp slot {SlotId}", UDA2.Logging.LogChannel.UI);
             float pressDuration = Time.unscaledTime - pointerDownTime;
             if (!isEmpty)
             {
@@ -130,12 +130,12 @@ namespace UDA2.UI.SaveLoad
                 }
                 longPressHandler.CancelPress();
                 progressView.Hide();
-                UDA2.Logging.Logger.LogInfo($"[SaveSlotView] progressView.Hide", UDA2.Logging.LogChannel.UI);
+                // UDA2.Logging.Logger.LogInfo($"[SaveSlotView] progressView.Hide", UDA2.Logging.LogChannel.UI);
             }
             // Tap: только если не long press и короткое нажатие
             if (!wasLongPressed && pressDuration < progressShowDelay)
             {
-                UDA2.Logging.Logger.LogInfo($"SaveSlotView: PrimaryClicked {SlotId} (tap)", UDA2.Logging.LogChannel.UI);
+                // UDA2.Logging.Logger.LogInfo($"SaveSlotView: PrimaryClicked {SlotId} (tap)", UDA2.Logging.LogChannel.UI);
                 PrimaryClicked?.Invoke(SlotId);
             }
             // Если был long press — ничего не делаем
@@ -152,10 +152,10 @@ namespace UDA2.UI.SaveLoad
                 {
                     longPressInProgress = false;
                 }
-                UDA2.Logging.Logger.LogInfo($"[SaveSlotView] OnPointerExit slot {SlotId}", UDA2.Logging.LogChannel.UI);
+                // UDA2.Logging.Logger.LogInfo($"[SaveSlotView] OnPointerExit slot {SlotId}", UDA2.Logging.LogChannel.UI);
                 longPressHandler.CancelPress();
                 progressView.Hide();
-                UDA2.Logging.Logger.LogInfo($"[SaveSlotView] progressView.Hide (exit)", UDA2.Logging.LogChannel.UI);
+                // UDA2.Logging.Logger.LogInfo($"[SaveSlotView] progressView.Hide (exit)", UDA2.Logging.LogChannel.UI);
             }
         }
 
@@ -173,7 +173,7 @@ namespace UDA2.UI.SaveLoad
         {
             // long press только для непустых слотов
             if (isEmpty) return;
-            UDA2.Logging.Logger.LogInfo($"[SaveSlotView] LongPress COMPLETED slot {SlotId}", UDA2.Logging.LogChannel.UI);
+            // UDA2.Logging.Logger.LogInfo($"[SaveSlotView] LongPress COMPLETED slot {SlotId}", UDA2.Logging.LogChannel.UI);
             progressView.Hide();
             wasLongPressed = true;
             longPressInProgress = false;
@@ -182,7 +182,7 @@ namespace UDA2.UI.SaveLoad
 
         private void HandleLongPressCanceled()
         {
-            UDA2.Logging.Logger.LogInfo($"[SaveSlotView] LongPress CANCELED slot {SlotId}", UDA2.Logging.LogChannel.UI);
+            // UDA2.Logging.Logger.LogInfo($"[SaveSlotView] LongPress CANCELED slot {SlotId}", UDA2.Logging.LogChannel.UI);
             progressView.Hide();
         }
 
@@ -197,16 +197,16 @@ namespace UDA2.UI.SaveLoad
             // Если был начат long press, но не завершён — не срабатывает ни клик, ни long press
             if (longPressInProgress && !wasLongPressed)
             {
-                UDA2.Logging.Logger.LogInfo($"SaveSlotView: PrimaryClicked {SlotId} — skipped due to incomplete long press", UDA2.Logging.LogChannel.UI);
+                // UDA2.Logging.Logger.LogInfo($"SaveSlotView: PrimaryClicked {SlotId} — skipped due to incomplete long press", UDA2.Logging.LogChannel.UI);
                 return;
             }
             if (wasLongPressed)
             {
                 wasLongPressed = false;
-                UDA2.Logging.Logger.LogInfo($"SaveSlotView: PrimaryClicked {SlotId} — skipped due to long press", UDA2.Logging.LogChannel.UI);
+                // UDA2.Logging.Logger.LogInfo($"SaveSlotView: PrimaryClicked {SlotId} — skipped due to long press", UDA2.Logging.LogChannel.UI);
                 return;
             }
-            UDA2.Logging.Logger.LogInfo($"SaveSlotView: PrimaryClicked {SlotId}", UDA2.Logging.LogChannel.UI);
+            // UDA2.Logging.Logger.LogInfo($"SaveSlotView: PrimaryClicked {SlotId}", UDA2.Logging.LogChannel.UI);
             PrimaryClicked?.Invoke(SlotId);
         }
 

@@ -32,7 +32,10 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
 
     public void UpdateState(BattleHUDState state)
     {
+        Debug.Log("[HUD] UpdateState called");
         if (state == null) return;
+
+        Debug.Log($"[HUD] Player HP: {state.PlayerHp}/{state.PlayerHpMax}, Enemy HP: {state.EnemyHp}/{state.EnemyHpMax}");
 
         if (playerHpBar != null && state.PlayerHpMax > 0)
             playerHpBar.SetNormalized((float)state.PlayerHp / state.PlayerHpMax);

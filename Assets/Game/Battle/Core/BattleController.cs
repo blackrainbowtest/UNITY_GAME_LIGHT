@@ -14,8 +14,13 @@ namespace Game.Battle
         private BattleContext context;
         private bool battleStarted;
 
+        [Header("Scene References")]
+        [SerializeField] private BattleEnvironmentController environmentController;
+        [SerializeField] private BattleHUDController hudController;
+
         public void StartBattle(BattleContext battleContext)
         {
+            Debug.Log("[BattleController] StartBattle called");
             if (battleStarted)
             {
                 Debug.LogWarning("BattleController: Battle already started");
@@ -47,13 +52,10 @@ namespace Game.Battle
             Debug.Log("Initializing participants");
         }
 
-        [Header("Scene References")]
-        [SerializeField] private BattleEnvironmentController environmentController;
-        [SerializeField] private BattleHUDController hudController;
-
         private void Start()
         {
             BindHUD(hudController);
+            
         }
 
         private void InitializeEnvironment()
