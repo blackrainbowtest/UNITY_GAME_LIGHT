@@ -10,9 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6d3415c4e97373348a965c5c6181b5ac, type: 3}
-  m_Name: Enemy_Slime
+  m_Name: Slime
   m_EditorClassIdentifier: Assembly-CSharp::Game.Battle.EnemyData
   enemyName: Slime
   icon: {fileID: 21300000, guid: 16b163f05386fbc4dbc719cd9ca014f8, type: 3}
-  maxHp: 10
-  attack: 55
+  hp: 30
+  mp: 10
+  sp: 5
+  lp: 5
+  maxHp: 30
+  maxMp: 10
+  maxSp: 5
+  maxLp: 100
+  attack: 5

@@ -10,9 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6d3415c4e97373348a965c5c6181b5ac, type: 3}
-  m_Name: Enemy_Goblin
+  m_Name: Goblin
   m_EditorClassIdentifier: Assembly-CSharp::Game.Battle.EnemyData
   enemyName: Goblin
   icon: {fileID: 21300000, guid: 18cc32f83a00a5c4a85ab2c440e44c3a, type: 3}
-  maxHp: 80
-  attack: 15
+  hp: 50
+  mp: 15
+  sp: 10
+  lp: 5
+  maxHp: 50
+  maxMp: 15
+  maxSp: 10
+  maxLp: 20
+  attack: 8

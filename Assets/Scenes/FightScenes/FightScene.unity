@@ -4732,7 +4732,13 @@ MonoBehaviour:
   itemButton: {fileID: 360775423}
   exitButton: {fileID: 504817726}
   playerHpBar: {fileID: 1667940087}
+  playerMpBar: {fileID: 1062091361}
+  playerSpBar: {fileID: 27017358}
+  playerLpBar: {fileID: 1267345187}
   enemyHpBar: {fileID: 294821743}
+  enemyMpBar: {fileID: 1659387216}
+  enemySpBar: {fileID: 807267046}
+  enemyLpBar: {fileID: 1064632143}
 --- !u!1 &1898294184
 GameObject:
   m_ObjectHideFlags: 0

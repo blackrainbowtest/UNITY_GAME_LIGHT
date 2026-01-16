@@ -9,8 +9,8 @@ using Game.Battle;
 public class BattleSceneEntryPoint : MonoBehaviour
 {
     [Header("Scene Data")]
-    [SerializeField] private EnemySpawnTable enemyTable;
-    [SerializeField] private BattleLocationData location;
+    [SerializeField] private Game.Battle.EnemySpawnTable enemyTable;
+    [SerializeField] private Game.Battle.BattleLocationData location;
     [Header("References")]
     [SerializeField] private BattleController battleController;
 
@@ -26,16 +26,23 @@ public class BattleSceneEntryPoint : MonoBehaviour
         var mode = BattleEntryContext.Consume();
         var playerSnapshot = BuildPlayerSnapshot();
 
-        // Выбираем врага по таблице
-        var resolver = new EnemySpawnResolver();
-        var enemy = resolver.Resolve(enemyTable);
+
+        // Получаем врага из BattleEnemyContext, если он уже выбран
+        Game.Battle.EnemyData enemy = BattleEnemyContext.Consume();
         if (enemy == null)
         {
-            Debug.LogError("[BattleSceneEntryPoint] Не удалось выбрать врага из таблицы!");
-            return;
+            // Если враг не был выбран заранее — выбираем из таблицы и сохраняем в контекст
+            var resolver = new Game.Battle.EnemySpawnResolver();
+            enemy = resolver.Resolve(enemyTable);
+            if (enemy == null)
+            {
+                Debug.LogError("[BattleSceneEntryPoint] Не удалось выбрать врага из таблицы!");
+                return;
+            }
+            BattleEnemyContext.Set(enemy);
         }
 
-        var context = new BattleContext(
+        var context = new Game.Battle.BattleContext(
             playerSnapshot,
             enemy,
             location,
@@ -53,10 +60,18 @@ public class BattleSceneEntryPoint : MonoBehaviour
         {
             Debug.LogError("[BattleSceneEntryPoint] GameState.CurrentSave или player/stats не инициализированы!");
             // Fallback: безопасные значения
-            return new PlayerCombatSnapshot(100, 100);
+            return new PlayerCombatSnapshot(100, 100, 50, 50, 30, 30, 10, 10);
         }
-        int maxHp = save.player.stats.hpMax;
-        int currentHp = save.player.stats.hp;
-        return new PlayerCombatSnapshot(maxHp, currentHp);
+        var stats = save.player.stats;
+        return new PlayerCombatSnapshot(
+            stats.hpMax,
+            stats.hp,
+            stats.mpMax,
+            stats.mp,
+            stats.spMax,
+            stats.sp,
+            stats.lpMax,
+            stats.lp
+        );
     }
 }

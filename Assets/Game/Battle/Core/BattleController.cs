@@ -42,8 +42,21 @@ namespace Game.Battle
             {
                 PlayerHp = context.Player.CurrentHP,
                 PlayerHpMax = context.Player.MaxHP,
-                EnemyHp = context.Enemy.maxHp,      // только maxHp, текущего нет
-                EnemyHpMax = context.Enemy.maxHp
+                PlayerMp = context.Player.CurrentMP,      // добавить в PlayerCombatSnapshot
+                PlayerMpMax = context.Player.MaxMP,       // добавить в PlayerCombatSnapshot
+                PlayerSp = context.Player.CurrentSP,      // добавить в PlayerCombatSnapshot
+                PlayerSpMax = context.Player.MaxSP,       // добавить в PlayerCombatSnapshot
+                PlayerLp = context.Player.CurrentLP,      // добавить в PlayerCombatSnapshot
+                PlayerLpMax = context.Player.MaxLP,       // добавить в PlayerCombatSnapshot
+
+                EnemyHp = context.Enemy.hp,
+                EnemyHpMax = context.Enemy.maxHp,
+                EnemyMp = context.Enemy.mp,
+                EnemyMpMax = context.Enemy.maxMp,
+                EnemySp = context.Enemy.sp,
+                EnemySpMax = context.Enemy.maxSp,
+                EnemyLp = context.Enemy.lp,
+                EnemyLpMax = context.Enemy.maxLp
             });
         }
 
@@ -55,7 +68,7 @@ namespace Game.Battle
         private void Start()
         {
             BindHUD(hudController);
-            
+
         }
 
         private void InitializeEnvironment()

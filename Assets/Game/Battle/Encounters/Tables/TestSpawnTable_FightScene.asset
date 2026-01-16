@@ -13,9 +13,7 @@ MonoBehaviour:
   m_Name: TestSpawnTable_FightScene
   m_EditorClassIdentifier: Assembly-CSharp::Game.Battle.EnemySpawnTable
   entries:
-  - enemy: {fileID: 11400000, guid: 48f584b9f670d2348922eab9b288ca62, type: 2}
+  - enemy: {fileID: 11400000, guid: 20fc20ce415a1e0428a8ed3c9babc603, type: 2}
     weight: 70
-  - enemy: {fileID: 11400000, guid: 9c9568e598572f04e963d60c874b6326, type: 2}
+  - enemy: {fileID: 11400000, guid: b80868a8ef627824fb5a308d1e756f23, type: 2}
     weight: 25
-  - enemy: {fileID: 11400000, guid: d666745147438c94a83c94353c458fb1, type: 2}
-    weight: 5

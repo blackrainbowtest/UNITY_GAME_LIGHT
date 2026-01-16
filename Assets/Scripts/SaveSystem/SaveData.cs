@@ -47,6 +47,12 @@ public class SaveData
     {
         public int hp;
         public int hpMax;
+        public int mp;
+        public int mpMax;
+        public int sp;
+        public int spMax;
+        public int lp;
+        public int lpMax;
     }
 
     [Serializable]
@@ -102,6 +108,12 @@ public class SaveData
             : sceneName;
         save.player.stats.hp = 100;
         save.player.stats.hpMax = 100;
+        save.player.stats.mp = 40;
+        save.player.stats.mpMax = 40;
+        save.player.stats.sp = 50;
+        save.player.stats.spMax = 60;
+        save.player.stats.lp = 0;
+        save.player.stats.lpMax = 100;
         save.meta.version = version;
         return save;
     }
