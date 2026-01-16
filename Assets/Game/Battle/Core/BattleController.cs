@@ -32,6 +32,14 @@ namespace Game.Battle
             InitializeParticipants();
             InitializeEnvironment();
             InitializeUI();
+
+            hudController?.UpdateState(new BattleHUDState
+            {
+                PlayerHp = context.Player.CurrentHP,
+                PlayerHpMax = context.Player.MaxHP,
+                EnemyHp = context.Enemy.maxHp,      // только maxHp, текущего нет
+                EnemyHpMax = context.Enemy.maxHp
+            });
         }
 
         private void InitializeParticipants()
