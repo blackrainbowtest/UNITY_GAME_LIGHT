@@ -1,4 +1,6 @@
+
 using UnityEngine;
+using Game.Battle.Combat;
 
 /// <summary>
 /// Orchestrates battle lifecycle.
@@ -13,6 +15,9 @@ namespace Game.Battle
     {
         private BattleContext context;
         private bool battleStarted;
+
+        private CombatState combatState;
+        private BattleCombatEngine combatEngine;
 
         [Header("Scene References")]
         [SerializeField] private BattleEnvironmentController environmentController;
@@ -30,6 +35,24 @@ namespace Game.Battle
             context = battleContext;
             battleStarted = true;
 
+            combatEngine = new BattleCombatEngine(
+                new CombatConfig(
+                    playerBaseDamage: 10,
+                    enemyBaseDamage: 7
+                )
+            );
+
+            combatState = new CombatState(
+                playerHp: context.Player.CurrentHP,
+                playerMp: context.Player.CurrentMP,
+                playerSp: context.Player.CurrentSP,
+                playerLp: context.Player.CurrentLP,
+                enemyHp: context.Enemy.hp,
+                enemyMp: context.Enemy.mp,
+                enemySp: context.Enemy.sp,
+                enemyLp: context.Enemy.lp
+            );
+
             Debug.Log("Battle started");
             Debug.Log($"Enemy: {context.Enemy.name}");
             Debug.Log($"Mode: {context.Mode}");
@@ -38,26 +61,7 @@ namespace Game.Battle
             InitializeEnvironment();
             InitializeUI();
 
-            hudController?.UpdateState(new BattleHUDState
-            {
-                PlayerHp = context.Player.CurrentHP,
-                PlayerHpMax = context.Player.MaxHP,
-                PlayerMp = context.Player.CurrentMP,      // добавить в PlayerCombatSnapshot
-                PlayerMpMax = context.Player.MaxMP,       // добавить в PlayerCombatSnapshot
-                PlayerSp = context.Player.CurrentSP,      // добавить в PlayerCombatSnapshot
-                PlayerSpMax = context.Player.MaxSP,       // добавить в PlayerCombatSnapshot
-                PlayerLp = context.Player.CurrentLP,      // добавить в PlayerCombatSnapshot
-                PlayerLpMax = context.Player.MaxLP,       // добавить в PlayerCombatSnapshot
-
-                EnemyHp = context.Enemy.hp,
-                EnemyHpMax = context.Enemy.maxHp,
-                EnemyMp = context.Enemy.mp,
-                EnemyMpMax = context.Enemy.maxMp,
-                EnemySp = context.Enemy.sp,
-                EnemySpMax = context.Enemy.maxSp,
-                EnemyLp = context.Enemy.lp,
-                EnemyLpMax = context.Enemy.maxLp
-            });
+            PushHudState();
         }
 
         private void InitializeParticipants()
@@ -100,9 +104,21 @@ namespace Game.Battle
             hud.SetActions(this);
         }
 
+
         public void OnAttackPressed()
         {
-            Debug.Log("Attack pressed");
+            if (!battleStarted)
+                return;
+
+            var result = combatEngine.PlayerAttack(combatState);
+            combatState = result.state;
+
+            PushHudState();
+
+            if (result.result == CombatResult.PlayerWon)
+                Debug.Log("BattleCombat v0.1: Player won");
+            else if (result.result == CombatResult.PlayerLost)
+                Debug.Log("BattleCombat v0.1: Player lost");
         }
 
         public void OnItemPressed()
@@ -113,6 +129,15 @@ namespace Game.Battle
         public void OnExitPressed()
         {
             Debug.Log("Exit pressed");
+        }
+        private void PushHudState()
+        {
+            var hudState = BattleHUDStateFactory.Create(
+                context.Player,
+                context.Enemy,
+                combatState
+            );
+            hudController?.UpdateState(hudState);
         }
     }
 }
