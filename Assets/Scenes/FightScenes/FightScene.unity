@@ -1399,7 +1399,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 136245380}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1889949562}
+        m_TargetAssemblyTypeName: BattleHUDController, Assembly-CSharp
+        m_MethodName: OnIceSpellPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &136245380
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1683,7 +1695,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 163411985}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1889949562}
+        m_TargetAssemblyTypeName: BattleHUDController, Assembly-CSharp
+        m_MethodName: OnHeavyAttackPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &163411985
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2109,7 +2133,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 302700668}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1889949562}
+        m_TargetAssemblyTypeName: BattleHUDController, Assembly-CSharp
+        m_MethodName: OnNormalAttackPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &302700668
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3426,7 +3462,7 @@ GameObject:
   - component: {fileID: 432964784}
   - component: {fileID: 432964783}
   m_Layer: 0
-  m_Name: Button_Act1
+  m_Name: Button_Inventory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3507,7 +3543,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 432964785}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1889949562}
+        m_TargetAssemblyTypeName: BattleHUDController, Assembly-CSharp
+        m_MethodName: OnInventoryPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &432964785
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3600,7 +3648,7 @@ GameObject:
   - component: {fileID: 444113339}
   - component: {fileID: 444113338}
   m_Layer: 0
-  m_Name: Button_Act4
+  m_Name: Button_Skip
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3681,7 +3729,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 444113340}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1889949562}
+        m_TargetAssemblyTypeName: BattleHUDController, Assembly-CSharp
+        m_MethodName: OnSkipTurnPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &444113340
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4596,7 +4656,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 666100626}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1889949562}
+        m_TargetAssemblyTypeName: BattleHUDController, Assembly-CSharp
+        m_MethodName: OnFastAttackPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &666100626
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5091,7 +5163,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 766993166}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1889949562}
+        m_TargetAssemblyTypeName: BattleHUDController, Assembly-CSharp
+        m_MethodName: OnCounterAttackPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &766993166
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5187,7 +5271,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Act4
+  m_text: Skip
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5547,7 +5631,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Act2
+  m_text: Run
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5776,7 +5860,7 @@ GameObject:
   - component: {fileID: 867095166}
   - component: {fileID: 867095165}
   m_Layer: 0
-  m_Name: Button_Act3
+  m_Name: Button_Surrender
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5857,7 +5941,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 867095167}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1889949562}
+        m_TargetAssemblyTypeName: BattleHUDController, Assembly-CSharp
+        m_MethodName: OnSurrenderPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &867095167
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6676,7 +6772,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1086687208}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1889949562}
+        m_TargetAssemblyTypeName: BattleHUDController, Assembly-CSharp
+        m_MethodName: OnFireSpellPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1086687208
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7309,6 +7417,21 @@ MonoBehaviour:
   enemyTable: {fileID: 11400000, guid: 0c7049c828e406f46a3daf326defdefb, type: 2}
   location: {fileID: 11400000, guid: 2a39c5871ba1ad5488be3ee5c2a4681d, type: 2}
   battleController: {fileID: 1904948090}
+  useDebugSetup: 0
+  debugMode: 1
+  debugEnemy: {fileID: 11400000, guid: 20fc20ce415a1e0428a8ed3c9babc603, type: 2}
+  overridePlayerSnapshot: 0
+  debugPlayer:
+    hpMax: 100
+    hp: 100
+    mpMax: 40
+    mp: 40
+    spMax: 100
+    sp: 100
+    lpMax: 100
+    lp: 15
+  setDebugReturnScene: 1
+  debugReturnSceneName: StartCityScene
 --- !u!1 &1266566168
 GameObject:
   m_ObjectHideFlags: 0
@@ -7473,7 +7596,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Act3
+  m_text: Surrender
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -7647,7 +7770,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1356038808}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1889949562}
+        m_TargetAssemblyTypeName: BattleHUDController, Assembly-CSharp
+        m_MethodName: OnSeductionAct3Pressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1356038808
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7893,7 +8028,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1438156029}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1889949562}
+        m_TargetAssemblyTypeName: BattleHUDController, Assembly-CSharp
+        m_MethodName: OnSeductionAct4Pressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1438156029
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8348,7 +8495,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Act1
+  m_text: Inventory
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -9385,7 +9532,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1780403652}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1889949562}
+        m_TargetAssemblyTypeName: BattleHUDController, Assembly-CSharp
+        m_MethodName: OnSeductionAct2Pressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1780403652
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9519,7 +9678,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1782010364}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1889949562}
+        m_TargetAssemblyTypeName: BattleHUDController, Assembly-CSharp
+        m_MethodName: OnHolySpellPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1782010364
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9653,7 +9824,7 @@ GameObject:
   - component: {fileID: 1861243113}
   - component: {fileID: 1861243112}
   m_Layer: 0
-  m_Name: Button_Act2
+  m_Name: Button_Run
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9734,7 +9905,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1861243114}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1889949562}
+        m_TargetAssemblyTypeName: BattleHUDController, Assembly-CSharp
+        m_MethodName: OnRunPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1861243114
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10029,12 +10212,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BattleHUDController
   attackButton: {fileID: 42915399}
-  itemButton: {fileID: 360775423}
-  exitButton: {fileID: 504817726}
-  rootMenu: {fileID: 0}
-  attackMenu: {fileID: 0}
-  magicMenu: {fileID: 0}
-  seductionMenu: {fileID: 0}
+  defenseButton: {fileID: 360775423}
+  magicButton: {fileID: 504817726}
+  actionsButton: {fileID: 430513131}
+  seductionButton: {fileID: 1544154293}
+  itemButton: {fileID: 0}
+  exitButton: {fileID: 0}
+  backButtons:
+  - {fileID: 87508260}
+  - {fileID: 324056502}
+  - {fileID: 2137078088}
+  - {fileID: 14657124}
+  rootMenu: {fileID: 318473893}
+  attackMenu: {fileID: 968396371}
+  actionsMenu: {fileID: 2062008290}
+  magicMenu: {fileID: 1902501533}
+  seductionMenu: {fileID: 173000495}
   playerHpBar: {fileID: 1667940087}
   playerMpBar: {fileID: 1062091361}
   playerSpBar: {fileID: 27017358}
@@ -10345,7 +10538,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1906920324}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1889949562}
+        m_TargetAssemblyTypeName: BattleHUDController, Assembly-CSharp
+        m_MethodName: OnDarkSpellPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1906920324
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10479,7 +10684,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1907161144}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1889949562}
+        m_TargetAssemblyTypeName: BattleHUDController, Assembly-CSharp
+        m_MethodName: OnSeductionAct1Pressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1907161144
 MonoBehaviour:
   m_ObjectHideFlags: 0

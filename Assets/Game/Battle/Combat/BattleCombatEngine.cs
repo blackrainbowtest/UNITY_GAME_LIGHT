@@ -80,6 +80,10 @@ namespace Game.Battle.Combat
             // 5. Handle block
             if (action.Id == Actions.CombatActionId.Block)
             {
+                // Rule: Block costs SP, but restores 3x that amount right after.
+                // Example: cost 5 -> restore 15 (net +10), clamped later by controller to MaxSP.
+                if (action.SpCost > 0)
+                    newState = newState.WithPlayerSp(newState.PlayerSp + (action.SpCost * 3));
                 newState = newState.WithPlayerBlockedLastTurn(true);
             }
 

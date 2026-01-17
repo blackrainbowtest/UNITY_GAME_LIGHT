@@ -68,6 +68,144 @@ namespace Game.Battle.Combat.Actions
                         spCost: 5,
                         lpCost: 0,
                         requiresPlayerBlockedLastTurn: false)
+                },
+
+                // ===== Magic =====
+                {
+                    CombatActionId.FireSpell,
+                    new CombatActionData(
+                        CombatActionId.FireSpell,
+                        CombatActionCategory.Magic,
+                        hpDamage: 22,
+                        mpCost: 10,
+                        spCost: 0,
+                        lpCost: 0,
+                        requiresPlayerBlockedLastTurn: false)
+                },
+                {
+                    CombatActionId.IceSpell,
+                    new CombatActionData(
+                        CombatActionId.IceSpell,
+                        CombatActionCategory.Magic,
+                        hpDamage: 18,
+                        mpCost: 8,
+                        spCost: 0,
+                        lpCost: 0,
+                        requiresPlayerBlockedLastTurn: false)
+                },
+                {
+                    CombatActionId.HolySpell,
+                    new CombatActionData(
+                        CombatActionId.HolySpell,
+                        CombatActionCategory.Magic,
+                        hpDamage: 14,
+                        mpCost: 6,
+                        spCost: 0,
+                        lpCost: 0,
+                        requiresPlayerBlockedLastTurn: false)
+                },
+                {
+                    CombatActionId.DarkSpell,
+                    new CombatActionData(
+                        CombatActionId.DarkSpell,
+                        CombatActionCategory.Magic,
+                        hpDamage: 28,
+                        mpCost: 14,
+                        spCost: 0,
+                        lpCost: 0,
+                        requiresPlayerBlockedLastTurn: false)
+                },
+
+                // ===== Seduction (placeholder effects for now) =====
+                {
+                    CombatActionId.SeductionAct1,
+                    new CombatActionData(
+                        CombatActionId.SeductionAct1,
+                        CombatActionCategory.Seduction,
+                        hpDamage: 0,
+                        mpCost: 0,
+                        spCost: 0,
+                        lpCost: 10,
+                        requiresPlayerBlockedLastTurn: false)
+                },
+                {
+                    CombatActionId.SeductionAct2,
+                    new CombatActionData(
+                        CombatActionId.SeductionAct2,
+                        CombatActionCategory.Seduction,
+                        hpDamage: 0,
+                        mpCost: 0,
+                        spCost: 0,
+                        lpCost: 20,
+                        requiresPlayerBlockedLastTurn: false)
+                },
+                {
+                    CombatActionId.SeductionAct3,
+                    new CombatActionData(
+                        CombatActionId.SeductionAct3,
+                        CombatActionCategory.Seduction,
+                        hpDamage: 0,
+                        mpCost: 0,
+                        spCost: 0,
+                        lpCost: 30,
+                        requiresPlayerBlockedLastTurn: false)
+                },
+                {
+                    CombatActionId.SeductionAct4,
+                    new CombatActionData(
+                        CombatActionId.SeductionAct4,
+                        CombatActionCategory.Seduction,
+                        hpDamage: 0,
+                        mpCost: 0,
+                        spCost: 0,
+                        lpCost: 40,
+                        requiresPlayerBlockedLastTurn: false)
+                },
+
+                // ===== Actions (placeholder effects for now) =====
+                {
+                    CombatActionId.ActionAct1,
+                    new CombatActionData(
+                        CombatActionId.ActionAct1,
+                        CombatActionCategory.Utility,
+                        hpDamage: 0,
+                        mpCost: 0,
+                        spCost: 0,
+                        lpCost: 0,
+                        requiresPlayerBlockedLastTurn: false)
+                },
+                {
+                    CombatActionId.ActionAct2,
+                    new CombatActionData(
+                        CombatActionId.ActionAct2,
+                        CombatActionCategory.Utility,
+                        hpDamage: 0,
+                        mpCost: 0,
+                        spCost: 0,
+                        lpCost: 0,
+                        requiresPlayerBlockedLastTurn: false)
+                },
+                {
+                    CombatActionId.ActionAct3,
+                    new CombatActionData(
+                        CombatActionId.ActionAct3,
+                        CombatActionCategory.Utility,
+                        hpDamage: 0,
+                        mpCost: 0,
+                        spCost: 0,
+                        lpCost: 0,
+                        requiresPlayerBlockedLastTurn: false)
+                },
+                {
+                    CombatActionId.ActionAct4,
+                    new CombatActionData(
+                        CombatActionId.ActionAct4,
+                        CombatActionCategory.Utility,
+                        hpDamage: 0,
+                        mpCost: 0,
+                        spCost: 0,
+                        lpCost: 0,
+                        requiresPlayerBlockedLastTurn: false)
                 }
             };
         }

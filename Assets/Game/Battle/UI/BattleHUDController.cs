@@ -7,8 +7,16 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
 {
     [Header("Action Buttons")]
     [SerializeField] private Button attackButton;
+    [SerializeField] private Button defenseButton;
+    [SerializeField] private Button magicButton;
+    [SerializeField] private Button actionsButton;
+    [SerializeField] private Button seductionButton;
     [SerializeField] private Button itemButton;
     [SerializeField] private Button exitButton;
+
+    [Header("Optional Buttons")]
+    [Tooltip("Any back buttons across submenus. If set, this controller will wire them to OnBackPressed().")]
+    [SerializeField] private Button[] backButtons;
 
     [Header("Menus")]
     [SerializeField] private GameObject rootMenu;
@@ -35,9 +43,22 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
 
         // Root menu buttons should switch UI, not execute actions directly.
         // Actual combat actions are sent by submenu buttons.
-        attackButton.onClick.AddListener(OnAttackMenuPressed);
-        itemButton.onClick.AddListener(() => actions.OnItemPressed());
-        exitButton.onClick.AddListener(() => actions.OnExitPressed());
+        if (attackButton != null) attackButton.onClick.AddListener(OnAttackMenuPressed);
+        if (defenseButton != null) defenseButton.onClick.AddListener(OnDefensePressed);
+        if (magicButton != null) magicButton.onClick.AddListener(OnMagicMenuPressed);
+        if (actionsButton != null) actionsButton.onClick.AddListener(OnActionsMenuPressed);
+        if (seductionButton != null) seductionButton.onClick.AddListener(OnSeductionMenuPressed);
+        if (itemButton != null) itemButton.onClick.AddListener(() => actions.OnItemPressed());
+        if (exitButton != null) exitButton.onClick.AddListener(() => actions.OnExitPressed());
+
+        if (backButtons != null)
+        {
+            foreach (var btn in backButtons)
+            {
+                if (btn == null) continue;
+                btn.onClick.AddListener(OnBackPressed);
+            }
+        }
 
         ShowRootMenu();
     }
@@ -90,6 +111,7 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
     // ===== Root menu button handlers =====
 
     public void OnAttackMenuPressed() => ShowAttackMenu();
+    public void OnDefensePressed() => SelectAction(CombatActionId.Block);
     public void OnActionsMenuPressed() => ShowActionsMenu();
     public void OnMagicMenuPressed() => ShowMagicMenu();
     public void OnSeductionMenuPressed() => ShowSeductionMenu();
@@ -110,6 +132,57 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
     public void OnSeductionAct1Pressed() => SelectAction(CombatActionId.SeductionAct1);
     public void OnSeductionAct2Pressed() => SelectAction(CombatActionId.SeductionAct2);
     public void OnSeductionAct3Pressed() => SelectAction(CombatActionId.SeductionAct3);
+    public void OnSeductionAct4Pressed() => SelectAction(CombatActionId.SeductionAct4);
+
+    // ===== Actions menu (non-combat intents) =====
+
+    public void OnInventoryPressed()
+    {
+        if (actions == null)
+        {
+            Debug.LogError("BattleHUDController: actions is not set");
+            return;
+        }
+
+        actions.OnItemPressed();
+        ShowRootMenu();
+    }
+
+    public void OnRunPressed()
+    {
+        if (actions == null)
+        {
+            Debug.LogError("BattleHUDController: actions is not set");
+            return;
+        }
+
+        actions.OnRunPressed();
+        ShowRootMenu();
+    }
+
+    public void OnSurrenderPressed()
+    {
+        if (actions == null)
+        {
+            Debug.LogError("BattleHUDController: actions is not set");
+            return;
+        }
+
+        actions.OnSurrenderPressed();
+        ShowRootMenu();
+    }
+
+    public void OnSkipTurnPressed()
+    {
+        if (actions == null)
+        {
+            Debug.LogError("BattleHUDController: actions is not set");
+            return;
+        }
+
+        actions.OnSkipTurnPressed();
+        ShowRootMenu();
+    }
 
     private void SelectAction(CombatActionId actionId)
     {

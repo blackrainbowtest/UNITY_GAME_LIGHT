@@ -8,6 +8,9 @@ namespace Game.Battle.UI
         void OnCombatActionSelected(Game.Battle.Combat.Actions.CombatActionId actionId);
         void OnAttackPressed();
         void OnItemPressed();
+        void OnRunPressed();
+        void OnSurrenderPressed();
+        void OnSkipTurnPressed();
         void OnExitPressed();
     }
 }

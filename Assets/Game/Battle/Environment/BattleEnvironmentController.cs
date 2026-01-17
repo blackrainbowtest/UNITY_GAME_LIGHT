@@ -34,6 +34,12 @@ namespace Game.Battle
         private void ApplyMusic(BattleLocationData location)
         {
             // Используем глобальный AudioManager для музыки
+            if (UDA2.Audio.AudioManager.Instance == null)
+            {
+                Debug.LogWarning("BattleEnvironmentController: AudioManager.Instance is null. Skipping music setup (likely running battle scene directly). ");
+                return;
+            }
+
             if (location.music != null)
             {
                 UDA2.Audio.AudioManager.Instance.PlayMusic(location.music);

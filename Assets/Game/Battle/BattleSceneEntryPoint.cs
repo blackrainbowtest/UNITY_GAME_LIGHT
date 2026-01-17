@@ -14,6 +14,29 @@ public class BattleSceneEntryPoint : MonoBehaviour
     [Header("References")]
     [SerializeField] private BattleController battleController;
 
+    [Header("Debug (Optional)")]
+    [SerializeField] private bool useDebugSetup;
+    [SerializeField] private BattleMode debugMode = BattleMode.Normal;
+    [SerializeField] private Game.Battle.EnemyData debugEnemy;
+
+    [System.Serializable]
+    private struct DebugPlayer
+    {
+        public int hpMax;
+        public int hp;
+        public int mpMax;
+        public int mp;
+        public int spMax;
+        public int sp;
+        public int lpMax;
+        public int lp;
+    }
+
+    [SerializeField] private bool overridePlayerSnapshot;
+    [SerializeField] private DebugPlayer debugPlayer;
+    [SerializeField] private bool setDebugReturnScene = true;
+    [SerializeField] private string debugReturnSceneName = "StartCityScene";
+
     private void Start()
     {
         // Явная ссылка на BattleController (назначается в инспекторе)
@@ -23,15 +46,25 @@ public class BattleSceneEntryPoint : MonoBehaviour
             return;
         }
 
-        var mode = BattleEntryContext.Consume();
-        var playerSnapshot = BuildPlayerSnapshot();
+        var mode = useDebugSetup ? debugMode : BattleEntryContext.Consume();
+        var playerSnapshot = BuildPlayerSnapshotForRun();
+
+        if (useDebugSetup && setDebugReturnScene && !string.IsNullOrEmpty(debugReturnSceneName))
+            BattleExitContext.SetReturnToScene(debugReturnSceneName);
 
 
         // Получаем врага из BattleEnemyContext, если он уже выбран
-        Game.Battle.EnemyData enemy = BattleEnemyContext.Consume();
+        Game.Battle.EnemyData enemy = (useDebugSetup && debugEnemy != null)
+            ? debugEnemy
+            : BattleEnemyContext.Consume();
         if (enemy == null)
         {
             // Если враг не был выбран заранее — выбираем из таблицы и сохраняем в контекст
+            if (enemyTable == null)
+            {
+                Debug.LogError("[BattleSceneEntryPoint] EnemySpawnTable не назначен и debugEnemy не задан. Нечего спавнить.");
+                return;
+            }
             var resolver = new Game.Battle.EnemySpawnResolver();
             enemy = resolver.Resolve(enemyTable);
             if (enemy == null)
@@ -50,6 +83,27 @@ public class BattleSceneEntryPoint : MonoBehaviour
         );
 
         battleController.StartBattle(context);
+    }
+
+    private PlayerCombatSnapshot BuildPlayerSnapshotForRun()
+    {
+        if (useDebugSetup && overridePlayerSnapshot)
+        {
+            // Avoid divide-by-zero / invalid values in HUD.
+            var hpMax = debugPlayer.hpMax > 0 ? debugPlayer.hpMax : 100;
+            var mpMax = debugPlayer.mpMax >= 0 ? debugPlayer.mpMax : 0;
+            var spMax = debugPlayer.spMax >= 0 ? debugPlayer.spMax : 0;
+            var lpMax = debugPlayer.lpMax >= 0 ? debugPlayer.lpMax : 0;
+
+            return new PlayerCombatSnapshot(
+                hpMax, Mathf.Clamp(debugPlayer.hp, 0, hpMax),
+                mpMax, Mathf.Clamp(debugPlayer.mp, 0, mpMax),
+                spMax, Mathf.Clamp(debugPlayer.sp, 0, spMax),
+                lpMax, Mathf.Clamp(debugPlayer.lp, 0, lpMax)
+            );
+        }
+
+        return BuildPlayerSnapshot();
     }
 
     private PlayerCombatSnapshot BuildPlayerSnapshot()

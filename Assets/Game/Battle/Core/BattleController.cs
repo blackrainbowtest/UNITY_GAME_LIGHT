@@ -131,6 +131,34 @@ namespace Game.Battle
             Debug.Log("Item pressed");
         }
 
+        public void OnRunPressed()
+        {
+            if (!battleStarted)
+                return;
+
+            Debug.Log("BattleController: Run pressed (escape placeholder)");
+            battleStarted = false;
+            ExitBattle();
+        }
+
+        public void OnSurrenderPressed()
+        {
+            if (!battleStarted)
+                return;
+
+            Debug.Log("BattleController: Surrender pressed");
+            FinishBattle(playerWon: false);
+        }
+
+        public void OnSkipTurnPressed()
+        {
+            if (!battleStarted)
+                return;
+
+            // Placeholder until enemy turn is implemented.
+            Debug.Log("BattleController: Skip turn pressed (no enemy turn yet)");
+        }
+
         public void OnExitPressed()
         {
             Debug.Log("Exit pressed");
@@ -159,7 +187,7 @@ namespace Game.Battle
                 return;
             }
 
-            combatState = resolution.State;
+            combatState = ClampPlayerResourcesToMax(resolution.State);
             PushHudState();
 
             if (combatState.IsEnemyDead)
@@ -173,6 +201,24 @@ namespace Game.Battle
                 FinishBattle(playerWon: false);
                 return;
             }
+        }
+
+        private CombatState ClampPlayerResourcesToMax(CombatState state)
+        {
+            if (context?.Player == null)
+                return state;
+
+            var clampedMp = Mathf.Clamp(state.PlayerMp, 0, context.Player.MaxMP);
+            var clampedSp = Mathf.Clamp(state.PlayerSp, 0, context.Player.MaxSP);
+            var clampedLp = Mathf.Clamp(state.PlayerLp, 0, context.Player.MaxLP);
+
+            if (clampedMp == state.PlayerMp && clampedSp == state.PlayerSp && clampedLp == state.PlayerLp)
+                return state;
+
+            return state
+                .WithPlayerMp(clampedMp)
+                .WithPlayerSp(clampedSp)
+                .WithPlayerLp(clampedLp);
         }
 
         private void FinishBattle(bool playerWon)
