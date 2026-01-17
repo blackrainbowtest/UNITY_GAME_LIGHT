@@ -89,5 +89,45 @@ namespace Game.Battle.Combat
 
             return new CombatResolution(newState, CombatActionResult.Executed);
         }
+
+        public CombatResolution ResolveEnemyAction(
+            CombatState state,
+            Actions.CombatActionData action)
+        {
+            // 1. Check resources
+            if (state.EnemyMp < action.MpCost ||
+                state.EnemySp < action.SpCost ||
+                state.EnemyLp < action.LpCost)
+            {
+                return new CombatResolution(state, CombatActionResult.Rejected_NotEnoughResources);
+            }
+
+            // 2. Apply enemy costs
+            var newState = new CombatState(
+                playerHp: state.PlayerHp,
+                playerMp: state.PlayerMp,
+                playerSp: state.PlayerSp,
+                playerLp: state.PlayerLp,
+
+                enemyHp: state.EnemyHp,
+                enemyMp: state.EnemyMp - action.MpCost,
+                enemySp: state.EnemySp - action.SpCost,
+                enemyLp: state.EnemyLp - action.LpCost,
+
+                // Enemy action should not change whether the player blocked last turn.
+                playerBlockedLastTurn: state.PlayerBlockedLastTurn
+            );
+
+            // 3. Apply effects (enemy damages player)
+            if (action.HpDamage > 0)
+            {
+                var newPlayerHp = newState.PlayerHp - action.HpDamage;
+                if (newPlayerHp < 0)
+                    newPlayerHp = 0;
+                newState = newState.WithPlayerHp(newPlayerHp);
+            }
+
+            return new CombatResolution(newState, CombatActionResult.Executed);
+        }
     }
 }

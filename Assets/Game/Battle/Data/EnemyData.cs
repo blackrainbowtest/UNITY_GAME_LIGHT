@@ -1,4 +1,5 @@
 using UnityEngine;
+using Game.Battle.Combat.Actions;
 
 namespace Game.Battle
 {
@@ -19,6 +20,9 @@ namespace Game.Battle
         public int maxSp;
         public int maxLp;
         public int attack;
+
+        [Header("AI")]
+        public CombatActionId[] allowedActions;
         // Добавляй новые поля по мере необходимости
     }
 }

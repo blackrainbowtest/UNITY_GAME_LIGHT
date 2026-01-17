@@ -8,7 +8,7 @@ namespace Game.Battle.Combat.Actions
     {
         FastAttack = 0,
         NormalAttack = 1,
-        ctok = 2,
+        HeavyAttack = 2,
         CounterAttack = 3,
 
         Block = 10,

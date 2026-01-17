@@ -18,6 +18,7 @@ public class BattleSceneEntryPoint : MonoBehaviour
     [SerializeField] private bool useDebugSetup;
     [SerializeField] private BattleMode debugMode = BattleMode.Normal;
     [SerializeField] private Game.Battle.EnemyData debugEnemy;
+    [SerializeField] private Game.Battle.EnemyDifficulty debugEnemyDifficulty = Game.Battle.EnemyDifficulty.Normal;
 
     [System.Serializable]
     private struct DebugPlayer
@@ -48,6 +49,9 @@ public class BattleSceneEntryPoint : MonoBehaviour
 
         var mode = useDebugSetup ? debugMode : BattleEntryContext.Consume();
         var playerSnapshot = BuildPlayerSnapshotForRun();
+        var enemyDifficulty = useDebugSetup
+            ? debugEnemyDifficulty
+            : Game.Battle.BattleEnemyDifficultyContext.ConsumeOrDefault(Game.Battle.EnemyDifficulty.Normal);
 
         if (useDebugSetup && setDebugReturnScene && !string.IsNullOrEmpty(debugReturnSceneName))
             BattleExitContext.SetReturnToScene(debugReturnSceneName);
@@ -79,7 +83,8 @@ public class BattleSceneEntryPoint : MonoBehaviour
             playerSnapshot,
             enemy,
             location,
-            mode
+            mode,
+            enemyDifficulty
         );
 
         battleController.StartBattle(context);

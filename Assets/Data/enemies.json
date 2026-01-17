@@ -2,7 +2,7 @@
   {
     "enemyName": "Slime",
     "iconPath": "Assets/Art/Icons/slime.png",
-	"hp": 30,
+    "hp": 30,
     "mp": 10,
     "sp": 5,
     "lp": 5,
@@ -10,12 +10,13 @@
     "maxMp": 10,
     "maxSp": 5,
     "maxLp": 100,
-    "attack": 5
+    "attack": 5,
+    "allowedActions": ["FastAttack", "NormalAttack", "HeavyAttack"]
   },
   {
     "enemyName": "Goblin",
     "iconPath": "Assets/Art/Icons/goblin.png",
-	"hp": 50,
+    "hp": 50,
     "mp": 15,
     "sp": 10,
     "lp": 5,
@@ -23,6 +24,7 @@
     "maxMp": 15,
     "maxSp": 10,
     "maxLp": 20,
-    "attack": 8
+    "attack": 8,
+    "allowedActions": ["FastAttack", "NormalAttack", "HeavyAttack", "FireSpell"]
   }
 ]

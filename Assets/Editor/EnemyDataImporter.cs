@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 using System.Collections.Generic;
+using Game.Battle.Combat.Actions;
 
 public class EnemyDataImporter : EditorWindow
 {
@@ -42,7 +43,12 @@ public class EnemyDataImporter : EditorWindow
         var enemies = JsonUtility.FromJson<EnemyListWrapper>("{\"enemies\":" + json + "}");
         foreach (var enemy in enemies.enemies)
         {
-            var asset = ScriptableObject.CreateInstance<Game.Battle.EnemyData>();
+            string assetPath = $"{outputPath}/{enemy.enemyName}.asset";
+
+            var asset = AssetDatabase.LoadAssetAtPath<Game.Battle.EnemyData>(assetPath);
+            if (asset == null)
+                asset = ScriptableObject.CreateInstance<Game.Battle.EnemyData>();
+
             asset.enemyName = enemy.enemyName;
             asset.maxHp = enemy.maxHp;
             asset.maxMp = enemy.maxMp;
@@ -54,12 +60,63 @@ public class EnemyDataImporter : EditorWindow
 			asset.sp = enemy.sp;
 			asset.lp = enemy.lp;
             asset.icon = AssetDatabase.LoadAssetAtPath<UnityEngine.Sprite>(enemy.iconPath);
-            string assetPath = $"{outputPath}/{enemy.enemyName}.asset";
-            AssetDatabase.CreateAsset(asset, assetPath);
+
+            asset.allowedActions = ParseAllowedActions(enemy.allowedActions);
+
+            if (AssetDatabase.GetAssetPath(asset) == string.Empty)
+            {
+                AssetDatabase.CreateAsset(asset, assetPath);
+            }
+            else
+            {
+                EditorUtility.SetDirty(asset);
+            }
         }
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
         Debug.Log($"Импортировано врагов: {enemies.enemies.Length}");
+    }
+
+    private static CombatActionId[] ParseAllowedActions(string[] allowedActions)
+    {
+        // Backward compatible: if JSON does not specify allowedActions,
+        // default to a physical attacker (fast/normal/heavy).
+        if (allowedActions == null || allowedActions.Length == 0)
+        {
+            return new[]
+            {
+                CombatActionId.FastAttack,
+                CombatActionId.NormalAttack,
+                CombatActionId.HeavyAttack
+            };
+        }
+
+        var list = new List<CombatActionId>(allowedActions.Length);
+        foreach (var raw in allowedActions)
+        {
+            if (string.IsNullOrWhiteSpace(raw))
+                continue;
+
+            if (System.Enum.TryParse(raw.Trim(), ignoreCase: true, out CombatActionId id))
+            {
+                if (!list.Contains(id))
+                    list.Add(id);
+            }
+            else
+            {
+                Debug.LogWarning($"[EnemyDataImporter] Unknown allowed action '{raw}'. Skipping.");
+            }
+        }
+
+        // Ensure there is at least something usable.
+        if (list.Count == 0)
+        {
+            list.Add(CombatActionId.FastAttack);
+            list.Add(CombatActionId.NormalAttack);
+            list.Add(CombatActionId.HeavyAttack);
+        }
+
+        return list.ToArray();
     }
 
     [System.Serializable]
@@ -76,6 +133,10 @@ public class EnemyDataImporter : EditorWindow
         public int sp;
         public int lp;
         public int attack;
+
+        // Optional: restrict what the enemy can do.
+        // Example: ["FastAttack","HeavyAttack"] or ["FireSpell","DarkSpell"].
+        public string[] allowedActions;
     }
     [System.Serializable]
     private class EnemyListWrapper

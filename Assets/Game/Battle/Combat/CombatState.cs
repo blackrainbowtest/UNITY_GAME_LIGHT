@@ -69,6 +69,24 @@ namespace Game.Battle.Combat
                 value, EnemyMp, EnemySp, EnemyLp,
                 PlayerBlockedLastTurn);
 
+        public CombatState WithEnemyMp(int value)
+            => new CombatState(
+                PlayerHp, PlayerMp, PlayerSp, PlayerLp,
+                EnemyHp, value, EnemySp, EnemyLp,
+                PlayerBlockedLastTurn);
+
+        public CombatState WithEnemySp(int value)
+            => new CombatState(
+                PlayerHp, PlayerMp, PlayerSp, PlayerLp,
+                EnemyHp, EnemyMp, value, EnemyLp,
+                PlayerBlockedLastTurn);
+
+        public CombatState WithEnemyLp(int value)
+            => new CombatState(
+                PlayerHp, PlayerMp, PlayerSp, PlayerLp,
+                EnemyHp, EnemyMp, EnemySp, value,
+                PlayerBlockedLastTurn);
+
         public CombatState WithPlayerBlockedLastTurn(bool value)
             => new CombatState(
                 PlayerHp, PlayerMp, PlayerSp, PlayerLp,

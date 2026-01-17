@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Game.Battle.Combat;
 using Game.Battle.Combat.Actions;
+using Game.Battle.Combat.EnemyAI;
 
 /// <summary>
 /// Orchestrates battle lifecycle.
@@ -17,6 +18,8 @@ namespace Game.Battle
     {
         private BattleContext context;
         private bool battleStarted;
+
+        private readonly System.Random rng = new System.Random();
 
         private CombatState combatState;
         private BattleCombatEngine combatEngine;
@@ -155,8 +158,7 @@ namespace Game.Battle
             if (!battleStarted)
                 return;
 
-            // Placeholder until enemy turn is implemented.
-            Debug.Log("BattleController: Skip turn pressed (no enemy turn yet)");
+            ExecuteEnemyTurn();
         }
 
         public void OnExitPressed()
@@ -196,10 +198,66 @@ namespace Game.Battle
                 return;
             }
 
+            ExecuteEnemyTurn();
+
+            // Enemy turn may have ended the battle.
+            if (!battleStarted)
+                return;
+
             if (combatState.IsPlayerDead)
             {
                 FinishBattle(playerWon: false);
                 return;
+            }
+        }
+
+        private void ExecuteEnemyTurn()
+        {
+            if (!battleStarted)
+                return;
+
+            if (combatEngine == null || actionRegistry == null)
+            {
+                Debug.LogError("BattleController: combatEngine/actionRegistry not initialized");
+                return;
+            }
+
+            if (combatState.IsEnemyDead || combatState.IsPlayerDead)
+                return;
+
+            var actionId = EnemyActionSelector.SelectEnemyAction(
+                context.EnemyDifficulty,
+                context.Enemy,
+                actionRegistry,
+                combatState,
+                rng);
+
+            if (!actionId.HasValue)
+            {
+                Debug.Log("[BattleController] Enemy skips turn (no affordable/allowed actions)");
+                return;
+            }
+
+            var action = actionRegistry.Get(actionId.Value);
+            if (action == null)
+            {
+                Debug.LogError($"[BattleController] Enemy action not found in registry: {actionId.Value}");
+                return;
+            }
+
+            var resolution = combatEngine.ResolveEnemyAction(combatState, action);
+            if (resolution.Result != CombatActionResult.Executed)
+            {
+                Debug.Log($"[BattleController] Enemy action rejected: {action.Id} -> {resolution.Result}");
+                return;
+            }
+
+            combatState = ClampEnemyResourcesToMax(resolution.State);
+            PushHudState();
+
+            if (combatState.IsPlayerDead)
+            {
+                FinishBattle(playerWon: false);
             }
         }
 
@@ -219,6 +277,24 @@ namespace Game.Battle
                 .WithPlayerMp(clampedMp)
                 .WithPlayerSp(clampedSp)
                 .WithPlayerLp(clampedLp);
+        }
+
+        private CombatState ClampEnemyResourcesToMax(CombatState state)
+        {
+            if (context?.Enemy == null)
+                return state;
+
+            var clampedMp = Mathf.Clamp(state.EnemyMp, 0, context.Enemy.maxMp);
+            var clampedSp = Mathf.Clamp(state.EnemySp, 0, context.Enemy.maxSp);
+            var clampedLp = Mathf.Clamp(state.EnemyLp, 0, context.Enemy.maxLp);
+
+            if (clampedMp == state.EnemyMp && clampedSp == state.EnemySp && clampedLp == state.EnemyLp)
+                return state;
+
+            return state
+                .WithEnemyMp(clampedMp)
+                .WithEnemySp(clampedSp)
+                .WithEnemyLp(clampedLp);
         }
 
         private void FinishBattle(bool playerWon)

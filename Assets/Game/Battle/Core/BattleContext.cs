@@ -10,17 +10,20 @@ namespace Game.Battle
         public EnemyData Enemy { get; }
         public BattleLocationData Location { get; }
         public BattleMode Mode { get; }
+        public EnemyDifficulty EnemyDifficulty { get; }
 
         public BattleContext(
             PlayerCombatSnapshot player,
             EnemyData enemy,
             BattleLocationData location,
-            BattleMode mode)
+            BattleMode mode,
+            EnemyDifficulty enemyDifficulty = EnemyDifficulty.Normal)
         {
             Player = player;
             Enemy = enemy;
             Location = location;
             Mode = mode;
+            EnemyDifficulty = enemyDifficulty;
         }
     }
 }
