@@ -3,6 +3,10 @@
 See also:
 - `BATTLE_API_REFERENCE.md` — battle architecture, contexts, actions, enemy AI/difficulty.
 
+Battle HUD notes:
+- `StatBarView` delta popups are driven by HUD state diffs.
+- Battle flow applies end-of-round effects (regen/statuses) as one batch, so HUD shows one net delta per stat.
+
 ## ConfirmDialog
 
 **RU:**

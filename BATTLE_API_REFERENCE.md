@@ -94,10 +94,12 @@
 
 ---
 
-## Passive Regen (per turn)
-Пассивное восстановление применяется **в начале хода** стороны:
-- начало хода игрока: +HP/+MP/+SP из `PlayerCombatSnapshot` (LP не регенится)
-- начало хода врага: +HP/+MP/+SP из `EnemyData` (LP не регенится)
+## End-of-round effects (regen + statuses)
+Эффекты конца раунда применяются **после атаки врага**, одним батчем:
+- сначала показываются попапы урона/изменений от действий (игрок → враг)
+- затем (после задержки) применяется пачка эффектов конца раунда и HUD обновляется один раз
+
+Сейчас в этот батч входит пассивная регенерация, позже сюда добавятся статусы (яд/горение/ауры и т.п.).
 
 Текущие дефолты для игрока (если нигде не переопределять):
 - `RegenHpPerTurn = 5`
@@ -105,6 +107,34 @@
 - `RegenSpPerTurn = 4`
 
 Для врагов значения задаются в `Assets/Data/enemies.json` и импортируются в EnemyData ассеты.
+
+### Queue API (для будущих статусов)
+`BattleController` предоставляет минимальный API, чтобы другие системы могли накидывать эффекты в конец раунда.
+
+Идея: в течение хода ты добавляешь эффекты (например яд -2, аура +5, горение -6), а в конце раунда они суммируются и применяются один раз.
+HUD покажет **итоговую** дельту (например -3), а не пачку маленьких попапов.
+
+Методы:
+- `BattleController.QueueEndOfRoundEffect(...)`
+- `BattleController.ClearEndOfRoundEffects()`
+
+Пример использования:
+```csharp
+// яд на игроке
+battleController.QueueEndOfRoundEffect(
+  sourceId: "Poison",
+  playerHpDelta: -2);
+
+// аура хила на игроке
+battleController.QueueEndOfRoundEffect(
+  sourceId: "HealingAura",
+  playerHpDelta: +5);
+
+// горение на враге
+battleController.QueueEndOfRoundEffect(
+  sourceId: "Burn",
+  enemyHpDelta: -6);
+```
 
 ---
 

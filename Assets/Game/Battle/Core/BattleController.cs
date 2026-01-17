@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Game.Battle.Combat;
@@ -12,6 +13,39 @@ namespace Game.Battle
 {
     public class BattleController : MonoBehaviour, IBattleUIActions
     {
+        private readonly struct EndOfRoundEffect
+        {
+            public string SourceId { get; }
+
+            public int PlayerHpDelta { get; }
+            public int PlayerMpDelta { get; }
+            public int PlayerSpDelta { get; }
+            public int PlayerLpDelta { get; }
+
+            public int EnemyHpDelta { get; }
+            public int EnemyMpDelta { get; }
+            public int EnemySpDelta { get; }
+            public int EnemyLpDelta { get; }
+
+            public EndOfRoundEffect(
+                string sourceId,
+                int playerHpDelta, int playerMpDelta, int playerSpDelta, int playerLpDelta,
+                int enemyHpDelta, int enemyMpDelta, int enemySpDelta, int enemyLpDelta)
+            {
+                SourceId = sourceId;
+
+                PlayerHpDelta = playerHpDelta;
+                PlayerMpDelta = playerMpDelta;
+                PlayerSpDelta = playerSpDelta;
+                PlayerLpDelta = playerLpDelta;
+
+                EnemyHpDelta = enemyHpDelta;
+                EnemyMpDelta = enemyMpDelta;
+                EnemySpDelta = enemySpDelta;
+                EnemyLpDelta = enemyLpDelta;
+            }
+        }
+
         private enum TurnPhase
         {
             NotStarted = 0,
@@ -42,6 +76,35 @@ namespace Game.Battle
 
         [Header("Turns")]
         [SerializeField] private float enemyTurnDelaySeconds = 0.35f;
+        [SerializeField] private float endOfRoundDelaySeconds = 0.8f;
+
+        private readonly List<EndOfRoundEffect> pendingEndOfRoundEffects = new List<EndOfRoundEffect>(8);
+
+        /// <summary>
+        /// Queues end-of-round resource changes (poison/burn/auras/etc).
+        /// All queued effects are summed and applied once in ApplyEndOfRoundEffects(), so HUD shows one net delta.
+        /// </summary>
+        public void QueueEndOfRoundEffect(
+            string sourceId,
+            int playerHpDelta = 0,
+            int playerMpDelta = 0,
+            int playerSpDelta = 0,
+            int playerLpDelta = 0,
+            int enemyHpDelta = 0,
+            int enemyMpDelta = 0,
+            int enemySpDelta = 0,
+            int enemyLpDelta = 0)
+        {
+            pendingEndOfRoundEffects.Add(new EndOfRoundEffect(
+                sourceId,
+                playerHpDelta, playerMpDelta, playerSpDelta, playerLpDelta,
+                enemyHpDelta, enemyMpDelta, enemySpDelta, enemyLpDelta));
+        }
+
+        public void ClearEndOfRoundEffects()
+        {
+            pendingEndOfRoundEffects.Clear();
+        }
 
         public void StartBattle(BattleContext battleContext)
         {
@@ -59,15 +122,25 @@ namespace Game.Battle
             combatEngine = new BattleCombatEngine();
             actionRegistry = new CombatActionRegistry();
 
+            var startPlayerHp = Mathf.Clamp(context.Player.CurrentHP, 0, context.Player.MaxHP);
+            var startPlayerMp = Mathf.Clamp(context.Player.CurrentMP, 0, context.Player.MaxMP);
+            var startPlayerSp = Mathf.Clamp(context.Player.CurrentSP, 0, context.Player.MaxSP);
+            var startPlayerLp = Mathf.Clamp(context.Player.CurrentLP, 0, context.Player.MaxLP);
+
+            var startEnemyHp = Mathf.Clamp(context.Enemy.hp, 0, context.Enemy.maxHp);
+            var startEnemyMp = Mathf.Clamp(context.Enemy.mp, 0, context.Enemy.maxMp);
+            var startEnemySp = Mathf.Clamp(context.Enemy.sp, 0, context.Enemy.maxSp);
+            var startEnemyLp = Mathf.Clamp(context.Enemy.lp, 0, context.Enemy.maxLp);
+
             combatState = new CombatState(
-                playerHp: context.Player.CurrentHP,
-                playerMp: context.Player.CurrentMP,
-                playerSp: context.Player.CurrentSP,
-                playerLp: context.Player.CurrentLP,
-                enemyHp: context.Enemy.hp,
-                enemyMp: context.Enemy.mp,
-                enemySp: context.Enemy.sp,
-                enemyLp: context.Enemy.lp,
+                playerHp: startPlayerHp,
+                playerMp: startPlayerMp,
+                playerSp: startPlayerSp,
+                playerLp: startPlayerLp,
+                enemyHp: startEnemyHp,
+                enemyMp: startEnemyMp,
+                enemySp: startEnemySp,
+                enemyLp: startEnemyLp,
                 playerBlockedLastTurn: false // первый ход — не блокировал
             );
 
@@ -78,6 +151,8 @@ namespace Game.Battle
             InitializeParticipants();
             InitializeEnvironment();
             InitializeUI();
+
+            ClearEndOfRoundEffects();
 
             PushHudState();
 
@@ -90,8 +165,6 @@ namespace Game.Battle
                 return;
 
             turnPhase = TurnPhase.PlayerTurn;
-            ApplyPlayerPassiveRegen();
-            PushHudState();
             hudController?.SetInputEnabled(true);
         }
 
@@ -225,6 +298,11 @@ namespace Game.Battle
                 return;
             }
 
+            var beforePlayerMp = combatState.PlayerMp;
+            var beforePlayerSp = combatState.PlayerSp;
+            var beforePlayerLp = combatState.PlayerLp;
+            var beforeEnemyHp = combatState.EnemyHp;
+
             var resolution = combatEngine.ResolvePlayerAction(combatState, action);
 
             if (resolution.Result != CombatActionResult.Executed)
@@ -263,9 +341,7 @@ namespace Game.Battle
 
         private IEnumerator EnemyTurnRoutine()
         {
-            ApplyEnemyPassiveRegen();
-            PushHudState();
-
+            // Give time for the player's damage popup to play before enemy acts.
             if (enemyTurnDelaySeconds > 0f)
                 yield return new WaitForSeconds(enemyTurnDelaySeconds);
 
@@ -282,7 +358,90 @@ namespace Game.Battle
                 yield break;
             }
 
+            // Give time for the enemy's damage popup to play before applying end-of-round effects.
+            if (endOfRoundDelaySeconds > 0f)
+                yield return new WaitForSeconds(endOfRoundDelaySeconds);
+
+            ApplyEndOfRoundEffects();
+            PushHudState();
+
             BeginPlayerTurn();
+        }
+
+        private void ApplyEndOfRoundEffects()
+        {
+            // End-of-round effects are applied as a single batch so HUD shows one net delta.
+
+            var totalPlayerHpDelta = 0;
+            var totalPlayerMpDelta = 0;
+            var totalPlayerSpDelta = 0;
+            var totalPlayerLpDelta = 0;
+
+            var totalEnemyHpDelta = 0;
+            var totalEnemyMpDelta = 0;
+            var totalEnemySpDelta = 0;
+            var totalEnemyLpDelta = 0;
+
+            // 1) External queued effects (poison/burn/auras/etc).
+            for (var i = 0; i < pendingEndOfRoundEffects.Count; i++)
+            {
+                var e = pendingEndOfRoundEffects[i];
+                totalPlayerHpDelta += e.PlayerHpDelta;
+                totalPlayerMpDelta += e.PlayerMpDelta;
+                totalPlayerSpDelta += e.PlayerSpDelta;
+                totalPlayerLpDelta += e.PlayerLpDelta;
+
+                totalEnemyHpDelta += e.EnemyHpDelta;
+                totalEnemyMpDelta += e.EnemyMpDelta;
+                totalEnemySpDelta += e.EnemySpDelta;
+                totalEnemyLpDelta += e.EnemyLpDelta;
+            }
+
+            // 2) Passive regen (treated as part of end-of-round batch).
+            if (context?.Player != null)
+            {
+                totalPlayerHpDelta += Mathf.Max(0, context.Player.RegenHpPerTurn);
+                totalPlayerMpDelta += Mathf.Max(0, context.Player.RegenMpPerTurn);
+                totalPlayerSpDelta += Mathf.Max(0, context.Player.RegenSpPerTurn);
+            }
+
+            if (context?.Enemy != null)
+            {
+                totalEnemyHpDelta += Mathf.Max(0, context.Enemy.regenHpPerTurn);
+                totalEnemyMpDelta += Mathf.Max(0, context.Enemy.regenMpPerTurn);
+                totalEnemySpDelta += Mathf.Max(0, context.Enemy.regenSpPerTurn);
+            }
+
+            // Apply totals (clamped to max pools).
+            if (context?.Player != null)
+            {
+                var hp = Mathf.Clamp(combatState.PlayerHp + totalPlayerHpDelta, 0, context.Player.MaxHP);
+                var mp = Mathf.Clamp(combatState.PlayerMp + totalPlayerMpDelta, 0, context.Player.MaxMP);
+                var sp = Mathf.Clamp(combatState.PlayerSp + totalPlayerSpDelta, 0, context.Player.MaxSP);
+                var lp = Mathf.Clamp(combatState.PlayerLp + totalPlayerLpDelta, 0, context.Player.MaxLP);
+
+                combatState = combatState
+                    .WithPlayerHp(hp)
+                    .WithPlayerMp(mp)
+                    .WithPlayerSp(sp)
+                    .WithPlayerLp(lp);
+            }
+
+            if (context?.Enemy != null)
+            {
+                var hp = Mathf.Clamp(combatState.EnemyHp + totalEnemyHpDelta, 0, context.Enemy.maxHp);
+                var mp = Mathf.Clamp(combatState.EnemyMp + totalEnemyMpDelta, 0, context.Enemy.maxMp);
+                var sp = Mathf.Clamp(combatState.EnemySp + totalEnemySpDelta, 0, context.Enemy.maxSp);
+                var lp = Mathf.Clamp(combatState.EnemyLp + totalEnemyLpDelta, 0, context.Enemy.maxLp);
+
+                combatState = combatState
+                    .WithEnemyHp(hp)
+                    .WithEnemyMp(mp)
+                    .WithEnemySp(sp)
+                    .WithEnemyLp(lp);
+            }
+
+            pendingEndOfRoundEffects.Clear();
         }
 
         private void ApplyPlayerPassiveRegen()
@@ -372,14 +531,16 @@ namespace Game.Battle
             if (context?.Player == null)
                 return state;
 
+            var clampedHp = Mathf.Clamp(state.PlayerHp, 0, context.Player.MaxHP);
             var clampedMp = Mathf.Clamp(state.PlayerMp, 0, context.Player.MaxMP);
             var clampedSp = Mathf.Clamp(state.PlayerSp, 0, context.Player.MaxSP);
             var clampedLp = Mathf.Clamp(state.PlayerLp, 0, context.Player.MaxLP);
 
-            if (clampedMp == state.PlayerMp && clampedSp == state.PlayerSp && clampedLp == state.PlayerLp)
+            if (clampedHp == state.PlayerHp && clampedMp == state.PlayerMp && clampedSp == state.PlayerSp && clampedLp == state.PlayerLp)
                 return state;
 
             return state
+                .WithPlayerHp(clampedHp)
                 .WithPlayerMp(clampedMp)
                 .WithPlayerSp(clampedSp)
                 .WithPlayerLp(clampedLp);
@@ -390,14 +551,16 @@ namespace Game.Battle
             if (context?.Enemy == null)
                 return state;
 
+            var clampedHp = Mathf.Clamp(state.EnemyHp, 0, context.Enemy.maxHp);
             var clampedMp = Mathf.Clamp(state.EnemyMp, 0, context.Enemy.maxMp);
             var clampedSp = Mathf.Clamp(state.EnemySp, 0, context.Enemy.maxSp);
             var clampedLp = Mathf.Clamp(state.EnemyLp, 0, context.Enemy.maxLp);
 
-            if (clampedMp == state.EnemyMp && clampedSp == state.EnemySp && clampedLp == state.EnemyLp)
+            if (clampedHp == state.EnemyHp && clampedMp == state.EnemyMp && clampedSp == state.EnemySp && clampedLp == state.EnemyLp)
                 return state;
 
             return state
+                .WithEnemyHp(clampedHp)
                 .WithEnemyMp(clampedMp)
                 .WithEnemySp(clampedSp)
                 .WithEnemyLp(clampedLp);
@@ -469,14 +632,14 @@ namespace Game.Battle
 
             return null;
         }
-        private void PushHudState()
+        private void PushHudState(bool showDeltas = true)
         {
             var hudState = BattleHUDStateFactory.Create(
                 context.Player,
                 context.Enemy,
                 combatState
             );
-            hudController?.UpdateState(hudState);
+            hudController?.UpdateState(hudState, showDeltas);
         }
     }
 }
