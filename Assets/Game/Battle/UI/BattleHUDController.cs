@@ -36,6 +36,18 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
     [SerializeField] private StatBarView enemyLpBar;
 
     private IBattleUIActions actions;
+    private CanvasGroup canvasGroup;
+
+    private BattleHUDState lastState;
+
+    private void Awake()
+    {
+        // CanvasGroup lets us disable all HUD interaction at once (including submenu buttons)
+        // without having to serialize every single Button reference.
+        canvasGroup = GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+            canvasGroup = gameObject.AddComponent<CanvasGroup>();
+    }
 
     public void SetActions(IBattleUIActions actions)
     {
@@ -61,6 +73,21 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
         }
 
         ShowRootMenu();
+
+        // Default: enabled.
+        SetInputEnabled(true);
+    }
+
+    public void SetInputEnabled(bool enabled)
+    {
+        if (canvasGroup == null)
+            return;
+
+        canvasGroup.interactable = enabled;
+        canvasGroup.blocksRaycasts = enabled;
+
+        // Optional: slight visual feedback.
+        canvasGroup.alpha = enabled ? 1f : 0.85f;
     }
 
     public void ShowRootMenu()
@@ -202,23 +229,59 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
 
         Debug.Log($"[HUD] Player HP: {state.PlayerHp}/{state.PlayerHpMax}, Enemy HP: {state.EnemyHp}/{state.EnemyHpMax}");
 
-        if (playerHpBar != null && state.PlayerHpMax > 0)
-            playerHpBar.SetNormalized((float)state.PlayerHp / state.PlayerHpMax);
-        if (playerMpBar != null && state.PlayerMpMax > 0)
-            playerMpBar.SetNormalized((float)state.PlayerMp / state.PlayerMpMax);
-        if (playerSpBar != null && state.PlayerSpMax > 0)
-            playerSpBar.SetNormalized((float)state.PlayerSp / state.PlayerSpMax);
-        if (playerLpBar != null && state.PlayerLpMax > 0)
-            playerLpBar.SetNormalized((float)state.PlayerLp / state.PlayerLpMax);
 
-        if (enemyHpBar != null && state.EnemyHpMax > 0)
-            enemyHpBar.SetNormalized((float)state.EnemyHp / state.EnemyHpMax);
-        if (enemyMpBar != null && state.EnemyMpMax > 0)
-            enemyMpBar.SetNormalized((float)state.EnemyMp / state.EnemyMpMax);
-        if (enemySpBar != null && state.EnemySpMax > 0)
-            enemySpBar.SetNormalized((float)state.EnemySp / state.EnemySpMax);
-        if (enemyLpBar != null && state.EnemyLpMax > 0)
-            enemyLpBar.SetNormalized((float)state.EnemyLp / state.EnemyLpMax);
+        var hasLast = lastState != null;
+
+        UpdateBar(playerHpBar, state.PlayerHp, state.PlayerHpMax, hasLast ? state.PlayerHp - lastState.PlayerHp : 0, hasLast);
+        UpdateBar(playerMpBar, state.PlayerMp, state.PlayerMpMax, hasLast ? state.PlayerMp - lastState.PlayerMp : 0, hasLast);
+        UpdateBar(playerSpBar, state.PlayerSp, state.PlayerSpMax, hasLast ? state.PlayerSp - lastState.PlayerSp : 0, hasLast);
+        UpdateBar(playerLpBar, state.PlayerLp, state.PlayerLpMax, hasLast ? state.PlayerLp - lastState.PlayerLp : 0, hasLast);
+
+        UpdateBar(enemyHpBar, state.EnemyHp, state.EnemyHpMax, hasLast ? state.EnemyHp - lastState.EnemyHp : 0, hasLast);
+        UpdateBar(enemyMpBar, state.EnemyMp, state.EnemyMpMax, hasLast ? state.EnemyMp - lastState.EnemyMp : 0, hasLast);
+        UpdateBar(enemySpBar, state.EnemySp, state.EnemySpMax, hasLast ? state.EnemySp - lastState.EnemySp : 0, hasLast);
+        UpdateBar(enemyLpBar, state.EnemyLp, state.EnemyLpMax, hasLast ? state.EnemyLp - lastState.EnemyLp : 0, hasLast);
+
+        // Store a copy so later deltas work even if caller reuses the same object.
+        lastState = Clone(state);
+    }
+
+    private static void UpdateBar(StatBarView bar, int current, int max, int delta, bool showDelta)
+    {
+        if (bar == null)
+            return;
+
+        if (max > 0)
+            bar.SetNormalized((float)current / max);
+
+        bar.SetValue(current, max);
+
+        if (showDelta)
+            bar.ShowDelta(delta);
+    }
+
+    private static BattleHUDState Clone(BattleHUDState s)
+    {
+        return new BattleHUDState
+        {
+            PlayerHp = s.PlayerHp,
+            PlayerHpMax = s.PlayerHpMax,
+            PlayerMp = s.PlayerMp,
+            PlayerMpMax = s.PlayerMpMax,
+            PlayerSp = s.PlayerSp,
+            PlayerSpMax = s.PlayerSpMax,
+            PlayerLp = s.PlayerLp,
+            PlayerLpMax = s.PlayerLpMax,
+
+            EnemyHp = s.EnemyHp,
+            EnemyHpMax = s.EnemyHpMax,
+            EnemyMp = s.EnemyMp,
+            EnemyMpMax = s.EnemyMpMax,
+            EnemySp = s.EnemySp,
+            EnemySpMax = s.EnemySpMax,
+            EnemyLp = s.EnemyLp,
+            EnemyLpMax = s.EnemyLpMax
+        };
     }
 
     public void Show() => gameObject.SetActive(true);

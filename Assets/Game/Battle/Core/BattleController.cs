@@ -1,24 +1,30 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Game.Battle.Combat;
 using Game.Battle.Combat.Actions;
 using Game.Battle.Combat.EnemyAI;
 
-/// <summary>
-/// Orchestrates battle lifecycle.
-/// Entry point for starting a battle.
-/// Contains no combat logic.
-/// </summary>
 using Game.Battle.UI;
 
 namespace Game.Battle
 {
     public class BattleController : MonoBehaviour, IBattleUIActions
     {
+        private enum TurnPhase
+        {
+            NotStarted = 0,
+            PlayerTurn = 1,
+            EnemyTurn = 2,
+            BattleOver = 3
+        }
+
         private BattleContext context;
         private bool battleStarted;
 
+        private TurnPhase turnPhase = TurnPhase.NotStarted;
+        private Coroutine enemyTurnRoutine;
         private readonly System.Random rng = new System.Random();
 
         private CombatState combatState;
@@ -34,6 +40,9 @@ namespace Game.Battle
         [SerializeField] private string tutorialReturnSceneName = "StartCityScene";
         [SerializeField] private string defaultReturnSceneName = "StartCityScene";
 
+        [Header("Turns")]
+        [SerializeField] private float enemyTurnDelaySeconds = 0.35f;
+
         public void StartBattle(BattleContext battleContext)
         {
             Debug.Log("[BattleController] StartBattle called");
@@ -45,6 +54,7 @@ namespace Game.Battle
 
             context = battleContext;
             battleStarted = true;
+            turnPhase = TurnPhase.PlayerTurn;
 
             combatEngine = new BattleCombatEngine();
             actionRegistry = new CombatActionRegistry();
@@ -70,6 +80,19 @@ namespace Game.Battle
             InitializeUI();
 
             PushHudState();
+
+            BeginPlayerTurn();
+        }
+
+        private void BeginPlayerTurn()
+        {
+            if (!battleStarted)
+                return;
+
+            turnPhase = TurnPhase.PlayerTurn;
+            ApplyPlayerPassiveRegen();
+            PushHudState();
+            hudController?.SetInputEnabled(true);
         }
 
         private void InitializeParticipants()
@@ -80,7 +103,6 @@ namespace Game.Battle
         private void Start()
         {
             BindHUD(hudController);
-
         }
 
         private void InitializeEnvironment()
@@ -118,12 +140,18 @@ namespace Game.Battle
             if (!battleStarted)
                 return;
 
+            if (turnPhase != TurnPhase.PlayerTurn)
+                return;
+
             ExecutePlayerAction(CombatActionId.NormalAttack);
         }
 
         public void OnCombatActionSelected(CombatActionId actionId)
         {
             if (!battleStarted)
+                return;
+
+            if (turnPhase != TurnPhase.PlayerTurn)
                 return;
 
             ExecutePlayerAction(actionId);
@@ -158,7 +186,10 @@ namespace Game.Battle
             if (!battleStarted)
                 return;
 
-            ExecuteEnemyTurn();
+            if (turnPhase != TurnPhase.PlayerTurn)
+                return;
+
+            BeginEnemyTurn();
         }
 
         public void OnExitPressed()
@@ -168,9 +199,19 @@ namespace Game.Battle
         
         private void ExecutePlayerAction(CombatActionId actionId)
         {
+            if (turnPhase != TurnPhase.PlayerTurn)
+                return;
+
+            // Lock input immediately to prevent spamming while enemy is about to act.
+            turnPhase = TurnPhase.EnemyTurn;
+            hudController?.SetInputEnabled(false);
+
             if (actionRegistry == null)
             {
                 Debug.LogError("BattleController: actionRegistry is not initialized");
+
+                turnPhase = TurnPhase.PlayerTurn;
+                hudController?.SetInputEnabled(true);
                 return;
             }
 
@@ -178,6 +219,9 @@ namespace Game.Battle
             if (action == null)
             {
                 Debug.LogError($"Action not found: {actionId}");
+
+                turnPhase = TurnPhase.PlayerTurn;
+                hudController?.SetInputEnabled(true);
                 return;
             }
 
@@ -186,6 +230,9 @@ namespace Game.Battle
             if (resolution.Result != CombatActionResult.Executed)
             {
                 Debug.Log($"Action rejected: {resolution.Result}");
+
+                turnPhase = TurnPhase.PlayerTurn;
+                hudController?.SetInputEnabled(true);
                 return;
             }
 
@@ -198,17 +245,76 @@ namespace Game.Battle
                 return;
             }
 
-            ExecuteEnemyTurn();
+            BeginEnemyTurn();
+        }
 
-            // Enemy turn may have ended the battle.
+        private void BeginEnemyTurn()
+        {
             if (!battleStarted)
                 return;
+
+            if (enemyTurnRoutine != null)
+                return;
+
+            turnPhase = TurnPhase.EnemyTurn;
+            hudController?.SetInputEnabled(false);
+            enemyTurnRoutine = StartCoroutine(EnemyTurnRoutine());
+        }
+
+        private IEnumerator EnemyTurnRoutine()
+        {
+            ApplyEnemyPassiveRegen();
+            PushHudState();
+
+            if (enemyTurnDelaySeconds > 0f)
+                yield return new WaitForSeconds(enemyTurnDelaySeconds);
+
+            ExecuteEnemyTurn();
+
+            enemyTurnRoutine = null;
+
+            if (!battleStarted)
+                yield break;
 
             if (combatState.IsPlayerDead)
             {
                 FinishBattle(playerWon: false);
-                return;
+                yield break;
             }
+
+            BeginPlayerTurn();
+        }
+
+        private void ApplyPlayerPassiveRegen()
+        {
+            if (context?.Player == null)
+                return;
+
+            // LP does not regenerate.
+            var hp = Mathf.Clamp(combatState.PlayerHp + Mathf.Max(0, context.Player.RegenHpPerTurn), 0, context.Player.MaxHP);
+            var mp = Mathf.Clamp(combatState.PlayerMp + Mathf.Max(0, context.Player.RegenMpPerTurn), 0, context.Player.MaxMP);
+            var sp = Mathf.Clamp(combatState.PlayerSp + Mathf.Max(0, context.Player.RegenSpPerTurn), 0, context.Player.MaxSP);
+
+            combatState = combatState
+                .WithPlayerHp(hp)
+                .WithPlayerMp(mp)
+                .WithPlayerSp(sp);
+        }
+
+        private void ApplyEnemyPassiveRegen()
+        {
+            if (context?.Enemy == null)
+                return;
+
+            // LP does not regenerate.
+            var hp = Mathf.Clamp(combatState.EnemyHp + Mathf.Max(0, context.Enemy.regenHpPerTurn), 0, context.Enemy.maxHp);
+            var mp = Mathf.Clamp(combatState.EnemyMp + Mathf.Max(0, context.Enemy.regenMpPerTurn), 0, context.Enemy.maxMp);
+            var sp = Mathf.Clamp(combatState.EnemySp + Mathf.Max(0, context.Enemy.regenSpPerTurn), 0, context.Enemy.maxSp);
+
+            combatState = combatState
+                .WithEnemyHp(hp)
+                .WithEnemyMp(mp)
+                .WithEnemySp(sp);
         }
 
         private void ExecuteEnemyTurn()
@@ -300,6 +406,8 @@ namespace Game.Battle
         private void FinishBattle(bool playerWon)
         {
             battleStarted = false;
+            turnPhase = TurnPhase.BattleOver;
+            hudController?.SetInputEnabled(false);
 
             // TODO: Здесь позже подключим реальную генерацию наград (drops/gold) из EnemyData.
             var result = new BattleResultData(

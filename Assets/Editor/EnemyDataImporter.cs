@@ -63,6 +63,10 @@ public class EnemyDataImporter : EditorWindow
 
             asset.allowedActions = ParseAllowedActions(enemy.allowedActions);
 
+            asset.regenHpPerTurn = enemy.regenHpPerTurn;
+            asset.regenMpPerTurn = enemy.regenMpPerTurn;
+            asset.regenSpPerTurn = enemy.regenSpPerTurn;
+
             if (AssetDatabase.GetAssetPath(asset) == string.Empty)
             {
                 AssetDatabase.CreateAsset(asset, assetPath);
@@ -133,6 +137,11 @@ public class EnemyDataImporter : EditorWindow
         public int sp;
         public int lp;
         public int attack;
+
+        // Passive regen per enemy turn (LP does not regenerate).
+        public int regenHpPerTurn;
+        public int regenMpPerTurn;
+        public int regenSpPerTurn;
 
         // Optional: restrict what the enemy can do.
         // Example: ["FastAttack","HeavyAttack"] or ["FireSpell","DarkSpell"].

@@ -1,5 +1,8 @@
 # UI API Reference / Справочник UI API
 
+See also:
+- `BATTLE_API_REFERENCE.md` — battle architecture, contexts, actions, enemy AI/difficulty.
+
 ## ConfirmDialog
 
 **RU:**

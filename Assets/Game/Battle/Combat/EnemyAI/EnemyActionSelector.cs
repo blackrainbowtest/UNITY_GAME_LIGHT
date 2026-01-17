@@ -81,10 +81,10 @@ namespace Game.Battle.Combat.EnemyAI
                     return ChooseWeighted(rng, weak, strong, weakChance: 0.60f)?.Id;
 
                 case EnemyDifficulty.Hard:
-                    return ChooseMostEffective(candidates)?.Id;
+                    return ChooseMostEffective(enemy, state, candidates, rng)?.Id;
 
                 default:
-                    return ChooseMostEffective(candidates)?.Id;
+                    return ChooseMostEffective(enemy, state, candidates, rng)?.Id;
             }
         }
 
@@ -106,25 +106,83 @@ namespace Game.Battle.Combat.EnemyAI
             return ChooseRandom(rng, strong);
         }
 
-        private static CombatActionData ChooseMostEffective(List<CombatActionData> candidates)
+        private static CombatActionData ChooseMostEffective(EnemyData enemy, CombatState state, List<CombatActionData> candidates, Random rng)
         {
+            if (candidates == null || candidates.Count == 0)
+                return null;
+
+            // 1) If we can kill the player now, do it.
+            // Among lethal options, prefer the lowest relative cost (so hard AI doesn't waste resources).
+            CombatActionData bestLethal = null;
+            var bestLethalScore = double.NegativeInfinity;
+            foreach (var c in candidates)
+            {
+                if (c.HpDamage < state.PlayerHp)
+                    continue;
+
+                var score = -RelativeCost(enemy, c);
+                if (score > bestLethalScore)
+                {
+                    bestLethalScore = score;
+                    bestLethal = c;
+                }
+            }
+            if (bestLethal != null)
+                return bestLethal;
+
+            // 2) Otherwise, maximize damage-per-cost with scarcity.
+            // Score = damage / (epsilon + relativeCost), where relativeCost is normalized by enemy max resources.
             CombatActionData best = null;
-            var bestScore = int.MinValue;
+            var bestScore = double.NegativeInfinity;
 
             foreach (var c in candidates)
             {
-                // "Maximally effective" for MVP: maximize raw damage.
-                // Later we can improve with status effects, resistances, etc.
-                var score = c.HpDamage;
+                var cost = RelativeCost(enemy, c);
+                var score = c.HpDamage / (0.10 + cost);
 
                 if (score > bestScore)
                 {
                     bestScore = score;
                     best = c;
                 }
+                else if (Math.Abs(score - bestScore) < 0.0001 && rng != null)
+                {
+                    // Tie-breaker: randomize a bit to avoid always repeating the same action.
+                    if (rng.NextDouble() < 0.5)
+                        best = c;
+                }
             }
 
             return best;
+        }
+
+        private static double RelativeCost(EnemyData enemy, CombatActionData action)
+        {
+            // Normalize costs by max pools. If max is 0 (resource not used), treat any cost as very expensive.
+            // Also apply scarcity: spending from a low current pool is effectively more costly.
+
+            double MpTerm()
+            {
+                if (action.MpCost <= 0) return 0.0;
+                if (enemy.maxMp <= 0) return 1000.0;
+                return (double)action.MpCost / enemy.maxMp;
+            }
+
+            double SpTerm()
+            {
+                if (action.SpCost <= 0) return 0.0;
+                if (enemy.maxSp <= 0) return 1000.0;
+                return (double)action.SpCost / enemy.maxSp;
+            }
+
+            double LpTerm()
+            {
+                if (action.LpCost <= 0) return 0.0;
+                if (enemy.maxLp <= 0) return 1000.0;
+                return (double)action.LpCost / enemy.maxLp;
+            }
+
+            return MpTerm() + SpTerm() + LpTerm();
         }
 
         private static CombatActionData ChooseRandom(Random rng, List<CombatActionData> list)

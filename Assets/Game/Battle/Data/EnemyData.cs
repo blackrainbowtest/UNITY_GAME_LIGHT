@@ -23,6 +23,11 @@ namespace Game.Battle
 
         [Header("AI")]
         public CombatActionId[] allowedActions;
+
+        [Header("Regen (per enemy turn)")]
+        public int regenHpPerTurn;
+        public int regenMpPerTurn;
+        public int regenSpPerTurn;
         // Добавляй новые поля по мере необходимости
     }
 }
