@@ -63,13 +63,33 @@ public class BattleSceneEntryPoint : MonoBehaviour
             return new PlayerCombatSnapshot(100, 100, 50, 50, 30, 30, 10, 10);
         }
         var stats = save.player.stats;
+
+        var currentMp = stats.mp;
+        var currentSp = stats.sp;
+
+        // NOTE: Частая причина нулей — старые сейвы без новых полей.
+        // Для старта боя безопасно поднимать текущие ресурсы до максимума,
+        // если max задан, а current == 0.
+        if (currentMp == 0 && stats.mpMax > 0)
+        {
+            Debug.LogWarning("[BattleSceneEntryPoint] stats.mp == 0 при stats.mpMax > 0. Используем mpMax как текущий MP для старта боя (возможен старый сейв)."
+            );
+            currentMp = stats.mpMax;
+        }
+        if (currentSp == 0 && stats.spMax > 0)
+        {
+            Debug.LogWarning("[BattleSceneEntryPoint] stats.sp == 0 при stats.spMax > 0. Используем spMax как текущий SP для старта боя (возможен старый сейв)."
+            );
+            currentSp = stats.spMax;
+        }
+
         return new PlayerCombatSnapshot(
             stats.hpMax,
             stats.hp,
             stats.mpMax,
-            stats.mp,
+            currentMp,
             stats.spMax,
-            stats.sp,
+            currentSp,
             stats.lpMax,
             stats.lp
         );

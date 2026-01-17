@@ -16,9 +16,13 @@ namespace Game.Battle.Combat
         public int EnemySp { get; }
         public int EnemyLp { get; }
 
+
+        public bool PlayerBlockedLastTurn { get; }
+
         public CombatState(
             int playerHp, int playerMp, int playerSp, int playerLp,
-            int enemyHp, int enemyMp, int enemySp, int enemyLp)
+            int enemyHp, int enemyMp, int enemySp, int enemyLp,
+            bool playerBlockedLastTurn)
         {
             PlayerHp = playerHp;
             PlayerMp = playerMp;
@@ -29,13 +33,29 @@ namespace Game.Battle.Combat
             EnemyMp = enemyMp;
             EnemySp = enemySp;
             EnemyLp = enemyLp;
+
+            PlayerBlockedLastTurn = playerBlockedLastTurn;
         }
 
+
+
         public CombatState WithPlayerHp(int value)
-            => new CombatState(value, PlayerMp, PlayerSp, PlayerLp, EnemyHp, EnemyMp, EnemySp, EnemyLp);
+            => new CombatState(
+                value, PlayerMp, PlayerSp, PlayerLp,
+                EnemyHp, EnemyMp, EnemySp, EnemyLp,
+                PlayerBlockedLastTurn);
 
         public CombatState WithEnemyHp(int value)
-            => new CombatState(PlayerHp, PlayerMp, PlayerSp, PlayerLp, value, EnemyMp, EnemySp, EnemyLp);
+            => new CombatState(
+                PlayerHp, PlayerMp, PlayerSp, PlayerLp,
+                value, EnemyMp, EnemySp, EnemyLp,
+                PlayerBlockedLastTurn);
+
+        public CombatState WithPlayerBlockedLastTurn(bool value)
+            => new CombatState(
+                PlayerHp, PlayerMp, PlayerSp, PlayerLp,
+                EnemyHp, EnemyMp, EnemySp, EnemyLp,
+                value);
 
         public bool IsPlayerDead => PlayerHp <= 0;
         public bool IsEnemyDead => EnemyHp <= 0;

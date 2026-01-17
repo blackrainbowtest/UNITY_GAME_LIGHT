@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UDA2.SceneFlow;
 
 namespace UDA2.Core
 {
@@ -32,7 +33,10 @@ namespace UDA2.Core
             }
 
             // Переход в первую игровую сцену
-            SceneManager.LoadScene(mainSceneName);
+            if (SceneFlowManager.Instance != null)
+                SceneFlowManager.Instance.LoadScene(mainSceneName);
+            else
+                SceneManager.LoadScene(mainSceneName);
         }
     }
 

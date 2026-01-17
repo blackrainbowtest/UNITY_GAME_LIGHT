@@ -68,6 +68,7 @@ public static class SaveSlotsManager
         var path = GetSlotPath(slotId);
         if (!File.Exists(path)) return null;
         var json = File.ReadAllText(path);
-        return JsonUtility.FromJson<SaveData>(json);
+        var save = JsonUtility.FromJson<SaveData>(json);
+        return SaveDataMigration.Apply(save);
     }
 }

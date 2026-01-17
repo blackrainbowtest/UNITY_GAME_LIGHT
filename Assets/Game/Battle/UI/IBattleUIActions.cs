@@ -5,6 +5,7 @@ namespace Game.Battle.UI
     /// </summary>
     public interface IBattleUIActions
     {
+        void OnCombatActionSelected(Game.Battle.Combat.Actions.CombatActionId actionId);
         void OnAttackPressed();
         void OnItemPressed();
         void OnExitPressed();

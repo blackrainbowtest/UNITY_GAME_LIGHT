@@ -152,7 +152,11 @@ public class IntroController : MonoBehaviour
         // GameState.Instance is the single source of truth for current save data in the session.
         if (GameState.Instance.CurrentSave == null)
         {
-            GameState.Instance.CurrentSave = new SaveData();
+            string versionPath = System.IO.Path.Combine(Application.dataPath, "..", "version.txt");
+            string version = System.IO.File.Exists(versionPath)
+                ? System.IO.File.ReadAllText(versionPath).Trim()
+                : "0.0.1";
+            GameState.Instance.CurrentSave = SaveData.CreateDefault(version);
         }
 
         // Null/empty check for scene name
@@ -188,6 +192,7 @@ public class IntroController : MonoBehaviour
         // Use a named constant for the save slot index
         SaveSlotsManager.SaveToSlot(DefaultIntroSaveSlot, GameState.Instance.CurrentSave);
         BattleEntryContext.Set(BattleMode.Tutorial);
+        Game.Battle.BattleExitContext.Set(new Game.Battle.BattleExitData("StartCityScene"));
 
         // Transition to the first fight scene using the scene loader if available
         if (UDA2.SceneFlow.SceneFlowManager.Instance != null)

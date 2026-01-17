@@ -8,7 +8,10 @@ namespace UDA2.Bootstrap
         private void Start()
         {
             // После инициализации менеджеров загружаем SplashScene
-            UnityEngine.SceneManagement.SceneManager.LoadScene("SplashScene");
+            if (SceneFlowManager.Instance != null)
+                SceneFlowManager.Instance.LoadScene("SplashScene");
+            else
+                UnityEngine.SceneManagement.SceneManager.LoadScene("SplashScene");
         }
     }
 }

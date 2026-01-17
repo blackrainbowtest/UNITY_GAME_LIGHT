@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Game.Battle.UI;
+using Game.Battle.Combat.Actions;
 
 public class BattleHUDController : MonoBehaviour, IBattleHUDView
 {
@@ -8,6 +9,13 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
     [SerializeField] private Button attackButton;
     [SerializeField] private Button itemButton;
     [SerializeField] private Button exitButton;
+
+    [Header("Menus")]
+    [SerializeField] private GameObject rootMenu;
+    [SerializeField] private GameObject attackMenu;
+    [SerializeField] private GameObject actionsMenu;
+    [SerializeField] private GameObject magicMenu;
+    [SerializeField] private GameObject seductionMenu;
 
     [Header("HP Bars")]
     [SerializeField] private StatBarView playerHpBar;
@@ -25,9 +33,94 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
     {
         this.actions = actions;
 
-        attackButton.onClick.AddListener(() => actions.OnAttackPressed());
+        // Root menu buttons should switch UI, not execute actions directly.
+        // Actual combat actions are sent by submenu buttons.
+        attackButton.onClick.AddListener(OnAttackMenuPressed);
         itemButton.onClick.AddListener(() => actions.OnItemPressed());
         exitButton.onClick.AddListener(() => actions.OnExitPressed());
+
+        ShowRootMenu();
+    }
+
+    public void ShowRootMenu()
+    {
+        if (rootMenu != null) rootMenu.SetActive(true);
+        if (attackMenu != null) attackMenu.SetActive(false);
+        if (actionsMenu != null) actionsMenu.SetActive(false);
+        if (magicMenu != null) magicMenu.SetActive(false);
+        if (seductionMenu != null) seductionMenu.SetActive(false);
+    }
+
+    public void ShowAttackMenu()
+    {
+        if (rootMenu != null) rootMenu.SetActive(false);
+        if (attackMenu != null) attackMenu.SetActive(true);
+        if (actionsMenu != null) actionsMenu.SetActive(false);
+        if (magicMenu != null) magicMenu.SetActive(false);
+        if (seductionMenu != null) seductionMenu.SetActive(false);
+    }
+
+    public void ShowActionsMenu()
+    {
+        if (rootMenu != null) rootMenu.SetActive(false);
+        if (attackMenu != null) attackMenu.SetActive(false);
+        if (actionsMenu != null) actionsMenu.SetActive(true);
+        if (magicMenu != null) magicMenu.SetActive(false);
+        if (seductionMenu != null) seductionMenu.SetActive(false);
+    }
+
+    public void ShowMagicMenu()
+    {
+        if (rootMenu != null) rootMenu.SetActive(false);
+        if (attackMenu != null) attackMenu.SetActive(false);
+        if (actionsMenu != null) actionsMenu.SetActive(false);
+        if (magicMenu != null) magicMenu.SetActive(true);
+        if (seductionMenu != null) seductionMenu.SetActive(false);
+    }
+
+    public void ShowSeductionMenu()
+    {
+        if (rootMenu != null) rootMenu.SetActive(false);
+        if (attackMenu != null) attackMenu.SetActive(false);
+        if (actionsMenu != null) actionsMenu.SetActive(false);
+        if (magicMenu != null) magicMenu.SetActive(false);
+        if (seductionMenu != null) seductionMenu.SetActive(true);
+    }
+
+    // ===== Root menu button handlers =====
+
+    public void OnAttackMenuPressed() => ShowAttackMenu();
+    public void OnActionsMenuPressed() => ShowActionsMenu();
+    public void OnMagicMenuPressed() => ShowMagicMenu();
+    public void OnSeductionMenuPressed() => ShowSeductionMenu();
+    public void OnBackPressed() => ShowRootMenu();
+
+    // ===== Submenu action button handlers =====
+
+    public void OnFastAttackPressed() => SelectAction(CombatActionId.FastAttack);
+    public void OnNormalAttackPressed() => SelectAction(CombatActionId.NormalAttack);
+    public void OnHeavyAttackPressed() => SelectAction(CombatActionId.HeavyAttack);
+    public void OnCounterAttackPressed() => SelectAction(CombatActionId.CounterAttack);
+
+    public void OnFireSpellPressed() => SelectAction(CombatActionId.FireSpell);
+    public void OnIceSpellPressed() => SelectAction(CombatActionId.IceSpell);
+    public void OnHolySpellPressed() => SelectAction(CombatActionId.HolySpell);
+    public void OnDarkSpellPressed() => SelectAction(CombatActionId.DarkSpell);
+
+    public void OnSeductionAct1Pressed() => SelectAction(CombatActionId.SeductionAct1);
+    public void OnSeductionAct2Pressed() => SelectAction(CombatActionId.SeductionAct2);
+    public void OnSeductionAct3Pressed() => SelectAction(CombatActionId.SeductionAct3);
+
+    private void SelectAction(CombatActionId actionId)
+    {
+        if (actions == null)
+        {
+            Debug.LogError("BattleHUDController: actions is not set");
+            return;
+        }
+
+        actions.OnCombatActionSelected(actionId);
+        ShowRootMenu();
     }
 
     public void UpdateState(BattleHUDState state)
