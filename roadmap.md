@@ -10,7 +10,8 @@
 ### Stage 1 — Scenes and Locations
 - 🔵 Main Menu
 - 🔵 Settings Menu
-- 🟡 Intro Scene
+- 🟢 Intro Scene
+- 🔵 Fight Scene
 - ⬜ Slum Scene
 - ⬜ Lair Scene
 - ⬜ Adventurer's Guild Scene
@@ -26,19 +27,20 @@
 ### Stage 2 — UI Basics & Interaction
 - 🟢 Styled buttons
 - 🟢 Click handling
-- 🟡 Scrollbar support
+- 🟢 Scrollbar support
+- 🟢 Longpress support
 
 ### Stage 3 — Backgrounds and Animations
-- 🟡 Main menu background
-- 🟡 Tigress in the main menu background
-- 🟡 Tigress animation
+- 🟢 Main menu background
+- 🟢 Tigress in the main menu background
+- 🔵 Tigress animation
 
 ### Stage 4 — UI and Interactivity
-- ⬜ Contextual location buttons
 - ⬜ Navigation buttons
 - ⬜ Basic interactions (take / enter)
-- ⬜ In-game menu (GameMenu)
-- ⬜ "Home" button in the game menu
+- 🔵 In-game menu (GameMenu)
+- 🟢 "Home" button in the game menu
+- 🟢 Comfirm modal window
 
 ### Stage 5 — Player Profile and Inventory
 - 🟡 ProfileOverlay (prefab with tabs)
@@ -54,10 +56,11 @@
 - ⬜ Tutorial soft-toggle (on/off)
 
 ### Stage 7 — Save and Load Systems
-- ⬜ Save game system
-- ⬜ Save scene
-- ⬜ Load game system
-- ⬜ Load scene
+- 🟢 Save game system
+- 🟢 Save scene
+- 🟢 Load game system
+- 🟢 Load scene
+- 🟢 Autosave system
 
 ### Stage 8 — Items, Recipes, Crafting
 - 🟡 Item system (Dictionary / Classes)
@@ -77,18 +80,22 @@
 - ⬜ Tutorial highlights for new elements
 
 ### Stage 11 — Audio and Localization
-- 🟡 Sound system (Music + SFX)
-- 🟡 Localization system
+- 🔵 Sound system (Music + SFX)
+- 🟢 Music audio mixer
+- 🔵 Localization system
+- ⬜ Action sfx sounds
+- ⬜ Fight sfx sounds
 
 ### Stage 12 — DevTools and Debugging
-- 🟡 DevLogs
+- 🟢 DevLogs
 - ⬜ DevTools
 - ⬜ DebugOverlay
-- ⬜ Autosave system
 
 ### Stage 13 — NPCs
-- 🔵 Crystal Wolfkin
-- 🟡 Crystal Slime
+- ⬜ Crystal Wolfkin
+- ⬜ Crystal Slime
+- 🟡 Goblin (default)
+- 🟡 Slime (default)
 - ⬜ Crystal Rat
 
 ### Stage 14 — Professions & Advanced Crafting
