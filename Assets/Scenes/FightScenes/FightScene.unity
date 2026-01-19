@@ -8821,7 +8821,7 @@ MonoBehaviour:
   battleController: {fileID: 1904948090}
   useDebugSetup: 0
   debugMode: 1
-  debugEnemy: {fileID: 11400000, guid: 20fc20ce415a1e0428a8ed3c9babc603, type: 2}
+  debugEnemy: {fileID: 11400000, guid: 4c0f8d9bb1b84f1e9b8ff3e2b8e8d0a1, type: 2}
   debugEnemyDifficulty: 1
   overridePlayerSnapshot: 0
   debugPlayer:
@@ -13628,7 +13628,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 60, y: -40}
+  m_AnchoredPosition: {x: 30, y: -40}
   m_SizeDelta: {x: 120, y: 120}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1990467967

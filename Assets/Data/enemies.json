@@ -32,5 +32,22 @@
     "regenMpPerTurn": 2,
     "regenSpPerTurn": 4,
     "allowedActions": ["FastAttack", "NormalAttack", "HeavyAttack", "FireSpell"]
+  },
+  {
+    "enemyName": "TrainingDummy",
+    "iconPath": "Assets/Art/Icons/slime.png",
+    "hp": 999,
+    "mp": 0,
+    "sp": 0,
+    "lp": 0,
+    "maxHp": 999,
+    "maxMp": 0,
+    "maxSp": 0,
+    "maxLp": 0,
+    "attack": 1,
+    "regenHpPerTurn": 0,
+    "regenMpPerTurn": 0,
+    "regenSpPerTurn": 0,
+    "allowedActions": ["NormalAttack"]
   }
 ]
