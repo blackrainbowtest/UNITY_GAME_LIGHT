@@ -109,3 +109,9 @@
 - ⬜ Crafting UI extensions
 
 Кристальный волкобраз - Crystal Wolfkin
+
+#### What am I working on now
+
+Completion of the minimum implementation of the combat system
+Creating the first main location, the ruined city
+Creating locations for this city /flea market, broken shelter, small shop, tavern, adventurer's guild/
