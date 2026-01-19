@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Game.Battle.UI;
 using Game.Battle.Combat.Actions;
+using Game.Battle.Statuses;
 
 public class BattleHUDController : MonoBehaviour, IBattleHUDView
 {
@@ -34,6 +36,9 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
     [SerializeField] private StatBarView enemyMpBar;
     [SerializeField] private StatBarView enemySpBar;
     [SerializeField] private StatBarView enemyLpBar;
+
+    [Header("Statuses (Optional)")]
+    [SerializeField] private BattleStatusPanelView statusPanel;
 
     private IBattleUIActions actions;
     private CanvasGroup canvasGroup;
@@ -226,6 +231,14 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
     public void UpdateState(BattleHUDState state)
     {
         UpdateState(state, showDeltas: true);
+    }
+
+    public void UpdateStatuses(IReadOnlyList<StatusInstance> player, IReadOnlyList<StatusInstance> enemy)
+    {
+        if (statusPanel == null)
+            return;
+
+        statusPanel.Render(player, enemy);
     }
 
     public void UpdateState(BattleHUDState state, bool showDeltas)
