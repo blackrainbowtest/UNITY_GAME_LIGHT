@@ -267,9 +267,16 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
         if (bar == null)
             return;
 
-        if (max > 0)
-            bar.SetNormalized((float)current / max);
+        // Important: if max == 0, we must still update the UI.
+        // Otherwise the bar keeps previous fill/value and looks like a random/default number.
+        if (max <= 0)
+        {
+            bar.SetNormalized(0f);
+            bar.SetValue(0, 0);
+            return;
+        }
 
+        bar.SetNormalized((float)current / max);
         bar.SetValue(current, max);
 
         if (showDelta)

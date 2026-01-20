@@ -45,9 +45,26 @@
     "maxSp": 0,
     "maxLp": 0,
     "attack": 1,
-    "regenHpPerTurn": 0,
+    "regenHpPerTurn": 1,
     "regenMpPerTurn": 0,
     "regenSpPerTurn": 0,
+    "allowedActions": ["NormalAttack"]
+  },
+  {
+    "enemyName": "Slaver",
+    "iconPath": "Assets/GameData/Enemies/Sprites/slaver_human/slaver human front.png",
+    "hp": 60,
+    "mp": 0,
+    "sp": 40,
+    "lp": 15,
+    "maxHp": 60,
+    "maxMp": 0,
+    "maxSp": 40,
+    "maxLp": 20,
+    "attack": 6,
+    "regenHpPerTurn": 2,
+    "regenMpPerTurn": 0,
+    "regenSpPerTurn": 2,
     "allowedActions": ["NormalAttack"]
   }
 ]

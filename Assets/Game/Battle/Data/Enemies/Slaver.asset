@@ -10,20 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6d3415c4e97373348a965c5c6181b5ac, type: 3}
-  m_Name: TrainingDummy
+  m_Name: Slaver
   m_EditorClassIdentifier: Assembly-CSharp::Game.Battle.EnemyData
-  enemyName: TrainingDummy
-  icon: {fileID: 0}
-  hp: 999
+  enemyName: Slaver
+  icon: {fileID: 1510118197167999201, guid: 6c24bf73ce1f0784cb98d8bc4b40330b, type: 3}
+  hp: 60
   mp: 0
-  sp: 0
-  lp: 0
-  maxHp: 999
+  sp: 40
+  lp: 15
+  maxHp: 60
   maxMp: 0
-  maxSp: 0
-  maxLp: 0
-  attack: 1
+  maxSp: 40
+  maxLp: 20
+  attack: 6
   allowedActions: 01000000
-  regenHpPerTurn: 1
+  regenHpPerTurn: 2
   regenMpPerTurn: 0
-  regenSpPerTurn: 0
+  regenSpPerTurn: 2

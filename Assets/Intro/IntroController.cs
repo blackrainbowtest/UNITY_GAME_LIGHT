@@ -25,6 +25,7 @@ public class IntroController : MonoBehaviour
 
     [Header("Flow")]
     [SerializeField] private string firstFightSceneName = "FightScene";
+    [SerializeField] private Game.Battle.EnemyData firstFightEnemy;
 
     private int currentIndex = 0;
     private Coroutine autoAdvanceCoroutine;
@@ -192,6 +193,14 @@ public class IntroController : MonoBehaviour
         // Use a named constant for the save slot index
         SaveSlotsManager.SaveToSlot(DefaultIntroSaveSlot, GameState.Instance.CurrentSave);
         BattleEntryContext.Set(BattleMode.Tutorial);
+        var enemyForFirstFight = firstFightEnemy;
+        if (enemyForFirstFight == null)
+            enemyForFirstFight = Resources.Load<Game.Battle.EnemyData>("Enemies/Slaver");
+
+        if (enemyForFirstFight != null)
+            BattleEnemyContext.Set(enemyForFirstFight);
+        else
+            Debug.LogWarning("IntroController: firstFightEnemy is not set and Resources/Enemies/Slaver was not found. BattleSceneEntryPoint will fallback to EnemySpawnTable.");
         Game.Battle.BattleExitContext.Set(new Game.Battle.BattleExitData("StartCityScene"));
 
         // Transition to the first fight scene using the scene loader if available
