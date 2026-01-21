@@ -1,100 +1,220 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*   File: Assets/Editor/Localization/UIStringsCsvImportWindow.cs             */
-/*                                                        /\_/\               */
-/*                                                       ( •.• )              */
-/*   By: unluckydungeonadventure.gmail.com                > ^ <               */
-/*                                                                            */
-/*   Created: 2026/01/08 16:21:10 by UDA                                      */
-/*   Updated: 2026/01/08 16:21:10 by UDA                                      */
-/*                                                                            */
-/* ************************************************************************** */
+  ____  ____  _     ___ _____ ____  _   _    _    ____  ____    ____ _____ _   _ ____ ___ ___  
+ / ___||  _ \| |   |_ _|_   _/ ___|| | | |  / \  |  _ \|  _ \  / ___|_   _| | | |  _ \_ _/ _ \ 
+ \___ \| |_) | |    | |  | | \___ \| |_| | / _ \ | |_) | | | | \___ \ | | | | | | | | | | | | |
+  ___) |  __/| |___ | |  | |  ___) |  _  |/ ___ \|  _ <| |_| |  ___) || | | |_| | |_| | | |_| |
+ |____/|_|   |_____|___| |_| |____/|_| |_/_/   \_\_| \_\____/  |____/ |_|  \___/|____/___\___/ 
+
+/* ******************************************************************************************************** */
+/*                                                                                                          */
+/*   File: Assets/Editor/Localization/UIStringsCsvImportWindow.cs                                           */
+/*                                                        /\_/\                                             */
+/*                                                       ( •.• )                                            */
+/*   By: unluckydungeonadventure.gmail.com                > ^ <                                             */
+/*                                                                                                          */
+/*   Created: 2026/01/08 16:21:10 by UDA                                                                    */
+/*   Updated: 2026/01/21 15:48:21 by UDA                                                                    */
+/*                                                                                                          */
+/* ******************************************************************************************************** */
 
 using UnityEngine;
 using UnityEditor;
+using System.Text;
+using System.IO;
 
+/// <summary>
+/// Editor window for importing UIStringsData from CSV files.
+/// 
+/// This tool acts purely as an orchestrator:
+/// - validates input
+/// - delegates parsing
+/// - delegates data application to UIStringsData
+/// </summary>
 public class UIStringsCsvImportWindow : EditorWindow
 {
     private TextAsset csvFile;
     private UIStringsData target;
 
+    // Editor-only localization conventions.
+    private const string CsvFolder =
+        "Assets/Data/Localization/CSV";
+
+    private const string AssetFolder =
+        "Assets/Data/Localization/Assets";
+
     [MenuItem("Tools/Localization/Import UI Strings from CSV")]
     public static void ShowWindow()
     {
-        GetWindow<UIStringsCsvImportWindow>("UI Strings CSV Importer");
+        GetWindow<UIStringsCsvImportWindow>(
+            "UI Strings CSV Importer"
+        );
     }
 
     private void OnGUI()
     {
-csvFile = (TextAsset)EditorGUILayout.ObjectField("CSV File", csvFile, typeof(TextAsset), false);
-        target = (UIStringsData)EditorGUILayout.ObjectField("Target Asset", target, typeof(UIStringsData), false);
+        DrawSingleImportSection();
 
-        using (new EditorGUI.DisabledScope(csvFile == null || target == null))
+        EditorGUILayout.Space();
+
+        DrawBatchImportSection();
+    }
+
+    private void DrawSingleImportSection()
+    {
+        csvFile = (TextAsset)EditorGUILayout.ObjectField(
+            "CSV File",
+            csvFile,
+            typeof(TextAsset),
+            false
+        );
+
+        target = (UIStringsData)EditorGUILayout.ObjectField(
+            "Target Asset",
+            target,
+            typeof(UIStringsData),
+            false
+        );
+
+        using (new EditorGUI.DisabledScope(
+                   csvFile == null || target == null))
         {
             if (GUILayout.Button("Import"))
             {
-                if (!UIStringsCsvParser.TryParse(csvFile.text, out var parsed, out var error))
-                {
-                    EditorUtility.DisplayDialog("Error", error, "OK");
-                    return;
-                }
-
-                if (!target.EditorReimportFromCsv("Assets/Data/Localization/CSV", out error))
-                {
-                    EditorUtility.DisplayDialog("Error", error, "OK");
-                    return;
-                }
-
-                AssetDatabase.SaveAssets();
+                ImportSingle(csvFile, target);
             }
         }
+    }
 
-        EditorGUILayout.Space();
-        if (GUILayout.Button("Import ALL CSVs in folder"))
+    private void DrawBatchImportSection()
+    {
+        if (!GUILayout.Button("Import ALL CSVs in folder"))
+            return;
+
+        ImportAllFromFolder();
+    }
+
+    /// <summary>
+    /// Imports a single CSV into a target UIStringsData asset.
+    /// </summary>
+    private void ImportSingle(TextAsset csv, UIStringsData asset)
+    {
+        if (!UIStringsCsvParser.TryParse(
+                csv.text,
+                out _,
+                out var error))
         {
-            int imported = 0;
-            int failed = 0;
-            string folder = "Assets/Data/Localization/CSV";
-            string assetFolder = "Assets/Data/Localization/Assets";
-            var csvGuids = AssetDatabase.FindAssets("t:TextAsset", new[] { folder });
-            System.Text.StringBuilder failReport = new System.Text.StringBuilder();
-            foreach (var guid in csvGuids)
-            {
-                string csvPath = AssetDatabase.GUIDToAssetPath(guid);
-                string assetName = System.IO.Path.GetFileNameWithoutExtension(csvPath);
-                string assetPath = System.IO.Path.Combine(assetFolder, assetName + ".asset");
-                var asset = AssetDatabase.LoadAssetAtPath<UIStringsData>(assetPath);
-                var csv = AssetDatabase.LoadAssetAtPath<TextAsset>(csvPath);
-                if (asset == null)
-                {
-                    failed++;
-                    failReport.AppendLine($"{assetName}: asset not found");
-                    continue;
-                }
-                if (csv == null)
-                {
-                    failed++;
-                    failReport.AppendLine($"{assetName}: CSV not found");
-                    continue;
-                }
-                if (!UIStringsCsvParser.TryParse(csv.text, out var parsed, out var error))
-                {
-                    failed++;
-                    failReport.AppendLine($"{assetName}: {error ?? "parse error"}");
-                    continue;
-                }
-                string dummy;
-                if (!asset.EditorReimportFromCsv(folder, out dummy))
-                {
-                    failed++;
-                    failReport.AppendLine($"{assetName}: {dummy ?? "import error"}");
-                    continue;
-                }
-                imported++;
-            }
-            AssetDatabase.SaveAssets();
-            string failMsg = failReport.Length > 0 ? $"\n\nFailed:\n{failReport}" : "";
-            EditorUtility.DisplayDialog("Batch Import", $"Imported: {imported}\nFailed: {failed}{failMsg}", "OK");
+            EditorUtility.DisplayDialog(
+                "Error",
+                error,
+                "OK"
+            );
+            return;
         }
+
+        // NOTE:
+        // Parsed data is intentionally not passed directly.
+        // UIStringsData owns the authoritative import logic.
+        if (!asset.EditorReimportFromCsv(
+                CsvFolder,
+                out error))
+        {
+            EditorUtility.DisplayDialog(
+                "Error",
+                error,
+                "OK"
+            );
+            return;
+        }
+
+        AssetDatabase.SaveAssets();
+    }
+
+    /// <summary>
+    /// Batch-imports all CSV files and reports detailed failures.
+    /// </summary>
+    private void ImportAllFromFolder()
+    {
+        int imported = 0;
+        int failed = 0;
+
+        var failReport = new StringBuilder();
+
+        var csvGuids = AssetDatabase.FindAssets(
+            "t:TextAsset",
+            new[] { CsvFolder }
+        );
+
+        foreach (var guid in csvGuids)
+        {
+            string csvPath =
+                AssetDatabase.GUIDToAssetPath(guid);
+
+            string assetName =
+                Path.GetFileNameWithoutExtension(csvPath);
+
+            string assetPath =
+                $"{AssetFolder}/{assetName}.asset";
+
+            var asset =
+                AssetDatabase.LoadAssetAtPath<UIStringsData>(assetPath);
+
+            var csv =
+                AssetDatabase.LoadAssetAtPath<TextAsset>(csvPath);
+
+            if (asset == null)
+            {
+                failed++;
+                failReport.AppendLine(
+                    $"{assetName}: asset not found"
+                );
+                continue;
+            }
+
+            if (csv == null)
+            {
+                failed++;
+                failReport.AppendLine(
+                    $"{assetName}: CSV not found"
+                );
+                continue;
+            }
+
+            if (!UIStringsCsvParser.TryParse(
+                    csv.text,
+                    out _,
+                    out var error))
+            {
+                failed++;
+                failReport.AppendLine(
+                    $"{assetName}: {error ?? "parse error"}"
+                );
+                continue;
+            }
+
+            if (!asset.EditorReimportFromCsv(
+                    CsvFolder,
+                    out error))
+            {
+                failed++;
+                failReport.AppendLine(
+                    $"{assetName}: {error ?? "import error"}"
+                );
+                continue;
+            }
+
+            imported++;
+        }
+
+        AssetDatabase.SaveAssets();
+
+        string failMsg =
+            failReport.Length > 0
+                ? $"\n\nFailed:\n{failReport}"
+                : string.Empty;
+
+        EditorUtility.DisplayDialog(
+            "Batch Import",
+            $"Imported: {imported}\nFailed: {failed}{failMsg}",
+            "OK"
+        );
     }
 }
