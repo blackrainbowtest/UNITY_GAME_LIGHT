@@ -10,6 +10,7 @@ namespace Game.Battle.Visual
 
         [Header("Animations")]
         [SerializeField] private SpriteFrameAnimator animator;
+        [SerializeField] private IdleAnimation idleAnimation;
         [SerializeField] private Sprite[] idleFrames;
 
         private void Reset()
@@ -32,7 +33,32 @@ namespace Game.Battle.Visual
             if (animator == null)
                 return;
 
-            animator.PlayLoop(idleFrames);
+            var frames = ResolveIdleFrames(out float fps);
+            if (frames == null || frames.Length == 0)
+                return;
+
+            if (fps > 0f)
+                animator.SetFramesPerSecond(fps);
+
+            animator.PlayLoop(frames);
+        }
+
+        public void SetIdleAnimation(IdleAnimation animation)
+        {
+            idleAnimation = animation;
+        }
+
+        private Sprite[] ResolveIdleFrames(out float fps)
+        {
+            fps = 0f;
+
+            if (idleAnimation != null && idleAnimation.IsValid())
+            {
+                fps = idleAnimation.FrameRate;
+                return idleAnimation.FramesArray;
+            }
+
+            return idleFrames;
         }
 
         public void Stop()

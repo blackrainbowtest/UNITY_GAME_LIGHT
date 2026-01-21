@@ -71,6 +71,11 @@ namespace Game.Battle.Visual
             target = spriteRenderer;
         }
 
+        public void SetFramesPerSecond(float fps)
+        {
+            framesPerSecond = Mathf.Max(0.01f, fps);
+        }
+
         public void PlayLoop(Sprite[] newFrames)
         {
             PlayInternal(newFrames, shouldLoop: true, finished: null);

@@ -6,6 +6,8 @@ namespace Game.Battle
     /// </summary>
     public class PlayerCombatSnapshot
     {
+        public string OutfitId { get; }
+
         public int MaxHP { get; }
         public int CurrentHP { get; }
         public int MaxMP { get; }
@@ -31,8 +33,11 @@ namespace Game.Battle
             int currentLp = 0,
             int regenHpPerTurn = 5,
             int regenMpPerTurn = 2,
-            int regenSpPerTurn = 4)
+            int regenSpPerTurn = 4,
+            string outfitId = "outfit_01")
         {
+            OutfitId = string.IsNullOrEmpty(outfitId) ? "outfit_01" : outfitId;
+
             MaxHP = maxHp;
             CurrentHP = currentHp;
             MaxMP = maxMp;

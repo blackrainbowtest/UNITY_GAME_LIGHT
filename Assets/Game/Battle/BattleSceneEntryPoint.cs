@@ -119,9 +119,10 @@ public class BattleSceneEntryPoint : MonoBehaviour
         {
             Debug.LogError("[BattleSceneEntryPoint] GameState.CurrentSave или player/stats не инициализированы!");
             // Fallback: безопасные значения
-            return new PlayerCombatSnapshot(100, 100, 50, 50, 30, 30, 10, 10);
+            return new PlayerCombatSnapshot(100, 100, 50, 50, 30, 30, 10, 10, outfitId: "outfit_01");
         }
         var stats = save.player.stats;
+        var outfitId = string.IsNullOrEmpty(save.player.outfitId) ? "outfit_01" : save.player.outfitId;
 
         var currentMp = stats.mp;
         var currentSp = stats.sp;
@@ -150,7 +151,8 @@ public class BattleSceneEntryPoint : MonoBehaviour
             stats.spMax,
             currentSp,
             stats.lpMax,
-            stats.lp
+            stats.lp,
+            outfitId: outfitId
         );
     }
 }

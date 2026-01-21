@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
+  m_Name: IdleAnimation
+  m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
+  id: idle_01
+  frames:
+  - {fileID: 21300000, guid: fcafc5a0c44d4d9498c1bd0bdc18a70e, type: 3}
+  - {fileID: 21300000, guid: 3b5f5419bd5dfde46a96056bcbd93358, type: 3}
+  - {fileID: 21300000, guid: 7835babea15da6a4fbf259530af89418, type: 3}
+  - {fileID: 21300000, guid: be64a4ca16c81264393413d154241ba8, type: 3}
+  - {fileID: 21300000, guid: fce434816f6592e47b9fedc4613dbfa1, type: 3}
+  - {fileID: 21300000, guid: 690573d7789a5bd40877c52f4397f17b, type: 3}
+  - {fileID: 21300000, guid: c8aeb0aeabdd8114c8e6cb6aee4545ca, type: 3}
+  - {fileID: 21300000, guid: f7a6287bf736fc2409f3f3ab6ca48c8d, type: 3}
+  - {fileID: 21300000, guid: 1013d1bd82b4bb249b246a081c8aa5d4, type: 3}
+  - {fileID: 21300000, guid: a9954222b5bc7434fb5b75a04016c951, type: 3}
+  - {fileID: 21300000, guid: 141c320b8ac7eb44a91eb809c535da05, type: 3}
+  - {fileID: 21300000, guid: ec2069118efed04419e87ea48bae4a17, type: 3}
+  - {fileID: 21300000, guid: 030599ae63e666e48863a95272068ef4, type: 3}
+  - {fileID: 21300000, guid: 7057a681ef236e043bd4e4e46fa35876, type: 3}
+  frameRate: 12

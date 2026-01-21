@@ -10,6 +10,10 @@ namespace Game.Battle
         public string enemyName;
         public Sprite icon;
 
+        [Header("Visuals")]
+        public string outfitId = "outfit_01";
+        public IdleAnimation idleAnimation;
+
         [Header("Stats")]
         public int hp;
         public int mp;
@@ -29,5 +33,11 @@ namespace Game.Battle
         public int regenMpPerTurn;
         public int regenSpPerTurn;
         // Добавляй новые поля по мере необходимости
+
+        private void OnValidate()
+        {
+            if (string.IsNullOrEmpty(outfitId))
+                outfitId = "outfit_01";
+        }
     }
 }

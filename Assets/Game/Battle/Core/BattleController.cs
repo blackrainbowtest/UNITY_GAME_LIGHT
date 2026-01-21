@@ -115,6 +115,9 @@ namespace Game.Battle
             Debug.Log("Initializing participants");
 
             // Optional visuals: play idle loops if views are wired in the scene.
+            if (enemyView != null && context != null && context.Enemy != null)
+                enemyView.SetIdleAnimation(context.Enemy.idleAnimation);
+
             playerView?.PlayIdle();
             enemyView?.PlayIdle();
         }

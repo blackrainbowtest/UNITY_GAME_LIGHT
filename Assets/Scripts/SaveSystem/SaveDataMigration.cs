@@ -29,6 +29,12 @@ public static class SaveDataMigration
         if (save.inventory == null) { save.inventory = new SaveData.Inventory(); Mark("inventory initialized"); }
         if (save.progress == null) { save.progress = new SaveData.Progress(); Mark("progress initialized"); }
 
+        if (string.IsNullOrEmpty(save.player.outfitId))
+        {
+            save.player.outfitId = "outfit_01";
+            Mark("player.outfitId defaulted");
+        }
+
         var stats = save.player.stats;
 
         // Detect missing max fields (common in older saves or saves created via new SaveData())

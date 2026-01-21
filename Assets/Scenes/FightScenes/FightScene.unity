@@ -4939,8 +4939,8 @@ Transform:
   m_GameObject: {fileID: 625450545}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.75, y: 0.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 988640863}
@@ -5022,7 +5022,7 @@ SpriteRenderer:
   m_SortingLayerID: 804083253
   m_SortingLayer: 2
   m_SortingOrder: 5
-  m_Sprite: {fileID: 21300000, guid: f87a8e672cda3d240b5e406c320adcd1, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -5030,7 +5030,7 @@ SpriteRenderer:
   m_Size: {x: 10.24, y: 10.24}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!114 &625450549
@@ -7743,6 +7743,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 988640863}
+  - component: {fileID: 988640864}
   m_Layer: 0
   m_Name: Anchors
   m_TagString: Untagged
@@ -7767,6 +7768,27 @@ Transform:
   - {fileID: 625450546}
   m_Father: {fileID: 1266566169}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &988640864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 988640862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ce041a3f06a42b429974f367967c3a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Battle.Visual.BattleStageAnchors
+  player: {fileID: 1816342351}
+  enemy: {fileID: 625450546}
+  targetCamera: {fileID: 1639308301}
+  playerX: 0.18
+  enemyX: 0.82
+  y: 0.392
+  playerOffset: {x: 0, y: 0, z: 0}
+  enemyOffset: {x: 0, y: 0, z: 0}
+  updateEveryFrame: 0
 --- !u!1 &1025972774
 GameObject:
   m_ObjectHideFlags: 0
@@ -12084,8 +12106,8 @@ Transform:
   m_GameObject: {fileID: 1816342350}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.06, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.75, y: 0.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 988640863}
@@ -12167,7 +12189,7 @@ SpriteRenderer:
   m_SortingLayerID: 804083253
   m_SortingLayer: 2
   m_SortingOrder: 5
-  m_Sprite: {fileID: 21300000, guid: 9e5d237b667e0f244abb5a0ad4ddf3eb, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -12175,7 +12197,7 @@ SpriteRenderer:
   m_Size: {x: 10.24, y: 10.24}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!114 &1816342354

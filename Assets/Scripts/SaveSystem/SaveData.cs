@@ -25,6 +25,7 @@ public class SaveData
         public int level = 1;
         public int exp = 0;
         public string sceneName;
+        public string outfitId = "outfit_01";
         public Stats stats = new Stats();
         public List<string> statusEffects = new List<string>();
 
@@ -103,6 +104,7 @@ public class SaveData
         save.player.id = System.Guid.NewGuid().ToString();
         save.player.level = 1;
         save.player.exp = 0;
+        save.player.outfitId = "outfit_01";
         save.player.sceneName = string.IsNullOrEmpty(sceneName)
             ? UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
             : sceneName;

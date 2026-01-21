@@ -32,6 +32,9 @@ public class IdleAnimation : ScriptableObject
     // Read-only access to animation frames
     public IReadOnlyList<Sprite> Frames => frames;
 
+    // Direct access for runtime systems that require arrays (no allocations)
+    public Sprite[] FramesArray => frames;
+
     // Frames per second used for playback
     public float FrameRate => frameRate;
 
