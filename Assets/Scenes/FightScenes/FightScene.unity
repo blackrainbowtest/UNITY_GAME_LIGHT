@@ -4960,6 +4960,7 @@ MonoBehaviour:
   spriteRenderer: {fileID: 625450548}
   flipX: 1
   animator: {fileID: 625450549}
+  idleAnimation: {fileID: 11400000, guid: 3d337397ce62bbc43aec799c7c4f89a2, type: 2}
   idleFrames:
   - {fileID: 21300000, guid: f87a8e672cda3d240b5e406c320adcd1, type: 3}
   - {fileID: 21300000, guid: 9e5d237b667e0f244abb5a0ad4ddf3eb, type: 3}
@@ -4975,6 +4976,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 347a2e5b94019e94bb2a069fc5149dfc, type: 3}
   - {fileID: 21300000, guid: 849e3a011e3ddde4c9a1608f58486903, type: 3}
   - {fileID: 21300000, guid: f86ee38238c50fc49bf1505f59ef8b29, type: 3}
+  visualProfile: {fileID: 0}
+  outfitId: outfit_01
 --- !u!212 &625450548
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -12127,6 +12130,7 @@ MonoBehaviour:
   spriteRenderer: {fileID: 1816342353}
   flipX: 0
   animator: {fileID: 1816342354}
+  idleAnimation: {fileID: 11400000, guid: 248f85fff92dcc24d9a743e9bcbe5977, type: 2}
   idleFrames:
   - {fileID: 21300000, guid: f87a8e672cda3d240b5e406c320adcd1, type: 3}
   - {fileID: 21300000, guid: 9e5d237b667e0f244abb5a0ad4ddf3eb, type: 3}
@@ -12142,6 +12146,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 347a2e5b94019e94bb2a069fc5149dfc, type: 3}
   - {fileID: 21300000, guid: 849e3a011e3ddde4c9a1608f58486903, type: 3}
   - {fileID: 21300000, guid: f86ee38238c50fc49bf1505f59ef8b29, type: 3}
+  visualProfile: {fileID: 0}
+  outfitId: outfit_01
 --- !u!212 &1816342353
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -12988,6 +12994,7 @@ MonoBehaviour:
   resultModal: {fileID: 0}
   playerView: {fileID: 1816342352}
   enemyView: {fileID: 625450547}
+  playerVisualProfile: {fileID: 11400000, guid: 7e45624e404755f4da2d7ea28db073ae, type: 2}
   tutorialReturnSceneName: StartCityScene
   defaultReturnSceneName: StartCityScene
   enemyTurnDelaySeconds: 0.35

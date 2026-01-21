@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
-  m_Name: IdleAnimation
+  m_Name: Enemy_slaver_outfit_01_Idle
   m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
   id: idle_01
   frames:

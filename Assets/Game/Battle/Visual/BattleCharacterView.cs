@@ -13,6 +13,10 @@ namespace Game.Battle.Visual
         [SerializeField] private IdleAnimation idleAnimation;
         [SerializeField] private Sprite[] idleFrames;
 
+        [Header("Visual Profile (Optional)")]
+        [SerializeField] private CharacterVisualProfile visualProfile;
+        [SerializeField] private string outfitId = "outfit_01";
+
         private void Reset()
         {
             spriteRenderer = GetComponentInChildren<SpriteRenderer>();
@@ -43,14 +47,44 @@ namespace Game.Battle.Visual
             animator.PlayLoop(frames);
         }
 
+        public void Play(BattleVisualAnimId animId)
+        {
+            if (animator == null)
+                return;
+
+            var anim = ResolveAnimation(animId);
+            if (anim == null || !anim.IsValid())
+                return;
+
+            animator.SetFramesPerSecond(anim.FrameRate);
+            animator.PlayLoop(anim.FramesArray);
+        }
+
         public void SetIdleAnimation(IdleAnimation animation)
         {
             idleAnimation = animation;
         }
 
+        public void SetVisualProfile(CharacterVisualProfile profile)
+        {
+            visualProfile = profile;
+        }
+
+        public void SetOutfitId(string id)
+        {
+            outfitId = string.IsNullOrEmpty(id) ? "outfit_01" : id;
+        }
+
         private Sprite[] ResolveIdleFrames(out float fps)
         {
             fps = 0f;
+
+            var idle = ResolveAnimation(BattleVisualAnimId.Idle);
+            if (idle != null && idle.IsValid())
+            {
+                fps = idle.FrameRate;
+                return idle.FramesArray;
+            }
 
             if (idleAnimation != null && idleAnimation.IsValid())
             {
@@ -59,6 +93,18 @@ namespace Game.Battle.Visual
             }
 
             return idleFrames;
+        }
+
+        private IdleAnimation ResolveAnimation(BattleVisualAnimId animId)
+        {
+            if (visualProfile == null)
+                return null;
+
+            var outfit = visualProfile.ResolveOutfit(outfitId);
+            if (outfit == null)
+                return null;
+
+            return outfit.Get(animId);
         }
 
         public void Stop()

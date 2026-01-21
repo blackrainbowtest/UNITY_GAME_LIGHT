@@ -12,6 +12,7 @@ namespace Game.Battle
 
         [Header("Visuals")]
         public string outfitId = "outfit_01";
+        public Game.Battle.Visual.CharacterVisualProfile visualProfile;
         public IdleAnimation idleAnimation;
 
         [Header("Stats")]

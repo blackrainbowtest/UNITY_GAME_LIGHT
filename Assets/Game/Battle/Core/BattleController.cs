@@ -39,6 +39,8 @@ namespace Game.Battle
         [SerializeField] private BattleCharacterView playerView;
         [SerializeField] private BattleCharacterView enemyView;
 
+        [SerializeField] private CharacterVisualProfile playerVisualProfile;
+
         [Header("Exit")]
         [SerializeField] private string tutorialReturnSceneName = "StartCityScene";
         [SerializeField] private string defaultReturnSceneName = "StartCityScene";
@@ -115,8 +117,19 @@ namespace Game.Battle
             Debug.Log("Initializing participants");
 
             // Optional visuals: play idle loops if views are wired in the scene.
+            if (playerView != null && context != null && context.Player != null)
+            {
+                playerView.SetVisualProfile(playerVisualProfile);
+                playerView.SetOutfitId(context.Player.OutfitId);
+                playerView.SetIdleAnimation(OutfitIdleAnimationResolver.ResolvePlayerIdle(context.Player.OutfitId));
+            }
+
             if (enemyView != null && context != null && context.Enemy != null)
+            {
+                enemyView.SetVisualProfile(context.Enemy.visualProfile);
+                enemyView.SetOutfitId(context.Enemy.outfitId);
                 enemyView.SetIdleAnimation(context.Enemy.idleAnimation);
+            }
 
             playerView?.PlayIdle();
             enemyView?.PlayIdle();
