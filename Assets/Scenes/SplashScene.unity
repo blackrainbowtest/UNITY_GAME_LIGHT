@@ -284,6 +284,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UDA2.UI.LogoFadeIn
   fadeDuration: 1
+  logoSfx: {fileID: 0}
 --- !u!225 &181711324
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -502,7 +503,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1000
+  far clip plane: 100
   field of view: 60
   orthographic: 1
   orthographic size: 5
