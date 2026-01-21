@@ -118,3 +118,12 @@ public static class ItemDatabaseAutoUpdater
         so.ApplyModifiedProperties();
     }
 }
+
+/*
+#if UNITY_EDITOR
+public void EditorSetItems(ItemDefinition[] definitions)
+{
+    items = definitions;
+}
+#endif
+*/
