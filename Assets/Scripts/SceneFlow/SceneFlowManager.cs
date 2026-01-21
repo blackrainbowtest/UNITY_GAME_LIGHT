@@ -28,6 +28,12 @@ namespace UDA2.SceneFlow
 			loadingScreen = screen;
 		}
 
+		public void UnregisterLoadingScreen(UI.LoadingScreenController screen)
+		{
+			if (loadingScreen == screen)
+				loadingScreen = null;
+		}
+
 		public void NotifySceneReady()
 		{
 			_sceneReady = true;
@@ -59,6 +65,7 @@ namespace UDA2.SceneFlow
 
 			// 1. Загружаем LoadingScene
 			_sceneReady = false;
+			loadingScreen = null;
 			AsyncOperation loadingOp = SceneManager.LoadSceneAsync(LoadingSceneName);
 			while (!loadingOp.isDone)
 				yield return null;

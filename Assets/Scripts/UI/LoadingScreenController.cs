@@ -13,6 +13,12 @@ namespace UDA2.UI
                 SceneFlowManager.Instance.RegisterLoadingScreen(this);
         }
 
+        private void OnDisable()
+        {
+            if (SceneFlowManager.Instance != null)
+                SceneFlowManager.Instance.UnregisterLoadingScreen(this);
+        }
+
         public void Show()
         {
             gameObject.SetActive(true);

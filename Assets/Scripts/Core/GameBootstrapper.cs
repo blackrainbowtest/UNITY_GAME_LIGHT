@@ -6,11 +6,20 @@ namespace UDA2.Core
 {
     public class GameBootstrapper : MonoBehaviour
     {
+        private static GameBootstrapper instance;
+
         public int saveSlot = 1;
         public string mainSceneName = "MainMenuScene";
 
         void Awake()
         {
+            if (instance != null && instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            instance = this;
+
             DontDestroyOnLoad(gameObject);
 
             // Загрузка настроек
