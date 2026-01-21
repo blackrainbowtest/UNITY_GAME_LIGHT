@@ -81,6 +81,12 @@ namespace ChebDoorStudio.Editor.Hierarchy
 
       private void TryOpenScene(string scenePath)
       {
+        if (EditorApplication.isPlayingOrWillChangePlaymode)
+        {
+          Debug.LogWarning("[HierarchySceneSelector] Cannot open scenes during Play Mode. Stop Play Mode first.");
+          return;
+        }
+
         if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
         {
           _ = EditorSceneManager.OpenScene(scenePath);

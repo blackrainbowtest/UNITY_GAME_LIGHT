@@ -5,6 +5,7 @@ using Game.Battle.Combat.Actions;
 using Game.Battle.Combat.EnemyAI;
 
 using Game.Battle.UI;
+using Game.Battle.Visual;
 
 namespace Game.Battle
 {
@@ -33,6 +34,10 @@ namespace Game.Battle
         [SerializeField] private BattleEnvironmentController environmentController;
         [SerializeField] private BattleHUDController hudController;
         [SerializeField] private BattleResultModalController resultModal;
+
+        [Header("Visuals (Optional)")]
+        [SerializeField] private BattleCharacterView playerView;
+        [SerializeField] private BattleCharacterView enemyView;
 
         [Header("Exit")]
         [SerializeField] private string tutorialReturnSceneName = "StartCityScene";
@@ -108,6 +113,10 @@ namespace Game.Battle
         private void InitializeParticipants()
         {
             Debug.Log("Initializing participants");
+
+            // Optional visuals: play idle loops if views are wired in the scene.
+            playerView?.PlayIdle();
+            enemyView?.PlayIdle();
         }
 
         private void Start()
