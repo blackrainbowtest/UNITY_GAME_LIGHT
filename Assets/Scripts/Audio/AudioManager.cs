@@ -88,6 +88,7 @@ namespace UDA2.Audio
             {
                 musicSource.outputAudioMixerGroup = musicGroup;
                 musicSource.playOnAwake = false;
+                musicSource.loop = true;
                 musicSource.volume = 1f;
             }
 
@@ -159,6 +160,7 @@ namespace UDA2.Audio
 
             currentClip = clip;
             musicSource.clip = clip;
+            musicSource.loop = true;
             musicFadeCoroutine = StartCoroutine(FadeMusicIn());
         }
 
