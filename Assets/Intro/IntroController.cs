@@ -38,7 +38,7 @@ public class IntroController : MonoBehaviour
 
     private void Start()
     {
-        if (introSequence == null || introSequence.frames.Count == 0)
+        if (introSequence == null || introSequence.Frames.Count == 0)
         {
             Debug.LogError("IntroController: IntroSequence is empty or missing.");
             return;
@@ -56,7 +56,7 @@ public class IntroController : MonoBehaviour
         }
 
 
-        if (index >= introSequence.frames.Count)
+        if (index >= introSequence.Frames.Count)
         {
             FinishIntro();
             return;
@@ -77,7 +77,7 @@ public class IntroController : MonoBehaviour
             return;
         }
 
-        IntroFrame frame = introSequence.frames[currentIndex];
+        IntroFrame frame = introSequence.Frames[currentIndex];
 
         // Background
         if (backgroundImage != null && frame.background != null)
