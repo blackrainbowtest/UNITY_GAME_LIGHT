@@ -6,7 +6,7 @@
 //
 /* ******************************************************************************************************** */
 /*                                                                                                          */
-/*   File: Assets\Scripts\Battle\Core\BattleController.cs                                                   */
+/*   File: Assets\Scripts\Battle\_Core\BattleController.cs                                                  */
 /*                                                        /\_/\                                             */
 /*                                                       ( •.• )                                            */
 /*   By: unluckydungeonadventure.gmail.com                > ^ <                                             */

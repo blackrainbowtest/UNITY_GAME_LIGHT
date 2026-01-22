@@ -6,27 +6,55 @@
 //
 /* ******************************************************************************************************** */
 /*                                                                                                          */
-/*   File: Assets\Scripts\Battle\Combat\Actions\CombatActionCategory.cs                                     */
+/*   File: Assets\Scripts\Battle\_Core\BattleExitContext.cs                                                 */
 /*                                                        /\_/\                                             */
 /*                                                       ( •.• )                                            */
 /*   By: unluckydungeonadventure.gmail.com                > ^ <                                             */
 /*                                                                                                          */
-/*   Created: 2026/01/23 01:37:27 by UDA                                                                    */
-/*   Updated: 2026/01/23 01:37:27 by UDA                                                                    */
+/*   Created: 2026/01/23 01:41:09 by UDA                                                                    */
+/*   Updated: 2026/01/23 01:41:09 by UDA                                                                    */
 /*                                                                                                          */
 /* ******************************************************************************************************** */
 
-namespace Game.Battle.Combat.Actions
+using UnityEngine.SceneManagement;
+
+namespace Game.Battle
 {
     /// <summary>
-    /// High-level categories used for UI menus.
+    /// Runtime context for passing "where to return after battle" between scenes.
+    /// One-time use by default (Consume).
     /// </summary>
-    public enum CombatActionCategory
+    public static class BattleExitContext
     {
-        Attack = 0,
-        Defense = 1,
-        Magic = 2,
-        Utility = 3,
-        Seduction = 4
+        private static BattleExitData data;
+
+        public static void SetReturnToScene(string sceneName)
+        {
+            Set(new BattleExitData(sceneName));
+        }
+
+        public static void SetReturnToActiveScene()
+        {
+            SetReturnToScene(SceneManager.GetActiveScene().name);
+        }
+
+        public static void Set(BattleExitData exitData)
+        {
+            data = exitData;
+        }
+
+        public static BattleExitData Peek() => data;
+
+        public static BattleExitData Consume()
+        {
+            var result = data;
+            data = null;
+            return result;
+        }
+
+        public static void Clear()
+        {
+            data = null;
+        }
     }
 }

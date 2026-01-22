@@ -6,27 +6,36 @@
 //
 /* ******************************************************************************************************** */
 /*                                                                                                          */
-/*   File: Assets\Scripts\Battle\Combat\Actions\CombatActionCategory.cs                                     */
+/*   File: Assets\Scripts\Battle\_Core\BattleEntryContext.cs                                                */
 /*                                                        /\_/\                                             */
 /*                                                       ( •.• )                                            */
 /*   By: unluckydungeonadventure.gmail.com                > ^ <                                             */
 /*                                                                                                          */
-/*   Created: 2026/01/23 01:37:27 by UDA                                                                    */
-/*   Updated: 2026/01/23 01:37:27 by UDA                                                                    */
+/*   Created: 2026/01/23 01:40:54 by UDA                                                                    */
+/*   Updated: 2026/01/23 01:40:54 by UDA                                                                    */
 /*                                                                                                          */
 /* ******************************************************************************************************** */
 
-namespace Game.Battle.Combat.Actions
+namespace Game.Battle
 {
     /// <summary>
-    /// High-level categories used for UI menus.
+    /// Runtime context for passing battle entry parameters between scenes.
+    /// One-time use, resets after consume.
     /// </summary>
-    public enum CombatActionCategory
+    public static class BattleEntryContext
     {
-        Attack = 0,
-        Defense = 1,
-        Magic = 2,
-        Utility = 3,
-        Seduction = 4
+        private static BattleMode mode = BattleMode.Normal;
+
+        public static void Set(BattleMode battleMode)
+        {
+            mode = battleMode;
+        }
+
+        public static BattleMode Consume()
+        {
+            var result = mode;
+            mode = BattleMode.Normal; // reset to default
+            return result;
+        }
     }
 }

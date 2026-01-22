@@ -6,27 +6,34 @@
 //
 /* ******************************************************************************************************** */
 /*                                                                                                          */
-/*   File: Assets\Scripts\Battle\Combat\Actions\CombatActionCategory.cs                                     */
+/*   File: Assets\Scripts\Battle\_Core\BattleResultData.cs                                                  */
 /*                                                        /\_/\                                             */
 /*                                                       ( •.• )                                            */
 /*   By: unluckydungeonadventure.gmail.com                > ^ <                                             */
 /*                                                                                                          */
-/*   Created: 2026/01/23 01:37:27 by UDA                                                                    */
-/*   Updated: 2026/01/23 01:37:27 by UDA                                                                    */
+/*   Created: 2026/01/23 01:41:53 by UDA                                                                    */
+/*   Updated: 2026/01/23 01:41:53 by UDA                                                                    */
 /*                                                                                                          */
 /* ******************************************************************************************************** */
 
-namespace Game.Battle.Combat.Actions
+using System.Collections.Generic;
+
+namespace Game.Battle
 {
     /// <summary>
-    /// High-level categories used for UI menus.
+    /// Data-only battle outcome for UI.
     /// </summary>
-    public enum CombatActionCategory
+    public sealed class BattleResultData
     {
-        Attack = 0,
-        Defense = 1,
-        Magic = 2,
-        Utility = 3,
-        Seduction = 4
+        public bool PlayerWon { get; }
+        public int GoldGained { get; }
+        public IReadOnlyList<string> ItemIds { get; }
+
+        public BattleResultData(bool playerWon, int goldGained, IReadOnlyList<string> itemIds)
+        {
+            PlayerWon = playerWon;
+            GoldGained = goldGained;
+            ItemIds = itemIds;
+        }
     }
 }

@@ -6,27 +6,29 @@
 //
 /* ******************************************************************************************************** */
 /*                                                                                                          */
-/*   File: Assets\Scripts\Battle\Combat\Actions\CombatActionCategory.cs                                     */
+/*   File: Assets\Scripts\Battle\_Core\BattleExitData.cs                                                    */
 /*                                                        /\_/\                                             */
 /*                                                       ( •.• )                                            */
 /*   By: unluckydungeonadventure.gmail.com                > ^ <                                             */
 /*                                                                                                          */
-/*   Created: 2026/01/23 01:37:27 by UDA                                                                    */
-/*   Updated: 2026/01/23 01:37:27 by UDA                                                                    */
+/*   Created: 2026/01/23 01:41:20 by UDA                                                                    */
+/*   Updated: 2026/01/23 01:41:20 by UDA                                                                    */
 /*                                                                                                          */
 /* ******************************************************************************************************** */
 
-namespace Game.Battle.Combat.Actions
+namespace Game.Battle
 {
     /// <summary>
-    /// High-level categories used for UI menus.
+    /// Data for leaving the battle scene.
+    /// Set this before loading the battle scene.
     /// </summary>
-    public enum CombatActionCategory
+    public sealed class BattleExitData
     {
-        Attack = 0,
-        Defense = 1,
-        Magic = 2,
-        Utility = 3,
-        Seduction = 4
+        public string ReturnSceneName { get; }
+
+        public BattleExitData(string returnSceneName)
+        {
+            ReturnSceneName = returnSceneName;
+        }
     }
 }

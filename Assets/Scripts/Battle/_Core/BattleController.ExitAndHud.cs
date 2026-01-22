@@ -6,7 +6,7 @@
 //
 /* ******************************************************************************************************** */
 /*                                                                                                          */
-/*   File: Assets\Scripts\Battle\Core\BattleController.ExitAndHud.cs                                        */
+/*   File: Assets\Scripts\Battle\_Core\BattleController.ExitAndHud.cs                                       */
 /*                                                        /\_/\                                             */
 /*                                                       ( •.• )                                            */
 /*   By: unluckydungeonadventure.gmail.com                > ^ <                                             */

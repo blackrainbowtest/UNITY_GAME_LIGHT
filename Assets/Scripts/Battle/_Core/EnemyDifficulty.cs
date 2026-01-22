@@ -6,27 +6,22 @@
 //
 /* ******************************************************************************************************** */
 /*                                                                                                          */
-/*   File: Assets\Scripts\Battle\Combat\Actions\CombatActionCategory.cs                                     */
+/*   File: Assets\Scripts\Battle\_Core\EnemyDifficulty.cs                                                   */
 /*                                                        /\_/\                                             */
 /*                                                       ( •.• )                                            */
 /*   By: unluckydungeonadventure.gmail.com                > ^ <                                             */
 /*                                                                                                          */
-/*   Created: 2026/01/23 01:37:27 by UDA                                                                    */
-/*   Updated: 2026/01/23 01:37:27 by UDA                                                                    */
+/*   Created: 2026/01/23 01:42:12 by UDA                                                                    */
+/*   Updated: 2026/01/23 01:42:12 by UDA                                                                    */
 /*                                                                                                          */
 /* ******************************************************************************************************** */
 
-namespace Game.Battle.Combat.Actions
+namespace Game.Battle
 {
-    /// <summary>
-    /// High-level categories used for UI menus.
-    /// </summary>
-    public enum CombatActionCategory
+    public enum EnemyDifficulty
     {
-        Attack = 0,
-        Defense = 1,
-        Magic = 2,
-        Utility = 3,
-        Seduction = 4
+        Easy = 0,
+        Normal = 1,
+        Hard = 2
     }
 }
