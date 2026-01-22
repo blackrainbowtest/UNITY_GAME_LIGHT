@@ -168,11 +168,3 @@ public static class LocalizationAssetImporter
         return asset != null;
     }
 }
-
-/*
-// feature update way
-UIStringsDataEditor.ImportFromCSV(
-    UIStringsData asset,
-    TextAsset csv
-);
-*/
