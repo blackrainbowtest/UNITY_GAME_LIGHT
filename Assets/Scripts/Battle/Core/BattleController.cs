@@ -3,6 +3,7 @@ using UnityEngine;
 using Game.Battle.Combat;
 using Game.Battle.Combat.Actions;
 using Game.Battle.Combat.EnemyAI;
+using UDA2.Logging;
 
 using Game.Battle.UI;
 using Game.Battle.Visual;
@@ -51,10 +52,10 @@ namespace Game.Battle
 
         public void StartBattle(BattleContext battleContext)
         {
-            Debug.Log("[BattleController] StartBattle called");
+            Logger.LogInfo("[BattleController] StartBattle called");
             if (battleStarted)
             {
-                Debug.LogWarning("BattleController: Battle already started");
+                Logger.LogWarning("BattleController: Battle already started");
                 return;
             }
 
@@ -87,9 +88,9 @@ namespace Game.Battle
                 playerBlockedLastTurn: false // первый ход — не блокировал
             );
 
-            Debug.Log("Battle started");
-            Debug.Log($"Enemy: {context.Enemy.name}");
-            Debug.Log($"Mode: {context.Mode}");
+            Logger.LogInfo("Battle started");
+            Logger.LogInfo($"Enemy: {context.Enemy.name}");
+            Logger.LogInfo($"Mode: {context.Mode}");
 
             InitializeParticipants();
             InitializeEnvironment();
@@ -114,7 +115,7 @@ namespace Game.Battle
 
         private void InitializeParticipants()
         {
-            Debug.Log("Initializing participants");
+            Logger.LogInfo("Initializing participants");
 
             // Optional visuals: play idle loops if views are wired in the scene.
             if (playerView != null && context != null && context.Player != null)
@@ -142,10 +143,10 @@ namespace Game.Battle
 
         private void InitializeEnvironment()
         {
-            Debug.Log("Initializing environment");
+            Logger.LogInfo("Initializing environment");
             if (environmentController == null)
             {
-                Debug.LogError("BattleController: BattleEnvironmentController not assigned");
+                Logger.LogError("BattleController: BattleEnvironmentController not assigned");
                 return;
             }
             environmentController.Apply(context.Location);
@@ -153,7 +154,7 @@ namespace Game.Battle
 
         private void InitializeUI()
         {
-            Debug.Log("Initializing UI");
+            Logger.LogInfo("Initializing UI");
         }
 
         /// <summary>
@@ -163,7 +164,7 @@ namespace Game.Battle
         {
             if (hud == null)
             {
-                Debug.LogError("BattleController: HUDController not assigned");
+                Logger.LogError("BattleController: HUDController not assigned");
                 return;
             }
             hud.SetActions(this);
@@ -194,7 +195,7 @@ namespace Game.Battle
 
         public void OnItemPressed()
         {
-            Debug.Log("Item pressed");
+            Logger.LogInfo("Item pressed");
         }
 
         public void OnRunPressed()
@@ -202,7 +203,7 @@ namespace Game.Battle
             if (!battleStarted)
                 return;
 
-            Debug.Log("BattleController: Run pressed (escape placeholder)");
+            Logger.LogInfo("BattleController: Run pressed (escape placeholder)");
             battleStarted = false;
             ExitBattle();
         }
@@ -212,7 +213,7 @@ namespace Game.Battle
             if (!battleStarted)
                 return;
 
-            Debug.Log("BattleController: Surrender pressed");
+            Logger.LogInfo("BattleController: Surrender pressed");
             FinishBattle(playerWon: false);
         }
 
@@ -229,7 +230,12 @@ namespace Game.Battle
 
         public void OnExitPressed()
         {
-            Debug.Log("Exit pressed");
+            if (!battleStarted)
+                return;
+
+            Logger.LogInfo("BattleController: Exit pressed");
+            battleStarted = false;
+            ExitBattle();
         }
         
         private void ExecutePlayerAction(CombatActionId actionId)
@@ -243,7 +249,7 @@ namespace Game.Battle
 
             if (actionRegistry == null)
             {
-                Debug.LogError("BattleController: actionRegistry is not initialized");
+                Logger.LogError("BattleController: actionRegistry is not initialized");
 
                 turnPhase = TurnPhase.PlayerTurn;
                 hudController?.SetInputEnabled(true);
@@ -253,7 +259,7 @@ namespace Game.Battle
             var action = actionRegistry.Get(actionId);
             if (action == null)
             {
-                Debug.LogError($"Action not found: {actionId}");
+                Logger.LogError($"Action not found: {actionId}");
 
                 turnPhase = TurnPhase.PlayerTurn;
                 hudController?.SetInputEnabled(true);
@@ -264,7 +270,7 @@ namespace Game.Battle
 
             if (resolution.Result != CombatActionResult.Executed)
             {
-                Debug.Log($"Action rejected: {resolution.Result}");
+                Logger.LogInfo($"Action rejected: {resolution.Result}");
 
                 turnPhase = TurnPhase.PlayerTurn;
                 hudController?.SetInputEnabled(true);
@@ -333,7 +339,7 @@ namespace Game.Battle
 
             if (combatEngine == null || actionRegistry == null)
             {
-                Debug.LogError("BattleController: combatEngine/actionRegistry not initialized");
+                Logger.LogError("BattleController: combatEngine/actionRegistry not initialized");
                 return;
             }
 
@@ -349,21 +355,21 @@ namespace Game.Battle
 
             if (!actionId.HasValue)
             {
-                Debug.Log("[BattleController] Enemy skips turn (no affordable/allowed actions)");
+                Logger.LogInfo("[BattleController] Enemy skips turn (no affordable/allowed actions)");
                 return;
             }
 
             var action = actionRegistry.Get(actionId.Value);
             if (action == null)
             {
-                Debug.LogError($"[BattleController] Enemy action not found in registry: {actionId.Value}");
+                Logger.LogError($"[BattleController] Enemy action not found in registry: {actionId.Value}");
                 return;
             }
 
             var resolution = combatEngine.ResolveEnemyAction(combatState, action);
             if (resolution.Result != CombatActionResult.Executed)
             {
-                Debug.Log($"[BattleController] Enemy action rejected: {action.Id} -> {resolution.Result}");
+                Logger.LogInfo($"[BattleController] Enemy action rejected: {action.Id} -> {resolution.Result}");
                 return;
             }
 

@@ -50,9 +50,12 @@ public class IntroSequence : ScriptableObject
     /// </summary>
     public void EditorSetFrames(List<IntroFrame> newFrames)
     {
-        // TODO:
-        // Add validation if intro sequencing rules become more complex
-        // (e.g. required first/last frame types).
+        if (newFrames == null)
+        {
+            Debug.LogError("IntroSequence.EditorSetFrames: newFrames is null");
+            return;
+        }
+
         frames = newFrames;
     }
 #endif

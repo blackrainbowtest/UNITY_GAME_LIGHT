@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections.Generic;
 
 [CreateAssetMenu(menuName = "Game/Item Database")]
@@ -19,4 +20,12 @@ public class ItemDatabase : ScriptableObject
 
         return cache.TryGetValue(id, out var result) ? result : null;
     }
+
+#if UNITY_EDITOR
+    public void EditorSetItems(ItemDefinition[] definitions)
+    {
+        items = new List<ItemDefinition>(definitions ?? Array.Empty<ItemDefinition>());
+        cache = null;
+    }
+#endif
 }

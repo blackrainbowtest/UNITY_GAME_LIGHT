@@ -43,6 +43,21 @@ public class UIStringsData : ScriptableObject
     }
 
 #if UNITY_EDITOR
+    public bool EditorSetSourceCsvName(string csvName, out string error)
+    {
+        error = null;
+
+        if (string.IsNullOrWhiteSpace(csvName))
+        {
+            error = "CSV name is null or empty.";
+            return false;
+        }
+
+        sourceCsvName = csvName.Trim();
+        EditorUtility.SetDirty(this);
+        return true;
+    }
+
     public bool EditorReimportFromCsv(
         string csvRootPath,
         out string error)

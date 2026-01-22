@@ -1,11 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UDA2.UI.Common;
 
-// TODO: fix comments
 namespace UDA2.UI.SaveLoad
 {
     public class SaveLoadModalController : MonoBehaviour
@@ -16,8 +14,6 @@ namespace UDA2.UI.SaveLoad
         [SerializeField] private GameObject slotTemplate; // Allows flexible slot instantiation
         [SerializeField] private Button closeButton; // Prevents modal from blocking UI
         [SerializeField] private TMP_Text headerText; // Ensures correct context for user
-
-        // Centralizes confirmation logic for destructive actions
 
         private SaveLoadMode currentMode;
         private List<SaveSlotView> slotViews = new List<SaveSlotView>(); // Enables batch slot updates

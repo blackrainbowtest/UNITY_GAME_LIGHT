@@ -101,32 +101,29 @@ public class EnemyDataImporter : EditorWindow
             AssetDatabase.CreateAsset(asset, assetPath);
         }
 
-        // TODO: Replace direct field assignments with a single initialization method
-        // (e.g. EditorInitializeFromJson / ApplyDefinition).
-        // Direct data mutation is temporarily allowed ONLY inside editor import tools.
+        var icon = LoadSprite(enemy.iconPath);
+        var actions = ParseAllowedActions(enemy.allowedActions);
 
-        asset.enemyName = enemy.enemyName;
-
-        asset.maxHp = enemy.maxHp;
-        asset.maxMp = enemy.maxMp;
-        asset.maxSp = enemy.maxSp;
-        asset.maxLp = enemy.maxLp;
-
-        asset.hp = enemy.hp;
-        asset.mp = enemy.mp;
-        asset.sp = enemy.sp;
-        asset.lp = enemy.lp;
-
-        asset.attack = enemy.attack;
-
-        asset.regenHpPerTurn = enemy.regenHpPerTurn;
-        asset.regenMpPerTurn = enemy.regenMpPerTurn;
-        asset.regenSpPerTurn = enemy.regenSpPerTurn;
-
-        asset.icon = LoadSprite(enemy.iconPath);
-        asset.allowedActions = ParseAllowedActions(enemy.allowedActions);
-
-        EditorUtility.SetDirty(asset);
+        if (!asset.EditorApplyDefinition(
+                newEnemyName: enemy.enemyName,
+                newIcon: icon,
+                newMaxHp: enemy.maxHp,
+                newMaxMp: enemy.maxMp,
+                newMaxSp: enemy.maxSp,
+                newMaxLp: enemy.maxLp,
+                newHp: enemy.hp,
+                newMp: enemy.mp,
+                newSp: enemy.sp,
+                newLp: enemy.lp,
+                newAttack: enemy.attack,
+                newRegenHpPerTurn: enemy.regenHpPerTurn,
+                newRegenMpPerTurn: enemy.regenMpPerTurn,
+                newRegenSpPerTurn: enemy.regenSpPerTurn,
+                newAllowedActions: actions,
+                out string error))
+        {
+            Debug.LogError($"EnemyDataImporter: Failed to apply '{enemy.enemyName}': {error}");
+        }
     }
 
     /// <summary>

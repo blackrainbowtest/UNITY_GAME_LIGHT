@@ -44,7 +44,7 @@ public class MainMenuCharacterMotionController
 
     protected virtual void OnUserActionTriggered(string triggerName)
     {
-        // TODO: remove if not needed
+        // Optional extension point for external side-effects (logs, background FX, etc.).
     }
 
     private IEnumerator CooldownCoroutine()

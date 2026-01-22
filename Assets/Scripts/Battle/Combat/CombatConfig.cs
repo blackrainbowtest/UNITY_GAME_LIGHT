@@ -14,7 +14,7 @@ namespace Game.Battle.Combat
             EnemyBaseDamage = enemyBaseDamage;
         }
 
-        // TODO: Позже добавить:
+        // Possible future extensions:
         // - staminaCost
         // - manaCost
         // - attack types

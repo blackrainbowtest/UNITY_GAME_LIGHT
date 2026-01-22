@@ -70,12 +70,15 @@ public static class LocalizationAssetCreator
 
         var asset = ScriptableObject.CreateInstance<UIStringsData>();
 
-        // TODO:
-        // Replace direct data mutation with a dedicated editor-only method
-        // on UIStringsData (e.g. EditorInitializeFromCsvName).
-        // asset.EditorInitialize(assetName);
-        // Direct assignment is temporarily allowed for asset bootstrap.
-        asset.sourceCsvName = assetName;
+        if (!asset.EditorSetSourceCsvName(assetName, out string error))
+        {
+            EditorUtility.DisplayDialog(
+                "Error",
+                $"Failed to initialize UIStringsData: {error}",
+                "OK"
+            );
+            return;
+        }
 
         AssetDatabase.CreateAsset(asset, assetPath);
         AssetDatabase.SaveAssets();

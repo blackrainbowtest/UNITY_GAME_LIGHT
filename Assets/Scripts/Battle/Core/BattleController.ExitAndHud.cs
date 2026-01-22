@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Game.Battle.UI;
+using UDA2.Logging;
 
 namespace Game.Battle
 {
@@ -13,7 +14,7 @@ namespace Game.Battle
             turnPhase = TurnPhase.BattleOver;
             hudController?.SetInputEnabled(false);
 
-            // TODO: Здесь позже подключим реальную генерацию наград (drops/gold) из EnemyData.
+            // Rewards are not configured yet (no drop tables wired).
             var result = new BattleResultData(
                 playerWon: playerWon,
                 goldGained: 0,
@@ -35,7 +36,7 @@ namespace Game.Battle
             var targetScene = ResolveReturnSceneName();
             if (string.IsNullOrEmpty(targetScene))
             {
-                Debug.LogError("BattleController: Cannot exit battle, return scene is not set");
+                Logger.LogError("BattleController: Cannot exit battle, return scene is not set");
                 return;
             }
 
@@ -61,13 +62,13 @@ namespace Game.Battle
             var saveScene = GameState.Instance?.CurrentSave?.player?.sceneName;
             if (!string.IsNullOrEmpty(saveScene) && !string.Equals(saveScene, currentScene, StringComparison.Ordinal))
             {
-                Debug.LogWarning($"BattleController: BattleExitContext was not set. Falling back to save.player.sceneName='{saveScene}'.");
+                Logger.LogWarning($"BattleController: BattleExitContext was not set. Falling back to save.player.sceneName='{saveScene}'.");
                 return saveScene;
             }
 
             if (!string.IsNullOrEmpty(defaultReturnSceneName) && !string.Equals(defaultReturnSceneName, currentScene, StringComparison.Ordinal))
             {
-                Debug.LogWarning($"BattleController: BattleExitContext was not set. Falling back to defaultReturnSceneName='{defaultReturnSceneName}'.");
+                Logger.LogWarning($"BattleController: BattleExitContext was not set. Falling back to defaultReturnSceneName='{defaultReturnSceneName}'.");
                 return defaultReturnSceneName;
             }
 

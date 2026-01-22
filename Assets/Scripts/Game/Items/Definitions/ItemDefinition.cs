@@ -1,5 +1,9 @@
 using UnityEngine;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 public enum ItemType
 {
     Currency,
@@ -35,4 +39,34 @@ public class ItemDefinition : ScriptableObject
     public Sprite Icon => icon;
     public ConsumableEffect Effect => effect;
     public int Value => value;
+
+#if UNITY_EDITOR
+    public bool EditorApplyDefinition(
+        string newId,
+        ItemType newType,
+        string newDisplayName,
+        Sprite newIcon,
+        ConsumableEffect newEffect,
+        int newValue,
+        out string error)
+    {
+        error = null;
+
+        if (string.IsNullOrWhiteSpace(newId))
+        {
+            error = "Item id is null or empty.";
+            return false;
+        }
+
+        id = newId.Trim();
+        type = newType;
+        displayName = newDisplayName ?? string.Empty;
+        icon = newIcon;
+        effect = newEffect;
+        value = newValue;
+
+        EditorUtility.SetDirty(this);
+        return true;
+    }
+#endif
 }

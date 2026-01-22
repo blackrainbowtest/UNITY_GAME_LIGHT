@@ -96,7 +96,7 @@ namespace Game.Battle.Combat
         public bool IsPlayerDead => PlayerHp <= 0;
         public bool IsEnemyDead => EnemyHp <= 0;
 
-        // TODO: Можно добавить:
+        // Possible future extensions:
         // - Очередь ходов или флаг чей сейчас ход (IsPlayerTurn)
         // - Счетчик раунда (Round)
         // - Активные эффекты (PlayerEffects, EnemyEffects)
