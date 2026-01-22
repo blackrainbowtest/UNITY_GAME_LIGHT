@@ -19,6 +19,7 @@
 using UnityEditor;
 using UnityEngine;
 using System.IO;
+using System.Text;
 
 /// <summary>
 /// Editor utility responsible for importing localization CSV files
@@ -63,11 +64,20 @@ public static class LocalizationAssetImporter
             return;
         }
 
-        // TODO:
-        // Route all CSV import logic through a single, authoritative method
-        // (e.g. UIStringsDataEditor.ImportFromCSV).
-        // This tool must remain an orchestrator only.
-        // UIStringsDataEditor.ImportFromCSV(asset, selected);
+        if (!asset.EditorReimportFromCsv(
+                CsvFolder,
+                out string error))
+        {
+            EditorUtility.DisplayDialog(
+                "Import Failed",
+                error,
+                "OK"
+            );
+            return;
+        }
+
+        EditorUtility.SetDirty(asset);
+        AssetDatabase.SaveAssets();
 
         EditorUtility.DisplayDialog(
             "Success",
@@ -85,6 +95,8 @@ public static class LocalizationAssetImporter
         );
 
         int imported = 0;
+        int failed = 0;
+        var failReport = new StringBuilder();
 
         foreach (var guid in csvGuids)
         {
@@ -103,16 +115,32 @@ public static class LocalizationAssetImporter
                     out _))
                 continue;
 
-            // TODO:
-            // Centralize import logic and error handling.
-            // UIStringsDataEditor.ImportFromCSV(asset, csv);
+            if (!asset.EditorReimportFromCsv(
+                    CsvFolder,
+                    out string error))
+            {
+                failed++;
+                string assetName = Path.GetFileNameWithoutExtension(csvPath);
+                failReport.AppendLine(
+                    $"{assetName}: {error ?? "import error"}"
+                );
+                continue;
+            }
 
+            EditorUtility.SetDirty(asset);
             imported++;
         }
 
+        AssetDatabase.SaveAssets();
+
+        string failMsg =
+            failReport.Length > 0
+                ? $"\n\nFailed:\n{failReport}"
+                : string.Empty;
+
         EditorUtility.DisplayDialog(
             "Batch Import",
-            $"Imported {imported} CSV files into assets.",
+            $"Imported: {imported}\nFailed: {failed}{failMsg}",
             "OK"
         );
     }

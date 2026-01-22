@@ -31,7 +31,7 @@ public class UIStringsDataEditor : Editor
     // Editor-only convention:
     // Root folder containing localization CSV files.
     private const string CsvRootPath =
-        "Assets/Localization/CSV";
+        "Assets/Data/Localization/CSV";
 
     public override void OnInspectorGUI()
     {
