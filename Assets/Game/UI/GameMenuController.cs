@@ -19,7 +19,7 @@ public class GameMenuController : MonoBehaviour
 
     public void SaveGame()
     {
-        UDA2.UI.SaveLoad.SaveLoadModalController.Show(UDA2.UI.SaveLoad.SaveLoadModalController.Mode.Save);
+        UDA2.UI.SaveLoad.SaveLoadModalController.Show(UDA2.UI.SaveLoad.SaveLoadMode.Save);
         gameObject.SetActive(false);
     }
 

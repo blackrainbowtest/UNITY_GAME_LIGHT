@@ -329,14 +329,19 @@ namespace UDA2.UI.SaveLoad
             SlotId = slotId;
             isEmpty = true;
 
-            // Title should always identify the slot number.
-            SetSlotTitleKey($"save_load_slot_{slotId}");
-
-            // Show empty state as a secondary line.
-            if (saveTimeText != null)
+            // Populate secondary fields first (guards against accidental prefab miswiring
+            // where multiple serialized fields point to the same TMP_Text instance).
+            if (saveTimeText != null && !ReferenceEquals(saveTimeText, slotTitle))
                 saveTimeText.text = TryGetUiString("save_load_empty");
-            levelGoldText.text = "—";
-            primaryButtonText.text = "—";
+
+            if (levelGoldText != null && !ReferenceEquals(levelGoldText, slotTitle))
+                levelGoldText.text = "—";
+
+            if (primaryButtonText != null && !ReferenceEquals(primaryButtonText, slotTitle))
+                primaryButtonText.text = "—";
+
+            // Title should always identify the slot number (set last so it can't be overwritten).
+            SetSlotTitleKey($"save_load_slot_{slotId}");
         }
 
         public void SetData(int slotId, SaveMeta meta)
@@ -344,10 +349,16 @@ namespace UDA2.UI.SaveLoad
             SlotId = slotId;
             isEmpty = false;
 
-            SetSlotTitleKey($"save_load_slot_{slotId}");
+            if (saveTimeText != null && !ReferenceEquals(saveTimeText, slotTitle))
+                saveTimeText.text = meta != null ? meta.saveTime : "—";
 
-            saveTimeText.text = meta != null ? meta.saveTime : "—";
-            levelGoldText.text = $"Lv {meta.playerLevel} • Gold {meta.playTimeSeconds}";
+            if (levelGoldText != null && !ReferenceEquals(levelGoldText, slotTitle))
+                levelGoldText.text = meta != null
+                    ? $"Lv {meta.playerLevel} • Gold {meta.playTimeSeconds}"
+                    : "—";
+
+            // Keep the title stable.
+            SetSlotTitleKey($"save_load_slot_{slotId}");
         }
 
         public void SetAutosave(bool isAutosave)
@@ -362,6 +373,39 @@ namespace UDA2.UI.SaveLoad
                 lockOverlay.SetActive(locked);
             if (primaryButton != null)
                 primaryButton.interactable = !locked;
+        }
+
+        public void Render(SaveSlotViewModel model)
+        {
+            SlotId = model.SlotId;
+            isEmpty = !model.HasSave;
+
+            SetAutosave(model.IsAutosave);
+            SetLocked(model.IsLocked);
+
+            // Populate secondary fields first (guards against accidental prefab miswiring).
+            if (isEmpty)
+            {
+                if (saveTimeText != null && !ReferenceEquals(saveTimeText, slotTitle))
+                    saveTimeText.text = TryGetUiString(model.EmptyKey);
+
+                if (levelGoldText != null && !ReferenceEquals(levelGoldText, slotTitle))
+                    levelGoldText.text = "—";
+
+                if (primaryButtonText != null && !ReferenceEquals(primaryButtonText, slotTitle))
+                    primaryButtonText.text = "—";
+            }
+            else
+            {
+                if (saveTimeText != null && !ReferenceEquals(saveTimeText, slotTitle))
+                    saveTimeText.text = string.IsNullOrEmpty(model.SaveTimeText) ? "—" : model.SaveTimeText;
+
+                if (levelGoldText != null && !ReferenceEquals(levelGoldText, slotTitle))
+                    levelGoldText.text = string.IsNullOrEmpty(model.LevelGoldText) ? "—" : model.LevelGoldText;
+            }
+
+            // Keep the title stable.
+            SetSlotTitleKey(model.TitleKey);
         }
     }
 }
