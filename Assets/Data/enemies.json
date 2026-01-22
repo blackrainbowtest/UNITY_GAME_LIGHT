@@ -55,7 +55,7 @@
   },
   {
     "enemyName": "Slaver",
-    "iconPath": "Assets/GameData/Enemies/Sprites/slaver_human/slaver human front.png",
+    "iconPath": "Assets/Sprites/Enemies/slaver/outfit_01/Idle/idle_outfit_01_01.png",
     "hp": 60,
     "mp": 0,
     "sp": 40,
