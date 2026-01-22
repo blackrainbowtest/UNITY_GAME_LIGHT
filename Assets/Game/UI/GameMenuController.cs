@@ -1,5 +1,4 @@
 using UnityEngine;
-using UDA2.Core;
 using UDA2.SceneFlow;
 
 public class GameMenuController : MonoBehaviour
@@ -65,12 +64,12 @@ public class GameMenuController : MonoBehaviour
 
     public void GoToMainMenu()
     {
-        if (GameContext.Current == null)
-            Debug.LogError("GameContext.Current is null! Сохранение не выполнено.");
+        if (GameState.Instance.CurrentSave == null)
+            Debug.LogError("GameState.Instance.CurrentSave is null! Сохранение не выполнено.");
         if (SceneFlowManager.Instance == null)
             Debug.LogError("SceneFlowManager.Instance is null! Переход в главное меню невозможен.");
 
-        SaveManager.Save(GameContext.Current, AUTO_SAVE_SLOT);
+        SaveSlotsManager.SaveToSlot(AUTO_SAVE_SLOT, GameState.Instance.CurrentSave);
         // Загрузка главного меню через SceneFlowManager
         if (SceneFlowManager.Instance != null)
             SceneFlowManager.Instance.LoadScene("MainMenuScene");
@@ -78,7 +77,7 @@ public class GameMenuController : MonoBehaviour
 
     public void ExitGame()
     {
-        SaveManager.Save(GameContext.Current, AUTO_SAVE_SLOT);
+        SaveSlotsManager.SaveToSlot(AUTO_SAVE_SLOT, GameState.Instance.CurrentSave);
     #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
     #else

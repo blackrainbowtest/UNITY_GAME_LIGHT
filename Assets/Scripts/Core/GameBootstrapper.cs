@@ -26,10 +26,9 @@ namespace UDA2.Core
             SettingsContext.Current = SettingsManager.Load();
             SettingsContext.ApplyAll();
 
-
-            // Загрузка сейва или создание нового
-            var loaded = SaveManager.Load(saveSlot);
-            GameContext.Current = loaded ?? new GameState();
+            // Загрузка сейва (SaveData) или создание нового
+            var loadedSave = SaveSlotsManager.LoadFromSlot(saveSlot);
+            global::GameState.Instance.CurrentSave = SaveDataMigration.Apply(loadedSave);
 
             // Если нет сейва — создаём новый с актуальной версией
             if (global::GameState.Instance.CurrentSave == null)
@@ -48,11 +47,4 @@ namespace UDA2.Core
                 SceneManager.LoadScene(mainSceneName);
         }
     }
-
-    // Контекст для хранения текущих экземпляров
-    public static class GameContext
-    {
-        public static GameState Current;
-    }
-
 }
