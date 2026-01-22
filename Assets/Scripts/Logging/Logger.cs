@@ -57,21 +57,16 @@ namespace UDA2.Logging
 
         private static int Severity(LogType type)
         {
-            // UnityEngine.LogType numeric values are not ordered by severity.
             // Lower number here means more severe.
             switch (type)
             {
-                case LogType.Exception:
-                    return 0;
                 case LogType.Error:
-                    return 1;
-                case LogType.Assert:
-                    return 2;
+                    return 0;
                 case LogType.Warning:
-                    return 3;
+                    return 1;
                 case LogType.Info:
                 default:
-                    return 4;
+                    return 2;
             }
         }
 
