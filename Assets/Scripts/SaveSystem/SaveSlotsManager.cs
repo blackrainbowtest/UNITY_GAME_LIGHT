@@ -54,6 +54,20 @@ public static class SaveSlotsManager
     public static void SaveToSlot(int slotId, SaveData data)
     {
         if (slotId < 0 || slotId > 10) throw new ArgumentOutOfRangeException();
+
+        if (data == null)
+        {
+            Debug.LogError($"[SaveSlotsManager] SaveToSlot failed: SaveData is null (slotId={slotId}).");
+            return;
+        }
+
+        data = SaveDataMigration.Apply(data);
+        if (data == null || data.meta == null)
+        {
+            Debug.LogError($"[SaveSlotsManager] SaveToSlot failed: SaveDataMigration returned invalid data (slotId={slotId}).");
+            return;
+        }
+
         string path = GetSlotPath(slotId);
         var dir = Path.GetDirectoryName(path);
         if (!Directory.Exists(dir))

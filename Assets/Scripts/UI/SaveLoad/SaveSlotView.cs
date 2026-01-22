@@ -1,12 +1,13 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 // TODO: fix comments and remove debugs
 namespace UDA2.UI.SaveLoad
 {
-    public class SaveSlotView : MonoBehaviour, UnityEngine.EventSystems.IPointerDownHandler, UnityEngine.EventSystems.IPointerUpHandler, UnityEngine.EventSystems.IPointerExitHandler
+    public class SaveSlotView : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler
     {
         [Header("Wiring")]
         [SerializeField] private TMP_Text slotTitle;
@@ -17,15 +18,16 @@ namespace UDA2.UI.SaveLoad
         [SerializeField] private TMP_Text primaryButtonText;
 
         [Header("Optional visuals")]
-        [SerializeField] private GameObject lockBadge; // show for autosave if needed
+        [SerializeField] private GameObject lockBadge; // show for autosave if needed 
         [SerializeField] private GameObject lockOverlay; // visual lock overlay
 
         public int SlotId { get; private set; }
         public bool IsAutoSave { get; private set; }
         private bool isEmpty = false;
         private bool isSaveMode = false;
+
         /// <summary>
-        /// Включает режим сохранения: обработчики работают для всех слотов.
+        /// Enables save mode: handlers work for all slots.
         /// </summary>
         public void SetSaveMode(bool value)
         {
@@ -55,6 +57,17 @@ namespace UDA2.UI.SaveLoad
         private Vector2 lastPointerDownPosition;
         private float pointerDownTime = 0f;
 
+        [Header("Scroll/Drag Guard")]
+        [SerializeField] private ScrollRect parentScrollRect;
+        [Tooltip("If the finger moved more than this (in pixels) we treat it as scroll/drag and ignore tap.")]
+        // <= 0 => use EventSystem.pixelDragThreshold
+        [SerializeField] private float dragThresholdPixels = -1f;
+        [Tooltip("If ScrollRect normalizedPosition changes more than this while pressed, we cancel tap/long press.")]
+        [SerializeField] private float scrollCancelThreshold = 0.0005f;
+
+        private bool canceledByScroll;
+        private Vector2 scrollPosOnPointerDown;
+
         public void ResetLongPressFlag()
         {
             wasLongPressed = false;
@@ -66,8 +79,10 @@ namespace UDA2.UI.SaveLoad
             if (primaryButton != null)
                 primaryButton.onClick.RemoveAllListeners(); // Remove all listeners to prevent Unity Button click
 
-            // progressView is assigned after instantiation via SetProgressView
+            if (parentScrollRect == null)
+                parentScrollRect = GetComponentInParent<ScrollRect>();
 
+            // progressView is assigned after instantiation via SetProgressView
             longPressHandler = new LongPressHandler(longPressDuration);
             longPressHandler.OnStarted += HandleLongPressStarted;
             longPressHandler.OnProgress += HandleLongPressProgress;
@@ -81,6 +96,13 @@ namespace UDA2.UI.SaveLoad
         {
             if (isPointerDown)
             {
+                if (!canceledByScroll && parentScrollRect != null)
+                {
+                    var delta = parentScrollRect.normalizedPosition - scrollPosOnPointerDown;
+                    if (delta.sqrMagnitude > scrollCancelThreshold * scrollCancelThreshold)
+                        CancelByScroll();
+                }
+
                 longPressHandler.Update(Time.unscaledDeltaTime);
                 if (waitingToShowProgress)
                 {
@@ -88,23 +110,28 @@ namespace UDA2.UI.SaveLoad
                     if (progressShowTimer >= progressShowDelay)
                     {
                         waitingToShowProgress = false;
-                        progressView.Show(lastPointerDownPosition);
+                        if (!canceledByScroll && progressView != null)
+                            progressView.Show(lastPointerDownPosition);
                         // UDA2.Logging.Logger.LogInfo($"[SaveSlotView] progressView.Show (delayed) at {lastPointerDownPosition}", UDA2.Logging.LogChannel.UI);
                     }
                 }
             }
         }
 
-        public void OnPointerDown(UnityEngine.EventSystems.PointerEventData eventData)
+        public void OnPointerDown(PointerEventData eventData)
         {
-            // Клик разрешён для всех слотов в save mode, long press — только для непустых
-            UDA2.Logging.Logger.LogInfo($"isEmpty {isEmpty} and isSaveMode {!isSaveMode}");
+            // Clicking is allowed for all slots in save mode, long press - only for non-empty ones
             if (isEmpty && !isSaveMode) return;
             isPointerDown = true;
+            canceledByScroll = false;
             progressShowTimer = 0f;
             lastPointerDownPosition = eventData.position;
             pointerDownTime = Time.unscaledTime;
-            // long press только для непустых
+
+            if (parentScrollRect != null)
+                scrollPosOnPointerDown = parentScrollRect.normalizedPosition;
+
+            // long press only for non-empty
             if (!isEmpty)
             {
                 longPressInProgress = true;
@@ -115,12 +142,20 @@ namespace UDA2.UI.SaveLoad
             }
         }
 
-        public void OnPointerUp(UnityEngine.EventSystems.PointerEventData eventData)
+        public void OnPointerUp(PointerEventData eventData)
         {
             if (isEmpty && !isSaveMode) return;
             isPointerDown = false;
             waitingToShowProgress = false;
             // UDA2.Logging.Logger.LogInfo($"[SaveSlotView] OnPointerUp slot {SlotId}", UDA2.Logging.LogChannel.UI);
+
+            if (canceledByScroll)
+            {
+                if (progressView != null)
+                    progressView.Hide();
+                return;
+            }
+
             float pressDuration = Time.unscaledTime - pointerDownTime;
             if (!isEmpty)
             {
@@ -129,23 +164,39 @@ namespace UDA2.UI.SaveLoad
                     longPressInProgress = false;
                 }
                 longPressHandler.CancelPress();
-                progressView.Hide();
+                if (progressView != null)
+                    progressView.Hide();
                 // UDA2.Logging.Logger.LogInfo($"[SaveSlotView] progressView.Hide", UDA2.Logging.LogChannel.UI);
             }
-            // Tap: только если не long press и короткое нажатие
+
+            // If finger moved, treat as scroll/drag -> ignore tap.
+            if (eventData != null)
+            {
+                float threshold = dragThresholdPixels > 0f
+                    ? dragThresholdPixels
+                    : (EventSystem.current != null ? EventSystem.current.pixelDragThreshold : 10f);
+                var moved = (eventData.position - lastPointerDownPosition).sqrMagnitude;
+                if (moved > threshold * threshold)
+                    return;
+                if (eventData.dragging)
+                    return;
+            }
+
+            // Tap: only if not long press and short press
             if (!wasLongPressed && pressDuration < progressShowDelay)
             {
                 // UDA2.Logging.Logger.LogInfo($"SaveSlotView: PrimaryClicked {SlotId} (tap)", UDA2.Logging.LogChannel.UI);
                 PrimaryClicked?.Invoke(SlotId);
             }
-            // Если был long press — ничего не делаем
+            // If there was a long press, do nothing.
         }
 
-        public void OnPointerExit(UnityEngine.EventSystems.PointerEventData eventData)
+        public void OnPointerExit(PointerEventData eventData)
         {
             if (isEmpty && !isSaveMode) return;
             isPointerDown = false;
             waitingToShowProgress = false;
+            canceledByScroll = true;
             if (!isEmpty)
             {
                 if (longPressInProgress && !wasLongPressed)
@@ -154,7 +205,8 @@ namespace UDA2.UI.SaveLoad
                 }
                 // UDA2.Logging.Logger.LogInfo($"[SaveSlotView] OnPointerExit slot {SlotId}", UDA2.Logging.LogChannel.UI);
                 longPressHandler.CancelPress();
-                progressView.Hide();
+                if (progressView != null)
+                    progressView.Hide();
                 // UDA2.Logging.Logger.LogInfo($"[SaveSlotView] progressView.Hide (exit)", UDA2.Logging.LogChannel.UI);
             }
         }
@@ -166,15 +218,18 @@ namespace UDA2.UI.SaveLoad
 
         private void HandleLongPressProgress(float progress)
         {
-            progressView.SetProgress(progress);
+            if (progressView != null)
+                progressView.SetProgress(progress);
         }
 
         private void HandleLongPressCompleted()
         {
             // long press только для непустых слотов
             if (isEmpty) return;
+            if (canceledByScroll) return;
             // UDA2.Logging.Logger.LogInfo($"[SaveSlotView] LongPress COMPLETED slot {SlotId}", UDA2.Logging.LogChannel.UI);
-            progressView.Hide();
+            if (progressView != null)
+                progressView.Hide();
             wasLongPressed = true;
             longPressInProgress = false;
             LongPressed?.Invoke(SlotId);
@@ -183,7 +238,18 @@ namespace UDA2.UI.SaveLoad
         private void HandleLongPressCanceled()
         {
             // UDA2.Logging.Logger.LogInfo($"[SaveSlotView] LongPress CANCELED slot {SlotId}", UDA2.Logging.LogChannel.UI);
-            progressView.Hide();
+            if (progressView != null)
+                progressView.Hide();
+        }
+
+        private void CancelByScroll()
+        {
+            canceledByScroll = true;
+            waitingToShowProgress = false;
+            longPressInProgress = false;
+            longPressHandler.CancelPress();
+            if (progressView != null)
+                progressView.Hide();
         }
 
         private void OnDestroy()
@@ -194,7 +260,7 @@ namespace UDA2.UI.SaveLoad
 
         private void OnPrimaryButtonClicked()
         {
-            // Если был начат long press, но не завершён — не срабатывает ни клик, ни long press
+            // If a long press was started but not completed, neither the click nor the long press will work.
             if (longPressInProgress && !wasLongPressed)
             {
                 // UDA2.Logging.Logger.LogInfo($"SaveSlotView: PrimaryClicked {SlotId} — skipped due to incomplete long press", UDA2.Logging.LogChannel.UI);
@@ -212,23 +278,63 @@ namespace UDA2.UI.SaveLoad
 
         public event Action<int> LongPressed;
 
+        private static string GetCurrentLang()
+        {
+            var settings = UDA2.Core.SettingsContext.Current;
+            if (settings == null)
+            {
+                settings = UDA2.Core.SettingsManager.Load();
+                if (settings == null)
+                    settings = new UDA2.Core.SettingsState();
+                UDA2.Core.SettingsContext.Current = settings;
+            }
+            return string.IsNullOrEmpty(settings.language) ? "en" : settings.language;
+        }
+
+        private static string TryGetUiString(string key)
+        {
+            if (string.IsNullOrEmpty(key))
+                return string.Empty;
+
+            var provider = UIStringsProvider.Instance;
+            if (provider == null)
+                return key;
+
+            return provider.Get(key, GetCurrentLang());
+        }
+
+        private void SetSlotTitleKey(string key)
+        {
+            var setter = slotTitle != null ? slotTitle.GetComponent<LocalizedTextSetter>() : null;
+            if (setter != null)
+            {
+                setter.key = key;
+                setter.UpdateText();
+            }
+
+            var comp = slotTitle != null ? slotTitle.GetComponent<LocalizedTextComponent>() : null;
+            if (comp != null)
+            {
+                comp.textKey = key;
+                comp.UpdateText();
+            }
+
+            // Hard fallback (also protects from miswired LocalizedTextSetter.targetText)
+            if (slotTitle != null)
+                slotTitle.text = TryGetUiString(key);
+        }
+
         public void SetEmpty(int slotId)
         {
             SlotId = slotId;
             isEmpty = true;
-            var setter = slotTitle.GetComponent<LocalizedTextSetter>();
-            if (setter != null)
-            {
-                setter.key = "save_load_empty";
-                setter.UpdateText();
-            }
-            var comp = slotTitle.GetComponent<LocalizedTextComponent>();
-            if (comp != null)
-            {
-                comp.textKey = "save_load_empty";
-                comp.UpdateText();
-            }
-            saveTimeText.text = "—";
+
+            // Title should always identify the slot number.
+            SetSlotTitleKey($"save_load_slot_{slotId}");
+
+            // Show empty state as a secondary line.
+            if (saveTimeText != null)
+                saveTimeText.text = TryGetUiString("save_load_empty");
             levelGoldText.text = "—";
             primaryButtonText.text = "—";
         }
@@ -237,23 +343,10 @@ namespace UDA2.UI.SaveLoad
         {
             SlotId = slotId;
             isEmpty = false;
-            var setter = slotTitle.GetComponent<LocalizedTextSetter>();
-            if (setter != null)
-            {
-                setter.key = $"save_load_slot_{slotId}";
-                setter.UpdateText();
-            }
-            else
-                primaryButtonText.text = "Load";
-            var comp = slotTitle.GetComponent<LocalizedTextComponent>();
-            if (comp != null)
-            {
-                comp.textKey = $"save_load_slot_{slotId}";
-                comp.UpdateText();
-            }
-            else
-                primaryButtonText.text = "Load";
-            saveTimeText.text = meta.saveTime;
+
+            SetSlotTitleKey($"save_load_slot_{slotId}");
+
+            saveTimeText.text = meta != null ? meta.saveTime : "—";
             levelGoldText.text = $"Lv {meta.playerLevel} • Gold {meta.playTimeSeconds}";
         }
 

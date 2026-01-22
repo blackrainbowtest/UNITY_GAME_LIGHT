@@ -50,6 +50,18 @@ namespace UDA2.UI.SaveLoad
         {
             currentMode = mode;
             gameObject.SetActive(true); // Prevents accidental background interaction
+
+            // Ensure we always have a valid SaveData instance when opening the modal.
+            // This modal can be opened from scenes where GameBootstrapper might not have run.
+            if (global::GameState.Instance.CurrentSave == null)
+            {
+                string versionPath = System.IO.Path.Combine(Application.dataPath, "..", "version.txt");
+                string version = System.IO.File.Exists(versionPath)
+                    ? System.IO.File.ReadAllText(versionPath).Trim()
+                    : "0.0.1";
+                global::GameState.Instance.CurrentSave = SaveData.CreateDefault(version);
+            }
+
             if (!isInitialized)
             {
                 InitSlots();
