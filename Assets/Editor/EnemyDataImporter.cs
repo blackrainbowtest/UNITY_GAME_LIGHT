@@ -34,7 +34,7 @@ public class EnemyDataImporter : EditorWindow
     private string jsonPath = "Assets/Data/enemies.json";
 
     // Output folder where EnemyData assets will be created or updated.
-    private string outputPath = "Assets/Game/Battle/Data/Enemies";
+    private string outputPath = "Assets/GameData/Battle/Data/Enemies";
 
     [MenuItem("Tools/Import EnemyData from JSON")]
     public static void ShowWindow()

@@ -29,10 +29,10 @@ using System.Linq;
 public static class ItemDatabaseAutoUpdater
 {
     private const string DatabasePath =
-        "Assets/Game/Items/Definitions/ItemDatabase.asset";
+        "Assets/GameData/Items/Definitions/ItemDatabase.asset";
 
     private const string ItemDefinitionsRoot =
-        "Assets/Game/Items/Definitions";
+        "Assets/GameData/Items/Definitions";
 
     [MenuItem("Tools/Items/Update Item Database")]
     public static void UpdateDatabase()

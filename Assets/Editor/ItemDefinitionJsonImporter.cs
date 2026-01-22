@@ -30,13 +30,13 @@ using System.Collections.Generic;
 public class ItemDefinitionJsonImporter : EditorWindow
 {
     private string jsonPath =
-        "Assets/Game/Items/Json/items.json";
+        "Assets/GameData/Items/Json/items.json";
 
     private string iconsPath =
-        "Assets/Game/Items/Icons/";
+        "Assets/Sprites/Items/";
 
     private string outputPath =
-        "Assets/Game/Items/Definitions/";
+        "Assets/GameData/Items/Definitions/";
 
     [MenuItem("Tools/Items/Import Items from JSON")]
     public static void ShowWindow()
@@ -175,13 +175,17 @@ public class ItemDefinitionJsonImporter : EditorWindow
         so.ApplyModifiedProperties();
     }
 
-    private static Sprite LoadIcon(string iconName)
+    private Sprite LoadIcon(string iconName)
     {
         if (string.IsNullOrWhiteSpace(iconName))
             return null;
 
+        var basePath = iconsPath ?? string.Empty;
+        if (!string.IsNullOrEmpty(basePath) && !basePath.EndsWith("/"))
+            basePath += "/";
+
         string iconAssetPath =
-            $"Assets/Game/Items/Icons/{iconName}.png";
+            $"{basePath}{iconName}.png";
 
         var icon =
             AssetDatabase.LoadAssetAtPath<Sprite>(iconAssetPath);
