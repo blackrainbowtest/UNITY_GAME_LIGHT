@@ -31,7 +31,7 @@ public class UIStringsDataEditor : Editor
     // Editor-only convention:
     // Root folder containing localization CSV files.
     private const string CsvRootPath =
-        "Assets/Localization/CSV";
+        "Assets/Data/Localization/CSV";
 
     public override void OnInspectorGUI()
     {
@@ -56,8 +56,15 @@ public class UIStringsDataEditor : Editor
         // Undo is intentionally not supported here.
         // Reimport is considered a destructive sync operation
         // from an external authoritative source (CSV).
-        // TODO: Consider adding an explicit confirmation dialog
-        // or snapshot-based rollback if required.
+        if (!EditorUtility.DisplayDialog(
+                "Reimport from CSV",
+                "This will overwrite all strings in the asset with data from the CSV file. Continue?",
+                "Reimport",
+                "Cancel"))
+        {
+            return;
+        }
+
         if (!data.EditorReimportFromCsv(
                 CsvRootPath,
                 out string error))

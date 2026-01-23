@@ -24,6 +24,7 @@ namespace UDA2.Logging
         private static readonly string LogFilePath = Path.Combine(Application.persistentDataPath, "uda2.log");
         private static readonly List<LogEntry> _entries = new List<LogEntry>(MaxEntries);
         public static LogType MinLogLevel = LogType.Info;
+        public static LogType MinUnityConsoleLevel = LogType.Warning;
         private static bool _outputToUnityConsole = true;
         private static bool _isDisposing = false;
         public static readonly string SessionId = Guid.NewGuid().ToString();
@@ -54,9 +55,25 @@ namespace UDA2.Logging
             Log(LogType.Error, channel, message, unityContext, callerFilePath, callerMemberName, callerLineNumber);
         }
 
+        private static int Severity(LogType type)
+        {
+            // Lower number here means more severe.
+            switch (type)
+            {
+                case LogType.Error:
+                    return 0;
+                case LogType.Warning:
+                    return 1;
+                case LogType.Info:
+                default:
+                    return 2;
+            }
+        }
+
         private static void Log(LogType type, LogChannel channel, string message, UnityEngine.Object unityContext, string callerFilePath, string callerMemberName, int callerLineNumber)
         {
-            if (type < MinLogLevel) return;
+            if (Severity(type) > Severity(MinLogLevel))
+                return;
 
             var entry = new LogEntry
             {
@@ -83,6 +100,9 @@ namespace UDA2.Logging
         private static void OutputToUnityConsoleWithCallerInfo(LogEntry entry)
         {
             if (!_outputToUnityConsole || _isDisposing)
+                return;
+
+            if (Severity(entry.Type) > Severity(MinUnityConsoleLevel))
                 return;
 
             string line = BuildLogLine(entry);
@@ -125,7 +145,6 @@ namespace UDA2.Logging
             try
             {
                 File.AppendAllText(LogFilePath, BuildLogLine(entry) + Environment.NewLine);
-                Debug.Log($"[Logger] Log entry written to file: {LogFilePath}");
             }
             catch (Exception ex)
             {
@@ -142,7 +161,6 @@ namespace UDA2.Logging
                 foreach (var entry in _entries)
                     lines.Add(BuildLogLine(entry));
                 File.WriteAllLines(LogFilePath, lines);
-                Debug.Log($"[Logger] Log file flushed: {LogFilePath}");
             }
             catch (Exception ex)
             {
@@ -167,7 +185,6 @@ namespace UDA2.Logging
         {
             _isDisposing = true;
             FlushToFile();
-            Debug.Log($"[Logger] Shutdown: logs saved to {LogFilePath}");
         }
     }
 }

@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-// TODO: fix comments and remove debugs
 namespace UDA2.UI.SaveLoad
 {
     public class SaveSlotView : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler
@@ -112,7 +111,6 @@ namespace UDA2.UI.SaveLoad
                         waitingToShowProgress = false;
                         if (!canceledByScroll && progressView != null)
                             progressView.Show(lastPointerDownPosition);
-                        // UDA2.Logging.Logger.LogInfo($"[SaveSlotView] progressView.Show (delayed) at {lastPointerDownPosition}", UDA2.Logging.LogChannel.UI);
                     }
                 }
             }
@@ -136,7 +134,6 @@ namespace UDA2.UI.SaveLoad
             {
                 longPressInProgress = true;
                 waitingToShowProgress = true;
-                // UDA2.Logging.Logger.LogInfo($"[SaveSlotView] OnPointerDown slot {SlotId}", UDA2.Logging.LogChannel.UI);
                 // progressView.Show will be called with a delay in Update
                 longPressHandler.StartPress();
             }
@@ -147,7 +144,6 @@ namespace UDA2.UI.SaveLoad
             if (isEmpty && !isSaveMode) return;
             isPointerDown = false;
             waitingToShowProgress = false;
-            // UDA2.Logging.Logger.LogInfo($"[SaveSlotView] OnPointerUp slot {SlotId}", UDA2.Logging.LogChannel.UI);
 
             if (canceledByScroll)
             {
@@ -166,7 +162,6 @@ namespace UDA2.UI.SaveLoad
                 longPressHandler.CancelPress();
                 if (progressView != null)
                     progressView.Hide();
-                // UDA2.Logging.Logger.LogInfo($"[SaveSlotView] progressView.Hide", UDA2.Logging.LogChannel.UI);
             }
 
             // If finger moved, treat as scroll/drag -> ignore tap.
@@ -185,7 +180,6 @@ namespace UDA2.UI.SaveLoad
             // Tap: only if not long press and short press
             if (!wasLongPressed && pressDuration < progressShowDelay)
             {
-                // UDA2.Logging.Logger.LogInfo($"SaveSlotView: PrimaryClicked {SlotId} (tap)", UDA2.Logging.LogChannel.UI);
                 PrimaryClicked?.Invoke(SlotId);
             }
             // If there was a long press, do nothing.
@@ -203,11 +197,9 @@ namespace UDA2.UI.SaveLoad
                 {
                     longPressInProgress = false;
                 }
-                // UDA2.Logging.Logger.LogInfo($"[SaveSlotView] OnPointerExit slot {SlotId}", UDA2.Logging.LogChannel.UI);
                 longPressHandler.CancelPress();
                 if (progressView != null)
                     progressView.Hide();
-                // UDA2.Logging.Logger.LogInfo($"[SaveSlotView] progressView.Hide (exit)", UDA2.Logging.LogChannel.UI);
             }
         }
 
@@ -227,7 +219,6 @@ namespace UDA2.UI.SaveLoad
             // long press только для непустых слотов
             if (isEmpty) return;
             if (canceledByScroll) return;
-            // UDA2.Logging.Logger.LogInfo($"[SaveSlotView] LongPress COMPLETED slot {SlotId}", UDA2.Logging.LogChannel.UI);
             if (progressView != null)
                 progressView.Hide();
             wasLongPressed = true;
@@ -237,7 +228,6 @@ namespace UDA2.UI.SaveLoad
 
         private void HandleLongPressCanceled()
         {
-            // UDA2.Logging.Logger.LogInfo($"[SaveSlotView] LongPress CANCELED slot {SlotId}", UDA2.Logging.LogChannel.UI);
             if (progressView != null)
                 progressView.Hide();
         }
@@ -263,16 +253,13 @@ namespace UDA2.UI.SaveLoad
             // If a long press was started but not completed, neither the click nor the long press will work.
             if (longPressInProgress && !wasLongPressed)
             {
-                // UDA2.Logging.Logger.LogInfo($"SaveSlotView: PrimaryClicked {SlotId} — skipped due to incomplete long press", UDA2.Logging.LogChannel.UI);
                 return;
             }
             if (wasLongPressed)
             {
                 wasLongPressed = false;
-                // UDA2.Logging.Logger.LogInfo($"SaveSlotView: PrimaryClicked {SlotId} — skipped due to long press", UDA2.Logging.LogChannel.UI);
                 return;
             }
-            // UDA2.Logging.Logger.LogInfo($"SaveSlotView: PrimaryClicked {SlotId}", UDA2.Logging.LogChannel.UI);
             PrimaryClicked?.Invoke(SlotId);
         }
 
@@ -329,14 +316,19 @@ namespace UDA2.UI.SaveLoad
             SlotId = slotId;
             isEmpty = true;
 
-            // Title should always identify the slot number.
-            SetSlotTitleKey($"save_load_slot_{slotId}");
-
-            // Show empty state as a secondary line.
-            if (saveTimeText != null)
+            // Populate secondary fields first (guards against accidental prefab miswiring
+            // where multiple serialized fields point to the same TMP_Text instance).
+            if (saveTimeText != null && !ReferenceEquals(saveTimeText, slotTitle))
                 saveTimeText.text = TryGetUiString("save_load_empty");
-            levelGoldText.text = "—";
-            primaryButtonText.text = "—";
+
+            if (levelGoldText != null && !ReferenceEquals(levelGoldText, slotTitle))
+                levelGoldText.text = "—";
+
+            if (primaryButtonText != null && !ReferenceEquals(primaryButtonText, slotTitle))
+                primaryButtonText.text = "—";
+
+            // Title should always identify the slot number (set last so it can't be overwritten).
+            SetSlotTitleKey($"save_load_slot_{slotId}");
         }
 
         public void SetData(int slotId, SaveMeta meta)
@@ -344,10 +336,16 @@ namespace UDA2.UI.SaveLoad
             SlotId = slotId;
             isEmpty = false;
 
-            SetSlotTitleKey($"save_load_slot_{slotId}");
+            if (saveTimeText != null && !ReferenceEquals(saveTimeText, slotTitle))
+                saveTimeText.text = meta != null ? meta.saveTime : "—";
 
-            saveTimeText.text = meta != null ? meta.saveTime : "—";
-            levelGoldText.text = $"Lv {meta.playerLevel} • Gold {meta.playTimeSeconds}";
+            if (levelGoldText != null && !ReferenceEquals(levelGoldText, slotTitle))
+                levelGoldText.text = meta != null
+                    ? $"Lv {meta.playerLevel} • Gold {meta.playTimeSeconds}"
+                    : "—";
+
+            // Keep the title stable.
+            SetSlotTitleKey($"save_load_slot_{slotId}");
         }
 
         public void SetAutosave(bool isAutosave)
@@ -362,6 +360,39 @@ namespace UDA2.UI.SaveLoad
                 lockOverlay.SetActive(locked);
             if (primaryButton != null)
                 primaryButton.interactable = !locked;
+        }
+
+        public void Render(SaveSlotViewModel model)
+        {
+            SlotId = model.SlotId;
+            isEmpty = !model.HasSave;
+
+            SetAutosave(model.IsAutosave);
+            SetLocked(model.IsLocked);
+
+            // Populate secondary fields first (guards against accidental prefab miswiring).
+            if (isEmpty)
+            {
+                if (saveTimeText != null && !ReferenceEquals(saveTimeText, slotTitle))
+                    saveTimeText.text = TryGetUiString(model.EmptyKey);
+
+                if (levelGoldText != null && !ReferenceEquals(levelGoldText, slotTitle))
+                    levelGoldText.text = "—";
+
+                if (primaryButtonText != null && !ReferenceEquals(primaryButtonText, slotTitle))
+                    primaryButtonText.text = "—";
+            }
+            else
+            {
+                if (saveTimeText != null && !ReferenceEquals(saveTimeText, slotTitle))
+                    saveTimeText.text = string.IsNullOrEmpty(model.SaveTimeText) ? "—" : model.SaveTimeText;
+
+                if (levelGoldText != null && !ReferenceEquals(levelGoldText, slotTitle))
+                    levelGoldText.text = string.IsNullOrEmpty(model.LevelGoldText) ? "—" : model.LevelGoldText;
+            }
+
+            // Keep the title stable.
+            SetSlotTitleKey(model.TitleKey);
         }
     }
 }

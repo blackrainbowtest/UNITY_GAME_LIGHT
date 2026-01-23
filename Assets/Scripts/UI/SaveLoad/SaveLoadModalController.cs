@@ -1,16 +1,13 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UDA2.UI.Common;
 
-// TODO: fix comments
 namespace UDA2.UI.SaveLoad
 {
     public class SaveLoadModalController : MonoBehaviour
     {
-        public enum Mode { Load, Save }
 
         [Header("UI References")]
         [SerializeField] private Transform slotsParent; // Enables dynamic slot layout
@@ -18,9 +15,7 @@ namespace UDA2.UI.SaveLoad
         [SerializeField] private Button closeButton; // Prevents modal from blocking UI
         [SerializeField] private TMP_Text headerText; // Ensures correct context for user
 
-        // Centralizes confirmation logic for destructive actions
-
-        private Mode currentMode;
+        private SaveLoadMode currentMode;
         private List<SaveSlotView> slotViews = new List<SaveSlotView>(); // Enables batch slot updates
         [Header("Long Press Progress")]
         [SerializeField] private LongPressProgressView progressViewPrefab;
@@ -35,7 +30,7 @@ namespace UDA2.UI.SaveLoad
         /// <summary>
         /// Displays modal, blocking background interaction until closed.
         /// </summary>
-        public static SaveLoadModalController Show(Mode mode)
+        public static SaveLoadModalController Show(SaveLoadMode mode)
         {
             var prefab = Resources.Load<SaveLoadModalController>("Prefabs/UI/SaveLoad/SaveLoadModal");
             var instance = Instantiate(prefab);
@@ -46,7 +41,7 @@ namespace UDA2.UI.SaveLoad
         /// <summary>
         /// Prepares modal for user action, guaranteeing up-to-date slot state.
         /// </summary>
-        private void OpenInternal(Mode mode)
+        private void OpenInternal(SaveLoadMode mode)
         {
             currentMode = mode;
             gameObject.SetActive(true); // Prevents accidental background interaction
@@ -74,13 +69,13 @@ namespace UDA2.UI.SaveLoad
             var setter = headerText.GetComponent<LocalizedTextSetter>();
             if (setter != null)
             {
-                setter.key = mode == Mode.Load ? "save_load_title_load" : "save_load_title_save";
+                setter.key = mode == SaveLoadMode.Load ? "save_load_title_load" : "save_load_title_save";
                 setter.UpdateText();
             }
             var comp = headerText.GetComponent<LocalizedTextComponent>();
             if (comp != null)
             {
-                comp.textKey = mode == Mode.Load ? "save_load_title_load" : "save_load_title_save";
+                comp.textKey = mode == SaveLoadMode.Load ? "save_load_title_load" : "save_load_title_save";
                 comp.UpdateText();
             }
         }
@@ -116,52 +111,13 @@ namespace UDA2.UI.SaveLoad
             for (int i = 0; i < SlotCount; i++)
             {
                 var slotView = slotViews[i];
+
                 // Set the save mode to ensure correct operation of clicks on empty slots
-                slotView.SetSaveMode(currentMode == Mode.Save); // <-- добавлено
+                slotView.SetSaveMode(currentMode == SaveLoadMode.Save);
+
                 int slotId = i;
-                bool hasSave = SaveSlotsManager.HasSave(slotId);
-                if (currentMode == Mode.Load)
-                {
-                    if (slotId == 0)
-                    {
-                        slotView.SetAutosave(true);
-                        slotView.SetLocked(false); // Allows autosave to be loaded
-                        if (hasSave)
-                            slotView.SetData(slotId, SaveSlotsManager.GetMeta(slotId));
-                        else
-                            slotView.SetEmpty(slotId);
-                    }
-                    else
-                    {
-                        slotView.SetAutosave(false);
-                        slotView.SetLocked(!hasSave); // Prevents loading from empty slots
-                        if (hasSave)
-                            slotView.SetData(slotId, SaveSlotsManager.GetMeta(slotId));
-                        else
-                            slotView.SetEmpty(slotId);
-                    }
-                }
-                else // Save Mode
-                {
-                    if (slotId == 0)
-                    {
-                        slotView.SetAutosave(true);
-                        slotView.SetLocked(true); // Prevents overwriting autosave
-                        if (hasSave)
-                            slotView.SetData(slotId, SaveSlotsManager.GetMeta(slotId));
-                        else
-                            slotView.SetEmpty(slotId);
-                    }
-                    else
-                    {
-                        slotView.SetAutosave(false);
-                        slotView.SetLocked(false); // Enables manual slot saving
-                        if (hasSave)
-                            slotView.SetData(slotId, SaveSlotsManager.GetMeta(slotId));
-                        else
-                            slotView.SetEmpty(slotId);
-                    }
-                }
+                var model = SaveSlotsPresenter.Build(currentMode, slotId);
+                slotView.Render(model);
             }
         }
 
@@ -170,7 +126,7 @@ namespace UDA2.UI.SaveLoad
         /// </summary>
         private void OnSlotClicked(int slotId)
         {
-            if (currentMode == Mode.Load)
+            if (currentMode == SaveLoadMode.Load)
             {
                 if (!SaveSlotsManager.HasSave(slotId)) return;
                 var save = SaveSlotsManager.LoadFromSlot(slotId);

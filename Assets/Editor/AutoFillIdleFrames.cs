@@ -20,6 +20,7 @@
 using UnityEngine;
 using UnityEditor;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 /// <summary>
 /// Editor utility window used to automatically populate idle animation frames
@@ -95,16 +96,40 @@ public class AutoFillIdleFrames : EditorWindow
 
         // Load all sprites located in the folder and its subfolders.
         // Sorting by name ensures stable frame order across machines and source control.
-        Sprite[] sprites = AssetDatabase
+        var rawSprites = AssetDatabase
             .FindAssets("t:Sprite", new[] { folderPath })
             .Select(guid =>
                 AssetDatabase.LoadAssetAtPath<Sprite>(
                     AssetDatabase.GUIDToAssetPath(guid)))
-            .OrderBy(sprite => sprite.name)
             .ToArray();
 
-        // TODO: Consider validating sprite naming conventions
-        // (e.g. idle_000, idle_001, ...) before assigning frames.
+        // Prefer numeric ordering when sprite names end with a frame number
+        // (e.g. idle_001, idle_002, ... or idle_outfit_01_01, idle_outfit_01_02, ...).
+        var parsed = rawSprites
+            .Select(s => new
+            {
+                Sprite = s,
+                HasIndex = TryGetTrailingNumber(s != null ? s.name : null, out int index),
+                Index = index
+            })
+            .ToArray();
+
+        bool anyIndexed = parsed.Any(p => p.HasIndex);
+        bool allIndexed = parsed.All(p => p.HasIndex);
+
+        if (anyIndexed && !allIndexed)
+        {
+            Debug.LogWarning(
+                "AutoFillIdleFrames: Mixed sprite naming detected (some frames have trailing numbers, some don't). Falling back to name sort."
+            );
+        }
+
+        Sprite[] sprites = (allIndexed
+                ? parsed.OrderBy(p => p.Index).ThenBy(p => p.Sprite.name)
+                : parsed.OrderBy(p => p.Sprite != null ? p.Sprite.name : string.Empty))
+            .Select(p => p.Sprite)
+            .Where(s => s != null)
+            .ToArray();
 
         // IMPORTANT:
         // Frames are assigned through a dedicated editor-only method.
@@ -118,6 +143,20 @@ public class AutoFillIdleFrames : EditorWindow
         Debug.Log(
             $"AutoFillIdleFrames: Added {sprites.Length} frames to {animationAsset.name}"
         );
+    }
+
+    private static bool TryGetTrailingNumber(string name, out int number)
+    {
+        number = 0;
+        if (string.IsNullOrEmpty(name))
+            return false;
+
+        // Capture last contiguous digit group at the end of the string.
+        var match = Regex.Match(name, @"(\d+)$");
+        if (!match.Success)
+            return false;
+
+        return int.TryParse(match.Groups[1].Value, out number);
     }
 }
 

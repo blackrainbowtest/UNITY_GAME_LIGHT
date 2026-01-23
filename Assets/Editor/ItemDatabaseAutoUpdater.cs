@@ -29,10 +29,10 @@ using System.Linq;
 public static class ItemDatabaseAutoUpdater
 {
     private const string DatabasePath =
-        "Assets/Game/Items/Definitions/ItemDatabase.asset";
+        "Assets/GameData/Items/Definitions/ItemDatabase.asset";
 
     private const string ItemDefinitionsRoot =
-        "Assets/Game/Items/Definitions";
+        "Assets/GameData/Items/Definitions";
 
     [MenuItem("Tools/Items/Update Item Database")]
     public static void UpdateDatabase()
@@ -41,12 +41,7 @@ public static class ItemDatabaseAutoUpdater
 
         var allItems = FindAllItemDefinitions();
 
-        // TODO: Replace SerializedObject mutation with an explicit
-        // editor-only method on ItemDatabase (e.g. EditorSetItems).
-        // Direct SerializedProperty manipulation is temporarily allowed
-        // for editor tooling but should not be the final architecture.
-
-        ApplyItemsViaSerializedObject(db, allItems);
+        db.EditorSetItems(allItems);
 
         EditorUtility.SetDirty(db);
         AssetDatabase.SaveAssets();
@@ -92,31 +87,6 @@ public static class ItemDatabaseAutoUpdater
             .ToArray();
     }
 
-    /// <summary>
-    /// Applies item list to the database using SerializedObject.
-    /// 
-    /// WARNING:
-    /// This method relies on internal field names and should be
-    /// replaced with a dedicated editor API on ItemDatabase.
-    /// </summary>
-    private static void ApplyItemsViaSerializedObject(
-        ItemDatabase db,
-        ItemDefinition[] items)
-    {
-        var so = new SerializedObject(db);
-        var itemsProp = so.FindProperty("items");
-
-        itemsProp.arraySize = items.Length;
-
-        for (int i = 0; i < items.Length; i++)
-        {
-            itemsProp
-                .GetArrayElementAtIndex(i)
-                .objectReferenceValue = items[i];
-        }
-
-        so.ApplyModifiedProperties();
-    }
 }
 
 /*

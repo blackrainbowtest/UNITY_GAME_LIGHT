@@ -30,13 +30,13 @@ using System.Collections.Generic;
 public class ItemDefinitionJsonImporter : EditorWindow
 {
     private string jsonPath =
-        "Assets/Game/Items/Json/items.json";
+        "Assets/GameData/Items/Json/items.json";
 
     private string iconsPath =
-        "Assets/Game/Items/Icons/";
+        "Assets/Sprites/Items/";
 
     private string outputPath =
-        "Assets/Game/Items/Definitions/";
+        "Assets/GameData/Items/Definitions/";
 
     [MenuItem("Tools/Items/Import Items from JSON")]
     public static void ShowWindow()
@@ -108,80 +108,47 @@ public class ItemDefinitionJsonImporter : EditorWindow
     /// </summary>
     private void CreateItemAsset(ItemJson item)
     {
-        var asset =
-            ScriptableObject.CreateInstance<ItemDefinition>();
-
-        // TODO:
-        // Replace field-by-field SerializedObject mutation with a single
-        // editor-only initialization method on ItemDefinition
-        // (e.g. EditorApplyDefinition / EditorInitialize).
-        // Current approach is temporary and relies on internal field names.
-
-        ApplyFieldsViaSerializedObject(asset, item);
-
         string assetPath =
             $"{outputPath}{item.id}.asset";
 
-        AssetDatabase.CreateAsset(asset, assetPath);
-    }
-
-    /// <summary>
-    /// Applies JSON data to ItemDefinition using SerializedObject.
-    /// 
-    /// WARNING:
-    /// This method relies on internal field names and bypasses
-    /// ItemDefinition's domain API. This is editor-only technical debt.
-    /// </summary>
-    private void ApplyFieldsViaSerializedObject(
-        ItemDefinition asset,
-        ItemJson item)
-    {
-        var so = new SerializedObject(asset);
-
-        SetProperty(so, "id", item.id);
-        SetProperty(
-            so,
-            "type",
-            (ItemType)System.Enum.Parse(
-                typeof(ItemType),
-                item.type
-            )
-        );
-
-        SetProperty(so, "displayName", item.displayName);
-
-        if (item.type == "Consumable")
+        var asset = AssetDatabase.LoadAssetAtPath<ItemDefinition>(assetPath);
+        if (asset == null)
         {
-            ConsumableEffect effectValue =
-                ConsumableEffect.HealHP;
-
-            if (!string.IsNullOrEmpty(item.effect)
-                && item.effect != "null"
-                && System.Enum.TryParse(
-                    item.effect,
-                    out ConsumableEffect parsedEffect))
-            {
-                effectValue = parsedEffect;
-            }
-
-            SetProperty(so, "effect", effectValue);
+            asset = ScriptableObject.CreateInstance<ItemDefinition>();
+            AssetDatabase.CreateAsset(asset, assetPath);
         }
 
-        SetProperty(so, "value", item.value);
+        if (!TryBuildEditorDefinition(item, out var definition, out string error))
+        {
+            Debug.LogError($"ItemDefinitionJsonImporter: Failed to parse '{item?.id}': {error}");
+            return;
+        }
 
-        var icon = LoadIcon(item.icon);
-        SetProperty(so, "icon", icon);
-
-        so.ApplyModifiedProperties();
+        var icon = LoadIcon(definition.IconName);
+        if (!asset.EditorApplyDefinition(
+                definition.Id,
+                definition.Type,
+                definition.DisplayName,
+                icon,
+                definition.Effect,
+                definition.Value,
+                out error))
+        {
+            Debug.LogError($"ItemDefinitionJsonImporter: Failed to apply '{definition.Id}': {error}");
+        }
     }
 
-    private static Sprite LoadIcon(string iconName)
+    private Sprite LoadIcon(string iconName)
     {
         if (string.IsNullOrWhiteSpace(iconName))
             return null;
 
+        var basePath = iconsPath ?? string.Empty;
+        if (!string.IsNullOrEmpty(basePath) && !basePath.EndsWith("/"))
+            basePath += "/";
+
         string iconAssetPath =
-            $"Assets/Game/Items/Icons/{iconName}.png";
+            $"{basePath}{iconName}.png";
 
         var icon =
             AssetDatabase.LoadAssetAtPath<Sprite>(iconAssetPath);
@@ -196,32 +163,79 @@ public class ItemDefinitionJsonImporter : EditorWindow
         return icon;
     }
 
-    private static void SetProperty(
-        SerializedObject so,
-        string fieldName,
-        object value)
+    private static bool TryBuildEditorDefinition(
+        ItemJson item,
+        out ItemEditorDefinition result,
+        out string error)
     {
-        var prop = so.FindProperty(fieldName);
-        if (prop == null)
-            return;
+        result = default;
+        error = null;
 
-        switch (prop.propertyType)
+        if (item == null)
         {
-            case SerializedPropertyType.String:
-                prop.stringValue = value as string;
-                break;
+            error = "Item JSON is null.";
+            return false;
+        }
 
-            case SerializedPropertyType.Integer:
-                prop.intValue = (int)value;
-                break;
+        if (string.IsNullOrWhiteSpace(item.id))
+        {
+            error = "Missing 'id'.";
+            return false;
+        }
 
-            case SerializedPropertyType.Enum:
-                prop.enumValueIndex = (int)value;
-                break;
+        if (!System.Enum.TryParse(item.type, ignoreCase: true, out ItemType itemType))
+        {
+            error = $"Unknown item type '{item.type}'.";
+            return false;
+        }
 
-            case SerializedPropertyType.ObjectReference:
-                prop.objectReferenceValue = value as Object;
-                break;
+        ConsumableEffect effect = ConsumableEffect.DoingNothing;
+        if (itemType == ItemType.Consumable)
+        {
+            // Old JSON may contain null-like values.
+            if (!string.IsNullOrWhiteSpace(item.effect)
+                && item.effect != "null"
+                && !System.Enum.TryParse(item.effect, ignoreCase: true, out effect))
+            {
+                error = $"Unknown consumable effect '{item.effect}'.";
+                return false;
+            }
+        }
+
+        result = new ItemEditorDefinition(
+            id: item.id,
+            type: itemType,
+            displayName: item.displayName,
+            iconName: item.icon,
+            effect: effect,
+            value: item.value
+        );
+        return true;
+    }
+
+    private readonly struct ItemEditorDefinition
+    {
+        public string Id { get; }
+        public ItemType Type { get; }
+        public string DisplayName { get; }
+        public string IconName { get; }
+        public ConsumableEffect Effect { get; }
+        public int Value { get; }
+
+        public ItemEditorDefinition(
+            string id,
+            ItemType type,
+            string displayName,
+            string iconName,
+            ConsumableEffect effect,
+            int value)
+        {
+            Id = id;
+            Type = type;
+            DisplayName = displayName;
+            IconName = iconName;
+            Effect = effect;
+            Value = value;
         }
     }
 

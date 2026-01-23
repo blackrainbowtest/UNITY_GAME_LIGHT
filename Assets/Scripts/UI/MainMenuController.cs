@@ -29,7 +29,7 @@ namespace UDA2.UI
 
         public void OnLoadGamePressed()
         {
-            UDA2.UI.SaveLoad.SaveLoadModalController.Show(UDA2.UI.SaveLoad.SaveLoadModalController.Mode.Load);
+            UDA2.UI.SaveLoad.SaveLoadModalController.Show(UDA2.UI.SaveLoad.SaveLoadMode.Load);
         }
 
         [SerializeField] private GameObject settingsMenuPrefab;
