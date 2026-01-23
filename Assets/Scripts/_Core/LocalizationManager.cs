@@ -38,8 +38,8 @@ namespace UDA2.Core
             if (_uiStringsAssets != null && _uiStringsAssets.Length > 0)
                 return;
 
-            // Load all UIStringsData ScriptableObjects from Assets/Resources.
-            _uiStringsAssets = UnityEngine.Resources.LoadAll<UIStringsData>(string.Empty);
+            // Load all UIStringsData ScriptableObjects from Assets/Resources/Localization (and subfolders).
+            _uiStringsAssets = UnityEngine.Resources.LoadAll<UIStringsData>("Localization");
 
             // Backward-compat: allow a single aggregated asset named "UIStrings".
             if (_uiStringsAssets == null || _uiStringsAssets.Length == 0)
