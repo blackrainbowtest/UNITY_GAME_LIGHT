@@ -24,15 +24,29 @@ namespace UDA2.Core
     {
         public static string CurrentLanguage { get; private set; } = "en";
 
-        private static UIStringsData _uiStringsData;
+        private static UIStringsData[] _uiStringsAssets;
 
         static LocalizationManager()
         {
             SettingsContext.OnLanguageChanged += SetLanguage;
-            if (_uiStringsData == null)
+
+            EnsureLoaded();
+        }
+
+        private static void EnsureLoaded()
+        {
+            if (_uiStringsAssets != null && _uiStringsAssets.Length > 0)
+                return;
+
+            // Load all UIStringsData ScriptableObjects from Assets/Resources.
+            _uiStringsAssets = UnityEngine.Resources.LoadAll<UIStringsData>(string.Empty);
+
+            // Backward-compat: allow a single aggregated asset named "UIStrings".
+            if (_uiStringsAssets == null || _uiStringsAssets.Length == 0)
             {
-                // Попробуем загрузить ассет из Resources, если он там лежит
-                _uiStringsData = UnityEngine.Resources.Load<UIStringsData>("UIStrings");
+                var single = UnityEngine.Resources.Load<UIStringsData>("UIStrings");
+                if (single != null)
+                    _uiStringsAssets = new[] { single };
             }
         }
 
@@ -50,15 +64,24 @@ namespace UDA2.Core
         /// </summary>
         public static string Get(string key)
         {
-            if (_uiStringsData == null)
+            if (string.IsNullOrEmpty(key))
+                return string.Empty;
+
+            EnsureLoaded();
+
+            if (_uiStringsAssets != null)
             {
-                // Попробуем загрузить ассет из Resources, если он там лежит
-                _uiStringsData = UnityEngine.Resources.Load<UIStringsData>("UIStrings");
+                for (int i = 0; i < _uiStringsAssets.Length; i++)
+                {
+                    var asset = _uiStringsAssets[i];
+                    if (asset == null)
+                        continue;
+
+                    if (asset.TryGet(key, CurrentLanguage, out var value))
+                        return value;
+                }
             }
-            if (_uiStringsData != null)
-            {
-                return _uiStringsData.Get(key, CurrentLanguage);
-            }
+
             return key;
         }
     }

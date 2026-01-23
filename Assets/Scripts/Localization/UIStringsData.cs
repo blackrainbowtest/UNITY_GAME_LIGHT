@@ -42,6 +42,25 @@ public class UIStringsData : ScriptableObject
         return key;
     }
 
+    public bool TryGet(string key, string languageCode, out string value)
+    {
+        value = null;
+
+        if (string.IsNullOrEmpty(key))
+            return false;
+
+        for (int i = 0; i < strings.Count; i++)
+        {
+            if (strings[i].Key == key)
+            {
+                value = strings[i].Get(languageCode);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 #if UNITY_EDITOR
     public bool EditorSetSourceCsvName(string csvName, out string error)
     {
