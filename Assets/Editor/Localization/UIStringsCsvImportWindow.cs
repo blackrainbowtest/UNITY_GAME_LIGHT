@@ -36,10 +36,39 @@ public class UIStringsCsvImportWindow : EditorWindow
 
     // Editor-only localization conventions.
     private const string CsvFolder =
+        "Assets/GameData/Localization/CSV";
+
+    private const string LegacyCsvFolder =
         "Assets/Data/Localization/CSV";
 
     private const string AssetFolder =
+        "Assets/Resources/Localization/UI";
+
+    private const string LegacyAssetFolder =
+        "Assets/GameData/Localization/Assets";
+
+    private const string LegacyAssetFolder2 =
         "Assets/Data/Localization/Assets";
+
+    private static string ResolveFolder(string preferred, string legacy)
+    {
+        if (AssetDatabase.IsValidFolder(preferred))
+            return preferred;
+        if (AssetDatabase.IsValidFolder(legacy))
+            return legacy;
+        return preferred;
+    }
+
+    private static string ResolveFolder(string preferred, string legacy1, string legacy2)
+    {
+        if (AssetDatabase.IsValidFolder(preferred))
+            return preferred;
+        if (AssetDatabase.IsValidFolder(legacy1))
+            return legacy1;
+        if (AssetDatabase.IsValidFolder(legacy2))
+            return legacy2;
+        return preferred;
+    }
 
     [MenuItem("Tools/Localization/Import UI Strings from CSV")]
     public static void ShowWindow()
@@ -113,8 +142,9 @@ public class UIStringsCsvImportWindow : EditorWindow
         // NOTE:
         // Parsed data is intentionally not passed directly.
         // UIStringsData owns the authoritative import logic.
+        string csvFolder = ResolveFolder(CsvFolder, LegacyCsvFolder);
         if (!asset.EditorReimportFromCsv(
-                CsvFolder,
+            csvFolder,
                 out error))
         {
             EditorUtility.DisplayDialog(
@@ -138,9 +168,22 @@ public class UIStringsCsvImportWindow : EditorWindow
 
         var failReport = new StringBuilder();
 
+        string csvFolder = ResolveFolder(CsvFolder, LegacyCsvFolder);
+        string assetFolder = ResolveFolder(AssetFolder, LegacyAssetFolder, LegacyAssetFolder2);
+
+        if (!AssetDatabase.IsValidFolder(csvFolder))
+        {
+            EditorUtility.DisplayDialog(
+                "Error",
+                $"CSV folder not found: '{csvFolder}'\n\nExpected new path: '{CsvFolder}'\nLegacy path: '{LegacyCsvFolder}'",
+                "OK"
+            );
+            return;
+        }
+
         var csvGuids = AssetDatabase.FindAssets(
             "t:TextAsset",
-            new[] { CsvFolder }
+            new[] { csvFolder }
         );
 
         foreach (var guid in csvGuids)
@@ -152,7 +195,7 @@ public class UIStringsCsvImportWindow : EditorWindow
                 Path.GetFileNameWithoutExtension(csvPath);
 
             string assetPath =
-                $"{AssetFolder}/{assetName}.asset";
+                $"{assetFolder}/{assetName}.asset";
 
             var asset =
                 AssetDatabase.LoadAssetAtPath<UIStringsData>(assetPath);
@@ -191,7 +234,7 @@ public class UIStringsCsvImportWindow : EditorWindow
             }
 
             if (!asset.EditorReimportFromCsv(
-                    CsvFolder,
+                    csvFolder,
                     out error))
             {
                 failed++;

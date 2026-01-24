@@ -10,14 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce5885deaae081245b76a3c7c94ef83f, type: 3}
-  m_Name: Player_outfit_01_Visuals
+  m_Name: Slaver_outfit_01_Visuals
   m_EditorClassIdentifier: Assembly-CSharp::Game.Battle.Visual.OutfitVisuals
   outfitId: outfit_01
-  idle: {fileID: 11400000, guid: 248f85fff92dcc24d9a743e9bcbe5977, type: 2}
-  hit: {fileID: 0}
-  fastAttack: {fileID: 0}
-  normalAttack: {fileID: 0}
-  heavyAttack: {fileID: 0}
-  cast: {fileID: 0}
-  block: {fileID: 0}
-  death: {fileID: 0}
+  idleVariations:
+  - {fileID: 11400000, guid: 3d337397ce62bbc43aec799c7c4f89a2, type: 2}
+  hitVariations: []
+  fastAttackVariations: []
+  normalAttackVariations: []
+  heavyAttackVariations: []
+  castVariations: []
+  blockVariations: []
+  deathVariations: []

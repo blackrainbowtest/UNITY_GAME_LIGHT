@@ -194,13 +194,10 @@ public class IntroController : MonoBehaviour
         SaveSlotsManager.SaveToSlot(DefaultIntroSaveSlot, GameState.Instance.CurrentSave);
         BattleEntryContext.Set(BattleMode.Tutorial);
         var enemyForFirstFight = firstFightEnemy;
-        if (enemyForFirstFight == null)
-            enemyForFirstFight = Resources.Load<Game.Battle.EnemyData>("Slaver");
-
         if (enemyForFirstFight != null)
             BattleEnemyContext.Set(enemyForFirstFight);
         else
-            Debug.LogWarning("IntroController: firstFightEnemy is not set and Resources/Slaver was not found. BattleSceneEntryPoint will fallback to EnemySpawnTable.");
+            Debug.LogWarning("IntroController: firstFightEnemy is not set. BattleSceneEntryPoint will fallback to EnemySpawnTable.");
         Game.Battle.BattleExitContext.Set(new Game.Battle.BattleExitData("StartCityScene"));
 
         // Transition to the first fight scene using the scene loader if available

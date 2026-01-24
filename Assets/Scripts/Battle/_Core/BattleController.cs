@@ -140,7 +140,6 @@ namespace Game.Battle
             {
                 playerView.SetVisualProfile(playerVisualProfile);
                 playerView.SetOutfitId(context.Player.OutfitId);
-                playerView.SetIdleAnimation(OutfitIdleAnimationResolver.ResolvePlayerIdle(context.Player.OutfitId));
             }
 
             if (enemyView != null && context != null && context.Enemy != null)

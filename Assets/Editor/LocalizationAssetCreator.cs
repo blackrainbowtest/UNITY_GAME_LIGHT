@@ -28,7 +28,20 @@ using System.IO;
 /// </summary>
 public static class LocalizationAssetCreator
 {
-    private const string TargetFolder = "Assets/Data/Localization/Assets";
+    private const string TargetFolder = "Assets/Resources/Localization/UI";
+    private const string LegacyTargetFolder = "Assets/GameData/Localization/Assets";
+    private const string LegacyTargetFolder2 = "Assets/Data/Localization/Assets";
+
+    private static string ResolveFolder(string preferred, string legacy1, string legacy2)
+    {
+        if (AssetDatabase.IsValidFolder(preferred))
+            return preferred;
+        if (AssetDatabase.IsValidFolder(legacy1))
+            return legacy1;
+        if (AssetDatabase.IsValidFolder(legacy2))
+            return legacy2;
+        return preferred;
+    }
 
     [MenuItem("Assets/Create/Localization/Create UIStringsData from CSV", false, 1000)]
     public static void CreateUIStringsDataFromCSV()
@@ -47,9 +60,10 @@ public static class LocalizationAssetCreator
         string selectedPath = AssetDatabase.GetAssetPath(selected);
         string assetName = Path.GetFileNameWithoutExtension(selectedPath);
 
-        EnsureTargetFolderExists();
+        string targetFolder = ResolveFolder(TargetFolder, LegacyTargetFolder, LegacyTargetFolder2);
+        EnsureTargetFolderExists(targetFolder);
 
-        string assetPath = $"{TargetFolder}/{assetName}.asset";
+        string assetPath = $"{targetFolder}/{assetName}.asset";
 
         var existing = AssetDatabase.LoadAssetAtPath<UIStringsData>(assetPath);
         if (existing != null)
@@ -95,14 +109,14 @@ public static class LocalizationAssetCreator
     /// Ensures the target folder exists in the AssetDatabase.
     /// Uses AssetDatabase APIs to keep Unity's asset pipeline consistent.
     /// </summary>
-    private static void EnsureTargetFolderExists()
+    private static void EnsureTargetFolderExists(string targetFolder)
     {
-        if (AssetDatabase.IsValidFolder(TargetFolder))
+        if (AssetDatabase.IsValidFolder(targetFolder))
             return;
 
         // Create missing parent folders progressively.
         // This avoids relying on Directory.CreateDirectory for AssetDatabase paths.
-        string[] parts = TargetFolder.Split('/');
+        string[] parts = targetFolder.Split('/');
         string current = parts[0]; // "Assets"
 
         for (int i = 1; i < parts.Length; i++)

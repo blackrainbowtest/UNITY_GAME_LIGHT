@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0368b4c3bfccd37418746aa8199b26e0, type: 3}
-  m_Name: Player_VisualProfilePlayer_VisualProfile
+  m_Name: Player_VisualProfile
   m_EditorClassIdentifier: Assembly-CSharp::Game.Battle.Visual.CharacterVisualProfile
   outfits:
   - {fileID: 11400000, guid: e83b1cddc52ecbe45826b639088d8554, type: 2}

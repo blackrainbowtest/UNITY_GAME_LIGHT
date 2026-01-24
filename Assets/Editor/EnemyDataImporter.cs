@@ -31,7 +31,7 @@ using Game.Battle.Combat.Actions;
 public class EnemyDataImporter : EditorWindow
 {
     // Path to the source JSON file containing enemy definitions.
-    private string jsonPath = "Assets/Data/enemies.json";
+    private string jsonPath = "Assets/GameData/enemies.json";
 
     // Output folder where EnemyData assets will be created or updated.
     private string outputPath = "Assets/GameData/Battle/Data/Enemies";

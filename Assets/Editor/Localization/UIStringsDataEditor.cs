@@ -30,7 +30,10 @@ public class UIStringsDataEditor : Editor
 {
     // Editor-only convention:
     // Root folder containing localization CSV files.
-    private const string CsvRootPath =
+    private const string CsvFolder =
+        "Assets/GameData/Localization/CSV";
+
+    private const string LegacyCsvFolder =
         "Assets/Data/Localization/CSV";
 
     public override void OnInspectorGUI()
@@ -53,9 +56,7 @@ public class UIStringsDataEditor : Editor
         var data = (UIStringsData)target;
 
         // NOTE:
-        // Undo is intentionally not supported here.
-        // Reimport is considered a destructive sync operation
-        // from an external authoritative source (CSV).
+        // This action overwrites serialized data based on an external authoritative source (CSV).
         if (!EditorUtility.DisplayDialog(
                 "Reimport from CSV",
                 "This will overwrite all strings in the asset with data from the CSV file. Continue?",
@@ -65,9 +66,9 @@ public class UIStringsDataEditor : Editor
             return;
         }
 
-        if (!data.EditorReimportFromCsv(
-                CsvRootPath,
-                out string error))
+        var csvFolder = ResolveFolder(CsvFolder, LegacyCsvFolder);
+
+        if (!data.EditorReimportFromCsv(csvFolder, out string error))
         {
             EditorUtility.DisplayDialog(
                 "Reimport Failed",
@@ -83,6 +84,15 @@ public class UIStringsDataEditor : Editor
         Debug.Log(
             $"Reimported '{data.name}' from CSV."
         );
+    }
+
+    private static string ResolveFolder(string preferred, string legacy)
+    {
+        if (AssetDatabase.IsValidFolder(preferred))
+            return preferred;
+        if (AssetDatabase.IsValidFolder(legacy))
+            return legacy;
+        return preferred;
     }
 }
 

@@ -4961,6 +4961,11 @@ MonoBehaviour:
   flipX: 1
   animator: {fileID: 625450549}
   idleAnimation: {fileID: 11400000, guid: 3d337397ce62bbc43aec799c7c4f89a2, type: 2}
+  randomizeIdle: 0
+  idleVariations: []
+  avoidImmediateIdleRepeat: 1
+  minIdleVariationRepeats: 1
+  maxIdleVariationRepeats: 1
   idleFrames:
   - {fileID: 21300000, guid: f87a8e672cda3d240b5e406c320adcd1, type: 3}
   - {fileID: 21300000, guid: 9e5d237b667e0f244abb5a0ad4ddf3eb, type: 3}
@@ -4976,7 +4981,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 347a2e5b94019e94bb2a069fc5149dfc, type: 3}
   - {fileID: 21300000, guid: 849e3a011e3ddde4c9a1608f58486903, type: 3}
   - {fileID: 21300000, guid: f86ee38238c50fc49bf1505f59ef8b29, type: 3}
-  visualProfile: {fileID: 0}
+  visualProfile: {fileID: 11400000, guid: 94fe25a12d0c66b4ab0fc7072a1406b2, type: 2}
   outfitId: outfit_01
 --- !u!212 &625450548
 SpriteRenderer:
@@ -12131,6 +12136,11 @@ MonoBehaviour:
   flipX: 0
   animator: {fileID: 1816342354}
   idleAnimation: {fileID: 11400000, guid: 248f85fff92dcc24d9a743e9bcbe5977, type: 2}
+  randomizeIdle: 0
+  idleVariations: []
+  avoidImmediateIdleRepeat: 1
+  minIdleVariationRepeats: 1
+  maxIdleVariationRepeats: 1
   idleFrames:
   - {fileID: 21300000, guid: f87a8e672cda3d240b5e406c320adcd1, type: 3}
   - {fileID: 21300000, guid: 9e5d237b667e0f244abb5a0ad4ddf3eb, type: 3}
@@ -12146,7 +12156,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 347a2e5b94019e94bb2a069fc5149dfc, type: 3}
   - {fileID: 21300000, guid: 849e3a011e3ddde4c9a1608f58486903, type: 3}
   - {fileID: 21300000, guid: f86ee38238c50fc49bf1505f59ef8b29, type: 3}
-  visualProfile: {fileID: 0}
+  visualProfile: {fileID: 11400000, guid: 7e45624e404755f4da2d7ea28db073ae, type: 2}
   outfitId: outfit_01
 --- !u!212 &1816342353
 SpriteRenderer:
