@@ -1,4 +1,5 @@
 using UnityEngine;
+using UDA2.Audio;
 
 namespace Game.Battle
 {
@@ -9,6 +10,9 @@ namespace Game.Battle
         public Sprite background;
 
         [Header("Audio")]
+        public AudioCue musicCue;
+
+        // Backward compatibility: older locations may still use a raw clip.
         public AudioClip music;
     }
 }

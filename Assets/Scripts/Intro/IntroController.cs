@@ -4,8 +4,13 @@ using TMPro;
 using System.Collections;
 using Game.Battle;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 public class IntroController : MonoBehaviour
 {
+    private const string DefaultFirstFightEnemyAssetName = "Slaver";
     // Local constant for the default save slot used in intro
     private const int DefaultIntroSaveSlot = 0;
     private enum IntroBranch { None, A, B }
@@ -25,7 +30,40 @@ public class IntroController : MonoBehaviour
 
     [Header("Flow")]
     [SerializeField] private string firstFightSceneName = "FightScene";
+    [Tooltip("Optional explicit enemy for the first fight (tutorial). If not set, we can optionally pick from a table.")]
     [SerializeField] private Game.Battle.EnemyData firstFightEnemy;
+
+    [Tooltip("Optional fallback table for the first fight. Useful if you want random/weighted tutorial enemies without editing the battle scene.")]
+    [SerializeField] private Game.Battle.EnemySpawnTable firstFightEnemyTable;
+
+    [Tooltip("Battle location to use for the first fight (background/music/etc).")]
+    [SerializeField] private Game.Battle.BattleLocationData firstFightLocation;
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        // Auto-wire the default tutorial enemy to prevent accidental null refs during new game flow.
+        // This is editor-only; at runtime you should always rely on serialized references.
+        if (firstFightEnemy != null)
+            return;
+
+        // Don't auto-assign if user explicitly chose to use a table.
+        if (firstFightEnemyTable != null)
+            return;
+
+        var guids = AssetDatabase.FindAssets($"{DefaultFirstFightEnemyAssetName} t:EnemyData");
+        if (guids == null || guids.Length == 0)
+            return;
+
+        var path = AssetDatabase.GUIDToAssetPath(guids[0]);
+        var enemy = AssetDatabase.LoadAssetAtPath<Game.Battle.EnemyData>(path);
+        if (enemy == null)
+            return;
+
+        firstFightEnemy = enemy;
+        EditorUtility.SetDirty(this);
+    }
+#endif
 
     private int currentIndex = 0;
     private Coroutine autoAdvanceCoroutine;
@@ -193,11 +231,30 @@ public class IntroController : MonoBehaviour
         // Use a named constant for the save slot index
         SaveSlotsManager.SaveToSlot(DefaultIntroSaveSlot, GameState.Instance.CurrentSave);
         BattleEntryContext.Set(BattleMode.Tutorial);
+
+        if (firstFightLocation != null)
+            BattleLocationContext.Set(firstFightLocation);
+
         var enemyForFirstFight = firstFightEnemy;
+        if (enemyForFirstFight == null && firstFightEnemyTable != null)
+        {
+            var resolver = new Game.Battle.EnemySpawnResolver();
+            enemyForFirstFight = resolver.Resolve(firstFightEnemyTable);
+        }
+
         if (enemyForFirstFight != null)
+        {
             BattleEnemyContext.Set(enemyForFirstFight);
+        }
         else
-            Debug.LogWarning("IntroController: firstFightEnemy is not set. BattleSceneEntryPoint will fallback to EnemySpawnTable.");
+        {
+#if UNITY_EDITOR
+            Debug.LogWarning(
+                "IntroController: firstFightEnemy is not set and firstFightEnemyTable is not assigned (or resolved to null). " +
+                "BattleSceneEntryPoint will fallback to its EnemySpawnTable if assigned."
+            );
+#endif
+        }
         Game.Battle.BattleExitContext.Set(new Game.Battle.BattleExitData("StartCityScene"));
 
         // Transition to the first fight scene using the scene loader if available

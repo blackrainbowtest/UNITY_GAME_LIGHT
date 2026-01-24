@@ -28,6 +28,8 @@ using UnityEngine;
 [CustomEditor(typeof(UIStringsData))]
 public class UIStringsDataEditor : Editor
 {
+    private TextAsset csvFile;
+
     // Editor-only convention:
     // Root folder containing localization CSV files.
     private const string CsvFolder =
@@ -38,14 +40,71 @@ public class UIStringsDataEditor : Editor
 
     public override void OnInspectorGUI()
     {
+        serializedObject.Update();
+
         DrawDefaultInspector();
 
+        // Even though UIStringsData hides this field, it's still useful to see/edit in the custom inspector.
+        var sourceCsvNameProp = serializedObject.FindProperty("sourceCsvName");
+        if (sourceCsvNameProp != null)
+        {
+            GUILayout.Space(6);
+            EditorGUILayout.PropertyField(
+                sourceCsvNameProp,
+                new GUIContent(
+                    "Source CSV Name",
+                    "CSV file name without extension (e.g. 'ui_battle')"
+                )
+            );
+        }
+
+        serializedObject.ApplyModifiedProperties();
+
         GUILayout.Space(10);
+
+        EditorGUILayout.LabelField("CSV Import", EditorStyles.boldLabel);
+
+        csvFile = (TextAsset)EditorGUILayout.ObjectField(
+            "CSV File",
+            csvFile,
+            typeof(TextAsset),
+            false
+        );
+
+        using (new EditorGUI.DisabledScope(csvFile == null))
+        {
+            if (GUILayout.Button("Import From CSV File"))
+            {
+                ImportFromCsvFile(csvFile);
+            }
+        }
 
         if (GUILayout.Button("Reimport from CSV"))
         {
             ReimportFromCsv();
         }
+    }
+
+    private void ImportFromCsvFile(TextAsset csv)
+    {
+        var data = (UIStringsData)target;
+
+        if (!data.EditorReimportFromCsv(csv, out string error))
+        {
+            EditorUtility.DisplayDialog(
+                "Import Failed",
+                error,
+                "OK"
+            );
+            return;
+        }
+
+        EditorUtility.SetDirty(data);
+        AssetDatabase.SaveAssets();
+
+        Debug.Log(
+            $"Imported '{csv.name}' into '{data.name}'."
+        );
     }
 
     /// <summary>

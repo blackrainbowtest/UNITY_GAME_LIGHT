@@ -1,0 +1,119 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72b5dfd223e65a04db6c6ba1b78d3607, type: 3}
+  m_Name: ui_loading_tips
+  m_EditorClassIdentifier: UDA2.Localization::UIStringsData
+  strings:
+  - key: tip_001
+    entries:
+    - languageCode: ru
+      text: "\u0425\u043E\u0440\u043E\u0448\u0438\u0439 \u0445\u043E\u0434 \u043D\u0430\u0447\u0438\u043D\u0430\u0435\u0442\u0441\u044F
+        \u0441 \u043E\u0446\u0435\u043D\u043A\u0438 \u0441\u0432\u043E\u0435\u0433\u043E
+        \u0441\u043E\u0441\u0442\u043E\u044F\u043D\u0438\u044F."
+    - languageCode: en
+      text: A good move starts with assessing your condition.
+    - languageCode: fr
+      text: "Un bon coup commence par l\u2019\xE9valuation de votre \xE9tat."
+  - key: tip_002
+    entries:
+    - languageCode: ru
+      text: "\u0418\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u043D\u0438\u0435
+        \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u043E\u0432 \u0438\u0437 \u0440\u044E\u043A\u0437\u0430\u043A\u0430
+        \u043D\u0435 \u043E\u0442\u043D\u0438\u043C\u0430\u0435\u0442 \u0445\u043E\u0434."
+    - languageCode: en
+      text: Using items from your backpack does not consume a turn.
+    - languageCode: fr
+      text: "L\u2019utilisation des objets du sac \xE0 dos ne consomme pas de tour."
+  - key: tip_003
+    entries:
+    - languageCode: ru
+      text: "\u0421\u043B\u0435\u0434\u0438\u0442\u0435 \u0437\u0430 \u0443\u0440\u043E\u0432\u043D\u0435\u043C
+        \u043F\u043E\u0445\u043E\u0442\u0438! \u041D\u0435\u043A\u043E\u0442\u043E\u0440\u044B\u0435
+        \u0441\u0446\u0435\u043D\u044B \u043E\u0442\u043A\u0440\u044B\u0432\u0430\u044E\u0442\u0441\u044F
+        \u0442\u043E\u043B\u044C\u043A\u043E \u043F\u0440\u0438 \u043E\u043F\u0440\u0435\u0434\u0435\u043B\u0451\u043D\u043D\u043E\u043C
+        \u0443\u0440\u043E\u0432\u043D\u0435 \u043F\u043E\u0445\u043E\u0442\u0438."
+    - languageCode: en
+      text: Keep an eye on your Lust level! Some scenes unlock only at certain Lust
+        thresholds.
+    - languageCode: fr
+      text: "Surveillez votre niveau de Luxure ! Certaines sc\xE8nes ne se d\xE9bloquent
+        qu\u2019\xE0 un niveau pr\xE9cis."
+  - key: tip_004
+    entries:
+    - languageCode: ru
+      text: "\u041D\u0435\u043A\u043E\u0442\u043E\u0440\u044B\u0435 \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u044B
+        \u0432 \u043D\u0430\u0447\u0430\u043B\u0435 \u043C\u043E\u0433\u0443\u0442
+        \u043A\u0430\u0437\u0430\u0442\u044C\u0441\u044F \u0431\u0435\u0441\u043F\u043E\u043B\u0435\u0437\u043D\u044B\u043C\u0438,
+        \u043F\u043E\u043A\u0430 \u0432\u044B \u043D\u0435 \u043D\u0430\u0443\u0447\u0438\u0442\u0435\u0441\u044C
+        \u043F\u0440\u0430\u0432\u0438\u043B\u044C\u043D\u043E \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C
+        \u0438\u0445."
+    - languageCode: en
+      text: Some items may seem useless at first until you learn how to use them
+        properly.
+    - languageCode: fr
+      text: "Certains objets peuvent sembler inutiles au d\xE9but, jusqu\u2019\xE0
+        ce que vous appreniez \xE0 les utiliser correctement."
+  - key: tip_005
+    entries:
+    - languageCode: ru
+      text: "\u041D\u0435\u043A\u043E\u0442\u043E\u0440\u044B\u0435 \u0437\u0430\u0434\u0430\u043D\u0438\u044F
+        \u0438\u043C\u0435\u044E\u0442 \u043E\u0433\u0440\u0430\u043D\u0438\u0447\u0435\u043D\u0438\u0435
+        \u043F\u043E \u0432\u0440\u0435\u043C\u0435\u043D\u0438 \u0432\u044B\u043F\u043E\u043B\u043D\u0435\u043D\u0438\u044F
+        \u2014 \u0431\u0443\u0434\u044C\u0442\u0435 \u0432\u043D\u0438\u043C\u0430\u0442\u0435\u043B\u044C\u043D\u044B."
+    - languageCode: en
+      text: "Some quests have time limits \u2014 pay close attention."
+    - languageCode: fr
+      text: "Certaines qu\xEAtes ont une limite de temps \u2014 soyez attentif."
+  - key: tip_006
+    entries:
+    - languageCode: ru
+      text: "\u041F\u043E\u0440\u043E\u0439 \u0432 \u043F\u0440\u043E\u0441\u0442\u044B\u0445
+        \u0434\u0438\u0430\u043B\u043E\u0433\u0430\u0445 \u043C\u043E\u0433\u0443\u0442
+        \u0431\u044B\u0442\u044C \u0441\u043A\u0440\u044B\u0442\u044B \u043F\u043E\u0434\u0441\u043A\u0430\u0437\u043A\u0438
+        \u043A \u0442\u0435\u043A\u0443\u0449\u0438\u043C \u0437\u0430\u0434\u0430\u043D\u0438\u044F\u043C."
+    - languageCode: en
+      text: Sometimes simple dialogues hide clues for your current quests.
+    - languageCode: fr
+      text: "Parfois, de simples dialogues dissimulent des indices pour vos qu\xEAtes
+        en cours."
+  - key: tip_007
+    entries:
+    - languageCode: ru
+      text: "\u041D\u0438\u043A\u043E\u0433\u0434\u0430 \u043D\u0435 \u0441\u0434\u0430\u0432\u0430\u0439\u0442\u0435\u0441\u044C,
+        \u0434\u0430\u0436\u0435 \u0435\u0441\u043B\u0438 \u0432\u0430\u0448 \u043F\u0440\u043E\u0442\u0438\u0432\u043D\u0438\u043A
+        \u043E\u0447\u0435\u043D\u044C \u0441\u0438\u043B\u044C\u043D\u044B\u0439."
+    - languageCode: en
+      text: Never give up, even if your opponent is very strong.
+    - languageCode: fr
+      text: "N\u2019abandonnez jamais, m\xEAme si votre adversaire est tr\xE8s puissant."
+  - key: tip_008
+    entries:
+    - languageCode: ru
+      text: "\u0415\u0441\u043B\u0438 \u043D\u0435 \u043F\u043E\u043B\u0443\u0447\u0430\u0435\u0442\u0441\u044F
+        \u043F\u043E\u0431\u0435\u0436\u0434\u0430\u0442\u044C \u0433\u0440\u0443\u0431\u043E\u0439
+        \u0441\u0438\u043B\u043E\u0439, \u043F\u043E\u043F\u0440\u043E\u0431\u0443\u0439\u0442\u0435
+        \u043F\u043E\u0431\u0435\u0436\u0434\u0430\u0442\u044C \u043B\u0430\u0441\u043A\u043E\u0439."
+    - languageCode: en
+      text: "If brute force doesn\u2019t work, try winning with tenderness."
+    - languageCode: fr
+      text: Si la force brute ne fonctionne pas, essayez de vaincre avec douceur.
+  - key: tip_009
+    entries:
+    - languageCode: ru
+      text: "\u041D\u0435\u043A\u043E\u0442\u043E\u0440\u044B\u0435 \u043F\u0440\u043E\u0442\u0438\u0432\u043D\u0438\u043A\u0438
+        \u043D\u0435\u0432\u043E\u0441\u043F\u0440\u0438\u0438\u043C\u0447\u0438\u0432\u044B
+        \u043A \u0444\u0438\u0437\u0438\u0447\u0435\u0441\u043A\u0438\u043C \u0430\u0442\u0430\u043A\u0430\u043C."
+    - languageCode: en
+      text: Some enemies are immune to physical attacks.
+    - languageCode: fr
+      text: "Certains ennemis sont immunis\xE9s contre les attaques physiques."
+  sourceCsvName: ui_loading_tips

@@ -69,7 +69,6 @@ public static class LocalizationAssetImporter
     [MenuItem("Assets/Localization/Import UIStringsData from CSV (Auto)", false, 1001)]
     public static void ImportUIStringsDataFromCSV_Auto()
     {
-        var csvFolder = ResolveFolder(CsvFolder, LegacyCsvFolder);
         var assetFolder = ResolveFolder(AssetFolder, LegacyAssetFolder, LegacyAssetFolder2);
 
         var selected = Selection.activeObject as TextAsset;
@@ -97,9 +96,7 @@ public static class LocalizationAssetImporter
             return;
         }
 
-        if (!asset.EditorReimportFromCsv(
-            csvFolder,
-                out string error))
+        if (!asset.EditorReimportFromCsv(selected, out string error))
         {
             EditorUtility.DisplayDialog(
                 "Import Failed",
@@ -152,9 +149,7 @@ public static class LocalizationAssetImporter
                     out _))
                 continue;
 
-            if (!asset.EditorReimportFromCsv(
-                    csvFolder,
-                    out string error))
+            if (!asset.EditorReimportFromCsv(csv, out string error))
             {
                 failed++;
                 string assetName = Path.GetFileNameWithoutExtension(csvPath);

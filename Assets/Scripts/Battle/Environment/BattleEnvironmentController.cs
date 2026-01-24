@@ -40,14 +40,19 @@ namespace Game.Battle
                 return;
             }
 
+            if (location.musicCue != null)
+            {
+                UDA2.Audio.AudioManager.Instance.Play(location.musicCue);
+                return;
+            }
+
             if (location.music != null)
             {
                 UDA2.Audio.AudioManager.Instance.PlayMusic(location.music);
+                return;
             }
-            else
-            {
-                UDA2.Audio.AudioManager.Instance.StopMusic();
-            }
+
+            UDA2.Audio.AudioManager.Instance.StopMusic();
         }
     }
 }

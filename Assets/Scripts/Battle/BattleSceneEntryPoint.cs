@@ -97,10 +97,15 @@ public class BattleSceneEntryPoint : MonoBehaviour
             BattleEnemyContext.Set(enemy);
         }
 
+        var resolvedLocation = location;
+        var contextLocation = BattleLocationContext.Consume();
+        if (contextLocation != null)
+            resolvedLocation = contextLocation;
+
         var context = new Game.Battle.BattleContext(
             playerSnapshot,
             enemy,
-            location,
+            resolvedLocation,
             mode,
             enemyDifficulty
         );

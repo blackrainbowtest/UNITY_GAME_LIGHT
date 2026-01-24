@@ -126,26 +126,8 @@ public class UIStringsCsvImportWindow : EditorWindow
     /// </summary>
     private void ImportSingle(TextAsset csv, UIStringsData asset)
     {
-        if (!UIStringsCsvParser.TryParse(
-                csv.text,
-                out _,
-                out var error))
-        {
-            EditorUtility.DisplayDialog(
-                "Error",
-                error,
-                "OK"
-            );
-            return;
-        }
-
-        // NOTE:
-        // Parsed data is intentionally not passed directly.
         // UIStringsData owns the authoritative import logic.
-        string csvFolder = ResolveFolder(CsvFolder, LegacyCsvFolder);
-        if (!asset.EditorReimportFromCsv(
-            csvFolder,
-                out error))
+        if (!asset.EditorReimportFromCsv(csv, out var error))
         {
             EditorUtility.DisplayDialog(
                 "Error",
@@ -205,11 +187,19 @@ public class UIStringsCsvImportWindow : EditorWindow
 
             if (asset == null)
             {
-                failed++;
-                failReport.AppendLine(
-                    $"{assetName}: asset not found"
-                );
-                continue;
+                // Auto-create missing UIStringsData assets so new CSVs can be imported in one click.
+                asset = ScriptableObject.CreateInstance<UIStringsData>();
+
+                if (!asset.EditorSetSourceCsvName(assetName, out var createError))
+                {
+                    failed++;
+                    failReport.AppendLine(
+                        $"{assetName}: failed to create asset ({createError ?? "unknown error"})"
+                    );
+                    continue;
+                }
+
+                AssetDatabase.CreateAsset(asset, assetPath);
             }
 
             if (csv == null)
@@ -221,21 +211,7 @@ public class UIStringsCsvImportWindow : EditorWindow
                 continue;
             }
 
-            if (!UIStringsCsvParser.TryParse(
-                    csv.text,
-                    out _,
-                    out var error))
-            {
-                failed++;
-                failReport.AppendLine(
-                    $"{assetName}: {error ?? "parse error"}"
-                );
-                continue;
-            }
-
-            if (!asset.EditorReimportFromCsv(
-                    csvFolder,
-                    out error))
+            if (!asset.EditorReimportFromCsv(csv, out var error))
             {
                 failed++;
                 failReport.AppendLine(

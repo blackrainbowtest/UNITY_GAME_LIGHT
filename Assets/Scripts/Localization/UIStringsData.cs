@@ -16,6 +16,7 @@ using UnityEngine;
 
 #if UNITY_EDITOR
 using UnityEditor;
+using System.IO;
 #endif
 
 [CreateAssetMenu(fileName = "UIStrings", menuName = "Game/Localization/UI Strings")]
@@ -61,7 +62,48 @@ public class UIStringsData : ScriptableObject
         return false;
     }
 
+    public void CopyKeysTo(List<string> destination)
+    {
+        if (destination == null)
+            throw new ArgumentNullException(nameof(destination));
+
+        destination.Clear();
+        for (int i = 0; i < strings.Count; i++)
+        {
+            if (strings[i] == null)
+                continue;
+
+            string key = strings[i].Key;
+            if (!string.IsNullOrEmpty(key))
+                destination.Add(key);
+        }
+    }
+
 #if UNITY_EDITOR
+    public bool EditorReimportFromCsv(TextAsset csv, out string error)
+    {
+        error = null;
+
+        if (csv == null)
+        {
+            error = "CSV TextAsset is null.";
+            return false;
+        }
+
+        // Keep the name in sync so other workflows (like the inspector button)
+        // can still reimport by name.
+        string csvPath = AssetDatabase.GetAssetPath(csv);
+        if (!string.IsNullOrWhiteSpace(csvPath))
+            sourceCsvName = Path.GetFileNameWithoutExtension(csvPath);
+        else if (!string.IsNullOrWhiteSpace(csv.name))
+            sourceCsvName = csv.name;
+
+        if (!UIStringsCsvParser.TryParse(csv.text, out var parsed, out error))
+            return false;
+
+        return EditorReplaceAll(parsed, out error);
+    }
+
     public bool EditorSetSourceCsvName(string csvName, out string error)
     {
         error = null;

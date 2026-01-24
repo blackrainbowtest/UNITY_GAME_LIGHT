@@ -10,10 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 08be09c6ceb1fec44b0910d22e2064f8, type: 3}
-  m_Name: TestSpawnTable_FightScene
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Battle.EnemySpawnTable
+  m_Name: est_firstScene
+  m_EditorClassIdentifier: UDA2.Battle::Game.Battle.EnemySpawnTable
   entries:
-  - enemy: {fileID: 11400000, guid: 20fc20ce415a1e0428a8ed3c9babc603, type: 2}
-    weight: 70
-  - enemy: {fileID: 11400000, guid: b80868a8ef627824fb5a308d1e756f23, type: 2}
-    weight: 25
+  - enemy: {fileID: 11400000, guid: 205537598eac29149a1f7e3b879dd003, type: 2}
+    weight: 1

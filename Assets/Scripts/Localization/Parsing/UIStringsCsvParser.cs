@@ -42,7 +42,8 @@ public static class UIStringsCsvParser
         int lineIndex = 0;
         while (lineIndex < lines.Length)
         {
-            string rawLine = lines[lineIndex].TrimEnd('\r','\n');
+            string rawLine = lines[lineIndex].TrimEnd('\r','\n').TrimStart();
+            rawLine = rawLine.TrimStart('\uFEFF'); // Handle UTF-8 BOM
             if (string.IsNullOrWhiteSpace(rawLine))
             {
                 lineIndex++;
@@ -88,7 +89,7 @@ public static class UIStringsCsvParser
                 int valueLines = 0;
                 while (valueLines < expectedValueLines && lineIndex < lines.Length)
                 {
-                    string valueLine = lines[lineIndex].TrimEnd('\r','\n');
+                    string valueLine = lines[lineIndex].TrimEnd('\r','\n').TrimStart(); // Trim leading whitespace
                     if (valueLine.StartsWith("*")) break;
                     currentValues.Add(valueLine);
                     valueLines++;
