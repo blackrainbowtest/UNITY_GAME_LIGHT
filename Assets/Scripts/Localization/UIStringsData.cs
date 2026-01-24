@@ -135,10 +135,25 @@ public class UIStringsData : ScriptableObject
 }
 
 [Serializable]
+public class LocalizedUIStringEntry
+{
+    public string languageCode;
+
+    [TextArea(3, 10)]
+    public string text;
+
+    public LocalizedUIStringEntry(string languageCode, string text)
+    {
+        this.languageCode = languageCode;
+        this.text = text;
+    }
+}
+
+[Serializable]
 public class LocalizedUIString
 {
     [SerializeField] private string key;
-    [SerializeField] private List<LocalizedTextEntry> entries = new();
+    [SerializeField] private List<LocalizedUIStringEntry> entries = new();
 
     public string Key => key;
 
@@ -153,12 +168,12 @@ public class LocalizedUIString
         {
             if (entries[i].languageCode == languageCode)
             {
-                entries[i] = new LocalizedTextEntry(languageCode, text);
+                entries[i] = new LocalizedUIStringEntry(languageCode, text);
                 return;
             }
         }
 
-        entries.Add(new LocalizedTextEntry(languageCode, text));
+        entries.Add(new LocalizedUIStringEntry(languageCode, text));
     }
 
     public string Get(string languageCode)

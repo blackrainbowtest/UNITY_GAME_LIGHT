@@ -1,0 +1,21 @@
+{
+  "name": "UDA2.Intro",
+  "rootNamespace": "UDA2.Intro",
+  "references": [
+    "UDA2.Battle",
+    "UDA2.UI",
+    "UDA2.Localization",
+    "UDA2.SceneFlow",
+    "UDA2.SaveSystem",
+    "Unity.TextMeshPro"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

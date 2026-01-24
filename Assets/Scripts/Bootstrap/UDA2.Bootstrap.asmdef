@@ -1,0 +1,16 @@
+{
+  "name": "UDA2.Bootstrap",
+  "rootNamespace": "UDA2.Bootstrap",
+  "references": [
+    "UDA2.SceneFlow"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

@@ -1,0 +1,21 @@
+{
+  "name": "UDA2.UI",
+  "rootNamespace": "UDA2.UI",
+  "references": [
+    "UDA2.Core",
+    "UDA2.Audio",
+    "UDA2.SceneFlow",
+    "UDA2.Localization",
+    "UDA2.SaveSystem",
+    "Unity.TextMeshPro"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

@@ -1,16 +1,22 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
-using UDA2.SceneFlow;
 
 namespace UDA2.SceneFlow
 {
+	public interface ILoadingScreen
+	{
+		void Show();
+		void Hide();
+		void SetProgress(float progress);
+	}
+
     public class SceneFlowManager : MonoBehaviour
 	{
 		public static SceneFlowManager Instance { get; private set; }
 
 		private bool _sceneReady;
-		private UI.LoadingScreenController loadingScreen;
+		private ILoadingScreen loadingScreen;
 		private Coroutine _loadCoroutine;
 
 		private void Awake()
@@ -39,12 +45,12 @@ namespace UDA2.SceneFlow
 				Instance = null;
 		}
 
-		public void RegisterLoadingScreen(UI.LoadingScreenController screen)
+		public void RegisterLoadingScreen(ILoadingScreen screen)
 		{
 			loadingScreen = screen;
 		}
 
-		public void UnregisterLoadingScreen(UI.LoadingScreenController screen)
+		public void UnregisterLoadingScreen(ILoadingScreen screen)
 		{
 			if (loadingScreen == screen)
 				loadingScreen = null;

@@ -1,0 +1,14 @@
+{
+  "name": "UDA2.SceneFlow",
+  "rootNamespace": "UDA2.SceneFlow",
+  "references": [],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

@@ -1,0 +1,22 @@
+{
+  "name": "UDA2.Battle",
+  "rootNamespace": "UDA2.Battle",
+  "references": [
+    "UDA2.Animations",
+    "UDA2.Audio",
+    "UDA2.UI",
+    "UDA2.SceneFlow",
+    "UDA2.SaveSystem",
+    "UDA2.Logging",
+    "Unity.TextMeshPro"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

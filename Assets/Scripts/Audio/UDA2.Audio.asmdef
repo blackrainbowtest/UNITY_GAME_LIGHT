@@ -1,0 +1,16 @@
+{
+  "name": "UDA2.Audio",
+  "rootNamespace": "UDA2.Audio",
+  "references": [
+    "UDA2.Core"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

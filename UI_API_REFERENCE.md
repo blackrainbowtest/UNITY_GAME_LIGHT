@@ -141,10 +141,9 @@ Visual-only component for showing a circular progress indicator under the finger
 ## AudioManager API
 
 **RU:**
-Глобальный менеджер звука и музыки (Singleton, DontDestroyOnLoad). Управляет музыкой, SFX и UI-звуками через AudioMixer и публичные методы.
+Глобальный менеджер звука и музыки (Singleton, DontDestroyOnLoad). Актуальная система — через **AudioCue** (ассеты звуков) и `SceneMusicConfig` (музыка по сценам).
 
-**EN:**
-Global sound and music manager (Singleton, DontDestroyOnLoad). Controls music, SFX, and UI sounds via AudioMixer and public methods.
+Подробная документация: см. `AUDIO_API_REFERENCE.md`.
 
 ### Основные методы / Main Methods
 
@@ -152,8 +151,11 @@ Global sound and music manager (Singleton, DontDestroyOnLoad). Controls music, S
 // Получить экземпляр / Get instance
 var audio = AudioManager.Instance;
 
-// Воспроизвести музыку / Play music
-audio.PlayMusic(audioClip); // audioClip — AudioClip (например, из ScriptableObject)
+// Воспроизвести звук/музыку через AudioCue
+audio.Play(cue);
+
+// Воспроизвести музыку напрямую (редко нужно)
+audio.PlayMusic(audioClip);
 
 // Остановить музыку / Stop music
 audio.StopMusic();
@@ -161,25 +163,17 @@ audio.StopMusic();
 // Изменить громкость музыки / Set music volume
 audio.SetMusicVolume(0.5f); // 0.0 ... 1.0
 
-// Воспроизвести SFX / Play SFX
+// Воспроизвести SFX напрямую (legacy)
 audio.PlaySfx(sfxClip);
 
 // Изменить громкость SFX / Set SFX volume
 audio.SetSfxVolume(0.8f);
 
-// Воспроизвести UI-клик / Play UI click
+// Воспроизвести UI-клик / Play UI click (через uiClickCue)
 audio.PlayUiClick();
 
 // Изменить громкость UI / Set UI volume
 audio.SetUiVolume(1.0f);
-```
-
-### Пример интеграции с локацией / Example with location ScriptableObject
-
-```csharp
-// location — объект BattleLocationData с полем AudioClip music
-if (location.music != null)
-    AudioManager.Instance.PlayMusic(location.music);
 ```
 
 **Все методы доступны из любого кода через AudioManager.Instance. Singleton создаётся автоматически и не уничтожается между сценами.**

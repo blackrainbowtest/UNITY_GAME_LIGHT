@@ -17,6 +17,7 @@
 /* ******************************************************************************************************** */
 
 using System;
+using System.Reflection;
 using UnityEngine;
 
 namespace UDA2.Core
@@ -25,13 +26,15 @@ namespace UDA2.Core
     {
         public static string CurrentLanguage { get; private set; } = "en";
 
-        private static UIStringsData[] _uiStringsAssets;
+		private static MethodInfo _providerGetKeyLang;
+		private static PropertyInfo _providerInstanceProp;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetStatics()
         {
             CurrentLanguage = "en";
-            _uiStringsAssets = null;
+			_providerGetKeyLang = null;
+			_providerInstanceProp = null;
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -40,24 +43,28 @@ namespace UDA2.Core
             // Ensure we don't stack handlers across play sessions when Domain Reload is disabled.
             SettingsContext.OnLanguageChanged -= SetLanguage;
             SettingsContext.OnLanguageChanged += SetLanguage;
-            EnsureLoaded();
         }
 
-        private static void EnsureLoaded()
+        private static bool TryResolveProvider()
         {
-            if (_uiStringsAssets != null && _uiStringsAssets.Length > 0)
-                return;
+            if (_providerGetKeyLang != null && _providerInstanceProp != null)
+                return true;
 
-            // Load all UIStringsData ScriptableObjects from Assets/Resources/Localization (and subfolders).
-            _uiStringsAssets = UnityEngine.Resources.LoadAll<UIStringsData>("Localization");
+            // UIStringsProvider lives in the Localization assembly (global namespace).
+            var providerType = Type.GetType("UIStringsProvider");
+            if (providerType == null)
+                return false;
 
-            // Backward-compat: allow a single aggregated asset named "UIStrings".
-            if (_uiStringsAssets == null || _uiStringsAssets.Length == 0)
-            {
-                var single = UnityEngine.Resources.Load<UIStringsData>("UIStrings");
-                if (single != null)
-                    _uiStringsAssets = new[] { single };
-            }
+            _providerInstanceProp = providerType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
+            _providerGetKeyLang = providerType.GetMethod(
+                "Get",
+                BindingFlags.Public | BindingFlags.Instance,
+                binder: null,
+                types: new[] { typeof(string), typeof(string) },
+                modifiers: null
+            );
+
+            return _providerInstanceProp != null && _providerGetKeyLang != null;
         }
 
         public static void SetLanguage(string lang)
@@ -77,19 +84,18 @@ namespace UDA2.Core
             if (string.IsNullOrEmpty(key))
                 return string.Empty;
 
-            EnsureLoaded();
-
-            if (_uiStringsAssets != null)
+            try
             {
-                for (int i = 0; i < _uiStringsAssets.Length; i++)
+                if (TryResolveProvider())
                 {
-                    var asset = _uiStringsAssets[i];
-                    if (asset == null)
-                        continue;
-
-                    if (asset.TryGet(key, CurrentLanguage, out var value))
-                        return value;
+                    var instance = _providerInstanceProp.GetValue(null);
+                    if (instance != null)
+                        return (string)_providerGetKeyLang.Invoke(instance, new object[] { key, CurrentLanguage });
                 }
+            }
+            catch
+            {
+                // ignore and fall back to key
             }
 
             return key;

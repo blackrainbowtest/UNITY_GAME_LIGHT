@@ -1,11 +1,9 @@
 using UnityEngine;
-
-
 using UDA2.SceneFlow;
 
 namespace UDA2.UI
 {
-    public class LoadingScreenController : MonoBehaviour
+    public class LoadingScreenController : MonoBehaviour, ILoadingScreen
     {
         private void Awake()
         {

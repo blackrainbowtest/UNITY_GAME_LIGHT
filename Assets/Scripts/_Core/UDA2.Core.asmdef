@@ -1,0 +1,17 @@
+{
+  "name": "UDA2.Core",
+  "rootNamespace": "UDA2.Core",
+  "references": [
+    "UDA2.SceneFlow",
+    "UDA2.SaveSystem"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
