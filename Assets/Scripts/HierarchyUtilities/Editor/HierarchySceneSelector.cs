@@ -13,6 +13,7 @@ namespace ChebDoorStudio.Editor.Hierarchy
   {
     public static void Initialize()
     {
+      EditorApplication.hierarchyWindowItemOnGUI -= OnHierarchyGUI;
       EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyGUI;
     }
 

@@ -22,16 +22,10 @@ namespace ChebDoorStudio.Editor.Hierarchy
 
     private static readonly Dictionary<int, Texture2D> _objectIcons = new();
 
-    private static bool _isInitialized;
-
     public static void Initialize()
     {
-      if (_isInitialized)
-      {
-        return;
-      }
-
-      _isInitialized = true;
+      EditorApplication.hierarchyChanged -= UpdateIcons;
+      EditorApplication.hierarchyWindowItemOnGUI -= DrawHierarchyIcon;
 
       EditorApplication.hierarchyChanged += UpdateIcons;
       EditorApplication.hierarchyWindowItemOnGUI += DrawHierarchyIcon;

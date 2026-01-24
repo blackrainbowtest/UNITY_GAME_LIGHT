@@ -11,6 +11,7 @@ namespace UDA2.SceneFlow
 
 		private bool _sceneReady;
 		private UI.LoadingScreenController loadingScreen;
+		private Coroutine _loadCoroutine;
 
 		private void Awake()
 		{
@@ -21,6 +22,21 @@ namespace UDA2.SceneFlow
 			}
 			Instance = this;
 			DontDestroyOnLoad(gameObject);
+		}
+
+		private void OnDisable()
+		{
+			if (_loadCoroutine != null)
+			{
+				StopCoroutine(_loadCoroutine);
+				_loadCoroutine = null;
+			}
+		}
+
+		private void OnDestroy()
+		{
+			if (Instance == this)
+				Instance = null;
 		}
 
 		public void RegisterLoadingScreen(UI.LoadingScreenController screen)
@@ -50,7 +66,12 @@ namespace UDA2.SceneFlow
 		public void LoadScene(string sceneName, SceneTransitionData data = null, float? minLoadingTime = null)
 		{
 			float minTime = minLoadingTime ?? DefaultMinLoadingTime;
-			StartCoroutine(LoadSceneWithLoadingScreen(sceneName, data, minTime));
+			if (_loadCoroutine != null)
+			{
+				StopCoroutine(_loadCoroutine);
+				_loadCoroutine = null;
+			}
+			_loadCoroutine = StartCoroutine(LoadSceneWithLoadingScreen(sceneName, data, minTime));
 		}
 
 		// Новый flow: всегда через LoadingScene
@@ -84,6 +105,7 @@ namespace UDA2.SceneFlow
 
 			// 4. Грузим целевую сцену с задержкой
 			yield return StartCoroutine(LoadSceneRoutine(targetScene, data, minLoadingTime));
+			_loadCoroutine = null;
 		}
 
 		// Обычная загрузка целевой сцены с ожиданием ready и минимального времени

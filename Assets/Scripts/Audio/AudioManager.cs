@@ -26,6 +26,15 @@ namespace UDA2.Audio
     {
         public static AudioManager Instance;
 
+        private const string MusicVolumeParam = "MusicVolume";
+        private const string SfxVolumeParam = "SFXVolume";
+        private const string UiVolumeParam = "UIVolume";
+
+        [Header("Scene Music (Optional)")]
+        [SerializeField] private SceneMusicConfig sceneMusicConfig;
+
+        private AudioCue nextSceneMusicCue;
+
         /* ===================== AUDIO MIXER ===================== */
 
         [Header("Audio Mixer")]
@@ -36,11 +45,6 @@ namespace UDA2.Audio
         [Header("Music")]
         [SerializeField] private AudioSource musicSource;
         [SerializeField] private UnityEngine.Audio.AudioMixerGroup musicGroup;
-
-        public AudioClip logoMusic;
-        public AudioClip introMusic;
-        public AudioClip mainMenuMusic;
-        public AudioClip gameplayMusic;
 
         private AudioClip currentClip;
         private Coroutine musicFadeCoroutine;
@@ -65,7 +69,7 @@ namespace UDA2.Audio
         [Header("UI Audio")]
         [SerializeField] private AudioSource uiSource;
         [SerializeField] private UnityEngine.Audio.AudioMixerGroup uiGroup;
-        [SerializeField] private AudioClip uiClickClip;
+        [SerializeField] private AudioCue uiClickCue;
 
         /* ===================== CHARACTER ===================== */
         [Header("Character Audio")]
@@ -96,10 +100,19 @@ namespace UDA2.Audio
             Instance = this;
             DontDestroyOnLoad(gameObject);
 
+            EnsurePersistentAudioObjects();
+
             // Fail-fast mixer validation
-            CheckParam("MusicVolume");
-            CheckParam("SFXVolume");
-            CheckParam("UIVolume");
+            if (audioMixer == null)
+            {
+                Debug.LogWarning("AudioManager: audioMixer не назначен. Громкость через микшер работать не будет.");
+            }
+            else
+            {
+                CheckParam(MusicVolumeParam);
+                CheckParam(SfxVolumeParam);
+                CheckParam(UiVolumeParam);
+            }
 
             // Music source
             if (musicSource != null && musicGroup != null)
@@ -126,6 +139,53 @@ namespace UDA2.Audio
             SetMusicVolume(s != null ? s.musicVolume : 1f);
             SetSfxVolume(s != null ? s.sfxVolume : 1f);
             SetUiVolume(s != null ? s.uiVolume : 1f);
+
+            if (musicSource == null)
+                Debug.LogWarning("AudioManager: musicSource не назначен в инспекторе — музыку не будет слышно.");
+        }
+
+        private void EnsurePersistentAudioObjects()
+        {
+            // If these references point to objects from a loaded scene, they will be destroyed on scene change,
+            // while AudioManager persists (DontDestroyOnLoad). Keep them under AudioManager to avoid stale refs.
+            if (musicSource != null && !musicSource.transform.IsChildOf(transform))
+                musicSource.transform.SetParent(transform, false);
+
+            if (uiSource != null && !uiSource.transform.IsChildOf(transform))
+                uiSource.transform.SetParent(transform, false);
+
+            if (sfxParent != null && !sfxParent.IsChildOf(transform))
+                sfxParent.SetParent(transform, false);
+
+            if (sfxParent == null)
+            {
+                var go = new GameObject("SFX");
+                go.transform.SetParent(transform, false);
+                sfxParent = go.transform;
+            }
+        }
+
+        private void EnsureSfxPool()
+        {
+            if (sfxPrefab == null)
+                return;
+
+            EnsurePersistentAudioObjects();
+
+            if (sfxPool == null || sfxPool.Length != sfxPoolSize)
+            {
+                InitSfxPool();
+                return;
+            }
+
+            for (int i = 0; i < sfxPool.Length; i++)
+            {
+                if (sfxPool[i] == null)
+                {
+                    InitSfxPool();
+                    return;
+                }
+            }
         }
 
         private void OnEnable()
@@ -146,24 +206,86 @@ namespace UDA2.Audio
             UDA2.Core.SettingsContext.OnUiVolumeChanged -= SetUiVolume;
         }
 
+        private void OnDestroy()
+        {
+            if (musicFadeCoroutine != null)
+            {
+                StopCoroutine(musicFadeCoroutine);
+                musicFadeCoroutine = null;
+            }
+
+            if (Instance == this)
+                Instance = null;
+        }
+
         /* ===================== SCENE MUSIC ===================== */
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            AudioClip clip = null;
+            ApplySceneMusic(scene);
+        }
 
-            switch (scene.name)
+        private void ApplySceneMusic(Scene scene)
+        {
+            // 1) Highest priority: explicit override set by loader BEFORE scene load.
+            if (nextSceneMusicCue != null)
             {
-                case "SplashScene":   clip = logoMusic; break;
-                case "IntroScene":    clip = introMusic; break;
-                case "MainMenuScene": clip = mainMenuMusic; break;
-                case "MainScene":     clip = gameplayMusic; break;
+                var cue = nextSceneMusicCue;
+                nextSceneMusicCue = null;
+                Play(cue);
+                return;
             }
 
-            if (clip != null)
-                PlayMusic(clip);
-            else
-                StopMusic();
+            // 2) Config asset mapping scene -> cue
+            if (sceneMusicConfig != null && sceneMusicConfig.TryGet(scene.name, out var entry))
+            {
+                if (entry.musicCue != null)
+                {
+                    Play(entry.musicCue);
+                    return;
+                }
+            }
+
+            StopMusic();
+        }
+
+        public void SetNextSceneMusic(AudioCue cue)
+        {
+            nextSceneMusicCue = cue;
+        }
+
+        public void Play(AudioCue cue)
+        {
+            if (cue == null || cue.Clip == null)
+                return;
+
+            if (cue.Category == AudioCategory.Music)
+            {
+                PlayMusic(cue.Clip);
+                return;
+            }
+
+            float pitch = cue.PitchRange.x;
+            if (cue.PitchRange.y > cue.PitchRange.x)
+                pitch = UnityEngine.Random.Range(cue.PitchRange.x, cue.PitchRange.y);
+
+            if (cue.Category == AudioCategory.Ui)
+            {
+                if (uiSource == null)
+                {
+                    Debug.LogWarning("AudioManager: uiSource не назначен — UI звук пропущен.");
+                    return;
+                }
+
+                float prevPitch = uiSource.pitch;
+                uiSource.pitch = pitch;
+                uiSource.PlayOneShot(cue.Clip, cue.DefaultVolume);
+                uiSource.pitch = prevPitch;
+                return;
+            }
+
+            // Gameplay sounds (Sound) and legacy Sfx both use the pooled SFX player.
+            PlaySfx(cue.Clip, cue.DefaultVolume, pitch);
         }
 
         /* ===================== MUSIC ===================== */
@@ -172,6 +294,12 @@ namespace UDA2.Audio
         {
             if (clip == null || clip == currentClip)
                 return;
+
+            if (musicSource == null)
+            {
+                Debug.LogWarning("AudioManager: musicSource не назначен — PlayMusic пропущен.");
+                return;
+            }
 
             if (musicFadeCoroutine != null)
                 StopCoroutine(musicFadeCoroutine);
@@ -185,18 +313,21 @@ namespace UDA2.Audio
         private IEnumerator FadeMusicIn()
         {
             float startDb = -80f;
-            audioMixer.SetFloat("MusicVolume", startDb);
+            if (audioMixer != null)
+                audioMixer.SetFloat(MusicVolumeParam, startDb);
             musicSource.Play();
 
             float t = 0f;
             while (t < 1f)
             {
                 t += Time.unscaledDeltaTime;
-                audioMixer.SetFloat("MusicVolume", Mathf.Lerp(startDb, targetMusicDb, t));
+                if (audioMixer != null)
+                    audioMixer.SetFloat(MusicVolumeParam, Mathf.Lerp(startDb, targetMusicDb, t));
                 yield return null;
             }
             // Ensure final value is set exactly
-            audioMixer.SetFloat("MusicVolume", targetMusicDb);
+            if (audioMixer != null)
+                audioMixer.SetFloat(MusicVolumeParam, targetMusicDb);
         }
 
         public void StopMusic()
@@ -217,7 +348,8 @@ namespace UDA2.Audio
         public void SetMusicVolume(float volume)
         {
             targetMusicDb = ToDb(volume);
-            audioMixer.SetFloat("MusicVolume", targetMusicDb);
+            if (audioMixer != null)
+                audioMixer.SetFloat(MusicVolumeParam, targetMusicDb);
         }
 
         /* ===================== SFX ===================== */
@@ -241,7 +373,12 @@ namespace UDA2.Audio
 
         public void PlaySfx(AudioClip clip, float volume = 1f, float pitch = 1f)
         {
-            if (clip == null || sfxPool == null)
+            if (clip == null)
+                return;
+
+            EnsureSfxPool();
+
+            if (sfxPool == null)
                 return;
 
             var src = sfxPool[sfxIndex];
@@ -250,6 +387,7 @@ namespace UDA2.Audio
             src.Stop();
             src.clip = clip;
             src.pitch = pitch;
+            src.volume = Mathf.Clamp01(volume) * sfxVolume;
             src.Play();
         }
 
@@ -262,28 +400,36 @@ namespace UDA2.Audio
         public void SetSfxVolume(float volume)
         {
             sfxVolume = Mathf.Clamp01(volume);
-            audioMixer.SetFloat("SFXVolume", ToDb(sfxVolume));
+            if (audioMixer != null)
+                audioMixer.SetFloat(SfxVolumeParam, ToDb(sfxVolume));
         }
 
         /* ===================== UI ===================== */
 
         public void PlayUiClick()
         {
-            if (uiClickClip != null && uiSource != null)
-                uiSource.PlayOneShot(uiClickClip);
-            else if (uiSource == null)
-                Debug.LogWarning("AudioManager: uiSource не назначен в инспекторе.");
+            if (uiClickCue != null)
+            {
+                Play(uiClickCue);
+                return;
+            }
+
+            Debug.LogWarning("AudioManager: uiClickCue не назначен (UI click звук пропущен).");
         }
 
         public void SetUiVolume(float volume)
         {
-            audioMixer.SetFloat("UIVolume", ToDb(volume));
+            if (audioMixer != null)
+                audioMixer.SetFloat(UiVolumeParam, ToDb(volume));
         }
 
         /* ===================== UTILS ===================== */
 
         private void CheckParam(string name)
         {
+            if (audioMixer == null)
+                return;
+
             if (!audioMixer.GetFloat(name, out _))
                 Debug.LogError($"AudioMixer missing exposed parameter: {name}");
         }

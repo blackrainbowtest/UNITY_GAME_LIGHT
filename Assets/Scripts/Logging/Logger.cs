@@ -75,6 +75,14 @@ namespace UDA2.Logging
             if (Severity(type) > Severity(MinLogLevel))
                 return;
 
+            int contextId = -1;
+            string contextName = null;
+            if (unityContext != null)
+            {
+                contextId = unityContext.GetInstanceID();
+                contextName = unityContext.name;
+            }
+
             var entry = new LogEntry
             {
                 Timestamp = DateTime.Now,
@@ -84,7 +92,8 @@ namespace UDA2.Logging
                 CallerFilePath = callerFilePath,
                 CallerMemberName = callerMemberName,
                 CallerLineNumber = callerLineNumber,
-                UnityContext = unityContext,
+				UnityContextInstanceId = contextId,
+				UnityContextName = contextName,
                 SessionId = SessionId,
                 BuildId = BuildId,
                 StackTrace = type == LogType.Error ? Environment.StackTrace : null
@@ -92,12 +101,12 @@ namespace UDA2.Logging
             if (_entries.Count >= MaxEntries)
                 _entries.RemoveAt(0);
             _entries.Add(entry);
-            OutputToUnityConsoleWithCallerInfo(entry);
+			OutputToUnityConsoleWithCallerInfo(entry, unityContext);
             if (type == LogType.Error)
                 WriteToFile(entry); // ошибки пишем сразу
         }
 
-        private static void OutputToUnityConsoleWithCallerInfo(LogEntry entry)
+		private static void OutputToUnityConsoleWithCallerInfo(LogEntry entry, UnityEngine.Object unityContext)
         {
             if (!_outputToUnityConsole || _isDisposing)
                 return;
@@ -112,13 +121,13 @@ namespace UDA2.Logging
             switch (entry.Type)
             {
                 case LogType.Warning:
-                    Debug.LogWarning(formattedMessage, entry.UnityContext);
+					Debug.LogWarning(formattedMessage, unityContext);
                     break;
                 case LogType.Error:
-                    Debug.LogError(formattedMessage, entry.UnityContext);
+					Debug.LogError(formattedMessage, unityContext);
                     break;
                 default:
-                    Debug.Log(formattedMessage, entry.UnityContext);
+					Debug.Log(formattedMessage, unityContext);
                     break;
             }
         }
@@ -127,7 +136,8 @@ namespace UDA2.Logging
         {
             string channel = entry.Channel != LogChannel.Default ? $"[{entry.Channel}]" : "";
             string stack = entry.StackTrace != null ? $"\nStackTrace: {entry.StackTrace}" : "";
-            return $"[{entry.Timestamp:yyyy-MM-dd HH:mm:ss}] [{entry.Type}]{channel} {entry.Message} (at {Path.GetFileName(entry.CallerFilePath)}:{entry.CallerLineNumber} in {entry.CallerMemberName}) [Session:{entry.SessionId} Build:{entry.BuildId}]{stack}";
+			string ctx = entry.UnityContextName != null ? $" [Ctx:{entry.UnityContextName}#{entry.UnityContextInstanceId}]" : "";
+			return $"[{entry.Timestamp:yyyy-MM-dd HH:mm:ss}] [{entry.Type}]{channel} {entry.Message} (at {Path.GetFileName(entry.CallerFilePath)}:{entry.CallerLineNumber} in {entry.CallerMemberName}) [Session:{entry.SessionId} Build:{entry.BuildId}]{ctx}{stack}";
         }
 
         private static string GetColorForType(LogType type)

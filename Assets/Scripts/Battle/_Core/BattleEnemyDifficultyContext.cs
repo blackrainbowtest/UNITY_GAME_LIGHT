@@ -26,6 +26,12 @@ namespace Game.Battle
     {
         private static EnemyDifficulty? _difficulty;
 
+        [UnityEngine.RuntimeInitializeOnLoadMethod(UnityEngine.RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics()
+        {
+            _difficulty = null;
+        }
+
         public static void Set(EnemyDifficulty difficulty)
         {
             _difficulty = difficulty;

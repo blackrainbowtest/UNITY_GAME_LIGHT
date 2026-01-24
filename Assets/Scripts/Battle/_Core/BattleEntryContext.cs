@@ -26,6 +26,12 @@ namespace Game.Battle
     {
         private static BattleMode mode = BattleMode.Normal;
 
+        [UnityEngine.RuntimeInitializeOnLoadMethod(UnityEngine.RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics()
+        {
+            mode = BattleMode.Normal;
+        }
+
         public static void Set(BattleMode battleMode)
         {
             mode = battleMode;

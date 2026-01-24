@@ -68,6 +68,15 @@ namespace Game.Battle
         [SerializeField] private float enemyTurnDelaySeconds = 0.35f;
         [SerializeField] private float endOfRoundDelaySeconds = 0.8f;
 
+        private void OnDisable()
+        {
+            if (enemyTurnRoutine != null)
+            {
+                StopCoroutine(enemyTurnRoutine);
+                enemyTurnRoutine = null;
+            }
+        }
+
         public void StartBattle(BattleContext battleContext)
         {
             Logger.LogInfo("[BattleController] StartBattle called");

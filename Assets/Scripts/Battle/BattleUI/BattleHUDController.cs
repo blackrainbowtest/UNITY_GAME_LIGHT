@@ -44,6 +44,7 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
     private CanvasGroup canvasGroup;
 
     private BattleHUDState lastState;
+	private bool isWired;
 
     private void Awake()
     {
@@ -58,6 +59,25 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
     {
         this.actions = actions;
 
+        if (!isWired)
+        {
+            WireButtons();
+            isWired = true;
+        }
+
+        ShowRootMenu();
+
+        // Default: enabled.
+        SetInputEnabled(true);
+    }
+
+    private void OnDestroy()
+    {
+        UnwireButtons();
+    }
+
+    private void WireButtons()
+    {
         // Root menu buttons should switch UI, not execute actions directly.
         // Actual combat actions are sent by submenu buttons.
         if (attackButton != null) attackButton.onClick.AddListener(OnAttackMenuPressed);
@@ -65,8 +85,8 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
         if (magicButton != null) magicButton.onClick.AddListener(OnMagicMenuPressed);
         if (actionsButton != null) actionsButton.onClick.AddListener(OnActionsMenuPressed);
         if (seductionButton != null) seductionButton.onClick.AddListener(OnSeductionMenuPressed);
-        if (itemButton != null) itemButton.onClick.AddListener(() => actions.OnItemPressed());
-        if (exitButton != null) exitButton.onClick.AddListener(() => actions.OnExitPressed());
+        if (itemButton != null) itemButton.onClick.AddListener(HandleItemPressed);
+        if (exitButton != null) exitButton.onClick.AddListener(HandleExitPressed);
 
         if (backButtons != null)
         {
@@ -76,11 +96,51 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
                 btn.onClick.AddListener(OnBackPressed);
             }
         }
+    }
 
-        ShowRootMenu();
+    private void UnwireButtons()
+    {
+        if (!isWired)
+            return;
 
-        // Default: enabled.
-        SetInputEnabled(true);
+        if (attackButton != null) attackButton.onClick.RemoveListener(OnAttackMenuPressed);
+        if (defenseButton != null) defenseButton.onClick.RemoveListener(OnDefensePressed);
+        if (magicButton != null) magicButton.onClick.RemoveListener(OnMagicMenuPressed);
+        if (actionsButton != null) actionsButton.onClick.RemoveListener(OnActionsMenuPressed);
+        if (seductionButton != null) seductionButton.onClick.RemoveListener(OnSeductionMenuPressed);
+        if (itemButton != null) itemButton.onClick.RemoveListener(HandleItemPressed);
+        if (exitButton != null) exitButton.onClick.RemoveListener(HandleExitPressed);
+
+        if (backButtons != null)
+        {
+            foreach (var btn in backButtons)
+            {
+                if (btn == null) continue;
+                btn.onClick.RemoveListener(OnBackPressed);
+            }
+        }
+
+        isWired = false;
+    }
+
+    private void HandleItemPressed()
+    {
+        if (actions == null)
+        {
+            Debug.LogError("BattleHUDController: actions is not set");
+            return;
+        }
+        actions.OnItemPressed();
+    }
+
+    private void HandleExitPressed()
+    {
+        if (actions == null)
+        {
+            Debug.LogError("BattleHUDController: actions is not set");
+            return;
+        }
+        actions.OnExitPressed();
     }
 
     public void SetInputEnabled(bool enabled)

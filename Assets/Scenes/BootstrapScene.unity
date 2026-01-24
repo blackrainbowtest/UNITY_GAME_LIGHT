@@ -1066,20 +1066,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb322643e0631e7419727b444ad644ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UDA2.Audio.AudioManager
+  sceneMusicConfig: {fileID: 11400000, guid: c52a8c7d32c3a93459dd395d00562080, type: 2}
   audioMixer: {fileID: 24100000, guid: 7fceed4f37ee3674580a19ca2d65ba88, type: 2}
   musicSource: {fileID: 534730535}
   musicGroup: {fileID: 3983095001128603496, guid: 7fceed4f37ee3674580a19ca2d65ba88, type: 2}
-  logoMusic: {fileID: 8300000, guid: 42ab6727c9ca27441ae9ecbdfcb67448, type: 3}
-  introMusic: {fileID: 8300000, guid: 45ddfbaf958850543a169a9dbb0ba425, type: 3}
-  mainMenuMusic: {fileID: 8300000, guid: 226d0cf5d128d894c8df9ae56b32d867, type: 3}
-  gameplayMusic: {fileID: 0}
   sfxPrefab: {fileID: 187023947}
   sfxGroup: {fileID: 2628169274047384267, guid: 7fceed4f37ee3674580a19ca2d65ba88, type: 2}
   sfxPoolSize: 10
   sfxParent: {fileID: 0}
   uiSource: {fileID: 1285300810}
   uiGroup: {fileID: -4760300794720278208, guid: 7fceed4f37ee3674580a19ca2d65ba88, type: 2}
-  uiClickClip: {fileID: 8300000, guid: 40e2899129bcc6345b5760f956423470, type: 3}
+  uiClickCue: {fileID: 11400000, guid: 124d178aab3834441a6ce5eecdaf64c0, type: 2}
   characterSource: {fileID: 1183560663}
   characterGroup: {fileID: 3357703855026073502, guid: 7fceed4f37ee3674580a19ca2d65ba88, type: 2}
   environmentSource: {fileID: 1285809763}

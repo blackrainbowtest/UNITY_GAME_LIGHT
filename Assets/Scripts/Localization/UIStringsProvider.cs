@@ -26,6 +26,12 @@ public class UIStringsProvider : MonoBehaviour
         currentLanguage = defaultLanguage;
     }
 
+	private void OnDestroy()
+	{
+		if (Instance == this)
+			Instance = null;
+	}
+
     public void SetLanguage(string lang)
     {
         currentLanguage = lang;

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf0bcc9e46067448b9737526731c680, type: 3}
+  m_Name: SceneMusicConfig
+  m_EditorClassIdentifier: Assembly-CSharp::UDA2.Audio.SceneMusicConfig
+  entries:
+  - sceneName: MainMenuScene
+    musicCue: {fileID: 11400000, guid: c4929f2960e6899498f2e5f8efdb3b20, type: 2}
+  - sceneName: SplashScene
+    musicCue: {fileID: 11400000, guid: 43bdb1638b3cc724c8b8164097dd67c7, type: 2}
+  - sceneName: IntroScene
+    musicCue: {fileID: 11400000, guid: 976a8363edda0ab4282b5985f9337447, type: 2}
+  - sceneName: FightScene
+    musicCue: {fileID: 11400000, guid: b694056ca0dab7244b35a6fde989f4d9, type: 2}
+  - sceneName: StartCityScene
+    musicCue: {fileID: 11400000, guid: b694056ca0dab7244b35a6fde989f4d9, type: 2}

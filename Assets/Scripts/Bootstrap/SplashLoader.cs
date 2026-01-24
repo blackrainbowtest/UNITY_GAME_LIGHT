@@ -10,6 +10,11 @@ namespace UDA2.Bootstrap
         {
             StartCoroutine(ShowSplashAndLoadMenu());
         }
+
+		private void OnDisable()
+		{
+			StopAllCoroutines();
+		}
         private System.Collections.IEnumerator ShowSplashAndLoadMenu()
         {
             yield return new WaitForSeconds(splashDuration);

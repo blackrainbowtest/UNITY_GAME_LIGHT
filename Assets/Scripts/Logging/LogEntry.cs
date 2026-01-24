@@ -18,7 +18,8 @@ namespace UDA2.Logging
         public string CallerMemberName { get; set; }
         public int CallerLineNumber { get; set; }
         public LogChannel Channel { get; set; }
-        public UnityEngine.Object UnityContext { get; set; }
+        public int UnityContextInstanceId { get; set; } = -1;
+        public string UnityContextName { get; set; }
         public string SessionId { get; set; }
         public string BuildId { get; set; }
         public string StackTrace { get; set; }

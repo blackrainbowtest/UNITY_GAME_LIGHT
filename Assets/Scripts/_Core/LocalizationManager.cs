@@ -17,6 +17,7 @@
 /* ******************************************************************************************************** */
 
 using System;
+using UnityEngine;
 
 namespace UDA2.Core
 {
@@ -26,10 +27,19 @@ namespace UDA2.Core
 
         private static UIStringsData[] _uiStringsAssets;
 
-        static LocalizationManager()
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics()
         {
-            SettingsContext.OnLanguageChanged += SetLanguage;
+            CurrentLanguage = "en";
+            _uiStringsAssets = null;
+        }
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        private static void Initialize()
+        {
+            // Ensure we don't stack handlers across play sessions when Domain Reload is disabled.
+            SettingsContext.OnLanguageChanged -= SetLanguage;
+            SettingsContext.OnLanguageChanged += SetLanguage;
             EnsureLoaded();
         }
 

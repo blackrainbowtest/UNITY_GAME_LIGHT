@@ -64,5 +64,11 @@ namespace UDA2.Core
             else
                 SceneManager.LoadScene(mainSceneName);
         }
+
+		private void OnDestroy()
+		{
+			if (instance == this)
+				instance = null;
+		}
     }
 }

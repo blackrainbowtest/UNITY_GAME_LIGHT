@@ -72,6 +72,9 @@ public class FontManager : MonoBehaviour
     private void OnDestroy()
     {
         UDA2.Core.SettingsContext.OnLanguageChanged -= OnLanguageChanged;
+
+		if (Instance == this)
+			Instance = null;
     }
 
     private void OnLanguageChanged(string languageCode)

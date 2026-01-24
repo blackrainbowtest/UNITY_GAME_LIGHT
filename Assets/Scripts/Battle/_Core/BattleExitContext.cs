@@ -28,6 +28,12 @@ namespace Game.Battle
     {
         private static BattleExitData data;
 
+        [UnityEngine.RuntimeInitializeOnLoadMethod(UnityEngine.RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics()
+        {
+            data = null;
+        }
+
         public static void SetReturnToScene(string sceneName)
         {
             Set(new BattleExitData(sceneName));

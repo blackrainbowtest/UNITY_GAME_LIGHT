@@ -17,6 +17,7 @@
 /* ******************************************************************************************************** */
 
 using Game.Battle;
+using UnityEngine;
 
 /// <summary>
 /// Контекст для передачи выбранного врага между сценами (Single Source of Truth).
@@ -24,6 +25,12 @@ using Game.Battle;
 public static class BattleEnemyContext
 {
     private static Game.Battle.EnemyData selectedEnemy;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStatics()
+    {
+        selectedEnemy = null;
+    }
 
     public static void Set(Game.Battle.EnemyData enemy)
     {

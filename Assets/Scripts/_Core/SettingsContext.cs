@@ -17,6 +17,7 @@
 /* ******************************************************************************************************** */
 
 using System;
+using UnityEngine;
 namespace UDA2.Core
 {
     public static partial class SettingsContext
@@ -27,6 +28,16 @@ namespace UDA2.Core
         public static event Action<float> OnMusicVolumeChanged;
         public static event Action<float> OnSfxVolumeChanged;
         public static event Action<float> OnUiVolumeChanged;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics()
+        {
+            Current = null;
+            OnLanguageChanged = null;
+            OnMusicVolumeChanged = null;
+            OnSfxVolumeChanged = null;
+            OnUiVolumeChanged = null;
+        }
 
         public static void SetLanguage(string lang)
         {
