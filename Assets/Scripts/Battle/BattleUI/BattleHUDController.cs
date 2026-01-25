@@ -42,6 +42,9 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
 
     private IBattleUIActions actions;
     private CanvasGroup canvasGroup;
+    private GraphicRaycaster graphicRaycaster;
+    private Button[] allButtons;
+    private bool inputEnabled;
 
     private BattleHUDState lastState;
 	private bool isWired;
@@ -53,6 +56,15 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
         canvasGroup = GetComponent<CanvasGroup>();
         if (canvasGroup == null)
             canvasGroup = gameObject.AddComponent<CanvasGroup>();
+
+        graphicRaycaster = GetComponentInParent<GraphicRaycaster>();
+
+        RefreshButtonsCache();
+    }
+
+    private void RefreshButtonsCache()
+    {
+        allButtons = GetComponentsInChildren<Button>(includeInactive: true);
     }
 
     public void SetActions(IBattleUIActions actions)
@@ -67,8 +79,8 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
 
         ShowRootMenu();
 
-        // Default: enabled.
-        SetInputEnabled(true);
+        // Do not change input state here.
+        // BattleController is the single source of truth for when input is enabled (player turn).
     }
 
     private void OnDestroy()
@@ -145,14 +157,40 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
 
     public void SetInputEnabled(bool enabled)
     {
-        if (canvasGroup == null)
-            return;
+        inputEnabled = enabled;
 
-        canvasGroup.interactable = enabled;
-        canvasGroup.blocksRaycasts = enabled;
+        // Strongest guarantee: if our HUD is on a Canvas with a GraphicRaycaster,
+        // disabling it prevents ALL pointer clicks from reaching buttons.
+        if (graphicRaycaster != null)
+            graphicRaycaster.enabled = enabled;
 
-        // Optional: slight visual feedback.
-        canvasGroup.alpha = enabled ? 1f : 0.85f;
+        if (canvasGroup != null)
+        {
+            canvasGroup.interactable = enabled;
+            canvasGroup.blocksRaycasts = enabled;
+
+            // Visual feedback: dim UI when disabled.
+            canvasGroup.alpha = enabled ? 1f : 0.65f;
+        }
+
+        if (allButtons == null || allButtons.Length == 0)
+            RefreshButtonsCache();
+
+        if (allButtons != null)
+        {
+            for (int i = 0; i < allButtons.Length; i++)
+            {
+                var btn = allButtons[i];
+                if (btn == null)
+                    continue;
+                btn.interactable = enabled;
+            }
+        }
+    }
+
+    private bool CanInteract()
+    {
+        return inputEnabled;
     }
 
     public void ShowRootMenu()
@@ -202,34 +240,37 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
 
     // ===== Root menu button handlers =====
 
-    public void OnAttackMenuPressed() => ShowAttackMenu();
-    public void OnDefensePressed() => SelectAction(CombatActionId.Block);
-    public void OnActionsMenuPressed() => ShowActionsMenu();
-    public void OnMagicMenuPressed() => ShowMagicMenu();
-    public void OnSeductionMenuPressed() => ShowSeductionMenu();
-    public void OnBackPressed() => ShowRootMenu();
+    public void OnAttackMenuPressed() { if (!CanInteract()) return; ShowAttackMenu(); }
+    public void OnDefensePressed() { if (!CanInteract()) return; SelectAction(CombatActionId.Block); }
+    public void OnActionsMenuPressed() { if (!CanInteract()) return; ShowActionsMenu(); }
+    public void OnMagicMenuPressed() { if (!CanInteract()) return; ShowMagicMenu(); }
+    public void OnSeductionMenuPressed() { if (!CanInteract()) return; ShowSeductionMenu(); }
+    public void OnBackPressed() { if (!CanInteract()) return; ShowRootMenu(); }
 
     // ===== Submenu action button handlers =====
 
-    public void OnFastAttackPressed() => SelectAction(CombatActionId.FastAttack);
-    public void OnNormalAttackPressed() => SelectAction(CombatActionId.NormalAttack);
-    public void OnHeavyAttackPressed() => SelectAction(CombatActionId.HeavyAttack);
-    public void OnCounterAttackPressed() => SelectAction(CombatActionId.CounterAttack);
+    public void OnFastAttackPressed() { if (!CanInteract()) return; SelectAction(CombatActionId.FastAttack); }
+    public void OnNormalAttackPressed() { if (!CanInteract()) return; SelectAction(CombatActionId.NormalAttack); }
+    public void OnHeavyAttackPressed() { if (!CanInteract()) return; SelectAction(CombatActionId.HeavyAttack); }
+    public void OnCounterAttackPressed() { if (!CanInteract()) return; SelectAction(CombatActionId.CounterAttack); }
 
-    public void OnFireSpellPressed() => SelectAction(CombatActionId.FireSpell);
-    public void OnIceSpellPressed() => SelectAction(CombatActionId.IceSpell);
-    public void OnHolySpellPressed() => SelectAction(CombatActionId.HolySpell);
-    public void OnDarkSpellPressed() => SelectAction(CombatActionId.DarkSpell);
+    public void OnFireSpellPressed() { if (!CanInteract()) return; SelectAction(CombatActionId.FireSpell); }
+    public void OnIceSpellPressed() { if (!CanInteract()) return; SelectAction(CombatActionId.IceSpell); }
+    public void OnHolySpellPressed() { if (!CanInteract()) return; SelectAction(CombatActionId.HolySpell); }
+    public void OnDarkSpellPressed() { if (!CanInteract()) return; SelectAction(CombatActionId.DarkSpell); }
 
-    public void OnSeductionAct1Pressed() => SelectAction(CombatActionId.SeductionAct1);
-    public void OnSeductionAct2Pressed() => SelectAction(CombatActionId.SeductionAct2);
-    public void OnSeductionAct3Pressed() => SelectAction(CombatActionId.SeductionAct3);
-    public void OnSeductionAct4Pressed() => SelectAction(CombatActionId.SeductionAct4);
+    public void OnSeductionAct1Pressed() { if (!CanInteract()) return; SelectAction(CombatActionId.SeductionAct1); }
+    public void OnSeductionAct2Pressed() { if (!CanInteract()) return; SelectAction(CombatActionId.SeductionAct2); }
+    public void OnSeductionAct3Pressed() { if (!CanInteract()) return; SelectAction(CombatActionId.SeductionAct3); }
+    public void OnSeductionAct4Pressed() { if (!CanInteract()) return; SelectAction(CombatActionId.SeductionAct4); }
 
     // ===== Actions menu (non-combat intents) =====
 
     public void OnInventoryPressed()
     {
+        if (!CanInteract())
+            return;
+
         if (actions == null)
         {
             Debug.LogError("BattleHUDController: actions is not set");
@@ -242,6 +283,9 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
 
     public void OnRunPressed()
     {
+        if (!CanInteract())
+            return;
+
         if (actions == null)
         {
             Debug.LogError("BattleHUDController: actions is not set");
@@ -254,6 +298,9 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
 
     public void OnSurrenderPressed()
     {
+        if (!CanInteract())
+            return;
+
         if (actions == null)
         {
             Debug.LogError("BattleHUDController: actions is not set");
@@ -266,6 +313,9 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
 
     public void OnSkipTurnPressed()
     {
+        if (!CanInteract())
+            return;
+
         if (actions == null)
         {
             Debug.LogError("BattleHUDController: actions is not set");

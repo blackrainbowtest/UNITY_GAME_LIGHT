@@ -86,12 +86,40 @@ namespace Game.Battle.Combat
             );
 
             // 4. Apply action effects
-            if (action.HpDamage > 0)
+            if (action.Id == Actions.CombatActionId.HolySpell)
             {
-                var newEnemyHp = newState.EnemyHp - action.HpDamage;
-                if (newEnemyHp < 0)
-                    newEnemyHp = 0;
-                newState = newState.WithEnemyHp(newEnemyHp);
+                // Holy = heal self (HpDamage acts as heal amount)
+                if (action.HpDamage > 0)
+                    newState = newState.WithPlayerHp(newState.PlayerHp + action.HpDamage);
+            }
+            else if (action.Id == Actions.CombatActionId.DarkSpell)
+            {
+                // Dark = lifesteal (heal for actual damage dealt)
+                if (action.HpDamage > 0)
+                {
+                    var dealt = action.HpDamage;
+                    if (dealt > newState.EnemyHp)
+                        dealt = newState.EnemyHp;
+
+                    var newEnemyHp = newState.EnemyHp - dealt;
+                    if (newEnemyHp < 0)
+                        newEnemyHp = 0;
+
+                    newState = newState
+                        .WithEnemyHp(newEnemyHp)
+                        .WithPlayerHp(newState.PlayerHp + dealt);
+                }
+            }
+            else
+            {
+                // Default: damage enemy
+                if (action.HpDamage > 0)
+                {
+                    var newEnemyHp = newState.EnemyHp - action.HpDamage;
+                    if (newEnemyHp < 0)
+                        newEnemyHp = 0;
+                    newState = newState.WithEnemyHp(newEnemyHp);
+                }
             }
 
             // 5. Handle block
@@ -135,13 +163,41 @@ namespace Game.Battle.Combat
                 playerBlockedLastTurn: state.PlayerBlockedLastTurn
             );
 
-            // 3. Apply effects (enemy damages player)
-            if (action.HpDamage > 0)
+            // 3. Apply effects
+            if (action.Id == Actions.CombatActionId.HolySpell)
             {
-                var newPlayerHp = newState.PlayerHp - action.HpDamage;
-                if (newPlayerHp < 0)
-                    newPlayerHp = 0;
-                newState = newState.WithPlayerHp(newPlayerHp);
+                // Holy = heal self (enemy)
+                if (action.HpDamage > 0)
+                    newState = newState.WithEnemyHp(newState.EnemyHp + action.HpDamage);
+            }
+            else if (action.Id == Actions.CombatActionId.DarkSpell)
+            {
+                // Dark = lifesteal (enemy heals for actual damage dealt)
+                if (action.HpDamage > 0)
+                {
+                    var dealt = action.HpDamage;
+                    if (dealt > newState.PlayerHp)
+                        dealt = newState.PlayerHp;
+
+                    var newPlayerHp = newState.PlayerHp - dealt;
+                    if (newPlayerHp < 0)
+                        newPlayerHp = 0;
+
+                    newState = newState
+                        .WithPlayerHp(newPlayerHp)
+                        .WithEnemyHp(newState.EnemyHp + dealt);
+                }
+            }
+            else
+            {
+                // Default: enemy damages player
+                if (action.HpDamage > 0)
+                {
+                    var newPlayerHp = newState.PlayerHp - action.HpDamage;
+                    if (newPlayerHp < 0)
+                        newPlayerHp = 0;
+                    newState = newState.WithPlayerHp(newPlayerHp);
+                }
             }
 
             return new CombatResolution(newState, CombatActionResult.Executed);
