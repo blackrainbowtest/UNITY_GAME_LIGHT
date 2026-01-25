@@ -52,6 +52,9 @@ namespace Game.Battle.Combat.EnemyAI
                 if (action == null)
                     continue;
 
+                if (id == CombatActionId.HolySpell)
+                    continue;
+
                 // Enemy turn: only meaningful if it affects the player for now.
                 if (action.HpDamage <= 0)
                     continue;
