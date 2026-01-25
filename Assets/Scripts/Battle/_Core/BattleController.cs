@@ -38,6 +38,8 @@ namespace Game.Battle
             BattleOver = 3
         }
 
+        private Coroutine playerActionRoutine;
+
         private BattleContext context;
         private bool battleStarted;
 
@@ -254,6 +256,48 @@ namespace Game.Battle
             BeginEnemyTurn();
         }
 
+        private static bool TryGetVisualAnimId(CombatActionId actionId, out BattleVisualAnimId animId)
+        {
+            switch (actionId)
+            {
+                case CombatActionId.FastAttack: animId = BattleVisualAnimId.FastAttack; return true;
+                case CombatActionId.NormalAttack: animId = BattleVisualAnimId.NormalAttack; return true;
+                case CombatActionId.HeavyAttack: animId = BattleVisualAnimId.HeavyAttack; return true;
+                case CombatActionId.Block: animId = BattleVisualAnimId.Block; return true;
+
+                case CombatActionId.FireSpell:
+                case CombatActionId.IceSpell:
+                case CombatActionId.HolySpell:
+                case CombatActionId.DarkSpell:
+                    animId = BattleVisualAnimId.Cast;
+                    return true;
+            }
+
+            animId = BattleVisualAnimId.Idle;
+            return false;
+        }
+
+        private IEnumerator PlayActionVisualAndWait(CombatActionId actionId, bool actorIsPlayer)
+        {
+            var view = actorIsPlayer ? playerView : enemyView;
+            if (view == null)
+                yield break;
+
+            if (!TryGetVisualAnimId(actionId, out var animId))
+                yield break;
+
+            bool finished = false;
+            view.RequestPlayAfterCurrent(animId, onFinished: () => finished = true);
+
+            // Safety timeout to avoid soft-lock if something is miswired.
+            float timeout = 5f;
+            while (!finished && timeout > 0f)
+            {
+                timeout -= Time.deltaTime;
+                yield return null;
+            }
+        }
+
         public void OnExitPressed()
         {
             if (!battleStarted)
@@ -269,17 +313,26 @@ namespace Game.Battle
             if (turnPhase != TurnPhase.PlayerTurn)
                 return;
 
+            if (playerActionRoutine != null)
+                return;
+
             // Lock input immediately to prevent spamming while enemy is about to act.
             turnPhase = TurnPhase.EnemyTurn;
             hudController?.SetInputEnabled(false);
 
+            playerActionRoutine = StartCoroutine(ExecutePlayerActionRoutine(actionId));
+        }
+
+        private IEnumerator ExecutePlayerActionRoutine(CombatActionId actionId)
+        {
             if (actionRegistry == null)
             {
                 Logger.LogError("BattleController: actionRegistry is not initialized");
 
                 turnPhase = TurnPhase.PlayerTurn;
                 hudController?.SetInputEnabled(true);
-                return;
+                playerActionRoutine = null;
+                yield break;
             }
 
             var action = actionRegistry.Get(actionId);
@@ -289,7 +342,8 @@ namespace Game.Battle
 
                 turnPhase = TurnPhase.PlayerTurn;
                 hudController?.SetInputEnabled(true);
-                return;
+                playerActionRoutine = null;
+                yield break;
             }
 
             var resolution = combatEngine.ResolvePlayerAction(combatState, action);
@@ -300,20 +354,28 @@ namespace Game.Battle
 
                 turnPhase = TurnPhase.PlayerTurn;
                 hudController?.SetInputEnabled(true);
-                return;
+                playerActionRoutine = null;
+                yield break;
             }
 
+            // 1) Play the action animation first.
+            yield return PlayActionVisualAndWait(actionId, actorIsPlayer: true);
+
+            // 2) Apply results after animation.
             combatState = ClampPlayerResourcesToMax(resolution.State);
             ApplyPostActionEffects(actionId, actorIsPlayer: true);
             PushHudState();
 
+            playerActionRoutine = null;
+
             if (combatState.IsEnemyDead)
             {
                 FinishBattle(playerWon: true);
-                return;
+                yield break;
             }
 
             BeginEnemyTurn();
+            yield break;
         }
 
         private void BeginEnemyTurn()
@@ -335,7 +397,22 @@ namespace Game.Battle
             if (enemyTurnDelaySeconds > 0f)
                 yield return new WaitForSeconds(enemyTurnDelaySeconds);
 
-            ExecuteEnemyTurn();
+            // Resolve enemy action (but apply AFTER playing its animation).
+            if (TryResolveEnemyAction(out var enemyActionId, out var enemyAction, out var enemyResolution))
+            {
+                yield return PlayActionVisualAndWait(enemyActionId, actorIsPlayer: false);
+
+                combatState = ClampEnemyResourcesToMax(enemyResolution.State);
+                ApplyPostActionEffects(enemyActionId, actorIsPlayer: false);
+                PushHudState();
+
+                if (combatState.IsPlayerDead)
+                {
+                    FinishBattle(playerWon: false);
+                    enemyTurnRoutine = null;
+                    yield break;
+                }
+            }
 
             enemyTurnRoutine = null;
 
@@ -358,55 +435,62 @@ namespace Game.Battle
             BeginPlayerTurn();
         }
 
-        private void ExecuteEnemyTurn()
+        private bool TryResolveEnemyAction(
+            out CombatActionId actionId,
+            out CombatActionData action,
+            out CombatResolution resolution)
         {
+            actionId = default;
+            action = null;
+            resolution = null;
+
             if (!battleStarted)
-                return;
+                return false;
 
             if (combatEngine == null || actionRegistry == null)
             {
                 Logger.LogError("BattleController: combatEngine/actionRegistry not initialized");
-                return;
+                return false;
             }
 
             if (combatState.IsEnemyDead || combatState.IsPlayerDead)
-                return;
+                return false;
 
-            var actionId = EnemyActionSelector.SelectEnemyAction(
+            var picked = EnemyActionSelector.SelectEnemyAction(
                 context.EnemyDifficulty,
                 context.Enemy,
                 actionRegistry,
                 combatState,
                 rng);
 
-            if (!actionId.HasValue)
+            if (!picked.HasValue)
             {
                 Logger.LogInfo("[BattleController] Enemy skips turn (no affordable/allowed actions)");
-                return;
+                return false;
             }
 
-            var action = actionRegistry.Get(actionId.Value);
+            actionId = picked.Value;
+            action = actionRegistry.Get(actionId);
             if (action == null)
             {
-                Logger.LogError($"[BattleController] Enemy action not found in registry: {actionId.Value}");
-                return;
+                Logger.LogError($"[BattleController] Enemy action not found in registry: {actionId}");
+                return false;
             }
 
-            var resolution = combatEngine.ResolveEnemyAction(combatState, action);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Debug.Log($"[Battle] Enemy used: {actionId}");
+#endif
+
+            resolution = combatEngine.ResolveEnemyAction(combatState, action);
             if (resolution.Result != CombatActionResult.Executed)
             {
                 Logger.LogInfo($"[BattleController] Enemy action rejected: {action.Id} -> {resolution.Result}");
-                return;
+                return false;
             }
 
-            combatState = ClampEnemyResourcesToMax(resolution.State);
-            ApplyPostActionEffects(actionId.Value, actorIsPlayer: false);
-            PushHudState();
-
-            if (combatState.IsPlayerDead)
-            {
-                FinishBattle(playerWon: false);
-            }
+            return true;
         }
+
+        // Enemy actions are handled inside EnemyTurnRoutine() to ensure visuals play before state updates.
     }
 }

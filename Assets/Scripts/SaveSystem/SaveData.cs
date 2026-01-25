@@ -8,6 +8,7 @@ public class SaveData
     public Player player = new Player();
     public Inventory inventory = new Inventory();
     public Progress progress = new Progress();
+    public SceneState sceneState = new SceneState();
 
     [Serializable]
     public class Meta
@@ -87,6 +88,51 @@ public class SaveData
                 return;
             }
             introResult = value;
+        }
+    }
+
+    [Serializable]
+    public class SceneState
+    {
+        /// <summary>
+        /// Anchor "main city" scene to return to from secondary locations.
+        /// </summary>
+        public string lastMainSceneName;
+
+        /// <summary>
+        /// If set, loading this save should restore battle entry contexts and then load battle.
+        /// Used for autosaves before battles (tutorial, encounters, etc.).
+        /// </summary>
+        public PendingBattle pendingBattle = new PendingBattle();
+    }
+
+    [Serializable]
+    public class PendingBattle
+    {
+        public bool isPending;
+        public string battleSceneName = "FightScene";
+
+        // Stored as strings to keep SaveData independent from battle assembly types.
+        public string battleMode; // e.g. "Tutorial", "Normal"
+
+        // Optional content identifiers; can be resolved via a runtime database.
+        public string enemyId;
+        public string locationId;
+
+        // Optional: where to return after battle.
+        public string returnSceneName;
+
+        // Optional: difficulty name ("Easy"/"Normal"/"Hard") or empty for default.
+        public string enemyDifficulty;
+
+        public void Clear()
+        {
+            isPending = false;
+            battleMode = null;
+            enemyId = null;
+            locationId = null;
+            returnSceneName = null;
+            enemyDifficulty = null;
         }
     }
 

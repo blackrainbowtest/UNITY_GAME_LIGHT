@@ -28,6 +28,8 @@ public static class SaveDataMigration
         if (save.player.stats == null) { save.player.stats = new SaveData.Stats(); Mark("player.stats initialized"); }
         if (save.inventory == null) { save.inventory = new SaveData.Inventory(); Mark("inventory initialized"); }
         if (save.progress == null) { save.progress = new SaveData.Progress(); Mark("progress initialized"); }
+        if (save.sceneState == null) { save.sceneState = new SaveData.SceneState(); Mark("sceneState initialized"); }
+        if (save.sceneState.pendingBattle == null) { save.sceneState.pendingBattle = new SaveData.PendingBattle(); Mark("sceneState.pendingBattle initialized"); }
 
         if (string.IsNullOrEmpty(save.player.outfitId))
         {

@@ -4,6 +4,15 @@ namespace Game.Battle.Visual
 {
     public sealed class BattleCharacterView : MonoBehaviour
     {
+        private const float DefaultIdleFramesPerSecond = 12f;
+
+        private bool hasPendingAnim;
+        private BattleVisualAnimId pendingAnimId;
+        private System.Action pendingAnimFinished;
+        private BattleVisualAnimId currentOneShotAnimId;
+        private System.Action currentOneShotFinished;
+
+
         [Header("Rendering")]
         [SerializeField] private SpriteRenderer spriteRenderer;
         [SerializeField] private bool flipX;
@@ -39,6 +48,15 @@ namespace Game.Battle.Visual
 
             if (animator != null && spriteRenderer != null)
                 animator.SetTarget(spriteRenderer);
+
+            if (animator != null)
+                animator.OnLooped += HandleAnimatorLooped;
+        }
+
+        private void OnDestroy()
+        {
+            if (animator != null)
+                animator.OnLooped -= HandleAnimatorLooped;
         }
 
         private void OnDisable()
@@ -97,12 +115,37 @@ namespace Game.Battle.Visual
                 return;
             }
 
-            var anim = ResolveAnimationOrVariation(animId);
-            if (anim == null || !anim.IsValid())
-                return;
+            TryPlayOnceInternal(animId, finished: null);
+        }
 
-            animator.SetFramesPerSecond(anim.FrameRate);
-            animator.PlayOnce(anim.FramesArray, finished: PlayIdle);
+        /// <summary>
+        /// Requests an animation to play after the current animation finishes.
+        /// If we are looping (idle), it starts on the next loop boundary.
+        /// </summary>
+        public bool RequestPlayAfterCurrent(BattleVisualAnimId animId, System.Action onFinished = null)
+        {
+            if (animator == null)
+            {
+                onFinished?.Invoke();
+                return false;
+            }
+
+            if (animId == BattleVisualAnimId.Idle)
+            {
+                PlayIdle();
+                onFinished?.Invoke();
+                return true;
+            }
+
+            hasPendingAnim = true;
+            pendingAnimId = animId;
+            pendingAnimFinished = onFinished;
+
+            // If nothing is playing, start immediately.
+            if (!animator.IsPlaying)
+                TryPlayPendingNow();
+
+            return true;
         }
 
         public void SetIdleAnimation(IdleAnimation animation)
@@ -143,6 +186,10 @@ namespace Game.Battle.Visual
                 return idleAnimation.FramesArray;
             }
 
+            // If we fall back to raw frames (no IdleAnimation asset), ensure FPS is still consistent.
+            if (idleFrames != null && idleFrames.Length > 0)
+                fps = DefaultIdleFramesPerSecond;
+
             return idleFrames;
         }
 
@@ -180,7 +227,82 @@ namespace Game.Battle.Visual
         {
             idleToken++;
             resolvedIdleVariations = null;
+            hasPendingAnim = false;
+            pendingAnimFinished = null;
+            currentOneShotFinished = null;
             animator?.Stop();
+        }
+
+        private void HandleAnimatorLooped()
+        {
+            // Only trigger pending anim at a clean boundary of a looping clip (idle).
+            if (!hasPendingAnim)
+                return;
+
+            // If we are currently not looping anymore (race), ignore.
+            if (animator == null || !animator.IsLooping)
+                return;
+
+            TryPlayPendingNow();
+        }
+
+        private void HandleNonLoopFinished(BattleVisualAnimId finishedId)
+        {
+            if (finishedId == currentOneShotAnimId)
+            {
+                var cb = currentOneShotFinished;
+                currentOneShotFinished = null;
+                cb?.Invoke();
+            }
+
+            if (TryPlayPendingNow())
+                return;
+
+            PlayIdle();
+        }
+
+        private bool TryPlayPendingNow()
+        {
+            if (!hasPendingAnim)
+                return false;
+
+            var id = pendingAnimId;
+            var finished = pendingAnimFinished;
+            hasPendingAnim = false;
+            pendingAnimFinished = null;
+
+            // Try start immediately; if missing animation, invoke callback and return to idle.
+            if (!TryPlayOnceInternal(id, finished))
+            {
+                finished?.Invoke();
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool TryPlayOnceInternal(BattleVisualAnimId animId, System.Action finished)
+        {
+            if (animator == null)
+                return false;
+
+            if (animId == BattleVisualAnimId.Idle)
+            {
+                PlayIdle();
+                finished?.Invoke();
+                return true;
+            }
+
+            var anim = ResolveAnimationOrVariation(animId);
+            if (anim == null || !anim.IsValid())
+                return false;
+
+            currentOneShotAnimId = animId;
+            currentOneShotFinished = finished;
+
+            animator.SetFramesPerSecond(anim.FrameRate);
+            animator.PlayOnce(anim.FramesArray, finished: () => HandleNonLoopFinished(animId));
+            return true;
         }
 
         private bool HasAnyValidIdleVariation()
@@ -248,6 +370,9 @@ namespace Game.Battle.Visual
             animator.PlayOnce(anim.FramesArray, finished: () =>
             {
                 if (token != idleToken)
+                    return;
+
+                if (TryPlayPendingNow())
                     return;
 
                 if (repeatsLeft > 1)

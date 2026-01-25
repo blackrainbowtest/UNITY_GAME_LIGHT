@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 using UDA2.UI.Common;
+using UDA2.SaveSystem;
 
 namespace UDA2.UI.SaveLoad
 {
@@ -133,17 +135,39 @@ namespace UDA2.UI.SaveLoad
                 if (save != null)
                 {
                     GameState.Instance.CurrentSave = save;
+
+                    var targetScene = save.player.sceneName;
+                    if (save.sceneState != null && save.sceneState.pendingBattle != null && save.sceneState.pendingBattle.isPending)
+                    {
+                        if (!string.IsNullOrEmpty(save.sceneState.pendingBattle.battleSceneName))
+                            targetScene = save.sceneState.pendingBattle.battleSceneName;
+                    }
+
                     // Ensures correct scene transition after load
                     if (UDA2.SceneFlow.SceneFlowManager.Instance != null)
-                        UDA2.SceneFlow.SceneFlowManager.Instance.LoadScene(save.player.sceneName);
+                        UDA2.SceneFlow.SceneFlowManager.Instance.LoadScene(targetScene);
                     else
-                        UnityEngine.SceneManagement.SceneManager.LoadScene(save.player.sceneName);
+                        UnityEngine.SceneManagement.SceneManager.LoadScene(targetScene);
                     Close();
                 }
             }
             else // Save Mode
             {
                 if (slotId == 0) return; // Prevents overwriting autosave
+
+                var activeScene = SceneManager.GetActiveScene().name;
+                if (!SceneCategoryResolver.IsSaveAllowed(activeScene))
+                {
+                    ConfirmDialog.Show(
+                        confirmDialogPrefab,
+                        dialogParent != null ? dialogParent : transform,
+                        "Сохранение в этой сцене недоступно (бой/катсцена). Сохраняйся в городе или безопасной локации.",
+                        onYes: null,
+                        onNo: null
+                    );
+                    return;
+                }
+
                 if (!SaveSlotsManager.HasSave(slotId))
                 {
                     SaveSlotsManager.SaveToSlot(slotId, GameState.Instance.CurrentSave);

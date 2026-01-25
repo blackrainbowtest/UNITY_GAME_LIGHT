@@ -15,9 +15,9 @@ MonoBehaviour:
   outfitId: outfit_01
   idleVariations:
   - {fileID: 11400000, guid: 248f85fff92dcc24d9a743e9bcbe5977, type: 2}
-  - {fileID: 11400000, guid: 7d9daf3c3185a1d44bb236b2619e49c5, type: 2}
   hitVariations: []
-  fastAttackVariations: []
+  fastAttackVariations:
+  - {fileID: 11400000, guid: cf34e98a186f5f34381e65a0920055bf, type: 2}
   normalAttackVariations: []
   heavyAttackVariations: []
   castVariations: []

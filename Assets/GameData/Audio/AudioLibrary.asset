@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UDA2.Audio.AudioLibrary
   cueAssets:
   - {fileID: 11400000, guid: c4929f2960e6899498f2e5f8efdb3b20, type: 2}
+  - {fileID: 11400000, guid: a3d4b64b711c75444a6b9d9ad51b2b5e, type: 2}
   - {fileID: 11400000, guid: 43bdb1638b3cc724c8b8164097dd67c7, type: 2}
   - {fileID: 11400000, guid: 976a8363edda0ab4282b5985f9337447, type: 2}
   - {fileID: 11400000, guid: b694056ca0dab7244b35a6fde989f4d9, type: 2}

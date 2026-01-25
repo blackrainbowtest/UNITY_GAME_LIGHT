@@ -23,6 +23,8 @@ namespace Game.Battle.Visual
 {
     public sealed class SpriteFrameAnimator : MonoBehaviour
     {
+        public event Action OnLooped;
+
         [Header("Target")]
         [SerializeField] private SpriteRenderer target;
 
@@ -36,6 +38,9 @@ namespace Game.Battle.Visual
         private int index;
         private bool isPlaying;
         private Action onFinished;
+
+        public bool IsPlaying => isPlaying;
+        public bool IsLooping => isPlaying && loop;
 
         private void Reset()
         {
@@ -70,6 +75,7 @@ namespace Game.Battle.Visual
                     if (loop)
                     {
                         index = 0;
+                        OnLooped?.Invoke();
                     }
                     else
                     {

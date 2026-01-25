@@ -35,6 +35,9 @@ namespace UDA2.Audio
 
         private AudioCue nextSceneMusicCue;
 
+        private Coroutine scenePlaylistCoroutine;
+        private int sceneMusicSessionId;
+
         /* ===================== AUDIO MIXER ===================== */
 
         [Header("Audio Mixer")]
@@ -227,6 +230,10 @@ namespace UDA2.Audio
 
         private void ApplySceneMusic(Scene scene)
         {
+            // New scene = new music session. Cancels any running playlist.
+            sceneMusicSessionId++;
+            StopScenePlaylist();
+
             // 1) Highest priority: explicit override set by loader BEFORE scene load.
             if (nextSceneMusicCue != null)
             {
@@ -239,6 +246,12 @@ namespace UDA2.Audio
             // 2) Config asset mapping scene -> cue
             if (sceneMusicConfig != null && sceneMusicConfig.TryGet(scene.name, out var entry))
             {
+                if (HasAnyValidCue(entry.playlist))
+                {
+                    StartScenePlaylist(entry.playlist, entry.loopPlaylist, sceneMusicSessionId, entry.musicCue);
+                    return;
+                }
+
                 if (entry.musicCue != null)
                 {
                     Play(entry.musicCue);
@@ -247,6 +260,78 @@ namespace UDA2.Audio
             }
 
             StopMusic();
+        }
+
+        private void StartScenePlaylist(AudioCue[] playlist, bool loop, int sessionId, AudioCue fallbackCue)
+        {
+            if (playlist == null || playlist.Length == 0)
+                return;
+
+            if (musicSource == null)
+            {
+                Debug.LogWarning("AudioManager: musicSource не назначен — playlist пропущен.");
+                return;
+            }
+
+            StopScenePlaylist();
+            scenePlaylistCoroutine = StartCoroutine(ScenePlaylistRoutine(playlist, loop, sessionId, fallbackCue));
+        }
+
+        private void StopScenePlaylist()
+        {
+            if (scenePlaylistCoroutine == null)
+                return;
+
+            StopCoroutine(scenePlaylistCoroutine);
+            scenePlaylistCoroutine = null;
+        }
+
+        private IEnumerator ScenePlaylistRoutine(AudioCue[] playlist, bool loop, int sessionId, AudioCue fallbackCue)
+        {
+            int index = 0;
+
+            while (sessionId == sceneMusicSessionId)
+            {
+                // Find next valid cue.
+                AudioCue cue = null;
+                int attempts = 0;
+                while (attempts < playlist.Length)
+                {
+                    var candidate = playlist[index];
+                    if (candidate != null && candidate.Clip != null)
+                    {
+                        cue = candidate;
+                        break;
+                    }
+
+                    index = (index + 1) % playlist.Length;
+                    attempts++;
+                }
+
+                if (cue == null)
+                {
+                    if (fallbackCue != null && fallbackCue.Clip != null)
+                        Play(fallbackCue);
+                    yield break;
+                }
+
+                PlayMusic(cue.Clip, loop: false);
+
+                // Wait for clip to end (or until cancelled).
+                while (sessionId == sceneMusicSessionId && musicSource != null && musicSource.isPlaying)
+                    yield return null;
+
+                if (sessionId != sceneMusicSessionId)
+                    yield break;
+
+                index++;
+                if (index >= playlist.Length)
+                {
+                    if (!loop)
+                        yield break;
+                    index = 0;
+                }
+            }
         }
 
         public void SetNextSceneMusic(AudioCue cue)
@@ -292,7 +377,17 @@ namespace UDA2.Audio
 
         public void PlayMusic(AudioClip clip)
         {
-            if (clip == null || clip == currentClip)
+            PlayMusic(clip, loop: true);
+        }
+
+        public void PlayMusic(AudioClip clip, bool loop)
+        {
+            if (clip == null)
+                return;
+
+            // If we are already playing this clip, do nothing. But if the clip finished (or was stopped),
+            // allow restarting it (important for scene playlists that loop back to the same track).
+            if (clip == currentClip && musicSource != null && musicSource.isPlaying)
                 return;
 
             if (musicSource == null)
@@ -306,8 +401,23 @@ namespace UDA2.Audio
 
             currentClip = clip;
             musicSource.clip = clip;
-            musicSource.loop = true;
+            musicSource.loop = loop;
             musicFadeCoroutine = StartCoroutine(FadeMusicIn());
+        }
+
+        private static bool HasAnyValidCue(AudioCue[] cues)
+        {
+            if (cues == null || cues.Length == 0)
+                return false;
+
+            for (int i = 0; i < cues.Length; i++)
+            {
+                var cue = cues[i];
+                if (cue != null && cue.Clip != null)
+                    return true;
+            }
+
+            return false;
         }
 
         private IEnumerator FadeMusicIn()
@@ -332,6 +442,8 @@ namespace UDA2.Audio
 
         public void StopMusic()
         {
+            StopScenePlaylist();
+
             if (musicFadeCoroutine != null)
                 StopCoroutine(musicFadeCoroutine);
 

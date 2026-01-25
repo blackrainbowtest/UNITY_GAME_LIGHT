@@ -65,6 +65,19 @@ public class BattleSceneEntryPoint : MonoBehaviour
             return;
         }
 
+        // If we loaded into battle from a save that had a pending battle marker,
+        // restore one-shot battle contexts before consuming them.
+        if (!useDebugSetup)
+        {
+            var save = GameState.Instance?.CurrentSave;
+            var pending = save?.sceneState?.pendingBattle;
+            if (pending != null && pending.isPending)
+            {
+                Game.Battle.BattleSaveBridge.TryApplyPendingBattle(save);
+                pending.Clear();
+            }
+        }
+
         var mode = useDebugSetup ? debugMode : BattleEntryContext.Consume();
         var playerSnapshot = BuildPlayerSnapshotForRun();
         var enemyDifficulty = useDebugSetup

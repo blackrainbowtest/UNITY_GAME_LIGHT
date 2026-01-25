@@ -205,6 +205,14 @@ public class IntroController : MonoBehaviour
             return;
         }
 
+        // Resolve enemy/location before saving so autosave can restore battle contexts on load.
+        var enemyForFirstFight = firstFightEnemy;
+        if (enemyForFirstFight == null && firstFightEnemyTable != null)
+        {
+            var resolver = new Game.Battle.EnemySpawnResolver();
+            enemyForFirstFight = resolver.Resolve(firstFightEnemyTable);
+        }
+
         // Data owner is GameState. Controller only initiates transition and records intro result.
         if (GameState.Instance.CurrentSave.player != null)
         {
@@ -228,19 +236,10 @@ public class IntroController : MonoBehaviour
             Debug.LogError("IntroController: CurrentSave.progress is null. Cannot set intro result.");
         }
 
-        // Use a named constant for the save slot index
-        SaveSlotsManager.SaveToSlot(DefaultIntroSaveSlot, GameState.Instance.CurrentSave);
         BattleEntryContext.Set(BattleMode.Tutorial);
 
         if (firstFightLocation != null)
             BattleLocationContext.Set(firstFightLocation);
-
-        var enemyForFirstFight = firstFightEnemy;
-        if (enemyForFirstFight == null && firstFightEnemyTable != null)
-        {
-            var resolver = new Game.Battle.EnemySpawnResolver();
-            enemyForFirstFight = resolver.Resolve(firstFightEnemyTable);
-        }
 
         if (enemyForFirstFight != null)
         {
@@ -256,6 +255,22 @@ public class IntroController : MonoBehaviour
 #endif
         }
         Game.Battle.BattleExitContext.Set(new Game.Battle.BattleExitData("StartCityScene"));
+
+    // Mark pending battle in save so Load can reconstruct contexts.
+    if (GameState.Instance.CurrentSave.sceneState != null && GameState.Instance.CurrentSave.sceneState.pendingBattle != null)
+    {
+        var pending = GameState.Instance.CurrentSave.sceneState.pendingBattle;
+        pending.isPending = true;
+        pending.battleSceneName = firstFightSceneName;
+        pending.battleMode = "Tutorial";
+        pending.returnSceneName = "StartCityScene";
+        pending.enemyDifficulty = "Normal";
+        pending.enemyId = enemyForFirstFight != null ? enemyForFirstFight.id : null;
+        pending.locationId = firstFightLocation != null ? firstFightLocation.id : null;
+    }
+
+    // Use a named constant for the save slot index
+    SaveSlotsManager.SaveToSlot(DefaultIntroSaveSlot, GameState.Instance.CurrentSave);
 
         // Transition to the first fight scene using the scene loader if available
         if (UDA2.SceneFlow.SceneFlowManager.Instance != null)

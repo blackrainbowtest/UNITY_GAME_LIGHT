@@ -11,7 +11,13 @@ namespace UDA2.Audio
         public struct Entry
         {
             public string sceneName;
+
+            [Header("Single")]
             public AudioCue musicCue;
+
+            [Header("Playlist (optional)")]
+            public AudioCue[] playlist;
+            public bool loopPlaylist;
         }
 
         [SerializeField] private Entry[] entries = Array.Empty<Entry>();

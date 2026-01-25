@@ -11,6 +11,8 @@ namespace Game.Battle
     public class EnemyData : ScriptableObject
     {
         [Header("Main")]
+        [Tooltip("Stable identifier used for saves (runtime). If empty, will be auto-filled from enemyName or asset name.")]
+        public string id;
         public string enemyName;
         public Sprite icon;
 
@@ -39,10 +41,36 @@ namespace Game.Battle
         public int regenSpPerTurn;
         // Добавляй новые поля по мере необходимости
 
+        private void OnEnable()
+        {
+            EnsureId();
+        }
+
         private void OnValidate()
         {
             if (string.IsNullOrEmpty(outfitId))
                 outfitId = "outfit_01";
+
+            EnsureId();
+        }
+
+        private void EnsureId()
+        {
+            if (!string.IsNullOrEmpty(id))
+                return;
+
+            var source = !string.IsNullOrEmpty(enemyName) ? enemyName : name;
+            id = SanitizeId(source);
+        }
+
+        private static string SanitizeId(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return "enemy";
+
+            value = value.Trim().ToLowerInvariant();
+            value = value.Replace(' ', '_');
+            return value;
         }
 
 #if UNITY_EDITOR

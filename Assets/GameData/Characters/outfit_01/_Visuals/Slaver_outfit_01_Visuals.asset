@@ -16,9 +16,12 @@ MonoBehaviour:
   idleVariations:
   - {fileID: 11400000, guid: 3d337397ce62bbc43aec799c7c4f89a2, type: 2}
   hitVariations: []
-  fastAttackVariations: []
-  normalAttackVariations: []
-  heavyAttackVariations: []
+  fastAttackVariations:
+  - {fileID: 11400000, guid: cf34e98a186f5f34381e65a0920055bf, type: 2}
+  normalAttackVariations:
+  - {fileID: 11400000, guid: cf34e98a186f5f34381e65a0920055bf, type: 2}
+  heavyAttackVariations:
+  - {fileID: 11400000, guid: cf34e98a186f5f34381e65a0920055bf, type: 2}
   castVariations: []
   blockVariations: []
   deathVariations: []
