@@ -53,8 +53,10 @@ namespace Game.Battle.Combat.EnemyAI
                     continue;
 
                 // Enemy turn: action is meaningful if it damages the player OR heals the enemy.
+                // Heal should only be considered when enemy is below 60% HP.
                 var canDamagePlayer = action.HpDamage > 0;
-                var canHealSelf = action.HpHealSelf > 0 && state.EnemyHp < enemy.maxHp;
+                var hpRatio = enemy.maxHp > 0 ? (float)state.EnemyHp / enemy.maxHp : 1f;
+                var canHealSelf = action.HpHealSelf > 0 && hpRatio < 0.60f;
                 if (!canDamagePlayer && !canHealSelf)
                     continue;
 
