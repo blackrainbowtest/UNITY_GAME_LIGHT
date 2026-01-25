@@ -17,9 +17,23 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 248f85fff92dcc24d9a743e9bcbe5977, type: 2}
   hitVariations: []
   fastAttackVariations:
-  - {fileID: 11400000, guid: cf34e98a186f5f34381e65a0920055bf, type: 2}
+  - {fileID: 11400000, guid: 74deed90e6bed1547ae16a2a6fe73e31, type: 2}
   normalAttackVariations: []
   heavyAttackVariations: []
+  counterAttackVariations: []
   castVariations: []
+  fireSpellVariations: []
+  iceSpellVariations: []
+  holySpellVariations:
+  - {fileID: 11400000, guid: cf34e98a186f5f34381e65a0920055bf, type: 2}
+  darkSpellVariations: []
+  seductionAct1Variations: []
+  seductionAct2Variations: []
+  seductionAct3Variations: []
+  seductionAct4Variations: []
+  actionAct1Variations: []
+  actionAct2Variations: []
+  actionAct3Variations: []
+  actionAct4Variations: []
   blockVariations: []
   deathVariations: []

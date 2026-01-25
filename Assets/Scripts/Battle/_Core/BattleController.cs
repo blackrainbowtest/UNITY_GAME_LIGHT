@@ -263,14 +263,23 @@ namespace Game.Battle
                 case CombatActionId.FastAttack: animId = BattleVisualAnimId.FastAttack; return true;
                 case CombatActionId.NormalAttack: animId = BattleVisualAnimId.NormalAttack; return true;
                 case CombatActionId.HeavyAttack: animId = BattleVisualAnimId.HeavyAttack; return true;
+                case CombatActionId.CounterAttack: animId = BattleVisualAnimId.CounterAttack; return true;
                 case CombatActionId.Block: animId = BattleVisualAnimId.Block; return true;
 
-                case CombatActionId.FireSpell:
-                case CombatActionId.IceSpell:
-                case CombatActionId.HolySpell:
-                case CombatActionId.DarkSpell:
-                    animId = BattleVisualAnimId.Cast;
-                    return true;
+                case CombatActionId.FireSpell: animId = BattleVisualAnimId.FireSpell; return true;
+                case CombatActionId.IceSpell: animId = BattleVisualAnimId.IceSpell; return true;
+                case CombatActionId.HolySpell: animId = BattleVisualAnimId.HolySpell; return true;
+                case CombatActionId.DarkSpell: animId = BattleVisualAnimId.DarkSpell; return true;
+
+                case CombatActionId.SeductionAct1: animId = BattleVisualAnimId.SeductionAct1; return true;
+                case CombatActionId.SeductionAct2: animId = BattleVisualAnimId.SeductionAct2; return true;
+                case CombatActionId.SeductionAct3: animId = BattleVisualAnimId.SeductionAct3; return true;
+                case CombatActionId.SeductionAct4: animId = BattleVisualAnimId.SeductionAct4; return true;
+
+                case CombatActionId.ActionAct1: animId = BattleVisualAnimId.ActionAct1; return true;
+                case CombatActionId.ActionAct2: animId = BattleVisualAnimId.ActionAct2; return true;
+                case CombatActionId.ActionAct3: animId = BattleVisualAnimId.ActionAct3; return true;
+                case CombatActionId.ActionAct4: animId = BattleVisualAnimId.ActionAct4; return true;
             }
 
             animId = BattleVisualAnimId.Idle;
