@@ -28,6 +28,7 @@ namespace Game.Battle.Combat.Actions
         public CombatActionCategory Category { get; }
 
         public int HpDamage { get; }
+        public int HpHealSelf { get; }
         public int MpCost { get; }
         public int SpCost { get; }
         public int LpCost { get; }
@@ -41,11 +42,13 @@ namespace Game.Battle.Combat.Actions
             int mpCost,
             int spCost,
             int lpCost,
-            bool requiresPlayerBlockedLastTurn)
+            bool requiresPlayerBlockedLastTurn,
+            int hpHealSelf = 0)
         {
             Id = id;
             Category = category;
             HpDamage = hpDamage;
+            HpHealSelf = hpHealSelf;
             MpCost = mpCost;
             SpCost = spCost;
             LpCost = lpCost;

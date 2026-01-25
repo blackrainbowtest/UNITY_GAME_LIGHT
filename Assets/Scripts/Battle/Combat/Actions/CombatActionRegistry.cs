@@ -116,11 +116,12 @@ namespace Game.Battle.Combat.Actions
                     new CombatActionData(
                         CombatActionId.HolySpell,
                         CombatActionCategory.Magic,
-                        hpDamage: 14,
+                        hpDamage: 0,
                         mpCost: 6,
                         spCost: 0,
                         lpCost: 0,
-                        requiresPlayerBlockedLastTurn: false)
+                        requiresPlayerBlockedLastTurn: false,
+                        hpHealSelf: 14)
                 },
                 {
                     CombatActionId.DarkSpell,

@@ -12,18 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
   m_Name: Player_outfit_01_Heal
   m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
-  id: fastattack_01
+  id: heal_01
   frames:
-  - {fileID: 21300000, guid: 455b510702facc94b80153ff41fe97ef, type: 3}
-  - {fileID: 21300000, guid: 8e7698ac2be496f4c88aa5e3ff236851, type: 3}
-  - {fileID: 21300000, guid: 67ceb4f19b1a52c4fa8126cd113151e2, type: 3}
-  - {fileID: 21300000, guid: f5310b97d1fac6a46b7abaf52e8d3eb1, type: 3}
-  - {fileID: 21300000, guid: ee65052b6fd7e7149a857f8b6af63371, type: 3}
-  - {fileID: 21300000, guid: ffaff9e23df99524086f343dabdac9d9, type: 3}
-  - {fileID: 21300000, guid: b4aea8cc1d7b7554bacdd11f0dd78649, type: 3}
-  - {fileID: 21300000, guid: 79e2750754b1b3b4eb8eec1c4d4d0556, type: 3}
-  - {fileID: 21300000, guid: 0147b36617dc3bb4c827e7faaa98e25a, type: 3}
-  - {fileID: 21300000, guid: 06bb206d896171f42a8c954355f1af81, type: 3}
-  - {fileID: 21300000, guid: 79d40ecee49884d498ebc9dc0443ea63, type: 3}
-  - {fileID: 21300000, guid: 4c649e306f93692449de9c2449a62d79, type: 3}
+  - {fileID: 21300000, guid: f22f68a6fc1875b4eb15001bc2090e88, type: 3}
+  - {fileID: 21300000, guid: 87d56c2353283de4da976b901240139e, type: 3}
+  - {fileID: 21300000, guid: 5163d0712619c7f438564b61470c5570, type: 3}
+  - {fileID: 21300000, guid: 42a765e9f836514428af4b5ee0b49857, type: 3}
+  - {fileID: 21300000, guid: 2bbac647500386f4dada8ebef5a4a7d4, type: 3}
+  - {fileID: 21300000, guid: baba6bd1c0ae37d469aa1f8b852708e5, type: 3}
+  - {fileID: 21300000, guid: ea0416d38ed01424ab752c551dfe5aab, type: 3}
+  - {fileID: 21300000, guid: da58630e5ab3bda4f8410bcba1579dd1, type: 3}
+  - {fileID: 21300000, guid: 855e1b625329d074298bb3a51401a930, type: 3}
+  - {fileID: 21300000, guid: a93283608a6e6f9428d923ed30dbd9a9, type: 3}
+  - {fileID: 21300000, guid: 5fa96b2b2fe86104da145db8761ca78d, type: 3}
+  - {fileID: 21300000, guid: 6fcead0539eace8449440a6deac828e0, type: 3}
   frameRate: 12

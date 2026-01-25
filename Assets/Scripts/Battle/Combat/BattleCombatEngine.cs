@@ -88,9 +88,9 @@ namespace Game.Battle.Combat
             // 4. Apply action effects
             if (action.Id == Actions.CombatActionId.HolySpell)
             {
-                // Holy = heal self (HpDamage acts as heal amount)
-                if (action.HpDamage > 0)
-                    newState = newState.WithPlayerHp(newState.PlayerHp + action.HpDamage);
+                // Holy = heal self
+                if (action.HpHealSelf > 0)
+                    newState = newState.WithPlayerHp(newState.PlayerHp + action.HpHealSelf);
             }
             else if (action.Id == Actions.CombatActionId.DarkSpell)
             {
@@ -167,8 +167,8 @@ namespace Game.Battle.Combat
             if (action.Id == Actions.CombatActionId.HolySpell)
             {
                 // Holy = heal self (enemy)
-                if (action.HpDamage > 0)
-                    newState = newState.WithEnemyHp(newState.EnemyHp + action.HpDamage);
+                if (action.HpHealSelf > 0)
+                    newState = newState.WithEnemyHp(newState.EnemyHp + action.HpHealSelf);
             }
             else if (action.Id == Actions.CombatActionId.DarkSpell)
             {

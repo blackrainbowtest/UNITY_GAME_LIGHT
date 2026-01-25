@@ -52,8 +52,10 @@ namespace Game.Battle.Combat.EnemyAI
                 if (action == null)
                     continue;
 
-                // Enemy turn: only meaningful if it affects the player for now.
-                if (action.HpDamage <= 0)
+                // Enemy turn: action is meaningful if it damages the player OR heals the enemy.
+                var canDamagePlayer = action.HpDamage > 0;
+                var canHealSelf = action.HpHealSelf > 0 && state.EnemyHp < enemy.maxHp;
+                if (!canDamagePlayer && !canHealSelf)
                     continue;
 
                 // Don't let enemy use "player-only" gated actions.
@@ -76,17 +78,18 @@ namespace Game.Battle.Combat.EnemyAI
             var maxDamage = int.MinValue;
             foreach (var c in candidates)
             {
-                if (c.HpDamage < minDamage) minDamage = c.HpDamage;
-                if (c.HpDamage > maxDamage) maxDamage = c.HpDamage;
+                var v = PrimaryValue(c);
+                if (v < minDamage) minDamage = v;
+                if (v > maxDamage) maxDamage = v;
             }
 
             var weak = new List<CombatActionData>();
             var strong = new List<CombatActionData>();
             foreach (var c in candidates)
             {
-                if (c.HpDamage == minDamage)
+                if (PrimaryValue(c) == minDamage)
                     weak.Add(c);
-                if (c.HpDamage == maxDamage)
+                if (PrimaryValue(c) == maxDamage)
                     strong.Add(c);
             }
 
@@ -149,14 +152,14 @@ namespace Game.Battle.Combat.EnemyAI
                 return bestLethal;
 
             // 2) Otherwise, maximize damage-per-cost with scarcity.
-            // Score = damage / (epsilon + relativeCost), where relativeCost is normalized by enemy max resources.
+            // Score = primaryValue / (epsilon + relativeCost), where primaryValue is damage to player OR heal to self.
             CombatActionData best = null;
             var bestScore = double.NegativeInfinity;
 
             foreach (var c in candidates)
             {
                 var cost = RelativeCost(enemy, c);
-                var score = c.HpDamage / (0.10 + cost);
+                var score = PrimaryValue(c) / (0.10 + cost);
 
                 if (score > bestScore)
                 {
@@ -172,6 +175,14 @@ namespace Game.Battle.Combat.EnemyAI
             }
 
             return best;
+        }
+
+        private static int PrimaryValue(CombatActionData action)
+        {
+            if (action == null)
+                return 0;
+
+            return action.HpDamage > 0 ? action.HpDamage : action.HpHealSelf;
         }
 
         private static double RelativeCost(EnemyData enemy, CombatActionData action)
