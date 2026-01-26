@@ -56,6 +56,12 @@ public class BattleSceneEntryPoint : MonoBehaviour
     [SerializeField] private bool setDebugReturnScene = true;
     [SerializeField] private string debugReturnSceneName = "StartCityScene";
 
+    /// <summary>
+    /// Точка входа сцены боя.
+    /// Собирает все необходимые данные (игрок, враг, локация, режим, сложность),
+    /// учитывает debug-настройки и сохранённые контексты,
+    /// формирует BattleContext и запускает бой через BattleController.
+    /// </summary>
     private void Start()
     {
         // Явная ссылка на BattleController (назначается в инспекторе)
@@ -126,6 +132,12 @@ public class BattleSceneEntryPoint : MonoBehaviour
         battleController.StartBattle(context);
     }
 
+    /// <summary>
+    /// Формирует снимок боевых параметров игрока для текущего запуска боя.
+    /// Если включён debug-режим и задан override — использует тестовые значения,
+    /// иначе делегирует построение снимка данным из GameState.
+    /// Гарантирует корректные и безопасные значения ресурсов.
+    /// </summary>
     private PlayerCombatSnapshot BuildPlayerSnapshotForRun()
     {
         if (useDebugSetup && overridePlayerSnapshot)
@@ -147,6 +159,12 @@ public class BattleSceneEntryPoint : MonoBehaviour
         return BuildPlayerSnapshot();
     }
 
+    /// <summary>
+    /// Создаёт боевой снимок игрока на основе текущего сохранения (GameState).
+    /// Использует stats игрока как Single Source of Truth,
+    /// применяет защитные fallback-значения при ошибках или старых сейвах,
+    /// корректирует MP/SP при обнаружении неконсистентных данных.
+    /// </summary>
     private PlayerCombatSnapshot BuildPlayerSnapshot()
     {
         // Получаем данные игрока из GameState (Single Source of Truth)
