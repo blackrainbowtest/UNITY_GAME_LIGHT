@@ -23,6 +23,12 @@ namespace Game.Battle
 {
     public partial class BattleController
     {
+        /// <summary>
+        /// Ограничивает текущие ресурсы игрока (HP/MP/SP/LP) допустимыми максимумами,
+        /// используя значения из контекста боя.
+        /// Если все значения уже находятся в допустимых пределах,
+        /// возвращает исходное состояние без создания нового экземпляра.
+        /// </summary>
         private CombatState ClampPlayerResourcesToMax(CombatState state)
         {
             if (context?.Player == null)
@@ -43,6 +49,12 @@ namespace Game.Battle
                 .WithPlayerLp(clampedLp);
         }
 
+        /// <summary>
+        /// Ограничивает текущие ресурсы врага (HP/MP/SP/LP) допустимыми максимумами,
+        /// используя параметры врага из контекста боя.
+        /// Если значения не выходят за пределы,
+        /// возвращает исходное состояние без изменений.
+        /// </summary>
         private CombatState ClampEnemyResourcesToMax(CombatState state)
         {
             if (context?.Enemy == null)
