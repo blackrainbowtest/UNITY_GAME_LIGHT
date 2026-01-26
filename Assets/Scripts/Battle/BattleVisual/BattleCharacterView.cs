@@ -295,7 +295,23 @@ namespace Game.Battle.Visual
 
             var anim = ResolveAnimationOrVariation(animId);
             if (anim == null || !anim.IsValid())
+            {
+                Debug.LogWarning(
+                    $"[BattleVisual] Missing animation '{animId}' " +
+                    $"for outfit '{outfitId}' on '{name}'. Falling back to Idle.",
+                    this
+                );
+
+                // Stop any currently playing one-shot to avoid visual sticking
+                animator.Stop();
+
+                // Safe fallback
+                PlayIdle();
+
+                // Ensure callbacks are not lost
+                finished?.Invoke();
                 return false;
+            }
 
             currentOneShotAnimId = animId;
             currentOneShotFinished = finished;
