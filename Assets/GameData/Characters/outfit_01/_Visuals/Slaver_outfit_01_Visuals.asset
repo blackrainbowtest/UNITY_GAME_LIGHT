@@ -14,14 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Battle.Visual.OutfitVisuals
   outfitId: outfit_01
   idleVariations:
-  - {fileID: 11400000, guid: 3d337397ce62bbc43aec799c7c4f89a2, type: 2}
+  - {fileID: 11400000, guid: c6e593608cb066743a6687dfa7db0fa3, type: 2}
   hitVariations: []
   fastAttackVariations:
-  - {fileID: 11400000, guid: cf34e98a186f5f34381e65a0920055bf, type: 2}
+  - {fileID: 11400000, guid: 3d337397ce62bbc43aec799c7c4f89a2, type: 2}
   normalAttackVariations:
-  - {fileID: 11400000, guid: cf34e98a186f5f34381e65a0920055bf, type: 2}
+  - {fileID: 11400000, guid: 3d337397ce62bbc43aec799c7c4f89a2, type: 2}
   heavyAttackVariations:
-  - {fileID: 11400000, guid: cf34e98a186f5f34381e65a0920055bf, type: 2}
+  - {fileID: 11400000, guid: 3d337397ce62bbc43aec799c7c4f89a2, type: 2}
   counterAttackVariations: []
   castVariations: []
   fireSpellVariations: []

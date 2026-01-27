@@ -22,7 +22,8 @@ MonoBehaviour:
   heavyAttackVariations: []
   counterAttackVariations: []
   castVariations: []
-  fireSpellVariations: []
+  fireSpellVariations:
+  - {fileID: 11400000, guid: 9501f20141a136e4d915ad9eaa59991a, type: 2}
   iceSpellVariations: []
   holySpellVariations:
   - {fileID: 11400000, guid: cf34e98a186f5f34381e65a0920055bf, type: 2}

@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
-  m_Name: Enemy_slaver_outfit_01_Idle
+  m_Name: Enemy_slaver_outfit_01_FastAttack
   m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
   id: idle_01
   frames:
-  - {fileID: 21300000, guid: f24cd96ff0f268940b6e2437e6a59e4e, type: 3}
-  - {fileID: 21300000, guid: 2101b9a679ac82945a4ba7f151a44358, type: 3}
-  - {fileID: 21300000, guid: e60402c5ddb08da4384474b51aaf2fa7, type: 3}
-  - {fileID: 21300000, guid: 1ca3019b770711e4a82567fd6b07a5e4, type: 3}
+  - {fileID: 21300000, guid: 871a7f358a963ec459b92286e30c6f4f, type: 3}
+  - {fileID: 21300000, guid: 348b7da4f4652bf42b6f7c2d5eabdc5d, type: 3}
+  - {fileID: 21300000, guid: 8b81b5b1a9b89a745989fe622f21cc7e, type: 3}
+  - {fileID: 21300000, guid: 1e07babd9919ca446840f9cf5a024f94, type: 3}
   frameRate: 12

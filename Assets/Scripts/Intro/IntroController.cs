@@ -256,21 +256,21 @@ public class IntroController : MonoBehaviour
         }
         Game.Battle.BattleExitContext.Set(new Game.Battle.BattleExitData("StartCityScene"));
 
-    // Mark pending battle in save so Load can reconstruct contexts.
-    if (GameState.Instance.CurrentSave.sceneState != null && GameState.Instance.CurrentSave.sceneState.pendingBattle != null)
-    {
-        var pending = GameState.Instance.CurrentSave.sceneState.pendingBattle;
-        pending.isPending = true;
-        pending.battleSceneName = firstFightSceneName;
-        pending.battleMode = "Tutorial";
-        pending.returnSceneName = "StartCityScene";
-        pending.enemyDifficulty = "Normal";
-        pending.enemyId = enemyForFirstFight != null ? enemyForFirstFight.id : null;
-        pending.locationId = firstFightLocation != null ? firstFightLocation.id : null;
-    }
+        // Mark pending battle in save so Load can reconstruct contexts.
+        if (GameState.Instance.CurrentSave.sceneState != null && GameState.Instance.CurrentSave.sceneState.pendingBattle != null)
+        {
+            var pending = GameState.Instance.CurrentSave.sceneState.pendingBattle;
+            pending.isPending = true;
+            pending.battleSceneName = firstFightSceneName;
+            pending.battleMode = "Tutorial";
+            pending.returnSceneName = "StartCityScene";
+            pending.enemyDifficulty = "Normal";
+            pending.enemyId = enemyForFirstFight != null ? enemyForFirstFight.id : null;
+            pending.locationId = firstFightLocation != null ? firstFightLocation.id : null;
+        }
 
-    // Use a named constant for the save slot index
-    SaveSlotsManager.SaveToSlot(DefaultIntroSaveSlot, GameState.Instance.CurrentSave);
+        // Use a named constant for the save slot index
+        // SaveSlotsManager.SaveToSlot(DefaultIntroSaveSlot, GameState.Instance.CurrentSave);
 
         // Transition to the first fight scene using the scene loader if available
         if (UDA2.SceneFlow.SceneFlowManager.Instance != null)
