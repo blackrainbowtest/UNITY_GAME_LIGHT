@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
+  m_Name: Player_outfit_01_IceSpell
+  m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
+  id: heal_01
+  frames:
+  - {fileID: 21300000, guid: 4c39d0231092d004e839608dc4685719, type: 3}
+  - {fileID: 21300000, guid: 5c659dc691e8ba64d81a885a9aec2328, type: 3}
+  - {fileID: 21300000, guid: 8985a1777fae0ec44902561007f56f05, type: 3}
+  - {fileID: 21300000, guid: 822085b748aa7c74aa9e602dc7c8a53b, type: 3}
+  - {fileID: 21300000, guid: 7cebfc86a0b7f05459d42dcdaf85efe1, type: 3}
+  - {fileID: 21300000, guid: a1e55894f28f0164986644773f40a7dc, type: 3}
+  - {fileID: 21300000, guid: 0d0708155801b154bab12face92dfd35, type: 3}
+  - {fileID: 21300000, guid: 6cd7b127a5a17ed4db4e8416b74943ca, type: 3}
+  - {fileID: 21300000, guid: 348ff6536fee5d346a800e1ee10ce34b, type: 3}
+  - {fileID: 21300000, guid: 9042fe7bd3a51dc4f9950b6b2bd259da, type: 3}
+  - {fileID: 21300000, guid: bba1e3db858b61640ad1abd0b8d4fc22, type: 3}
+  - {fileID: 21300000, guid: cc2a030453cab3243bef9c44852c0d7b, type: 3}
+  - {fileID: 21300000, guid: fdd06a781b8a1e84c924d1678a68c7b6, type: 3}
+  - {fileID: 21300000, guid: a450a3fd8386fa54aa5f3da9f5181a24, type: 3}
+  frameRate: 12

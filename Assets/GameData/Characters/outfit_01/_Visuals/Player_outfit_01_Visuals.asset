@@ -15,6 +15,9 @@ MonoBehaviour:
   outfitId: outfit_01
   idleVariations:
   - {fileID: 11400000, guid: 248f85fff92dcc24d9a743e9bcbe5977, type: 2}
+  - {fileID: 11400000, guid: f323b3b9f79d4214ca173f3308fe30d4, type: 2}
+  - {fileID: 11400000, guid: 248f85fff92dcc24d9a743e9bcbe5977, type: 2}
+  - {fileID: 11400000, guid: 248f85fff92dcc24d9a743e9bcbe5977, type: 2}
   hitVariations: []
   fastAttackVariations:
   - {fileID: 11400000, guid: 74deed90e6bed1547ae16a2a6fe73e31, type: 2}
@@ -24,7 +27,8 @@ MonoBehaviour:
   castVariations: []
   fireSpellVariations:
   - {fileID: 11400000, guid: 9501f20141a136e4d915ad9eaa59991a, type: 2}
-  iceSpellVariations: []
+  iceSpellVariations:
+  - {fileID: 11400000, guid: 009bcaa8f83a17d438b3630ed6709b5d, type: 2}
   holySpellVariations:
   - {fileID: 11400000, guid: cf34e98a186f5f34381e65a0920055bf, type: 2}
   darkSpellVariations: []
