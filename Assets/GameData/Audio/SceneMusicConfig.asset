@@ -16,6 +16,7 @@ MonoBehaviour:
   - sceneName: MainMenuScene
     musicCue: {fileID: 11400000, guid: c4929f2960e6899498f2e5f8efdb3b20, type: 2}
     playlist:
+    - {fileID: 11400000, guid: d4fa453bd0da9644f8739605f05aad97, type: 2}
     - {fileID: 11400000, guid: c4929f2960e6899498f2e5f8efdb3b20, type: 2}
     - {fileID: 11400000, guid: a3d4b64b711c75444a6b9d9ad51b2b5e, type: 2}
     loopPlaylist: 1
