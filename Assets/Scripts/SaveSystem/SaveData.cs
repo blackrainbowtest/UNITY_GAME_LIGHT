@@ -8,7 +8,22 @@ public class SaveData
     public Player player = new Player();
     public Inventory inventory = new Inventory();
     public Progress progress = new Progress();
+    public TimeState time = new TimeState();
     public SceneState sceneState = new SceneState();
+
+    [Serializable]
+    public class TimeState
+    {
+        /// <summary>
+        /// 1-based day counter (Day 1 is the first day).
+        /// </summary>
+        public int day = 1;
+
+        /// <summary>
+        /// Minutes since 00:00 within the current day. Range: 0..1439.
+        /// </summary>
+        public int minuteOfDay = 8 * 60;
+    }
 
     [Serializable]
     public class Meta
@@ -104,6 +119,30 @@ public class SaveData
         /// Used for autosaves before battles (tutorial, encounters, etc.).
         /// </summary>
         public PendingBattle pendingBattle = new PendingBattle();
+
+        /// <summary>
+        /// If true, SaveSlotsManager should autosave when entering a suitable scene.
+        /// Used for cases like: after finishing tutorial battle and returning to StartCityScene.
+        /// </summary>
+        public bool requestAutosaveOnSceneEnter;
+
+        /// <summary>
+        /// Optional: only autosave when entering this exact scene name.
+        /// If null/empty, any save-allowed scene can trigger the autosave.
+        /// </summary>
+        public string requestAutosaveSceneName;
+
+        public void RequestAutosave(string sceneName = null)
+        {
+            requestAutosaveOnSceneEnter = true;
+            requestAutosaveSceneName = sceneName;
+        }
+
+        public void ClearAutosaveRequest()
+        {
+            requestAutosaveOnSceneEnter = false;
+            requestAutosaveSceneName = null;
+        }
     }
 
     [Serializable]
@@ -163,6 +202,11 @@ public class SaveData
         save.player.stats.lp = 0;
         save.player.stats.lpMax = 100;
         save.meta.version = version;
+
+        // Time defaults
+        save.time.day = 1;
+        save.time.minuteOfDay = 8 * 60;
+
         return save;
     }
 }

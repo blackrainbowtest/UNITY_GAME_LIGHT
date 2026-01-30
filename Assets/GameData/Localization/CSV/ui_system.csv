@@ -35,3 +35,11 @@
 	Вы уверены, что хотите удалить это сохранение?;
 	Are you sure you want to delete this save?
 	Are you sure you want to delete this save?
+*day;
+	День;
+	Day;
+	Jour;
+*time;
+	Время;
+	Time;
+	Temps;

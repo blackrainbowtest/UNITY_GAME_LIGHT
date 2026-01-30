@@ -89,4 +89,20 @@ MonoBehaviour:
       text: Are you sure you want to delete this save?
     - languageCode: fr
       text: Are you sure you want to delete this save?
+  - key: day
+    entries:
+    - languageCode: ru
+      text: "\u0414\u0435\u043D\u044C"
+    - languageCode: en
+      text: Day
+    - languageCode: fr
+      text: Jour
+  - key: time
+    entries:
+    - languageCode: ru
+      text: "\u0412\u0440\u0435\u043C\u044F"
+    - languageCode: en
+      text: Time
+    - languageCode: fr
+      text: Temps
   sourceCsvName: ui_system

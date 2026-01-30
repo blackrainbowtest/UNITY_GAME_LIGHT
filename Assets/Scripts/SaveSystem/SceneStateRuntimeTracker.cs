@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -68,6 +69,23 @@ namespace UDA2.SaveSystem
             if (category == SceneCategory.Main)
             {
                 save.sceneState.lastMainSceneName = sceneName;
+            }
+
+            // Deferred autosave request (e.g. after tutorial battle victory).
+            // We do it here so that:
+            // - sceneName is already updated
+            // - pendingBattle is already cleared when leaving battle
+            if (save.sceneState.requestAutosaveOnSceneEnter)
+            {
+                var filter = save.sceneState.requestAutosaveSceneName;
+                bool sceneMatches = string.IsNullOrEmpty(filter) || string.Equals(filter, sceneName, StringComparison.Ordinal);
+                bool allowed = SceneCategoryResolver.IsSaveAllowed(sceneName);
+
+                if (sceneMatches && allowed)
+                {
+                    global::SaveSlotsManager.SaveToSlot(0, save);
+                    save.sceneState.ClearAutosaveRequest();
+                }
             }
         }
     }

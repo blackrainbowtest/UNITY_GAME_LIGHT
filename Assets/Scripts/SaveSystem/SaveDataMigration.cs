@@ -28,8 +28,22 @@ public static class SaveDataMigration
         if (save.player.stats == null) { save.player.stats = new SaveData.Stats(); Mark("player.stats initialized"); }
         if (save.inventory == null) { save.inventory = new SaveData.Inventory(); Mark("inventory initialized"); }
         if (save.progress == null) { save.progress = new SaveData.Progress(); Mark("progress initialized"); }
+        if (save.time == null) { save.time = new SaveData.TimeState(); Mark("time initialized"); }
         if (save.sceneState == null) { save.sceneState = new SaveData.SceneState(); Mark("sceneState initialized"); }
         if (save.sceneState.pendingBattle == null) { save.sceneState.pendingBattle = new SaveData.PendingBattle(); Mark("sceneState.pendingBattle initialized"); }
+
+        // Time sanity
+        if (save.time.day <= 0)
+        {
+            save.time.day = 1;
+            Mark("time.day defaulted");
+        }
+
+        if (save.time.minuteOfDay < 0 || save.time.minuteOfDay > 1439)
+        {
+            save.time.minuteOfDay = Mathf.Clamp(save.time.minuteOfDay, 0, 1439);
+            Mark("time.minuteOfDay clamped");
+        }
 
         if (string.IsNullOrEmpty(save.player.outfitId))
         {

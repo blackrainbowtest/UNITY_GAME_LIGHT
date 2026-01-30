@@ -169,7 +169,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.9647059}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -360,6 +360,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: dc4c470c4c1a4d44e98a032a1c11553b, type: 3}
   - {fileID: 21300000, guid: 741fb1adea1633646bde3438c9b6031d, type: 3}
   - {fileID: 21300000, guid: 27e5a0ed4b4394942bcc633fb8b64fef, type: 3}
+  - {fileID: 21300000, guid: b868d62e4b83d0d4ab56858f2f123ed9, type: 3}
   logBackgroundWarnings: 1
   tooltipText: {fileID: 985135405}
   tooltipKeysSource: {fileID: 11400000, guid: a35b77c8a5c831f41953a5ca2302675f, type: 2}
@@ -421,7 +422,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ca6c211efa6963b4bb3e6325f7a8a1a5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b868d62e4b83d0d4ab56858f2f123ed9, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

@@ -32,6 +32,17 @@ namespace Game.Battle
             turnPhase = TurnPhase.BattleOver;
             hudController?.SetInputEnabled(false);
 
+            // Tutorial flow: after victory we want an autosave when we arrive to StartCityScene.
+            // Do NOT save here (we are still in battle scene and pendingBattle may still be set).
+            if (playerWon && context != null && context.Mode == BattleMode.Tutorial)
+            {
+                var save = global::GameState.Instance?.CurrentSave;
+                if (save?.sceneState != null)
+                {
+                    save.sceneState.RequestAutosave(tutorialReturnSceneName);
+                }
+            }
+
             // Rewards are not configured yet (no drop tables wired).
             var result = new BattleResultData(
                 playerWon: playerWon,
