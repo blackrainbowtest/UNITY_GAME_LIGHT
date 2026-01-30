@@ -1,5 +1,7 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UDA2.SceneFlow;
+using UDA2.SaveSystem;
 
 public class GameMenuController : MonoBehaviour
 {
@@ -69,7 +71,16 @@ public class GameMenuController : MonoBehaviour
         if (SceneFlowManager.Instance == null)
             Debug.LogError("SceneFlowManager.Instance is null! Переход в главное меню невозможен.");
 
-        SaveSlotsManager.SaveToSlot(AUTO_SAVE_SLOT, GameState.Instance.CurrentSave);
+        var sceneName = SceneManager.GetActiveScene().name;
+        if (SceneCategoryResolver.IsSaveAllowed(sceneName))
+        {
+            SaveSlotsManager.SaveToSlot(AUTO_SAVE_SLOT, GameState.Instance.CurrentSave);
+        }
+        else
+        {
+            Debug.Log($"[GameMenu] Autosave skipped in scene '{sceneName}'");
+        }
+
         // Загрузка главного меню через SceneFlowManager
         if (SceneFlowManager.Instance != null)
             SceneFlowManager.Instance.LoadScene("MainMenuScene");
@@ -77,7 +88,15 @@ public class GameMenuController : MonoBehaviour
 
     public void ExitGame()
     {
-        SaveSlotsManager.SaveToSlot(AUTO_SAVE_SLOT, GameState.Instance.CurrentSave);
+        var sceneName = SceneManager.GetActiveScene().name;
+        if (SceneCategoryResolver.IsSaveAllowed(sceneName))
+        {
+            SaveSlotsManager.SaveToSlot(AUTO_SAVE_SLOT, GameState.Instance.CurrentSave);
+        }
+        else
+        {
+            Debug.Log($"[GameMenu] Autosave skipped in scene '{sceneName}'");
+        }
     #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
     #else
