@@ -40,6 +40,14 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
     [Header("Statuses (Optional)")]
     [SerializeField] private BattleStatusPanelView statusPanel;
 
+    [Header("Input Visuals")]
+    [Tooltip("Optional: assign a CanvasGroup to dim ONLY the button area. If null, the HUD root CanvasGroup is used.")]
+    [SerializeField] private CanvasGroup inputVisualGroup;
+    [Tooltip("Optional: overlay GameObject (e.g. a semi-transparent panel with 'Enemy turn'). Enabled when input is disabled.")]
+    [SerializeField] private GameObject inputDisabledOverlay;
+    [SerializeField] private bool dimWhenInputDisabled = true;
+    [SerializeField, Range(0.05f, 1f)] private float disabledAlpha = 0.35f;
+
     private IBattleUIActions actions;
     private CanvasGroup canvasGroup;
     private GraphicRaycaster graphicRaycaster;
@@ -56,6 +64,9 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
         canvasGroup = GetComponent<CanvasGroup>();
         if (canvasGroup == null)
             canvasGroup = gameObject.AddComponent<CanvasGroup>();
+
+        if (inputVisualGroup == null)
+            inputVisualGroup = canvasGroup;
 
         graphicRaycaster = GetComponentInParent<GraphicRaycaster>();
 
@@ -168,9 +179,14 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
         {
             canvasGroup.interactable = enabled;
             canvasGroup.blocksRaycasts = enabled;
+        }
 
-            // Visual feedback: dim UI when disabled.
-            canvasGroup.alpha = enabled ? 1f : 0.65f;
+        if (inputDisabledOverlay != null)
+            inputDisabledOverlay.SetActive(!enabled);
+
+        if (dimWhenInputDisabled && inputVisualGroup != null)
+        {
+            inputVisualGroup.alpha = enabled ? 1f : Mathf.Clamp(disabledAlpha, 0.05f, 1f);
         }
 
         if (allButtons == null || allButtons.Length == 0)
