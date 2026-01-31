@@ -31,5 +31,8 @@ namespace UDA2.Core
         public string controlScheme = "touch";
         public bool showSubtitles = true;
         public bool vibrationEnabled = true;
+
+        // City map
+        public bool cityInspectModeEnabled = false;
     }
 }
