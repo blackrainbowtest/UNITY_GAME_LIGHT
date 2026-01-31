@@ -60,6 +60,6 @@ GameTimeAPI.ConfigureAnimation(stepSeconds: 0.02f, minutesPerStep: 2);
 
 Attach `UDA2.UI.Game.GameTimeHUDController` to a UI object.
 Assign two `TMP_Text` references:
-- Day text (top-left)
+- Day value text (top-left number only; label like "Day" should be a separate localized TMP_Text)
 - Time text (under the day)
 

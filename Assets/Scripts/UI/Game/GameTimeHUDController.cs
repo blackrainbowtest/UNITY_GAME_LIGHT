@@ -31,7 +31,7 @@ namespace UDA2.UI.Game
         private void Refresh()
         {
             if (dayText != null)
-                dayText.text = $"Day {GameTimeAPI.Day}";
+                dayText.text = $"{GameTimeAPI.Day}";
 
             if (timeText != null)
                 timeText.text = GameTimeAPI.Time24h;
