@@ -29,6 +29,8 @@ namespace UDA2.Core
         public static event Action<float> OnSfxVolumeChanged;
         public static event Action<float> OnUiVolumeChanged;
 
+        public static event Action<bool> OnCityInspectModeChanged;
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetStatics()
         {
@@ -37,6 +39,25 @@ namespace UDA2.Core
             OnMusicVolumeChanged = null;
             OnSfxVolumeChanged = null;
             OnUiVolumeChanged = null;
+
+            OnCityInspectModeChanged = null;
+        }
+
+        public static bool GetCityInspectModeEnabled()
+        {
+            return Current != null && Current.cityInspectModeEnabled;
+        }
+
+        public static void SetCityInspectModeEnabled(bool enabled)
+        {
+            if (Current == null)
+                return;
+
+            if (Current.cityInspectModeEnabled == enabled)
+                return;
+
+            Current.cityInspectModeEnabled = enabled;
+            OnCityInspectModeChanged?.Invoke(enabled);
         }
 
         public static void SetLanguage(string lang)
