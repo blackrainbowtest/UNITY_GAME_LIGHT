@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Serialization;
 
 namespace UDA2.City
 {
@@ -13,7 +14,11 @@ namespace UDA2.City
 
         [Header("Visual")]
         [Tooltip("Optional: a highlight object (e.g. white frame Image) enabled when Inspect Mode is ON.")]
-        [SerializeField] private Graphic highlight;
+        [FormerlySerializedAs("highlight")]
+        [SerializeField] private GameObject highlightObject;
+
+        [Tooltip("Optional: if you prefer, drag the Image component directly here.")]
+        [SerializeField] private Graphic highlightGraphic;
 
         private Button button;
 
@@ -24,8 +29,13 @@ namespace UDA2.City
             button = GetComponent<Button>();
             button.onClick.AddListener(HandleClick);
 
-            if (highlight != null)
-                highlight.gameObject.SetActive(false);
+            // If only object was set, try resolve graphic for future use.
+            if (highlightGraphic == null && highlightObject != null)
+                highlightGraphic = highlightObject.GetComponent<Graphic>();
+
+            var go = GetHighlightGameObject();
+            if (go != null)
+                go.SetActive(false);
         }
 
         private void OnDestroy()
@@ -36,8 +46,16 @@ namespace UDA2.City
 
         public void SetHighlight(bool enabled)
         {
-            if (highlight != null)
-                highlight.gameObject.SetActive(enabled);
+            var go = GetHighlightGameObject();
+            if (go != null)
+                go.SetActive(enabled);
+        }
+
+        private GameObject GetHighlightGameObject()
+        {
+            if (highlightGraphic != null)
+                return highlightGraphic.gameObject;
+            return highlightObject;
         }
 
         private void HandleClick()
