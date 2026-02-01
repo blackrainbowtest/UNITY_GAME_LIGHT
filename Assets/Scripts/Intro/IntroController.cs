@@ -191,11 +191,7 @@ public class IntroController : MonoBehaviour
         // GameState.Instance is the single source of truth for current save data in the session.
         if (GameState.Instance.CurrentSave == null)
         {
-            string versionPath = System.IO.Path.Combine(Application.dataPath, "..", "version.txt");
-            string version = System.IO.File.Exists(versionPath)
-                ? System.IO.File.ReadAllText(versionPath).Trim()
-                : "0.0.1";
-            GameState.Instance.CurrentSave = SaveData.CreateDefault(version);
+            GameState.Instance.CurrentSave = SaveData.CreateDefault(Application.version);
         }
 
         // Null/empty check for scene name
