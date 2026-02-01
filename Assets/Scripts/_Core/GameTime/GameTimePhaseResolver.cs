@@ -54,7 +54,18 @@ namespace UDA2.GameTime
             if (!IsInNightRaidWindow(minuteOfDay))
                 return NightSpecialPhase.None;
 
-            // Every N days (e.g. day 7, 14, 21...) => special night.
+            return GetScheduledSpecialNightForDay(day);
+        }
+
+        /// <summary>
+        /// Returns which special night is scheduled for the given day.
+        /// Note: does NOT check the time window (00:00..04:59).
+        /// </summary>
+        public static NightSpecialPhase GetScheduledSpecialNightForDay(int day)
+        {
+            day = Mathf.Max(1, day);
+
+            // Every 7 days (e.g. day 7, 14, 21...) => special night.
             if (day % SpecialNightFrequencyDays != 0)
                 return NightSpecialPhase.None;
 

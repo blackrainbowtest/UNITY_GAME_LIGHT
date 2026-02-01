@@ -1875,6 +1875,81 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 794794618}
   m_CullTransparentMesh: 1
+--- !u!1 &828956367
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 828956370}
+  - component: {fileID: 828956369}
+  - component: {fileID: 828956368}
+  m_Layer: 5
+  m_Name: WorldTintOverlay
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &828956368
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 828956367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &828956369
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 828956367}
+  m_CullTransparentMesh: 1
+--- !u!224 &828956370
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 828956367}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 979461134}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &836216852
 GameObject:
   m_ObjectHideFlags: 0
@@ -2328,6 +2403,7 @@ RectTransform:
   m_Children:
   - {fileID: 1610287803}
   - {fileID: 1758028157}
+  - {fileID: 828956370}
   m_Father: {fileID: 1999170722}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -4808,6 +4884,7 @@ Transform:
   - {fileID: 1160886503}
   - {fileID: 468229437}
   - {fileID: 1496935842}
+  - {fileID: 2056043076}
   m_Father: {fileID: 836216853}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1610287802
@@ -6192,6 +6269,86 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2052812844}
   m_CullTransparentMesh: 1
+--- !u!1 &2056043075
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2056043076}
+  - component: {fileID: 2056043077}
+  m_Layer: 0
+  m_Name: WorldTintOverlayController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2056043076
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2056043075}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1569148469}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2056043077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2056043075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0626b2ab223246844a0a4f27a676786c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UDA2.UI::UDA2.UI.Game.WorldTintOverlayController
+  overlayImage: {fileID: 828956368}
+  transitionSeconds: 0.6
+  useUnscaledTime: 1
+  intensity: 1
+  tintSaturation: 0.45
+  dawn:
+    color: {r: 1, g: 0.88, b: 0.75, a: 1}
+    alpha: 0.015
+  morning:
+    color: {r: 1, g: 0.98, b: 0.9, a: 1}
+    alpha: 0.005
+  noon:
+    color: {r: 1, g: 1, b: 1, a: 1}
+    alpha: 0
+  afternoon:
+    color: {r: 1, g: 0.97, b: 0.92, a: 1}
+    alpha: 0.005
+  evening:
+    color: {r: 1, g: 0.78, b: 0.62, a: 1}
+    alpha: 0.015
+  dusk:
+    color: {r: 0.7, g: 0.5, b: 0.95, a: 1}
+    alpha: 0.04
+  night:
+    color: {r: 0.038180854, g: 0.074603684, b: 0.20754719, a: 1}
+    alpha: 0.1
+  specialNightFadeMinutes: 10
+  crystalNight:
+    color: {r: 0.7123119, g: 0.2509804, b: 0.9490196, a: 1}
+    alpha: 0.15
+  lustNight:
+    color: {r: 1, g: 0.25, b: 0.65, a: 1}
+    alpha: 0.15
+  fullMoon:
+    color: {r: 0.7, g: 0.85, b: 1, a: 1}
+    alpha: 0.15
 --- !u!1 &2122414844
 GameObject:
   m_ObjectHideFlags: 0

@@ -24,19 +24,29 @@ namespace UDA2.UI.Game
         [Tooltip("Use unscaled time so the tint still animates when Time.timeScale=0 (menus/pause).")]
         [SerializeField] private bool useUnscaledTime = true;
 
+        [Header("Look")]
+        [Tooltip("Overall strength multiplier for all tints (alpha).")]
+        [SerializeField, Range(0f, 2f)] private float intensity = 1f;
+
+        [Tooltip("How saturated the tint color is. 0 = white (no color shift), 1 = full tint color.")]
+        [SerializeField, Range(0f, 1f)] private float tintSaturation = 0.45f;
+
         [Header("Normal Phases")]
-        [SerializeField] private Tint dawn = new Tint { color = new Color(1.00f, 0.88f, 0.75f, 1f), alpha = 0.10f };
+        [SerializeField] private Tint dawn = new Tint { color = new Color(1.00f, 0.88f, 0.75f, 1f), alpha = 0.06f };
         [SerializeField] private Tint morning = new Tint { color = new Color(1.00f, 0.98f, 0.90f, 1f), alpha = 0.00f };
         [SerializeField] private Tint noon = new Tint { color = new Color(1.00f, 1.00f, 1.00f, 1f), alpha = 0.00f };
         [SerializeField] private Tint afternoon = new Tint { color = new Color(1.00f, 0.97f, 0.92f, 1f), alpha = 0.02f };
-        [SerializeField] private Tint evening = new Tint { color = new Color(1.00f, 0.78f, 0.62f, 1f), alpha = 0.12f };
-        [SerializeField] private Tint dusk = new Tint { color = new Color(0.70f, 0.50f, 0.95f, 1f), alpha = 0.18f };
-        [SerializeField] private Tint night = new Tint { color = new Color(0.18f, 0.30f, 0.75f, 1f), alpha = 0.25f };
+        [SerializeField] private Tint evening = new Tint { color = new Color(1.00f, 0.78f, 0.62f, 1f), alpha = 0.07f };
+        [SerializeField] private Tint dusk = new Tint { color = new Color(0.70f, 0.50f, 0.95f, 1f), alpha = 0.09f };
+        [SerializeField] private Tint night = new Tint { color = new Color(0.18f, 0.30f, 0.75f, 1f), alpha = 0.12f };
 
         [Header("Special Nights (00:00..04:59)")]
-        [SerializeField] private Tint crystalNight = new Tint { color = new Color(0.55f, 0.25f, 0.95f, 1f), alpha = 0.28f };
-        [SerializeField] private Tint lustNight = new Tint { color = new Color(1.00f, 0.25f, 0.65f, 1f), alpha = 0.26f };
-        [SerializeField] private Tint fullMoon = new Tint { color = new Color(0.70f, 0.85f, 1.00f, 1f), alpha = 0.18f };
+        [Tooltip("Minutes to fade special night tint in/out at the edges of 00:00..04:59. Set to 0 for instant.")]
+        [SerializeField] private int specialNightFadeMinutes = 10;
+
+        [SerializeField] private Tint crystalNight = new Tint { color = new Color(0.55f, 0.25f, 0.95f, 1f), alpha = 0.14f };
+        [SerializeField] private Tint lustNight = new Tint { color = new Color(1.00f, 0.25f, 0.65f, 1f), alpha = 0.13f };
+        [SerializeField] private Tint fullMoon = new Tint { color = new Color(0.70f, 0.85f, 1.00f, 1f), alpha = 0.10f };
 
         private Color _currentColor = Color.clear;
         private float _currentAlpha;
@@ -103,19 +113,68 @@ namespace UDA2.UI.Game
             if (overlayImage == null)
                 return;
 
-            // Special night has priority, but only exists in 00:00..04:59.
-            var special = GameTimeAPI.NightSpecialPhase;
-            if (special != NightSpecialPhase.None)
+            int dayValue = GameTimeAPI.Day;
+            int minuteOfDay = GameTimeAPI.MinuteOfDay;
+
+            Tint baseTint = ToEffectiveTint(ResolvePhaseTint(GameTimeAPI.TimeOfDayPhase));
+
+            // Special night can blend in/out near the edges of the window.
+            var scheduled = GameTimePhaseResolver.GetScheduledSpecialNightForDay(dayValue);
+            if (scheduled == NightSpecialPhase.None)
             {
-                Tint s = ResolveSpecialTint(special);
-                _targetColor = s.color;
-                _targetAlpha = s.alpha;
+                _targetColor = baseTint.color;
+                _targetAlpha = baseTint.alpha;
                 return;
             }
 
-            Tint p = ResolvePhaseTint(GameTimeAPI.TimeOfDayPhase);
-            _targetColor = p.color;
-            _targetAlpha = p.alpha;
+            float w = ComputeSpecialNightWeight(minuteOfDay);
+            if (w <= 0f)
+            {
+                _targetColor = baseTint.color;
+                _targetAlpha = baseTint.alpha;
+                return;
+            }
+
+            Tint specialTint = ToEffectiveTint(ResolveSpecialTint(scheduled));
+            _targetColor = Color.Lerp(baseTint.color, specialTint.color, w);
+            _targetAlpha = Mathf.Lerp(baseTint.alpha, specialTint.alpha, w);
+        }
+
+        private Tint ToEffectiveTint(Tint tint)
+        {
+            // Mix tint color with white so the effect looks like subtle grading rather than paint.
+            float sat = Mathf.Clamp01(tintSaturation);
+            float a = Mathf.Clamp01(tint.alpha * Mathf.Max(0f, intensity));
+            return new Tint
+            {
+                color = Color.Lerp(Color.white, tint.color, sat),
+                alpha = a,
+            };
+        }
+
+        private float ComputeSpecialNightWeight(int minuteOfDay)
+        {
+            if (!GameTimePhaseResolver.IsInNightRaidWindow(minuteOfDay))
+                return 0f;
+
+            int fade = Mathf.Clamp(specialNightFadeMinutes, 0, 60);
+            if (fade <= 0)
+                return 1f;
+
+            // Window is 00:00..04:59
+            int start = GameTimePhaseResolver.NightRaidStartMinute;
+            int end = GameTimePhaseResolver.NightRaidEndMinute;
+
+            if (minuteOfDay <= start)
+                return 0f;
+
+            if (minuteOfDay < start + fade)
+                return Mathf.InverseLerp(start, start + fade, minuteOfDay);
+
+            if (minuteOfDay > end - fade)
+                return Mathf.InverseLerp(end, end - fade, minuteOfDay);
+
+            return 1f;
         }
 
         private void ApplyImmediate()
