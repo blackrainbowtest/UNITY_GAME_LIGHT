@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: f8b36a9ac6b66104c887af7931bd172f
+guid: 78c7e156e884011478a597c4b58b17e1
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4596890190067712060
-    second: btn_cube_500_0
+      213: -7744764659995089639
+    second: icn_close_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -52,7 +52,7 @@ TextureImporter:
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
-  spriteBorder: {x: 65, y: 50, z: 65, w: 50}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
@@ -126,23 +126,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: btn_cube_500_0
+      name: icn_close_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 500
-        height: 100
+        x: 26
+        y: 18
+        width: 209
+        height: 209
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 60, y: 48, z: 60, w: 48}
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4cf398d3ab09430c0800000000000000
-      internalID: -4596890190067712060
+      spriteID: 9156ef34391158490800000000000000
+      internalID: -7744764659995089639
       vertices: []
       indices: 
       edges: []
@@ -151,8 +151,8 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: a008e40d6e6a4e84bb2480a74b8c156a
-    internalID: 1391464919
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
     vertices: []
     indices: 
     edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      btn_cube_500_0: -4596890190067712060
+      icn_close_0: -7744764659995089639
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
