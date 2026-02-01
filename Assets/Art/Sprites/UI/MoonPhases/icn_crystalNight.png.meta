@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 122fe4de2fe010446a6fcf1b4e89fc64
+guid: dada9f6ac93b9204ca97f238812adbf9
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 684227844416748894
-    second: icn_clock_0
+      213: -3200320110460962772
+    second: crystalNight_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: icn_clock_0
+      name: crystalNight_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
-        width: 64
-        height: 64
+        y: 12
+        width: 256
+        height: 232
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e5d34eb699dde7900800000000000000
-      internalID: 684227844416748894
+      spriteID: c287f68c0dd2693d0800000000000000
+      internalID: -3200320110460962772
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      icn_clock_0: 684227844416748894
+      crystalNight_0: -3200320110460962772
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -16,6 +16,12 @@ namespace UDA2.GameTime
 
         public static string Time24h => GameTimeService.Instance != null ? GameTimeService.Instance.GetFormattedTime24h() : "00:00";
 
+        public static TimeOfDayPhase TimeOfDayPhase => GameTimePhaseResolver.GetTimeOfDayPhase(MinuteOfDay);
+
+        public static NightSpecialPhase NightSpecialPhase => GameTimePhaseResolver.GetNightSpecialPhase(Day, MinuteOfDay);
+
+        public static bool IsNightRaidWindow => GameTimePhaseResolver.IsInNightRaidWindow(MinuteOfDay);
+
         public static void AddMinutes(int minutes)
         {
             GameTimeService.Instance?.AddMinutes(minutes);

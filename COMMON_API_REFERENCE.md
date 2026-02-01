@@ -22,6 +22,11 @@ int day = GameTimeAPI.Day;         // 1,2,3...
 string time = GameTimeAPI.Time24h; // "08:05"
 int hour = GameTimeAPI.Hour24;     // 0..23
 int minute = GameTimeAPI.Minute;  // 0..59
+
+// Phases
+var phase = GameTimeAPI.TimeOfDayPhase;           // Dawn/Morning/Noon/Afternoon/Evening/Dusk/Night
+var specialNight = GameTimeAPI.NightSpecialPhase; // None/CrystalNight/LustNight/FullMoon
+bool isNightRaidTime = GameTimeAPI.IsNightRaidWindow; // 00:00..04:59
 ```
 
 ### Add Time (Instant)
@@ -54,6 +59,19 @@ using UDA2.GameTime;
 
 // Every 0.02s add +2 minutes
 GameTimeAPI.ConfigureAnimation(stepSeconds: 0.02f, minutesPerStep: 2);
+```
+
+### Special Nights (every 7 days)
+
+Special night types are deterministic, occur every 7 in-game days, and are only active during `00:00..04:59`.
+
+```csharp
+using UDA2.GameTime;
+
+if (GameTimeAPI.IsNightRaidWindow && GameTimeAPI.NightSpecialPhase != NightSpecialPhase.None)
+{
+	// Example: spawn stronger monsters
+}
 ```
 
 ### UI
