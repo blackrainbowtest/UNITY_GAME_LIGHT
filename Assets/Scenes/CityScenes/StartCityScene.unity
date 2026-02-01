@@ -1956,7 +1956,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Color: {r: 0.5188679, g: 0.5188679, b: 0.5188679, a: 0}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -6389,7 +6389,7 @@ MonoBehaviour:
     alpha: 0.04
   night:
     color: {r: 0.038180854, g: 0.074603684, b: 0.20754719, a: 1}
-    alpha: 0.1
+    alpha: 0.01
   specialNightFadeMinutes: 10
   crystalNight:
     color: {r: 0.7123119, g: 0.2509804, b: 0.9490196, a: 1}

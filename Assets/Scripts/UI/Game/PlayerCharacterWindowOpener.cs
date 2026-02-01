@@ -43,7 +43,6 @@ namespace UDA2.UI.Game
         {
             if (windowPrefab == null)
             {
-                Debug.LogWarning("[PlayerCharacterWindowOpener] Window prefab is not assigned.");
                 return;
             }
 
@@ -63,7 +62,6 @@ namespace UDA2.UI.Game
             _instance = Instantiate(windowPrefab, parent, worldPositionStays: false);
             if (_instance == null)
             {
-                Debug.LogError("[PlayerCharacterWindowOpener] Instantiate returned null.");
                 return;
             }
 
@@ -80,7 +78,6 @@ namespace UDA2.UI.Game
             if (logUIInfoOnOpen)
                 LogUIInfo(_instance, parent);
 
-            Debug.Log($"[PlayerCharacterWindowOpener] Opened '{_instance.name}' under '{(parent != null ? parent.name : "<root>")}'");
 
             var closeHandler = _instance.GetComponent<global::IMenuCloseHandler>();
             if (closeHandler != null)
@@ -159,28 +156,6 @@ namespace UDA2.UI.Game
         {
             if (instance == null)
                 return;
-
-            var rt = instance.transform as RectTransform;
-            if (rt != null)
-            {
-                Debug.Log($"[PlayerCharacterWindowOpener] RectTransform: anchoredPos={rt.anchoredPosition} sizeDelta={rt.sizeDelta} anchorMin={rt.anchorMin} anchorMax={rt.anchorMax} scale={rt.localScale}");
-            }
-
-            var instanceCanvas = instance.GetComponentInChildren<Canvas>(true);
-            if (instanceCanvas != null)
-            {
-                Debug.Log($"[PlayerCharacterWindowOpener] Window Canvas: enabled={instanceCanvas.enabled} renderMode={instanceCanvas.renderMode} overrideSorting={instanceCanvas.overrideSorting} sortingOrder={instanceCanvas.sortingOrder} worldCamera={(instanceCanvas.worldCamera != null ? instanceCanvas.worldCamera.name : "null")}");
-            }
-            else
-            {
-                Debug.Log("[PlayerCharacterWindowOpener] Window has no Canvas (will rely on parent Canvas).");
-            }
-
-            var parentCanvas = parent != null ? parent.GetComponentInParent<Canvas>() : null;
-            if (parentCanvas != null)
-            {
-                Debug.Log($"[PlayerCharacterWindowOpener] Parent Canvas: name={parentCanvas.name} renderMode={parentCanvas.renderMode} sortingOrder={parentCanvas.sortingOrder}");
-            }
         }
     }
 }

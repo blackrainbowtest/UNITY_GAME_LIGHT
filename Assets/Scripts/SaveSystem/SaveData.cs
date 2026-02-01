@@ -45,6 +45,24 @@ public class SaveData
         public Stats stats = new Stats();
         public List<string> statusEffects = new List<string>();
 
+        public Equipment equipment = new Equipment();
+
+        [Serializable]
+        public class Equipment
+        {
+            // Left side (accessories / utility)
+            public string bagItemId;
+            public string ring1ItemId;
+            public string ring2ItemId;
+            public string amuletItemId;
+
+            // Right side (armor)
+            public string helmetItemId;
+            public string armorItemId;
+            public string pantsItemId;
+            public string bootsItemId;
+        }
+
         /// <summary>
         /// Sets the player's scene name. Only allows non-null, non-empty values.
         /// </summary>
