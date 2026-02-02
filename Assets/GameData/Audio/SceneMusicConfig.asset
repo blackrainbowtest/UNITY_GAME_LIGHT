@@ -32,6 +32,8 @@ MonoBehaviour:
     playlist: []
     loopPlaylist: 0
   - sceneName: StartCityScene
-    musicCue: {fileID: 11400000, guid: b694056ca0dab7244b35a6fde989f4d9, type: 2}
-    playlist: []
-    loopPlaylist: 0
+    musicCue: {fileID: 11400000, guid: 66aec447f4be1c14a98a3ff506a64826, type: 2}
+    playlist:
+    - {fileID: 11400000, guid: 66aec447f4be1c14a98a3ff506a64826, type: 2}
+    - {fileID: 11400000, guid: 8df92816f1dd1e14cbad671d5be21ba3, type: 2}
+    loopPlaylist: 1

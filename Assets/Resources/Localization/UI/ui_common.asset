@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72b5dfd223e65a04db6c6ba1b78d3607, type: 3}
+  m_Name: ui_common
+  m_EditorClassIdentifier: UDA2.Localization::UIStringsData
+  strings:
+  - key: profile
+    entries:
+    - languageCode: ru
+      text: "\u041F\u0440\u043E\u0444\u0438\u043B\u044C"
+    - languageCode: en
+      text: Profile
+    - languageCode: fr
+      text: Profil
+  - key: status
+    entries:
+    - languageCode: ru
+      text: "\u0421\u0442\u0430\u0442\u0443\u0441"
+    - languageCode: en
+      text: Status
+    - languageCode: fr
+      text: Statut
+  - key: inventory
+    entries:
+    - languageCode: ru
+      text: "\u0418\u043D\u0432\u0435\u043D\u0442\u0430\u0440\u044C"
+    - languageCode: en
+      text: Inventory
+    - languageCode: fr
+      text: Inventaire
+  - key: skills
+    entries:
+    - languageCode: ru
+      text: "\u0421\u043A\u0438\u043B\u043B\u044B"
+    - languageCode: en
+      text: Skills
+    - languageCode: fr
+      text: "Comp\xE9tences"
+  sourceCsvName: ui_common
