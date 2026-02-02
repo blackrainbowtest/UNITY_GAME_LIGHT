@@ -14,7 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
   id: gold
   type: 0
-  displayName: item.gold.name
+  displayName: 
   icon: {fileID: 0}
+  displayNameKey: item.gold.name
+  descriptionKey: item.gold.desc
+  description: 
+  stackable: 1
+  maxStack: 9999
+  equipSlotId: 
+  inventorySlotsBonus: 0
   effect: 0
   value: 1

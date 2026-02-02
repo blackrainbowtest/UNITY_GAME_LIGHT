@@ -56,6 +56,8 @@ public class SaveData
             public string ring2ItemId;
             public string amuletItemId;
 
+            public string weaponItemId;
+
             // Right side (armor)
             public string helmetItemId;
             public string armorItemId;

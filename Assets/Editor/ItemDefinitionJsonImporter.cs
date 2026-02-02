@@ -126,13 +126,20 @@ public class ItemDefinitionJsonImporter : EditorWindow
 
         var icon = LoadIcon(definition.IconName);
         if (!asset.EditorApplyDefinition(
-                definition.Id,
-                definition.Type,
-                definition.DisplayName,
-                icon,
-                definition.Effect,
-                definition.Value,
-                out error))
+            definition.Id,
+            definition.Type,
+            definition.DisplayNameFallback,
+            definition.DisplayNameKey,
+            definition.DescriptionKey,
+            definition.DescriptionFallback,
+            icon,
+            definition.Stackable,
+            definition.MaxStack,
+            definition.EquipSlotId,
+            definition.InventorySlotsBonus,
+            definition.Effect,
+            definition.Value,
+            out error))
         {
             Debug.LogError($"ItemDefinitionJsonImporter: Failed to apply '{definition.Id}': {error}");
         }
@@ -185,30 +192,100 @@ public class ItemDefinitionJsonImporter : EditorWindow
 
         if (!System.Enum.TryParse(item.type, ignoreCase: true, out ItemType itemType))
         {
-            error = $"Unknown item type '{item.type}'.";
-            return false;
-        }
-
-        ConsumableEffect effect = ConsumableEffect.DoingNothing;
-        if (itemType == ItemType.Consumable)
-        {
-            // Old JSON may contain null-like values.
-            if (!string.IsNullOrWhiteSpace(item.effect)
-                && item.effect != "null"
-                && !System.Enum.TryParse(item.effect, ignoreCase: true, out effect))
+            // Allow a more generic external schema.
+            if (string.Equals(item.type, "Generic", System.StringComparison.OrdinalIgnoreCase))
+                itemType = ItemType.Resource;
+            else
             {
-                error = $"Unknown consumable effect '{item.effect}'.";
+                error = $"Unknown item type '{item.type}'.";
                 return false;
             }
         }
 
+        ConsumableEffect effect = ConsumableEffect.DoingNothing;
+        int value = item.value;
+
+        // Prefer explicit effect/value (legacy), otherwise derive from effects block (new schema).
+        if (itemType == ItemType.Consumable)
+        {
+            // Old JSON may contain null-like values.
+            if (!string.IsNullOrWhiteSpace(item.effect)
+                && item.effect != "null")
+            {
+                if (!System.Enum.TryParse(item.effect, ignoreCase: true, out effect))
+                {
+                    error = $"Unknown consumable effect '{item.effect}'.";
+                    return false;
+                }
+            }
+            else if (item.effects != null)
+            {
+                if (item.effects.hp != 0)
+                {
+                    effect = ConsumableEffect.HealHP;
+                    value = item.effects.hp;
+                }
+                else if (item.effects.mp != 0)
+                {
+                    effect = ConsumableEffect.RestoreMana;
+                    value = item.effects.mp;
+                }
+                else if (item.effects.sp != 0)
+                {
+                    effect = ConsumableEffect.RestoreStamina;
+                    value = item.effects.sp;
+                }
+            }
+        }
+
+        // Backwards-compatible field mapping.
+        // Legacy JSON used 'displayName' as a key (e.g. item.gold.name).
+        // New JSON can store keys in meta.nameKey/meta.descriptionKey.
+        var nameKey = (item.meta != null && !string.IsNullOrWhiteSpace(item.meta.nameKey))
+            ? item.meta.nameKey
+            : (item.displayName ?? string.Empty);
+
+        var descKey = (item.meta != null && !string.IsNullOrWhiteSpace(item.meta.descriptionKey))
+            ? item.meta.descriptionKey
+            : string.Empty;
+
+        var descFallback = (item.meta != null ? item.meta.description : null) ?? string.Empty;
+
+        var iconName = (item.meta != null && !string.IsNullOrWhiteSpace(item.meta.icon))
+            ? item.meta.icon
+            : item.icon;
+
+        bool stackable = item.meta != null ? item.meta.stackable : (itemType != ItemType.Equipment);
+        int maxStack = item.meta != null && item.meta.maxStack > 0 ? item.meta.maxStack : 99;
+
+        string equipSlotId = item.equipment != null ? (item.equipment.slot ?? string.Empty) : string.Empty;
+        int inventorySlotsBonus = 0;
+        if (item.equipment != null)
+        {
+            if (item.equipment.inventorySlotsBonus != 0)
+                inventorySlotsBonus = item.equipment.inventorySlotsBonus;
+        }
+        // Alternate bag capacity location from a more "world"-oriented schema.
+        if (inventorySlotsBonus == 0 && item.world != null && item.world.containerSize > 0)
+            inventorySlotsBonus = item.world.containerSize;
+
+        // Prefer economy.value if present.
+        if (item.economy != null && item.economy.value != 0)
+            value = item.economy.value;
+
         result = new ItemEditorDefinition(
             id: item.id,
             type: itemType,
-            displayName: item.displayName,
-            iconName: item.icon,
+            displayNameKey: nameKey,
+            descriptionKey: descKey,
+            descriptionFallback: descFallback,
+            iconName: iconName,
+            stackable: stackable,
+            maxStack: maxStack,
+            equipSlotId: equipSlotId,
+            inventorySlotsBonus: inventorySlotsBonus,
             effect: effect,
-            value: item.value
+            value: value
         );
         return true;
     }
@@ -217,25 +294,76 @@ public class ItemDefinitionJsonImporter : EditorWindow
     {
         public string Id { get; }
         public ItemType Type { get; }
-        public string DisplayName { get; }
+        public string DisplayNameKey { get; }
+        public string DescriptionKey { get; }
+        public string DescriptionFallback { get; }
+        public string DisplayNameFallback { get; }
         public string IconName { get; }
+        public bool Stackable { get; }
+        public int MaxStack { get; }
+        public string EquipSlotId { get; }
+        public int InventorySlotsBonus { get; }
         public ConsumableEffect Effect { get; }
         public int Value { get; }
 
         public ItemEditorDefinition(
             string id,
             ItemType type,
-            string displayName,
+            string displayNameKey,
+            string descriptionKey,
+            string descriptionFallback,
+            string displayNameFallback,
             string iconName,
+            bool stackable,
+            int maxStack,
+            string equipSlotId,
+            int inventorySlotsBonus,
             ConsumableEffect effect,
             int value)
         {
             Id = id;
             Type = type;
-            DisplayName = displayName;
+            DisplayNameKey = displayNameKey ?? string.Empty;
+            DescriptionKey = descriptionKey ?? string.Empty;
+            DescriptionFallback = descriptionFallback ?? string.Empty;
+            DisplayNameFallback = displayNameFallback ?? string.Empty;
             IconName = iconName;
+            Stackable = stackable;
+            MaxStack = maxStack;
+            EquipSlotId = equipSlotId ?? string.Empty;
+            InventorySlotsBonus = inventorySlotsBonus;
             Effect = effect;
             Value = value;
+        }
+
+        public ItemEditorDefinition(
+            string id,
+            ItemType type,
+            string displayNameKey,
+            string descriptionKey,
+            string descriptionFallback,
+            string iconName,
+            bool stackable,
+            int maxStack,
+            string equipSlotId,
+            int inventorySlotsBonus,
+            ConsumableEffect effect,
+            int value)
+            : this(
+                id,
+                type,
+                displayNameKey,
+                descriptionKey,
+                descriptionFallback,
+                displayNameFallback: string.Empty,
+                iconName,
+                stackable,
+                maxStack,
+                equipSlotId,
+                inventorySlotsBonus,
+                effect,
+                value)
+        {
         }
     }
 
@@ -246,10 +374,91 @@ public class ItemDefinitionJsonImporter : EditorWindow
     {
         public string id;
         public string type;
+
+        // Legacy fields (still supported)
         public string displayName;
         public string icon;
         public string effect;
         public int value;
+
+        // New schema (optional)
+        public ItemMetaJson meta;
+        public ItemEconomyJson economy;
+        public ItemUsageJson usage;
+        public ItemEffectsJson effects;
+        public ItemEquipmentJson equipment;
+        public ItemWorldJson world;
+        public string[] flags;
+    }
+
+    [System.Serializable]
+    public class ItemMetaJson
+    {
+        public string nameKey;
+        public string descriptionKey;
+        public string icon;
+        public string rarity;
+        public bool stackable = true;
+        public int maxStack = 99;
+        public string description;
+    }
+
+    [System.Serializable]
+    public class ItemEconomyJson
+    {
+        public int value;
+        public float weight;
+    }
+
+    [System.Serializable]
+    public class ItemUsageJson
+    {
+        public string useType;
+        public bool consumable;
+        public int cooldown;
+    }
+
+    [System.Serializable]
+    public class ItemEffectsJson
+    {
+        public int hp;
+        public int mp;
+        public int sp;
+        public int lp;
+        public string[] statuses;
+    }
+
+    [System.Serializable]
+    public class ItemEquipmentJson
+    {
+        public string slot;
+
+        // For bags
+        public int inventorySlotsBonus;
+
+        // Not used by runtime yet; kept for schema compatibility.
+        public ItemEquipmentStatsJson stats;
+    }
+
+    [System.Serializable]
+    public class ItemEquipmentStatsJson
+    {
+        // Placeholder: JsonUtility does not support dictionaries.
+        // Add explicit stat fields here when needed.
+        public int hp;
+        public int mp;
+        public int sp;
+        public int lp;
+    }
+
+    [System.Serializable]
+    public class ItemWorldJson
+    {
+        public bool canDrop = true;
+        public bool canDestroy;
+
+        // Use -1 to represent null (JsonUtility can't read nullable ints).
+        public int containerSize = -1;
     }
 
     #endregion

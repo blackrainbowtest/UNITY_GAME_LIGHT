@@ -2,33 +2,155 @@
   {
     "id": "gold",
     "type": "Currency",
-    "displayName": "item.gold.name",
-    "icon": "icon_gold",
-    "effect": "DoingNothing",
-    "value": 1
+    "meta": {
+      "nameKey": "item.gold.name",
+      "descriptionKey": "item.gold.desc",
+      "icon": "icon_gold",
+      "rarity": "Common",
+      "stackable": true,
+      "maxStack": 9999
+    },
+    "economy": {
+      "value": 1,
+      "weight": 0.0
+    },
+    "usage": {
+      "useType": "None",
+      "consumable": false,
+      "cooldown": 0
+    },
+    "effects": {
+      "hp": 0,
+      "mp": 0,
+      "sp": 0,
+      "lp": 0,
+      "statuses": []
+    },
+    "equipment": {
+      "slot": null,
+      "stats": {}
+    },
+    "world": {
+      "canDrop": true,
+      "canDestroy": false,
+      "containerSize": -1
+    },
+    "flags": [
+      "Currency"
+    ]
   },
   {
     "id": "potion_hp_small",
     "type": "Consumable",
-    "displayName": "item.potion_hp_small.name",
-    "icon": "icon_potion_hp_small",
-    "effect": "HealHP",
-    "value": 25
+    "meta": {
+      "nameKey": "item.potion_hp_small.name",
+      "descriptionKey": "item.potion_hp_small.desc",
+      "icon": "icon_potion_hp_small",
+      "rarity": "Common",
+      "stackable": true,
+      "maxStack": 99
+    },
+    "economy": {
+      "value": 0,
+      "weight": 0.0
+    },
+    "usage": {
+      "useType": "Drink",
+      "consumable": true,
+      "cooldown": 0
+    },
+    "effects": {
+      "hp": 25,
+      "mp": 0,
+      "sp": 0,
+      "lp": 0,
+      "statuses": []
+    },
+    "equipment": {
+      "slot": null,
+      "stats": {}
+    },
+    "world": {
+      "canDrop": true,
+      "canDestroy": false,
+      "containerSize": -1
+    },
+    "flags": []
   },
   {
     "id": "potion_mana_small",
     "type": "Consumable",
-    "displayName": "item.potion_mana_small.name",
-    "icon": "icon_potion_mp_small",
-    "effect": "RestoreMana",
-    "value": 20
+    "meta": {
+      "nameKey": "item.potion_mana_small.name",
+      "descriptionKey": "item.potion_mana_small.desc",
+      "icon": "icon_potion_mp_small",
+      "rarity": "Common",
+      "stackable": true,
+      "maxStack": 99
+    },
+    "economy": {
+      "value": 0,
+      "weight": 0.0
+    },
+    "usage": {
+      "useType": "Drink",
+      "consumable": true,
+      "cooldown": 0
+    },
+    "effects": {
+      "hp": 0,
+      "mp": 20,
+      "sp": 0,
+      "lp": 0,
+      "statuses": []
+    },
+    "equipment": {
+      "slot": null,
+      "stats": {}
+    },
+    "world": {
+      "canDrop": true,
+      "canDestroy": false,
+      "containerSize": -1
+    },
+    "flags": []
   },
   {
     "id": "potion_stamina_small",
     "type": "Consumable",
-    "displayName": "item.potion_stamina_small.name",
-    "icon": "icon_potion_st_small",
-    "effect": "RestoreStamina",
-    "value": 20
+    "meta": {
+      "nameKey": "item.potion_stamina_small.name",
+      "descriptionKey": "item.potion_stamina_small.desc",
+      "icon": "icon_potion_st_small",
+      "rarity": "Common",
+      "stackable": true,
+      "maxStack": 99
+    },
+    "economy": {
+      "value": 0,
+      "weight": 0.0
+    },
+    "usage": {
+      "useType": "Drink",
+      "consumable": true,
+      "cooldown": 0
+    },
+    "effects": {
+      "hp": 0,
+      "mp": 0,
+      "sp": 20,
+      "lp": 0,
+      "statuses": []
+    },
+    "equipment": {
+      "slot": null,
+      "stats": {}
+    },
+    "world": {
+      "canDrop": true,
+      "canDestroy": false,
+      "containerSize": -1
+    },
+    "flags": []
   }
 ]

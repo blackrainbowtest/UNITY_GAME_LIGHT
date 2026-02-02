@@ -192,6 +192,7 @@ namespace UDA2.UI.Game
                 EquipmentSlotId.Ring1 => equipment.ring1ItemId,
                 EquipmentSlotId.Ring2 => equipment.ring2ItemId,
                 EquipmentSlotId.Amulet => equipment.amuletItemId,
+                EquipmentSlotId.Weapon => equipment.weaponItemId,
                 EquipmentSlotId.Helmet => equipment.helmetItemId,
                 EquipmentSlotId.Armor => equipment.armorItemId,
                 EquipmentSlotId.Pants => equipment.pantsItemId,

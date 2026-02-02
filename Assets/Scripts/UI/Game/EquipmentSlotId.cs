@@ -7,6 +7,8 @@ namespace UDA2.UI.Game
         Ring2 = 2,
         Amulet = 3,
 
+        Weapon = 4,
+
         Helmet = 10,
         Armor = 11,
         Pants = 12,
