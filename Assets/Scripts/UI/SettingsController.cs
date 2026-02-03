@@ -17,6 +17,7 @@ public class SettingsController : MonoBehaviour, IMenuCloseHandler
     public Slider sfxSlider;
     public Slider uiSlider;
     public Toggle vibrationToggle;
+    public Toggle showBattleResultToggle;
     public TextMeshProUGUI versionText;
 
     // ===== LIFECYCLE =====
@@ -47,6 +48,9 @@ public class SettingsController : MonoBehaviour, IMenuCloseHandler
 
         if (vibrationToggle != null)
             vibrationToggle.isOn = _editingState.vibrationEnabled;
+
+        if (showBattleResultToggle != null)
+            showBattleResultToggle.isOn = _editingState.showBattleResultModal;
     }
 
     private void Start()
@@ -65,6 +69,9 @@ public class SettingsController : MonoBehaviour, IMenuCloseHandler
 
         if (vibrationToggle != null)
             vibrationToggle.onValueChanged.AddListener(OnVibrationChanged);
+
+        if (showBattleResultToggle != null)
+            showBattleResultToggle.onValueChanged.AddListener(OnShowBattleResultChanged);
     }
 
     // ===== OPEN / CLOSE =====
@@ -136,6 +143,11 @@ public class SettingsController : MonoBehaviour, IMenuCloseHandler
         _editingState.vibrationEnabled = value;
     }
 
+    public void OnShowBattleResultChanged(bool value)
+    {
+        _editingState.showBattleResultModal = value;
+    }
+
     // ===== APPLY / RESET =====
 
     public void OnApply()
@@ -172,6 +184,9 @@ public class SettingsController : MonoBehaviour, IMenuCloseHandler
         if (vibrationToggle != null)
             vibrationToggle.isOn = _editingState.vibrationEnabled;
 
+        if (showBattleResultToggle != null)
+            showBattleResultToggle.isOn = _editingState.showBattleResultModal;
+
         SettingsContext.SetLanguage(_editingState.language);
 
         if (UDA2.Audio.AudioManager.Instance != null)
@@ -206,7 +221,8 @@ public class SettingsController : MonoBehaviour, IMenuCloseHandler
             tutorialShown = source.tutorialShown,
             controlScheme = source.controlScheme,
             showSubtitles = source.showSubtitles,
-            vibrationEnabled = source.vibrationEnabled
+            vibrationEnabled = source.vibrationEnabled,
+            showBattleResultModal = source.showBattleResultModal
         };
     }
 

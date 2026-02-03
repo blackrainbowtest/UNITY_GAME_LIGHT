@@ -70,6 +70,20 @@ namespace Game.Battle
         [SerializeField] private float enemyTurnDelaySeconds = 0.35f;
         [SerializeField] private float endOfRoundDelaySeconds = 0.8f;
 
+        private void Awake()
+        {
+            if (resultModal == null)
+            {
+#if UNITY_2023_1_OR_NEWER
+                resultModal = FindAnyObjectByType<BattleResultModalController>(FindObjectsInactive.Include);
+#elif UNITY_2022_2_OR_NEWER
+                resultModal = FindAnyObjectByType<BattleResultModalController>(FindObjectsInactive.Include);
+#else
+                resultModal = FindObjectOfType<BattleResultModalController>(includeInactive: true);
+#endif
+            }
+        }
+
         private void OnDisable()
         {
             if (enemyTurnRoutine != null)

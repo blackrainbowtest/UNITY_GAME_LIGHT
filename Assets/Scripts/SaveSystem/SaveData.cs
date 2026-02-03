@@ -97,6 +97,8 @@ public class SaveData
     public class Inventory
     {
         public int gold;
+        public int manaCrystals;
+        public int demonCrystals;
         public List<Item> items = new List<Item>();
     }
 

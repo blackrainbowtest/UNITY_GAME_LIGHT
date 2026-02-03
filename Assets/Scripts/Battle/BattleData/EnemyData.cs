@@ -115,6 +115,7 @@ namespace Game.Battle
         public bool EditorApplyDefinition(
             string newEnemyName,
             Sprite newIcon,
+            string newOutfitId,
             int newMaxHp,
             int newMaxMp,
             int newMaxSp,
@@ -128,6 +129,8 @@ namespace Game.Battle
             int newRegenMpPerTurn,
             int newRegenSpPerTurn,
             CombatActionId[] newAllowedActions,
+            int newExpReward,
+            LootDrop[] newLootTable,
             out string error)
         {
             error = null;
@@ -140,6 +143,8 @@ namespace Game.Battle
 
             enemyName = newEnemyName.Trim();
             icon = newIcon;
+
+            outfitId = string.IsNullOrWhiteSpace(newOutfitId) ? "outfit_01" : newOutfitId.Trim();
 
             maxHp = newMaxHp;
             maxMp = newMaxMp;
@@ -158,6 +163,9 @@ namespace Game.Battle
             regenSpPerTurn = newRegenSpPerTurn;
 
             allowedActions = newAllowedActions;
+
+            expReward = Mathf.Max(0, newExpReward);
+            lootTable = newLootTable;
 
             EditorUtility.SetDirty(this);
             return true;

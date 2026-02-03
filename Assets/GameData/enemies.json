@@ -2,6 +2,8 @@
   {
     "enemyName": "Slime",
     "iconPath": "Assets/Art/Icons/slime.png",
+    "expReward": 0,
+    "lootTable": [],
     "hp": 30,
     "mp": 10,
     "sp": 5,
@@ -20,6 +22,8 @@
   {
     "enemyName": "Goblin",
     "iconPath": "Assets/Art/Icons/goblin.png",
+    "expReward": 0,
+    "lootTable": [],
     "hp": 50,
     "mp": 15,
     "sp": 10,
@@ -38,6 +42,8 @@
   {
     "enemyName": "TrainingDummy",
     "iconPath": "Assets/Art/Icons/slime.png",
+    "expReward": 0,
+    "lootTable": [],
     "hp": 999,
     "mp": 0,
     "sp": 0,
@@ -56,6 +62,8 @@
   {
     "enemyName": "Slaver",
     "iconPath": "Assets/Sprites/Enemies/slaver/outfit_01/Idle/idle_outfit_01_01.png",
+    "expReward": 15,
+    "lootTable": [],
     "hp": 60,
     "mp": 0,
     "sp": 40,

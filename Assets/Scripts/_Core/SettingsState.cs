@@ -32,6 +32,9 @@ namespace UDA2.Core
         public bool showSubtitles = true;
         public bool vibrationEnabled = true;
 
+        // Battle
+        public bool showBattleResultModal = true;
+
         // City map
         public bool cityInspectModeEnabled = false;
     }

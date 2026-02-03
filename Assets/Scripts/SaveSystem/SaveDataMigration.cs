@@ -53,6 +53,25 @@ public static class SaveDataMigration
             Mark("player.outfitId defaulted");
         }
 
+        // Level/EXP sanity (EXP is stored as progress within the current level).
+        if (save.player.level <= 0)
+        {
+            save.player.level = 1;
+            Mark("player.level defaulted");
+        }
+
+        if (save.player.exp < 0)
+        {
+            save.player.exp = 0;
+            Mark("player.exp clamped");
+        }
+
+        var beforeLevel = save.player.level;
+        var beforeExp = save.player.exp;
+        Game.Progression.PlayerExperience.Normalize(ref save.player.level, ref save.player.exp);
+        if (save.player.level != beforeLevel || save.player.exp != beforeExp)
+            Mark("player exp/level normalized");
+
         var stats = save.player.stats;
 
         // Detect missing max fields (common in older saves or saves created via new SaveData())

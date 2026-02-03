@@ -10,12 +10,16 @@ namespace Game.Battle
         public readonly struct LootResult
         {
             public int GoldGained { get; }
+            public int ManaCrystalsGained { get; }
+            public int DemonCrystalsGained { get; }
             public int ExpGained { get; }
             public IReadOnlyList<BattleResultData.ItemReward> Items { get; }
 
-            public LootResult(int goldGained, int expGained, IReadOnlyList<BattleResultData.ItemReward> items)
+            public LootResult(int goldGained, int manaCrystalsGained, int demonCrystalsGained, int expGained, IReadOnlyList<BattleResultData.ItemReward> items)
             {
                 GoldGained = goldGained;
+                ManaCrystalsGained = manaCrystalsGained;
+                DemonCrystalsGained = demonCrystalsGained;
                 ExpGained = expGained;
                 Items = items;
             }
@@ -30,6 +34,8 @@ namespace Game.Battle
             float multiplier = ComputeLootMultiplier(save, level);
 
             int gold = 0;
+            int manaCrystals = 0;
+            int demonCrystals = 0;
             var items = new List<BattleResultData.ItemReward>(8);
 
             if (enemy != null && enemy.lootTable != null)
@@ -61,12 +67,8 @@ namespace Game.Battle
                     // Apply multiplier after base roll.
                     int finalCount = Mathf.FloorToInt(baseCount * multiplier);
 
-                    bool isGold = string.Equals(itemId, "gold", StringComparison.OrdinalIgnoreCase);
-                    if (isGold)
+                    if (TryApplyCurrency(itemId, finalCount, ref gold, ref manaCrystals, ref demonCrystals))
                     {
-                        // Currency can be reduced to 0.
-                        if (finalCount > 0)
-                            gold += finalCount;
                         continue;
                     }
 
@@ -85,7 +87,62 @@ namespace Game.Battle
             if (exp > 0)
                 exp = Mathf.FloorToInt(exp * ComputeExpMultiplier(level));
 
-            return new LootResult(gold, exp, items);
+            return new LootResult(gold, manaCrystals, demonCrystals, exp, items);
+        }
+
+        private static bool TryApplyCurrency(string itemId, int amount, ref int gold, ref int manaCrystals, ref int demonCrystals)
+        {
+            if (string.IsNullOrWhiteSpace(itemId))
+                return false;
+
+            // Currency can be reduced to 0 by multipliers.
+            if (amount <= 0)
+                return IsCurrencyId(itemId);
+
+            if (IsGoldId(itemId))
+            {
+                gold += amount;
+                return true;
+            }
+
+            if (IsManaCrystalId(itemId))
+            {
+                manaCrystals += amount;
+                return true;
+            }
+
+            if (IsDemonCrystalId(itemId))
+            {
+                demonCrystals += amount;
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool IsCurrencyId(string itemId)
+        {
+            return IsGoldId(itemId) || IsManaCrystalId(itemId) || IsDemonCrystalId(itemId);
+        }
+
+        private static bool IsGoldId(string itemId)
+        {
+            return string.Equals(itemId, "gold", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsManaCrystalId(string itemId)
+        {
+            return string.Equals(itemId, "mana_crystal", StringComparison.OrdinalIgnoreCase)
+                   || string.Equals(itemId, "mana_crystals", StringComparison.OrdinalIgnoreCase)
+                   || string.Equals(itemId, "manaCrystal", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsDemonCrystalId(string itemId)
+        {
+            return string.Equals(itemId, "demon_crystal", StringComparison.OrdinalIgnoreCase)
+                   || string.Equals(itemId, "demon_crystals", StringComparison.OrdinalIgnoreCase)
+                   || string.Equals(itemId, "demonic_crystal", StringComparison.OrdinalIgnoreCase)
+                   || string.Equals(itemId, "demonic_crystals", StringComparison.OrdinalIgnoreCase);
         }
 
         private static string ResolveItemId(EnemyData.LootDrop entry)

@@ -103,10 +103,12 @@ public class EnemyDataImporter : EditorWindow
 
         var icon = LoadSprite(enemy.iconPath);
         var actions = ParseAllowedActions(enemy.allowedActions);
+        var lootTable = ParseLootTable(enemy.lootTable);
 
         if (!asset.EditorApplyDefinition(
                 newEnemyName: enemy.enemyName,
                 newIcon: icon,
+                newOutfitId: enemy.outfitId,
                 newMaxHp: enemy.maxHp,
                 newMaxMp: enemy.maxMp,
                 newMaxSp: enemy.maxSp,
@@ -120,10 +122,41 @@ public class EnemyDataImporter : EditorWindow
                 newRegenMpPerTurn: enemy.regenMpPerTurn,
                 newRegenSpPerTurn: enemy.regenSpPerTurn,
                 newAllowedActions: actions,
+                newExpReward: enemy.expReward,
+                newLootTable: lootTable,
                 out string error))
         {
             Debug.LogError($"EnemyDataImporter: Failed to apply '{enemy.enemyName}': {error}");
         }
+    }
+
+    private static Game.Battle.EnemyData.LootDrop[] ParseLootTable(LootDropJson[] lootTable)
+    {
+        if (lootTable == null || lootTable.Length == 0)
+            return null;
+
+        var result = new Game.Battle.EnemyData.LootDrop[lootTable.Length];
+
+        for (int i = 0; i < lootTable.Length; i++)
+        {
+            var src = lootTable[i];
+            if (src == null)
+            {
+                result[i] = null;
+                continue;
+            }
+
+            var dst = new Game.Battle.EnemyData.LootDrop();
+            dst.item = null;
+            dst.itemId = string.IsNullOrWhiteSpace(src.itemId) ? null : src.itemId.Trim();
+            dst.minCount = Mathf.Max(0, src.minCount);
+            dst.maxCount = Mathf.Max(dst.minCount, src.maxCount);
+            dst.dropChance = Mathf.Clamp01(src.dropChance);
+
+            result[i] = dst;
+        }
+
+        return result;
     }
 
     /// <summary>
@@ -204,6 +237,7 @@ public class EnemyDataImporter : EditorWindow
     {
         public string enemyName;
         public string iconPath;
+        public string outfitId;
 
         public int maxHp;
         public int maxMp;
@@ -217,6 +251,10 @@ public class EnemyDataImporter : EditorWindow
 
         public int attack;
 
+        // Rewards
+        public int expReward;
+        public LootDropJson[] lootTable;
+
         // Passive regeneration per enemy turn (LP does not regenerate).
         public int regenHpPerTurn;
         public int regenMpPerTurn;
@@ -224,6 +262,15 @@ public class EnemyDataImporter : EditorWindow
 
         // Optional action restrictions.
         public string[] allowedActions;
+    }
+
+    [System.Serializable]
+    private sealed class LootDropJson
+    {
+        public string itemId;
+        public int minCount = 1;
+        public int maxCount = 1;
+        public float dropChance = 1f;
     }
 
     [System.Serializable]

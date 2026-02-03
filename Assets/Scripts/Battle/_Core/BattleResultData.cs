@@ -39,13 +39,23 @@ namespace Game.Battle
 
         public bool PlayerWon { get; }
         public int GoldGained { get; }
+        public int ManaCrystalsGained { get; }
+        public int DemonCrystalsGained { get; }
         public int ExpGained { get; }
         public IReadOnlyList<ItemReward> Items { get; }
 
-        public BattleResultData(bool playerWon, int goldGained, int expGained, IReadOnlyList<ItemReward> items)
+        public BattleResultData(
+            bool playerWon,
+            int goldGained,
+            int manaCrystalsGained,
+            int demonCrystalsGained,
+            int expGained,
+            IReadOnlyList<ItemReward> items)
         {
             PlayerWon = playerWon;
             GoldGained = goldGained;
+            ManaCrystalsGained = manaCrystalsGained;
+            DemonCrystalsGained = demonCrystalsGained;
             ExpGained = expGained;
             Items = items;
         }

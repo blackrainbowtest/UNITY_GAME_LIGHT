@@ -44,6 +44,8 @@ namespace Game.Battle
             }
 
             int goldGained = 0;
+            int manaCrystalsGained = 0;
+            int demonCrystalsGained = 0;
             int expGained = 0;
             var itemsGained = Array.Empty<BattleResultData.ItemReward>();
 
@@ -54,20 +56,28 @@ namespace Game.Battle
 
                 var loot = BattleLootResolver.Resolve(enemy, save);
                 goldGained = loot.GoldGained;
+                manaCrystalsGained = loot.ManaCrystalsGained;
+                demonCrystalsGained = loot.DemonCrystalsGained;
                 expGained = loot.ExpGained;
                 itemsGained = loot.Items != null ? (loot.Items as BattleResultData.ItemReward[] ?? new System.Collections.Generic.List<BattleResultData.ItemReward>(loot.Items).ToArray()) : Array.Empty<BattleResultData.ItemReward>();
 
-                ApplyRewardsToSave(save, goldGained, expGained, itemsGained);
+                ApplyRewardsToSave(save, goldGained, manaCrystalsGained, demonCrystalsGained, expGained, itemsGained);
             }
 
             var result = new BattleResultData(
                 playerWon: playerWon,
                 goldGained: goldGained,
+                manaCrystalsGained: manaCrystalsGained,
+                demonCrystalsGained: demonCrystalsGained,
                 expGained: expGained,
                 items: itemsGained
             );
 
-            if (resultModal != null)
+            var showResult = UDA2.Core.SettingsContext.Current == null
+                ? true
+                : UDA2.Core.SettingsContext.Current.showBattleResultModal;
+
+            if (resultModal != null && showResult)
             {
                 resultModal.Show(result, ExitBattle);
             }
@@ -77,7 +87,7 @@ namespace Game.Battle
             }
         }
 
-        private static void ApplyRewardsToSave(SaveData save, int goldGained, int expGained, BattleResultData.ItemReward[] items)
+        private static void ApplyRewardsToSave(SaveData save, int goldGained, int manaCrystalsGained, int demonCrystalsGained, int expGained, BattleResultData.ItemReward[] items)
         {
             if (save == null)
                 return;
@@ -91,8 +101,14 @@ namespace Game.Battle
             if (goldGained > 0)
                 save.inventory.gold += goldGained;
 
+            if (manaCrystalsGained > 0)
+                save.inventory.manaCrystals += manaCrystalsGained;
+
+            if (demonCrystalsGained > 0)
+                save.inventory.demonCrystals += demonCrystalsGained;
+
             if (expGained > 0)
-                save.player.exp += expGained;
+                Game.Progression.PlayerExperience.AddExp(ref save.player.level, ref save.player.exp, expGained, out _);
 
             if (items == null || items.Length == 0)
                 return;
