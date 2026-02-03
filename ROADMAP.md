@@ -245,3 +245,13 @@ Inventory is a **data-driven UI**, not a gameplay system.
 - `MoveMode`
 
 State transitions must be explicit and mutually exclusive.
+
+# ------------------------------------------------------------
+
+======================================================================\
+create checkbox turn off/on NSFW (it will be turn off NSFW content show an actions like lust attacks and special actions after 50% 75% 100% lust)
+no NSFW content on fights
+need to add API to check isNSFWOn(); true/false
+======================================================================\
+skip already watched option buttons to skip / ask on repeating / dont skip
+======================================================================\
