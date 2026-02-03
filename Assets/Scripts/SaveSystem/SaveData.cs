@@ -7,6 +7,7 @@ public class SaveData
     public Meta meta = new Meta();
     public Player player = new Player();
     public Inventory inventory = new Inventory();
+    public Storage storage = new Storage();
     public Progress progress = new Progress();
     public TimeState time = new TimeState();
     public SceneState sceneState = new SceneState();
@@ -96,6 +97,15 @@ public class SaveData
     public class Inventory
     {
         public int gold;
+        public List<Item> items = new List<Item>();
+    }
+
+    [Serializable]
+    public class Storage
+    {
+        /// <summary>
+        /// Base storage items (e.g., town stash). Capacity is enforced by runtime rules.
+        /// </summary>
         public List<Item> items = new List<Item>();
     }
 

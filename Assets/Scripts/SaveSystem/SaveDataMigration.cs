@@ -28,6 +28,7 @@ public static class SaveDataMigration
         if (save.player.stats == null) { save.player.stats = new SaveData.Stats(); Mark("player.stats initialized"); }
         if (save.player.equipment == null) { save.player.equipment = new SaveData.Player.Equipment(); Mark("player.equipment initialized"); }
         if (save.inventory == null) { save.inventory = new SaveData.Inventory(); Mark("inventory initialized"); }
+        if (save.storage == null) { save.storage = new SaveData.Storage(); Mark("storage initialized"); }
         if (save.progress == null) { save.progress = new SaveData.Progress(); Mark("progress initialized"); }
         if (save.time == null) { save.time = new SaveData.TimeState(); Mark("time initialized"); }
         if (save.sceneState == null) { save.sceneState = new SaveData.SceneState(); Mark("sceneState initialized"); }

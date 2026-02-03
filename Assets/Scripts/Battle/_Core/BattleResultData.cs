@@ -25,15 +25,29 @@ namespace Game.Battle
     /// </summary>
     public sealed class BattleResultData
     {
+        public readonly struct ItemReward
+        {
+            public string ItemId { get; }
+            public int Count { get; }
+
+            public ItemReward(string itemId, int count)
+            {
+                ItemId = itemId;
+                Count = count;
+            }
+        }
+
         public bool PlayerWon { get; }
         public int GoldGained { get; }
-        public IReadOnlyList<string> ItemIds { get; }
+        public int ExpGained { get; }
+        public IReadOnlyList<ItemReward> Items { get; }
 
-        public BattleResultData(bool playerWon, int goldGained, IReadOnlyList<string> itemIds)
+        public BattleResultData(bool playerWon, int goldGained, int expGained, IReadOnlyList<ItemReward> items)
         {
             PlayerWon = playerWon;
             GoldGained = goldGained;
-            ItemIds = itemIds;
+            ExpGained = expGained;
+            Items = items;
         }
     }
 }

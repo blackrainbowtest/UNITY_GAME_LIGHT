@@ -1,6 +1,6 @@
 public static class InventoryCapacityRules
 {
-    public const int BaseSlots = 10;
+    public const int BaseSlots = 30;
 
     /// <summary>
     /// Temporary rule: any equipped bag grants +10 slots.

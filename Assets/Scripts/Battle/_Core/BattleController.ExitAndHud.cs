@@ -43,11 +43,28 @@ namespace Game.Battle
                 }
             }
 
-            // Rewards are not configured yet (no drop tables wired).
+            int goldGained = 0;
+            int expGained = 0;
+            var itemsGained = Array.Empty<BattleResultData.ItemReward>();
+
+            if (playerWon)
+            {
+                var save = global::GameState.Instance?.CurrentSave;
+                var enemy = context != null ? context.Enemy : null;
+
+                var loot = BattleLootResolver.Resolve(enemy, save);
+                goldGained = loot.GoldGained;
+                expGained = loot.ExpGained;
+                itemsGained = loot.Items != null ? (loot.Items as BattleResultData.ItemReward[] ?? new System.Collections.Generic.List<BattleResultData.ItemReward>(loot.Items).ToArray()) : Array.Empty<BattleResultData.ItemReward>();
+
+                ApplyRewardsToSave(save, goldGained, expGained, itemsGained);
+            }
+
             var result = new BattleResultData(
                 playerWon: playerWon,
-                goldGained: 0,
-                itemIds: Array.Empty<string>()
+                goldGained: goldGained,
+                expGained: expGained,
+                items: itemsGained
             );
 
             if (resultModal != null)
@@ -58,6 +75,60 @@ namespace Game.Battle
             {
                 ExitBattle();
             }
+        }
+
+        private static void ApplyRewardsToSave(SaveData save, int goldGained, int expGained, BattleResultData.ItemReward[] items)
+        {
+            if (save == null)
+                return;
+
+            if (save.inventory == null)
+                save.inventory = new SaveData.Inventory();
+
+            if (save.player == null)
+                save.player = new SaveData.Player();
+
+            if (goldGained > 0)
+                save.inventory.gold += goldGained;
+
+            if (expGained > 0)
+                save.player.exp += expGained;
+
+            if (items == null || items.Length == 0)
+                return;
+
+            if (save.inventory.items == null)
+                save.inventory.items = new System.Collections.Generic.List<SaveData.Item>();
+
+            for (int i = 0; i < items.Length; i++)
+            {
+                var r = items[i];
+                if (string.IsNullOrWhiteSpace(r.ItemId) || r.Count <= 0)
+                    continue;
+
+                AddOrStack(save.inventory.items, r.ItemId.Trim(), r.Count);
+            }
+        }
+
+        private static void AddOrStack(System.Collections.Generic.List<SaveData.Item> list, string itemId, int count)
+        {
+            if (list == null || string.IsNullOrWhiteSpace(itemId) || count <= 0)
+                return;
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                var it = list[i];
+                if (it == null)
+                    continue;
+
+                if (string.Equals(it.itemId, itemId, StringComparison.OrdinalIgnoreCase))
+                {
+                    it.count += count;
+                    return;
+                }
+            }
+
+            list.Add(new SaveData.Item { itemId = itemId, count = count });
         }
 
         private void ExitBattle()

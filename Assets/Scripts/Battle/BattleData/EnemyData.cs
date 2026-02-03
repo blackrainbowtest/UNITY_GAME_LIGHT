@@ -10,6 +10,22 @@ namespace Game.Battle
     [CreateAssetMenu(menuName = "Game/Battle/Enemy")]
     public class EnemyData : ScriptableObject
     {
+        [System.Serializable]
+        public sealed class LootDrop
+        {
+            [Tooltip("Optional: drag ItemDefinition asset here (resolved by reflection at runtime).")]
+            public UnityEngine.Object item;
+
+            [Tooltip("Fallback if ItemDefinition is not assigned. Example: 'gold' or 'potion_hp_small'.")]
+            public string itemId;
+
+            [Min(0)] public int minCount = 1;
+            [Min(0)] public int maxCount = 1;
+
+            [Range(0f, 1f)]
+            public float dropChance = 1f;
+        }
+
         [Header("Main")]
         [Tooltip("Stable identifier used for saves (runtime). If empty, will be auto-filled from enemyName or asset name.")]
         public string id;
@@ -35,6 +51,13 @@ namespace Game.Battle
         [Header("AI")]
         public CombatActionId[] allowedActions;
 
+        [Header("Rewards")]
+        [Min(0)]
+        public int expReward = 0;
+
+        [Tooltip("Possible drops on victory. Each entry rolls independently by chance.")]
+        public LootDrop[] lootTable;
+
         [Header("Regen (per enemy turn)")]
         public int regenHpPerTurn;
         public int regenMpPerTurn;
@@ -50,6 +73,21 @@ namespace Game.Battle
         {
             if (string.IsNullOrEmpty(outfitId))
                 outfitId = "outfit_01";
+
+            if (lootTable != null)
+            {
+                for (int i = 0; i < lootTable.Length; i++)
+                {
+                    var e = lootTable[i];
+                    if (e == null) continue;
+
+                    if (e.maxCount < e.minCount)
+                        e.maxCount = e.minCount;
+
+                    if (!string.IsNullOrWhiteSpace(e.itemId))
+                        e.itemId = e.itemId.Trim();
+                }
+            }
 
             EnsureId();
         }

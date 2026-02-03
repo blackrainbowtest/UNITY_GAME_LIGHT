@@ -39,11 +39,17 @@ namespace Game.Battle.UI
             {
                 var sb = new StringBuilder();
                 sb.AppendLine($"Gold: {data.GoldGained}");
-                if (data.ItemIds != null && data.ItemIds.Count > 0)
+                sb.AppendLine($"EXP: {data.ExpGained}");
+
+                if (data.Items != null && data.Items.Count > 0)
                 {
                     sb.AppendLine("Items:");
-                    foreach (var itemId in data.ItemIds)
-                        sb.AppendLine($"- {itemId}");
+                    foreach (var item in data.Items)
+                    {
+                        var label = string.IsNullOrEmpty(item.ItemId) ? "<unknown>" : item.ItemId;
+                        var count = item.Count;
+                        sb.AppendLine(count > 1 ? $"- {label} x{count}" : $"- {label}");
+                    }
                 }
                 rewardsText.text = sb.ToString().TrimEnd();
             }
