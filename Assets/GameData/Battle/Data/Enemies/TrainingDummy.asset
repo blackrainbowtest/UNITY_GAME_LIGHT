@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d3415c4e97373348a965c5c6181b5ac, type: 3}
   m_Name: TrainingDummy
   m_EditorClassIdentifier: Assembly-CSharp::Game.Battle.EnemyData
+  id: trainingdummy
   enemyName: TrainingDummy
   icon: {fileID: 0}
   outfitId: outfit_01
@@ -27,6 +28,9 @@ MonoBehaviour:
   maxLp: 0
   attack: 1
   allowedActions: 01000000
+  goldReward: 0
+  expReward: 0
+  lootTable: []
   regenHpPerTurn: 1
   regenMpPerTurn: 0
   regenSpPerTurn: 0

@@ -2,6 +2,7 @@
   {
     "enemyName": "Slime",
     "iconPath": "Assets/Art/Icons/slime.png",
+    "goldReward": 10,
     "expReward": 0,
     "lootTable": [],
     "hp": 30,
@@ -22,6 +23,7 @@
   {
     "enemyName": "Goblin",
     "iconPath": "Assets/Art/Icons/goblin.png",
+    "goldReward": 10,
     "expReward": 0,
     "lootTable": [],
     "hp": 50,
@@ -62,6 +64,7 @@
   {
     "enemyName": "Slaver",
     "iconPath": "Assets/Sprites/Enemies/slaver/outfit_01/Idle/idle_outfit_01_01.png",
+    "goldReward": 10,
     "expReward": 15,
     "lootTable": [],
     "hp": 60,

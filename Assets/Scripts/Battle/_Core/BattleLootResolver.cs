@@ -83,8 +83,17 @@ namespace Game.Battle
                 }
             }
 
+            // Guaranteed gold reward (configured in EnemyData, similar to expReward).
+            int baseGoldReward = Mathf.Max(0, enemy != null ? enemy.goldReward : 0);
+            if (baseGoldReward > 0 && enemy != null)
+            {
+                int finalGoldReward = Mathf.FloorToInt(baseGoldReward * multiplier);
+                finalGoldReward = Mathf.Max(1, finalGoldReward);
+                gold += finalGoldReward;
+            }
+
             // Fallback: if loot table is empty/not configured, grant a tiny amount of gold so victory feels rewarding.
-            if ((enemy == null || enemy.lootTable == null || enemy.lootTable.Length == 0) && enemy != null)
+            if (baseGoldReward <= 0 && (enemy == null || enemy.lootTable == null || enemy.lootTable.Length == 0) && enemy != null)
             {
                 int baseGold = Mathf.Max(1, Mathf.RoundToInt(enemy.maxHp * 0.1f));
                 int finalGold = Mathf.FloorToInt(baseGold * multiplier);
@@ -158,27 +167,32 @@ namespace Game.Battle
             if (entry == null)
                 return null;
 
+            // Prefer the assigned item asset (single source of truth).
+            if (entry.item != null)
+            {
+                // Reflection to avoid assembly reference coupling.
+                try
+                {
+                    var t = entry.item.GetType();
+                    var prop = t.GetProperty("Id");
+                    if (prop != null)
+                    {
+                        var value = prop.GetValue(entry.item) as string;
+                        if (!string.IsNullOrWhiteSpace(value))
+                            return value.Trim();
+                    }
+                }
+                catch
+                {
+                    // ignore
+                }
+            }
+
+            // Fallback (e.g. JSON-defined drops).
             if (!string.IsNullOrWhiteSpace(entry.itemId))
                 return entry.itemId.Trim();
 
-            if (entry.item == null)
-                return null;
-
-            // Reflection to avoid assembly reference coupling.
-            try
-            {
-                var t = entry.item.GetType();
-                var prop = t.GetProperty("Id");
-                if (prop == null)
-                    return null;
-
-                var value = prop.GetValue(entry.item) as string;
-                return string.IsNullOrWhiteSpace(value) ? null : value.Trim();
-            }
-            catch
-            {
-                return null;
-            }
+            return null;
         }
 
         private static float ComputeLootMultiplier(SaveData save, int level)

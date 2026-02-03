@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d3415c4e97373348a965c5c6181b5ac, type: 3}
   m_Name: Slime
   m_EditorClassIdentifier: Assembly-CSharp::Game.Battle.EnemyData
+  id: slime
   enemyName: Slime
   icon: {fileID: 0}
   outfitId: outfit_01
@@ -27,6 +28,9 @@ MonoBehaviour:
   maxLp: 100
   attack: 5
   allowedActions: 000000000100000002000000
+  goldReward: 10
+  expReward: 0
+  lootTable: []
   regenHpPerTurn: 5
   regenMpPerTurn: 2
   regenSpPerTurn: 4

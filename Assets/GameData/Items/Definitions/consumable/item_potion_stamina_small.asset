@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 895a625fa51d25548b88d2bb5ad050ea, type: 3}
-  m_Name: potion_stamina_small
+  m_Name: item_potion_stamina_small
   m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
   id: potion_stamina_small
   type: 1

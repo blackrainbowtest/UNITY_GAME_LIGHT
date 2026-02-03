@@ -122,6 +122,7 @@ public class EnemyDataImporter : EditorWindow
                 newRegenMpPerTurn: enemy.regenMpPerTurn,
                 newRegenSpPerTurn: enemy.regenSpPerTurn,
                 newAllowedActions: actions,
+                newGoldReward: enemy.goldReward,
                 newExpReward: enemy.expReward,
                 newLootTable: lootTable,
                 out string error))
@@ -252,6 +253,7 @@ public class EnemyDataImporter : EditorWindow
         public int attack;
 
         // Rewards
+        public int goldReward;
         public int expReward;
         public LootDropJson[] lootTable;
 

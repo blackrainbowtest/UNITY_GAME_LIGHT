@@ -53,6 +53,10 @@ namespace Game.Battle
 
         [Header("Rewards")]
         [Min(0)]
+        [Tooltip("Guaranteed gold gained on victory (before multipliers). If 0, runtime may use fallback rules.")]
+        public int goldReward = 0;
+
+        [Min(0)]
         public int expReward = 0;
 
         [Tooltip("Possible drops on victory. Each entry rolls independently by chance.")]
@@ -84,12 +88,40 @@ namespace Game.Battle
                     if (e.maxCount < e.minCount)
                         e.maxCount = e.minCount;
 
+                    // Convenience: if an ItemDefinition asset is assigned, auto-fill itemId as a fallback.
+                    if (string.IsNullOrWhiteSpace(e.itemId) && e.item != null)
+                    {
+                        var resolved = TryResolveItemIdFromObject(e.item);
+                        if (!string.IsNullOrWhiteSpace(resolved))
+                            e.itemId = resolved.Trim();
+                    }
+
                     if (!string.IsNullOrWhiteSpace(e.itemId))
                         e.itemId = e.itemId.Trim();
                 }
             }
 
             EnsureId();
+        }
+
+        private static string TryResolveItemIdFromObject(UnityEngine.Object obj)
+        {
+            if (obj == null)
+                return null;
+
+            try
+            {
+                var t = obj.GetType();
+                var prop = t.GetProperty("Id");
+                if (prop == null)
+                    return null;
+
+                return prop.GetValue(obj) as string;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         private void EnsureId()
@@ -129,6 +161,7 @@ namespace Game.Battle
             int newRegenMpPerTurn,
             int newRegenSpPerTurn,
             CombatActionId[] newAllowedActions,
+            int newGoldReward,
             int newExpReward,
             LootDrop[] newLootTable,
             out string error)
@@ -164,6 +197,7 @@ namespace Game.Battle
 
             allowedActions = newAllowedActions;
 
+            goldReward = Mathf.Max(0, newGoldReward);
             expReward = Mathf.Max(0, newExpReward);
             lootTable = newLootTable;
 
