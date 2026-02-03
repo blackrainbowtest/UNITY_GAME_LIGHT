@@ -20,6 +20,9 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Game.Battle.Statuses;
 
 /// <summary>
 /// Editor utility for importing ItemDefinition assets from JSON.
@@ -33,7 +36,7 @@ public class ItemDefinitionJsonImporter : EditorWindow
         "Assets/GameData/Items/Json/items.json";
 
     private string iconsPath =
-        "Assets/Sprites/Items/";
+        "Assets/Art/Sprites/Items/";
 
     private string outputPath =
         "Assets/GameData/Items/Definitions/";
@@ -88,7 +91,22 @@ public class ItemDefinitionJsonImporter : EditorWindow
         }
 
         string json = File.ReadAllText(jsonPath);
-        var itemList = JsonHelper.FromJson<ItemJson>(json);
+        List<ItemJson> itemList;
+        try
+        {
+            itemList = JsonConvert.DeserializeObject<List<ItemJson>>(json);
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"ItemDefinitionJsonImporter: Failed to parse JSON: {ex.Message}");
+            return;
+        }
+
+        if (itemList == null)
+        {
+            Debug.LogError("ItemDefinitionJsonImporter: JSON parsed to null list.");
+            return;
+        }
 
         foreach (var item in itemList)
         {
@@ -99,7 +117,7 @@ public class ItemDefinitionJsonImporter : EditorWindow
         AssetDatabase.Refresh();
 
         Debug.Log(
-            $"ItemDefinitionJsonImporter: Imported {itemList.Length} items."
+            $"ItemDefinitionJsonImporter: Imported {itemList.Count} items."
         );
     }
 
@@ -108,14 +126,10 @@ public class ItemDefinitionJsonImporter : EditorWindow
     /// </summary>
     private void CreateItemAsset(ItemJson item)
     {
-        string assetPath =
-            $"{outputPath}{item.id}.asset";
-
-        var asset = AssetDatabase.LoadAssetAtPath<ItemDefinition>(assetPath);
-        if (asset == null)
+        if (item == null)
         {
-            asset = ScriptableObject.CreateInstance<ItemDefinition>();
-            AssetDatabase.CreateAsset(asset, assetPath);
+            Debug.LogError("ItemDefinitionJsonImporter: Item JSON is null.");
+            return;
         }
 
         if (!TryBuildEditorDefinition(item, out var definition, out string error))
@@ -124,7 +138,29 @@ public class ItemDefinitionJsonImporter : EditorWindow
             return;
         }
 
+        string assetDir = EnsureTypeFolder(outputPath, definition.Type);
+        string assetPath = $"{assetDir}{definition.Id}.asset";
+
+        // If asset exists elsewhere (legacy path or other folder), move it.
+        var existingPath = FindExistingAssetPath(definition.Id);
+        if (!string.IsNullOrEmpty(existingPath) && existingPath != assetPath)
+        {
+            EnsureAssetFolderExists(assetDir);
+            var moveResult = AssetDatabase.MoveAsset(existingPath, assetPath);
+            if (!string.IsNullOrWhiteSpace(moveResult))
+                Debug.LogWarning($"ItemDefinitionJsonImporter: Failed to move '{definition.Id}' to '{assetPath}': {moveResult}");
+        }
+
+        var asset = AssetDatabase.LoadAssetAtPath<ItemDefinition>(assetPath);
+        if (asset == null)
+        {
+            EnsureAssetFolderExists(assetDir);
+            asset = ScriptableObject.CreateInstance<ItemDefinition>();
+            AssetDatabase.CreateAsset(asset, assetPath);
+        }
+
         var icon = LoadIcon(definition.IconName);
+
         if (!asset.EditorApplyDefinition(
             definition.Id,
             definition.Type,
@@ -137,12 +173,95 @@ public class ItemDefinitionJsonImporter : EditorWindow
             definition.MaxStack,
             definition.EquipSlotId,
             definition.InventorySlotsBonus,
+            definition.EquipmentStats,
             definition.Effect,
             definition.Value,
+            definition.Rarity,
+            definition.Weight,
+            definition.UseType,
+            definition.Consumable,
+            definition.Cooldown,
+            definition.HP,
+            definition.MP,
+            definition.SP,
+            definition.LP,
+            definition.StatusEffects,
+            definition.HasCombatDamage,
+            definition.CombatDamage,
+            definition.HasCombatRange,
+            definition.CombatRange,
+            definition.HasCombatSpeed,
+            definition.CombatSpeed,
+            definition.CombatTags,
+            definition.CanDrop,
+            definition.CanDestroy,
+            definition.HasContainerSize,
+            definition.ContainerSize,
+            definition.Flags,
             out error))
         {
             Debug.LogError($"ItemDefinitionJsonImporter: Failed to apply '{definition.Id}': {error}");
         }
+    }
+
+    private static void EnsureAssetFolderExists(string assetDir)
+    {
+        if (string.IsNullOrWhiteSpace(assetDir))
+            return;
+
+        assetDir = NormalizeAssetPath(assetDir);
+        if (AssetDatabase.IsValidFolder(assetDir.TrimEnd('/')))
+            return;
+
+        // Create nested folders under Assets/...
+        var parts = assetDir.Trim('/').Split('/');
+        if (parts.Length == 0)
+            return;
+
+        string current = parts[0]; // Should be "Assets"
+        for (int i = 1; i < parts.Length; i++)
+        {
+            var next = $"{current}/{parts[i]}";
+            if (!AssetDatabase.IsValidFolder(next))
+                AssetDatabase.CreateFolder(current, parts[i]);
+            current = next;
+        }
+    }
+
+    private static string EnsureTypeFolder(string baseOutputPath, ItemType type)
+    {
+        baseOutputPath = NormalizeAssetPath(baseOutputPath);
+        if (!baseOutputPath.EndsWith("/"))
+            baseOutputPath += "/";
+
+        var typeFolder = $"{baseOutputPath}{type}/";
+        EnsureAssetFolderExists(typeFolder);
+        return typeFolder;
+    }
+
+    private static string NormalizeAssetPath(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            return "Assets/";
+        return path.Replace('\\', '/');
+    }
+
+    private static string FindExistingAssetPath(string id)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+            return null;
+
+        // Fast path: legacy root path.
+        // NOTE: We don't know outputPath here; use a broader search.
+        var guids = AssetDatabase.FindAssets($"{id} t:ItemDefinition");
+        foreach (var guid in guids)
+        {
+            var p = AssetDatabase.GUIDToAssetPath(guid);
+            if (p.EndsWith($"/{id}.asset"))
+                return p;
+        }
+
+        return null;
     }
 
     private Sprite LoadIcon(string iconName)
@@ -154,20 +273,40 @@ public class ItemDefinitionJsonImporter : EditorWindow
         if (!string.IsNullOrEmpty(basePath) && !basePath.EndsWith("/"))
             basePath += "/";
 
-        string iconAssetPath =
-            $"{basePath}{iconName}.png";
-
-        var icon =
-            AssetDatabase.LoadAssetAtPath<Sprite>(iconAssetPath);
-
-        if (icon == null)
+        // First try: treat iconName as a file name under iconsPath (legacy behavior).
+        // Support both with and without extension.
+        string iconAssetPath = $"{basePath}{iconName}";
+        if (!iconAssetPath.EndsWith(".png")
+            && !iconAssetPath.EndsWith(".jpg")
+            && !iconAssetPath.EndsWith(".jpeg")
+            && !iconAssetPath.EndsWith(".tga")
+            && !iconAssetPath.EndsWith(".psd"))
         {
-            Debug.LogWarning(
-                $"ItemDefinitionJsonImporter: Icon not found at '{iconAssetPath}'."
-            );
+            iconAssetPath += ".png";
         }
 
-        return icon;
+        var icon = AssetDatabase.LoadAssetAtPath<Sprite>(iconAssetPath);
+        if (icon != null)
+            return icon;
+
+        // Fallback: search by name under iconsPath (supports nested folders like Items/Potions/...).
+        // We prefer sprites, but allow textures too.
+        string nameNoExt = Path.GetFileNameWithoutExtension(iconName);
+        string searchRoot = NormalizeAssetPath(iconsPath);
+        if (string.IsNullOrWhiteSpace(searchRoot))
+            searchRoot = "Assets";
+
+        var guids = AssetDatabase.FindAssets($"{nameNoExt} t:Sprite", new[] { searchRoot.TrimEnd('/') });
+        if (guids != null && guids.Length > 0)
+        {
+            var p = AssetDatabase.GUIDToAssetPath(guids[0]);
+            icon = AssetDatabase.LoadAssetAtPath<Sprite>(p);
+            if (icon != null)
+                return icon;
+        }
+
+        Debug.LogWarning($"ItemDefinitionJsonImporter: Icon '{iconName}' not found under '{searchRoot}'. Tried '{iconAssetPath}' and name search.");
+        return null;
     }
 
     private static bool TryBuildEditorDefinition(
@@ -220,20 +359,20 @@ public class ItemDefinitionJsonImporter : EditorWindow
             }
             else if (item.effects != null)
             {
-                if (item.effects.hp != 0)
+                if (item.effects.hp.HasValue && item.effects.hp.Value != 0)
                 {
                     effect = ConsumableEffect.HealHP;
-                    value = item.effects.hp;
+                    value = item.effects.hp.Value;
                 }
-                else if (item.effects.mp != 0)
+                else if (item.effects.mp.HasValue && item.effects.mp.Value != 0)
                 {
                     effect = ConsumableEffect.RestoreMana;
-                    value = item.effects.mp;
+                    value = item.effects.mp.Value;
                 }
-                else if (item.effects.sp != 0)
+                else if (item.effects.sp.HasValue && item.effects.sp.Value != 0)
                 {
                     effect = ConsumableEffect.RestoreStamina;
-                    value = item.effects.sp;
+                    value = item.effects.sp.Value;
                 }
             }
         }
@@ -266,12 +405,54 @@ public class ItemDefinitionJsonImporter : EditorWindow
                 inventorySlotsBonus = item.equipment.inventorySlotsBonus;
         }
         // Alternate bag capacity location from a more "world"-oriented schema.
-        if (inventorySlotsBonus == 0 && item.world != null && item.world.containerSize > 0)
-            inventorySlotsBonus = item.world.containerSize;
+        if (inventorySlotsBonus == 0 && item.world != null && item.world.containerSize.HasValue && item.world.containerSize.Value > 0)
+            inventorySlotsBonus = item.world.containerSize.Value;
 
         // Prefer economy.value if present.
-        if (item.economy != null && item.economy.value != 0)
-            value = item.economy.value;
+        if (item.economy != null && item.economy.value.HasValue)
+            value = item.economy.value.Value;
+
+        string rarity = item.meta != null ? (item.meta.rarity ?? string.Empty) : string.Empty;
+        float weight = item.economy != null && item.economy.weight.HasValue ? item.economy.weight.Value : 0f;
+
+        string useType = item.usage != null ? (item.usage.useType ?? string.Empty) : string.Empty;
+        bool consumable = item.usage != null && item.usage.consumable.HasValue ? item.usage.consumable.Value : (itemType == ItemType.Consumable);
+        int cooldown = item.usage != null && item.usage.cooldown.HasValue ? item.usage.cooldown.Value : 0;
+
+        int hp = item.effects != null && item.effects.hp.HasValue ? item.effects.hp.Value : 0;
+        int mp = item.effects != null && item.effects.mp.HasValue ? item.effects.mp.Value : 0;
+        int sp = item.effects != null && item.effects.sp.HasValue ? item.effects.sp.Value : 0;
+        int lp = item.effects != null && item.effects.lp.HasValue ? item.effects.lp.Value : 0;
+        var statusEffects = ParseStatusEffects(item.id, item.effects != null ? item.effects.statuses : null);
+
+        bool hasCombatDamage = item.combat != null && item.combat.damage.HasValue;
+        float combatDamage = item.combat != null && item.combat.damage.HasValue ? item.combat.damage.Value : 0f;
+        bool hasCombatRange = item.combat != null && item.combat.range.HasValue;
+        float combatRange = item.combat != null && item.combat.range.HasValue ? item.combat.range.Value : 0f;
+        bool hasCombatSpeed = item.combat != null && item.combat.speed.HasValue;
+        float combatSpeed = item.combat != null && item.combat.speed.HasValue ? item.combat.speed.Value : 0f;
+        string[] combatTags = item.combat != null && item.combat.tags != null ? item.combat.tags.ToArray() : new string[0];
+
+        bool canDrop = item.world == null || !item.world.canDrop.HasValue ? true : item.world.canDrop.Value;
+        bool canDestroy = item.world != null && item.world.canDestroy.HasValue ? item.world.canDestroy.Value : false;
+        bool hasContainerSize = item.world != null && item.world.containerSize.HasValue;
+        int containerSize = item.world != null && item.world.containerSize.HasValue ? item.world.containerSize.Value : 0;
+
+        // Equipment stats (dictionary -> serializable array)
+        var equipmentStats = new List<ItemDefinition.StatEntry>();
+        if (item.equipment != null && item.equipment.stats != null)
+        {
+            foreach (var kv in item.equipment.stats)
+            {
+                equipmentStats.Add(new ItemDefinition.StatEntry
+                {
+                    key = kv.Key,
+                    value = kv.Value
+                });
+            }
+        }
+
+        string[] flags = item.flags != null ? item.flags.ToArray() : new string[0];
 
         result = new ItemEditorDefinition(
             id: item.id,
@@ -284,10 +465,101 @@ public class ItemDefinitionJsonImporter : EditorWindow
             maxStack: maxStack,
             equipSlotId: equipSlotId,
             inventorySlotsBonus: inventorySlotsBonus,
+            equipmentStats: equipmentStats.ToArray(),
             effect: effect,
-            value: value
+            value: value,
+            rarity: rarity,
+            weight: weight,
+            useType: useType,
+            consumable: consumable,
+            cooldown: cooldown,
+            hp: hp,
+            mp: mp,
+            sp: sp,
+            lp: lp,
+            statusEffects: statusEffects,
+            hasCombatDamage: hasCombatDamage,
+            combatDamage: combatDamage,
+            hasCombatRange: hasCombatRange,
+            combatRange: combatRange,
+            hasCombatSpeed: hasCombatSpeed,
+            combatSpeed: combatSpeed,
+            combatTags: combatTags,
+            canDrop: canDrop,
+            canDestroy: canDestroy,
+            hasContainerSize: hasContainerSize,
+            containerSize: containerSize,
+            flags: flags
         );
         return true;
+    }
+
+    private static ItemDefinition.StatusEffectGrant[] ParseStatusEffects(string itemId, JToken statusesToken)
+    {
+        if (statusesToken == null || statusesToken.Type == JTokenType.Null)
+            return System.Array.Empty<ItemDefinition.StatusEffectGrant>();
+
+        if (statusesToken.Type != JTokenType.Array)
+        {
+            Debug.LogWarning($"ItemDefinitionJsonImporter: effects.statuses for '{itemId}' is not an array; ignoring.");
+            return System.Array.Empty<ItemDefinition.StatusEffectGrant>();
+        }
+
+        var array = (JArray)statusesToken;
+        if (array.Count == 0)
+            return System.Array.Empty<ItemDefinition.StatusEffectGrant>();
+
+        var grants = new List<ItemDefinition.StatusEffectGrant>(array.Count);
+
+        for (int i = 0; i < array.Count; i++)
+        {
+            var token = array[i];
+            if (token == null || token.Type == JTokenType.Null)
+                continue;
+
+            // Supported formats:
+            // 1) "Burning" (legacy shorthand)
+            // 2) { "id": "Burning", "turns": 2 }
+            // 3) { "status": "Burning", "duration": 2 } (alternative keys)
+            string idRaw = null;
+            int turns = 1;
+
+            if (token.Type == JTokenType.String)
+            {
+                idRaw = token.Value<string>();
+            }
+            else if (token.Type == JTokenType.Object)
+            {
+                var obj = (JObject)token;
+                idRaw = (string)obj["id"] ?? (string)obj["status"] ?? (string)obj["type"];
+
+                var turnsToken = obj["turns"] ?? obj["duration"] ?? obj["durationTurns"];
+                if (turnsToken != null && turnsToken.Type == JTokenType.Integer)
+                    turns = turnsToken.Value<int>();
+            }
+            else
+            {
+                Debug.LogWarning($"ItemDefinitionJsonImporter: Unknown statuses entry type for '{itemId}' at index {i}; ignoring.");
+                continue;
+            }
+
+            if (string.IsNullOrWhiteSpace(idRaw))
+                continue;
+
+            // FIXME: If battle statuses change/expand, verify JSON ids still map correctly.
+            if (!System.Enum.TryParse(idRaw.Trim(), ignoreCase: true, out StatusEffectId parsed))
+            {
+                Debug.LogWarning($"ItemDefinitionJsonImporter: Unknown StatusEffectId '{idRaw}' for '{itemId}'; ignoring.");
+                continue;
+            }
+
+            if (turns < 0)
+                turns = 0;
+
+            grants.Add(new ItemDefinition.StatusEffectGrant { id = parsed, turns = turns });
+        }
+
+        return grants.Count == 0 ? System.Array.Empty<ItemDefinition.StatusEffectGrant>() : grants.ToArray();
     }
 
     private readonly struct ItemEditorDefinition
@@ -303,8 +575,37 @@ public class ItemDefinitionJsonImporter : EditorWindow
         public int MaxStack { get; }
         public string EquipSlotId { get; }
         public int InventorySlotsBonus { get; }
+        public ItemDefinition.StatEntry[] EquipmentStats { get; }
         public ConsumableEffect Effect { get; }
         public int Value { get; }
+
+        public string Rarity { get; }
+        public float Weight { get; }
+
+        public string UseType { get; }
+        public bool Consumable { get; }
+        public int Cooldown { get; }
+
+        public int HP { get; }
+        public int MP { get; }
+        public int SP { get; }
+        public int LP { get; }
+        public ItemDefinition.StatusEffectGrant[] StatusEffects { get; }
+
+        public bool HasCombatDamage { get; }
+        public float CombatDamage { get; }
+        public bool HasCombatRange { get; }
+        public float CombatRange { get; }
+        public bool HasCombatSpeed { get; }
+        public float CombatSpeed { get; }
+        public string[] CombatTags { get; }
+
+        public bool CanDrop { get; }
+        public bool CanDestroy { get; }
+        public bool HasContainerSize { get; }
+        public int ContainerSize { get; }
+
+        public string[] Flags { get; }
 
         public ItemEditorDefinition(
             string id,
@@ -318,8 +619,31 @@ public class ItemDefinitionJsonImporter : EditorWindow
             int maxStack,
             string equipSlotId,
             int inventorySlotsBonus,
+            ItemDefinition.StatEntry[] equipmentStats,
             ConsumableEffect effect,
-            int value)
+            int value,
+            string rarity,
+            float weight,
+            string useType,
+            bool consumable,
+            int cooldown,
+            int hp,
+            int mp,
+            int sp,
+            int lp,
+            ItemDefinition.StatusEffectGrant[] statusEffects,
+            bool hasCombatDamage,
+            float combatDamage,
+            bool hasCombatRange,
+            float combatRange,
+            bool hasCombatSpeed,
+            float combatSpeed,
+            string[] combatTags,
+            bool canDrop,
+            bool canDestroy,
+            bool hasContainerSize,
+            int containerSize,
+            string[] flags)
         {
             Id = id;
             Type = type;
@@ -332,8 +656,37 @@ public class ItemDefinitionJsonImporter : EditorWindow
             MaxStack = maxStack;
             EquipSlotId = equipSlotId ?? string.Empty;
             InventorySlotsBonus = inventorySlotsBonus;
+            EquipmentStats = equipmentStats;
             Effect = effect;
             Value = value;
+
+            Rarity = rarity ?? string.Empty;
+            Weight = weight;
+
+            UseType = useType ?? string.Empty;
+            Consumable = consumable;
+            Cooldown = cooldown;
+
+            HP = hp;
+            MP = mp;
+            SP = sp;
+            LP = lp;
+            StatusEffects = statusEffects ?? System.Array.Empty<ItemDefinition.StatusEffectGrant>();
+
+            HasCombatDamage = hasCombatDamage;
+            CombatDamage = combatDamage;
+            HasCombatRange = hasCombatRange;
+            CombatRange = combatRange;
+            HasCombatSpeed = hasCombatSpeed;
+            CombatSpeed = combatSpeed;
+            CombatTags = combatTags;
+
+            CanDrop = canDrop;
+            CanDestroy = canDestroy;
+            HasContainerSize = hasContainerSize;
+            ContainerSize = containerSize;
+
+            Flags = flags;
         }
 
         public ItemEditorDefinition(
@@ -347,8 +700,31 @@ public class ItemDefinitionJsonImporter : EditorWindow
             int maxStack,
             string equipSlotId,
             int inventorySlotsBonus,
+            ItemDefinition.StatEntry[] equipmentStats,
             ConsumableEffect effect,
-            int value)
+            int value,
+            string rarity,
+            float weight,
+            string useType,
+            bool consumable,
+            int cooldown,
+            int hp,
+            int mp,
+            int sp,
+            int lp,
+            ItemDefinition.StatusEffectGrant[] statusEffects,
+            bool hasCombatDamage,
+            float combatDamage,
+            bool hasCombatRange,
+            float combatRange,
+            bool hasCombatSpeed,
+            float combatSpeed,
+            string[] combatTags,
+            bool canDrop,
+            bool canDestroy,
+            bool hasContainerSize,
+            int containerSize,
+            string[] flags)
             : this(
                 id,
                 type,
@@ -361,8 +737,31 @@ public class ItemDefinitionJsonImporter : EditorWindow
                 maxStack,
                 equipSlotId,
                 inventorySlotsBonus,
+                equipmentStats,
                 effect,
-                value)
+                value,
+                rarity,
+                weight,
+                useType,
+                consumable,
+                cooldown,
+                hp,
+                mp,
+                sp,
+                lp,
+                statusEffects,
+                hasCombatDamage,
+                combatDamage,
+                hasCombatRange,
+                combatRange,
+                hasCombatSpeed,
+                combatSpeed,
+                combatTags,
+                canDrop,
+                canDestroy,
+                hasContainerSize,
+                containerSize,
+                flags)
         {
         }
     }
@@ -387,8 +786,9 @@ public class ItemDefinitionJsonImporter : EditorWindow
         public ItemUsageJson usage;
         public ItemEffectsJson effects;
         public ItemEquipmentJson equipment;
+        public ItemCombatJson combat;
         public ItemWorldJson world;
-        public string[] flags;
+        public List<string> flags;
     }
 
     [System.Serializable]
@@ -406,26 +806,26 @@ public class ItemDefinitionJsonImporter : EditorWindow
     [System.Serializable]
     public class ItemEconomyJson
     {
-        public int value;
-        public float weight;
+        public int? value;
+        public float? weight;
     }
 
     [System.Serializable]
     public class ItemUsageJson
     {
         public string useType;
-        public bool consumable;
-        public int cooldown;
+        public bool? consumable;
+        public int? cooldown;
     }
 
     [System.Serializable]
     public class ItemEffectsJson
     {
-        public int hp;
-        public int mp;
-        public int sp;
-        public int lp;
-        public string[] statuses;
+        public int? hp;
+        public int? mp;
+        public int? sp;
+        public int? lp;
+        public JToken statuses;
     }
 
     [System.Serializable]
@@ -436,53 +836,25 @@ public class ItemDefinitionJsonImporter : EditorWindow
         // For bags
         public int inventorySlotsBonus;
 
-        // Not used by runtime yet; kept for schema compatibility.
-        public ItemEquipmentStatsJson stats;
+        // Full stats support via Json.NET; Unity can't serialize dictionaries directly, so we convert to StatEntry[]
+        public Dictionary<string, float> stats;
     }
 
     [System.Serializable]
-    public class ItemEquipmentStatsJson
+    public class ItemCombatJson
     {
-        // Placeholder: JsonUtility does not support dictionaries.
-        // Add explicit stat fields here when needed.
-        public int hp;
-        public int mp;
-        public int sp;
-        public int lp;
+        public float? damage;
+        public float? range;
+        public float? speed;
+        public List<string> tags;
     }
 
     [System.Serializable]
     public class ItemWorldJson
     {
-        public bool canDrop = true;
-        public bool canDestroy;
-
-        // Use -1 to represent null (JsonUtility can't read nullable ints).
-        public int containerSize = -1;
-    }
-
-    #endregion
-
-    #region Json Helper
-
-    public static class JsonHelper
-    {
-        public static T[] FromJson<T>(string json)
-        {
-            string wrapped =
-                "{\"array\":" + json + "}";
-
-            Wrapper<T> wrapper =
-                JsonUtility.FromJson<Wrapper<T>>(wrapped);
-
-            return wrapper.array;
-        }
-
-        [System.Serializable]
-        private class Wrapper<T>
-        {
-            public T[] array;
-        }
+        public bool? canDrop;
+        public bool? canDestroy;
+        public int? containerSize;
     }
 
     #endregion

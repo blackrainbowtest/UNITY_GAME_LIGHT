@@ -45,4 +45,28 @@ MonoBehaviour:
       text: Skills
     - languageCode: fr
       text: "Comp\xE9tences"
+  - key: byid
+    entries:
+    - languageCode: ru
+      text: "\u041F\u043E \u0438\u043D\u0434\u0435\u043A\u0441\u0443"
+    - languageCode: en
+      text: By index
+    - languageCode: fr
+      text: By index
+  - key: bytype
+    entries:
+    - languageCode: ru
+      text: "\u041F\u043E \u0442\u0438\u043F\u0443"
+    - languageCode: en
+      text: By type
+    - languageCode: fr
+      text: By type
+  - key: byrarity
+    entries:
+    - languageCode: ru
+      text: "\u041F\u043E \u0440\u0435\u0434\u043A\u043E\u0441\u0442\u0438"
+    - languageCode: en
+      text: By rarity
+    - languageCode: fr
+      text: By rarity
   sourceCsvName: ui_common

@@ -45,7 +45,7 @@
     "meta": {
       "nameKey": "item.potion_hp_small.name",
       "descriptionKey": "item.potion_hp_small.desc",
-      "icon": "icon_potion_hp_small",
+      "icon": "Potions/icon_potion_hp_small",
       "rarity": "Common",
       "stackable": true,
       "maxStack": 99
@@ -83,7 +83,7 @@
     "meta": {
       "nameKey": "item.potion_mana_small.name",
       "descriptionKey": "item.potion_mana_small.desc",
-      "icon": "icon_potion_mp_small",
+      "icon": "Potions/icon_potion_mp_small",
       "rarity": "Common",
       "stackable": true,
       "maxStack": 99
@@ -121,7 +121,7 @@
     "meta": {
       "nameKey": "item.potion_stamina_small.name",
       "descriptionKey": "item.potion_stamina_small.desc",
-      "icon": "icon_potion_st_small",
+      "icon": "Potions/icon_potion_st_small",
       "rarity": "Common",
       "stackable": true,
       "maxStack": 99

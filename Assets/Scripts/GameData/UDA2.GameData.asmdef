@@ -1,7 +1,9 @@
 {
   "name": "UDA2.GameData",
   "rootNamespace": "UDA2.GameData",
-  "references": [],
+  "references": [
+    "UDA2.Battle"
+  ],
   "includePlatforms": [],
   "excludePlatforms": [],
   "allowUnsafeCode": false,

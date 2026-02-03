@@ -23,5 +23,31 @@ MonoBehaviour:
   maxStack: 9999
   equipSlotId: 
   inventorySlotsBonus: 0
+  equipmentStats: []
+  rarityId: Common
+  rarity: 0
+  weight: 0
+  useType: None
+  consumable: 0
+  cooldown: 0
+  hp: 0
+  mp: 0
+  sp: 0
+  lp: 0
+  statusEffects: []
+  statusesLegacy: []
+  hasCombatDamage: 0
+  combatDamage: 0
+  hasCombatRange: 0
+  combatRange: 0
+  hasCombatSpeed: 0
+  combatSpeed: 0
+  combatTags: []
+  canDrop: 1
+  canDestroy: 0
+  hasContainerSize: 1
+  containerSize: -1
+  flags:
+  - Currency
   effect: 0
   value: 1

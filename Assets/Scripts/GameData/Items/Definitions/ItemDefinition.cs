@@ -1,8 +1,10 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
+using Game.Battle.Statuses;
 
 public enum ItemType
 {
@@ -12,6 +14,18 @@ public enum ItemType
     Equipment
 }
 
+public enum ItemRarity
+{
+    Common,
+    Uncommon,
+    Rare,
+    Epic,
+    Legendary,
+    Mythic,
+    Unique
+}
+
+// FIXME: Consumable effects
 public enum ConsumableEffect
 {
     DoingNothing,
@@ -53,6 +67,68 @@ public class ItemDefinition : ScriptableObject
     [Tooltip("For bags: how many inventory slots this item adds. Example: +10.")]
     [SerializeField] private int inventorySlotsBonus;
 
+    [System.Serializable]
+    public struct StatEntry
+    {
+        public string key;
+        public float value;
+    }
+
+    [Tooltip("Optional equipment stats imported from JSON. Stored as key/value pairs for Unity serialization.")]
+    [SerializeField] private StatEntry[] equipmentStats;
+
+    [Header("Meta")]
+    [FormerlySerializedAs("rarity")]
+    [SerializeField] private string rarityId;
+
+    [SerializeField] private ItemRarity rarity = ItemRarity.Common;
+
+    [Tooltip("Item weight (for future use).")]
+    [SerializeField] private float weight;
+
+    [Header("Usage")]
+    [SerializeField] private string useType;
+    [SerializeField] private bool consumable;
+    [SerializeField] private int cooldown;
+
+    [Header("Effects")]
+    [SerializeField] private int hp;
+    [SerializeField] private int mp;
+    [SerializeField] private int sp;
+    [SerializeField] private int lp;
+
+    [System.Serializable]
+    public struct StatusEffectGrant
+    {
+        public StatusEffectId id;
+        [Min(0)] public int turns;
+    }
+
+    [Tooltip("Status effects granted by using this item (data-driven).")]
+    [SerializeField] private StatusEffectGrant[] statusEffects;
+
+    [FormerlySerializedAs("statuses")]
+    [Tooltip("Legacy string list of statuses (kept for backward compatibility).")]
+    [SerializeField] private string[] statusesLegacy;
+
+    [Header("Combat")]
+    [SerializeField] private bool hasCombatDamage;
+    [SerializeField] private float combatDamage;
+    [SerializeField] private bool hasCombatRange;
+    [SerializeField] private float combatRange;
+    [SerializeField] private bool hasCombatSpeed;
+    [SerializeField] private float combatSpeed;
+    [SerializeField] private string[] combatTags;
+
+    [Header("World")]
+    [SerializeField] private bool canDrop = true;
+    [SerializeField] private bool canDestroy;
+    [SerializeField] private bool hasContainerSize;
+    [SerializeField] private int containerSize;
+
+    [Header("Flags")]
+    [SerializeField] private string[] flags;
+
     [Header("Consumable")]
     [SerializeField] private ConsumableEffect effect;
     [SerializeField] private int value;
@@ -71,6 +147,99 @@ public class ItemDefinition : ScriptableObject
 
     public string EquipSlotId => equipSlotId;
     public int InventorySlotsBonus => inventorySlotsBonus;
+
+    public StatEntry[] EquipmentStats => equipmentStats;
+    public string RarityId => rarityId;
+    public ItemRarity Rarity => rarity;
+    public float Weight => weight;
+
+    private void OnValidate()
+    {
+        // Keep string id in a reasonable state for newly created assets.
+        if (string.IsNullOrWhiteSpace(rarityId))
+            rarityId = rarity.ToString();
+    }
+
+    private void ApplyRarityFromString(string rarityString)
+    {
+        rarityId = rarityString ?? string.Empty;
+
+        if (string.IsNullOrWhiteSpace(rarityId))
+        {
+            rarity = ItemRarity.Common;
+            return;
+        }
+
+        if (System.Enum.TryParse(rarityId.Trim(), ignoreCase: true, out ItemRarity parsed))
+        {
+            rarity = parsed;
+            return;
+        }
+
+        // Unknown rarity string -> default.
+        rarity = ItemRarity.Common;
+    }
+
+    public string UseType => useType;
+    public bool Consumable => consumable;
+    public int Cooldown => cooldown;
+
+    public int HP => hp;
+    public int MP => mp;
+    public int SP => sp;
+    public int LP => lp;
+
+    public StatusEffectGrant[] StatusEffects
+    {
+        get
+        {
+            if (statusEffects != null && statusEffects.Length > 0)
+                return statusEffects;
+
+            // Backward compatibility: parse legacy string ids into enum entries.
+            if (statusesLegacy == null || statusesLegacy.Length == 0)
+                return System.Array.Empty<StatusEffectGrant>();
+
+            var converted = new StatusEffectGrant[statusesLegacy.Length];
+            int count = 0;
+            for (int i = 0; i < statusesLegacy.Length; i++)
+            {
+                var raw = statusesLegacy[i];
+                if (string.IsNullOrWhiteSpace(raw))
+                    continue;
+
+                if (!System.Enum.TryParse(raw.Trim(), ignoreCase: true, out StatusEffectId parsed))
+                    continue;
+
+                converted[count++] = new StatusEffectGrant { id = parsed, turns = 1 };
+            }
+
+            if (count == converted.Length)
+                return converted;
+
+            var trimmed = new StatusEffectGrant[count];
+            for (int i = 0; i < count; i++)
+                trimmed[i] = converted[i];
+            return trimmed;
+        }
+    }
+
+    public string[] StatusesLegacy => statusesLegacy;
+
+    public bool HasCombatDamage => hasCombatDamage;
+    public float CombatDamage => combatDamage;
+    public bool HasCombatRange => hasCombatRange;
+    public float CombatRange => combatRange;
+    public bool HasCombatSpeed => hasCombatSpeed;
+    public float CombatSpeed => combatSpeed;
+    public string[] CombatTags => combatTags;
+
+    public bool CanDrop => canDrop;
+    public bool CanDestroy => canDestroy;
+    public bool HasContainerSize => hasContainerSize;
+    public int ContainerSize => containerSize;
+
+    public string[] Flags => flags;
 
     public bool IsEquipable => type == ItemType.Equipment && !string.IsNullOrWhiteSpace(equipSlotId);
 
@@ -122,6 +291,111 @@ public class ItemDefinition : ScriptableObject
         value = newValue;
 
         // Leave new fields as-is to avoid breaking older importers.
+
+        EditorUtility.SetDirty(this);
+        return true;
+    }
+
+    public bool EditorApplyDefinition(
+        string newId,
+        ItemType newType,
+        string newDisplayName,
+        string newDisplayNameKey,
+        string newDescriptionKey,
+        string newDescription,
+        Sprite newIcon,
+        bool newStackable,
+        int newMaxStack,
+        string newEquipSlotId,
+        int newInventorySlotsBonus,
+        StatEntry[] newEquipmentStats,
+        ConsumableEffect newEffect,
+        int newValue,
+        string newRarity,
+        float newWeight,
+        string newUseType,
+        bool newConsumable,
+        int newCooldown,
+        int newHp,
+        int newMp,
+        int newSp,
+        int newLp,
+        StatusEffectGrant[] newStatusEffects,
+        bool newHasCombatDamage,
+        float newCombatDamage,
+        bool newHasCombatRange,
+        float newCombatRange,
+        bool newHasCombatSpeed,
+        float newCombatSpeed,
+        string[] newCombatTags,
+        bool newCanDrop,
+        bool newCanDestroy,
+        bool newHasContainerSize,
+        int newContainerSize,
+        string[] newFlags,
+        out string error)
+    {
+        if (!EditorApplyDefinition(
+                newId,
+                newType,
+                newDisplayName,
+                newDisplayNameKey,
+                newDescriptionKey,
+                newDescription,
+                newIcon,
+                newStackable,
+                newMaxStack,
+                newEquipSlotId,
+                newInventorySlotsBonus,
+                newEffect,
+                newValue,
+                out error))
+        {
+            return false;
+        }
+
+        equipmentStats = newEquipmentStats;
+
+        ApplyRarityFromString(newRarity);
+        weight = newWeight;
+
+        useType = newUseType ?? string.Empty;
+        consumable = newConsumable;
+        cooldown = newCooldown;
+
+        hp = newHp;
+        mp = newMp;
+        sp = newSp;
+        lp = newLp;
+
+        statusEffects = newStatusEffects ?? System.Array.Empty<StatusEffectGrant>();
+        // Keep legacy ids populated for readability and migration.
+        if (statusEffects.Length == 0)
+        {
+            statusesLegacy = System.Array.Empty<string>();
+        }
+        else
+        {
+            var ids = new string[statusEffects.Length];
+            for (int i = 0; i < statusEffects.Length; i++)
+                ids[i] = statusEffects[i].id.ToString();
+            statusesLegacy = ids;
+        }
+
+        hasCombatDamage = newHasCombatDamage;
+        combatDamage = newCombatDamage;
+        hasCombatRange = newHasCombatRange;
+        combatRange = newCombatRange;
+        hasCombatSpeed = newHasCombatSpeed;
+        combatSpeed = newCombatSpeed;
+        combatTags = newCombatTags;
+
+        canDrop = newCanDrop;
+        canDestroy = newCanDestroy;
+        hasContainerSize = newHasContainerSize;
+        containerSize = newContainerSize;
+
+        flags = newFlags;
 
         EditorUtility.SetDirty(this);
         return true;

@@ -15,3 +15,15 @@
 	Скиллы;
 	Skills;
 	Compétences;
+*byid;
+	По индексу;
+	By index;
+	By index;
+*bytype;
+	По типу;
+	By type;
+	By type;
+*byrarity;
+	По редкости;
+	By rarity;
+	By rarity;
