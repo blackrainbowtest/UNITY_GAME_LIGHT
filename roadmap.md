@@ -17,7 +17,7 @@
 - ⬜ Adventurer's Guild Scene
 - ⬜ Shopping District Scene
 - ⬜ Main City Gate Scene
-- ⬜ Global World Map Scene
+- 🔵 Global World Map Scene
 - ⬜ Crystal Monster Cave Scene (F Rank)
 - ⬜ Dark Forest Scene
 - ⬜ Valley of a Thousand Flowers Scene
