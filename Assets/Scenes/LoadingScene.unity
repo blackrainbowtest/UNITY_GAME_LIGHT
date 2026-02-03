@@ -365,6 +365,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: e393ecbe2e5659c4287894797ad27096, type: 3}
   - {fileID: 21300000, guid: 1773d4af432409e4997a11dbcac50e70, type: 3}
   - {fileID: 21300000, guid: 7e4dd308ab15cab4f9fb3b39a3f03b66, type: 3}
+  - {fileID: 21300000, guid: 674b9e96017e9ba4a85206544c5daa34, type: 3}
+  - {fileID: 21300000, guid: 90a6b61f9761bb04cb1c8c7821cee536, type: 3}
   logBackgroundWarnings: 1
   tooltipText: {fileID: 985135405}
   tooltipKeysSource: {fileID: 11400000, guid: a35b77c8a5c831f41953a5ca2302675f, type: 2}

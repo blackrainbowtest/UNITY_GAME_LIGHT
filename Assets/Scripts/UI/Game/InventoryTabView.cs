@@ -122,7 +122,7 @@ namespace UDA2.UI.Game
                 if (i < entries.Count)
                 {
                     var e = entries[i];
-                    _spawned[i].RenderItem(e.icon, e.count);
+                    _spawned[i].RenderItem(e.itemId, e.icon, e.count);
                 }
                 else
                 {

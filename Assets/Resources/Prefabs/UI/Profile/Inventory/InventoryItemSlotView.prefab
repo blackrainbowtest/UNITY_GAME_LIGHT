@@ -377,3 +377,14 @@ MonoBehaviour:
   countText: {fileID: 4386997396968732088}
   emptyStateRoot: {fileID: 3131534179863395951}
   filledStateRoot: {fileID: 1569965929170508773}
+  showCountWhenOne: 0
+  itemDatabase: {fileID: 11400000, guid: ea48e7814522e8849a7792d9d32df653, type: 2}
+  goldIcon: {fileID: 0}
+  manaCrystalIcon: {fileID: 0}
+  demonCrystalIcon: {fileID: 0}
+  expIcon: {fileID: 0}
+  enableInput: 1
+  longPressDuration: 0.7
+  parentScrollRect: {fileID: 0}
+  dragThresholdPixels: -1
+  scrollCancelThreshold: 0.0005

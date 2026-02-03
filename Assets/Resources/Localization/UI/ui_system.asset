@@ -105,4 +105,12 @@ MonoBehaviour:
       text: Time
     - languageCode: fr
       text: Temps
+  - key: confirm
+    entries:
+    - languageCode: ru
+      text: "\u041F\u043E\u0434\u0442\u0432\u0435\u0440\u0434\u0438\u0442\u044C"
+    - languageCode: en
+      text: Confirm
+    - languageCode: fr
+      text: Confirm
   sourceCsvName: ui_system

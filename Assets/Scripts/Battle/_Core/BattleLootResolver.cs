@@ -67,14 +67,14 @@ namespace Game.Battle
                     // Apply multiplier after base roll.
                     int finalCount = Mathf.FloorToInt(baseCount * multiplier);
 
+                    // If the drop was rolled (baseCount>0), never reduce it to 0 (even for currencies).
+                    if (baseCount > 0)
+                        finalCount = Mathf.Max(1, finalCount);
+
                     if (TryApplyCurrency(itemId, finalCount, ref gold, ref manaCrystals, ref demonCrystals))
                     {
                         continue;
                     }
-
-                    // Non-currency: if the item was rolled (baseCount>0), never reduce to 0.
-                    if (baseCount > 0)
-                        finalCount = Mathf.Max(1, finalCount);
 
                     if (finalCount <= 0)
                         continue;
@@ -83,7 +83,21 @@ namespace Game.Battle
                 }
             }
 
+            // Fallback: if loot table is empty/not configured, grant a tiny amount of gold so victory feels rewarding.
+            if ((enemy == null || enemy.lootTable == null || enemy.lootTable.Length == 0) && enemy != null)
+            {
+                int baseGold = Mathf.Max(1, Mathf.RoundToInt(enemy.maxHp * 0.1f));
+                int finalGold = Mathf.FloorToInt(baseGold * multiplier);
+                finalGold = Mathf.Max(1, finalGold);
+                gold += finalGold;
+            }
+
             int exp = Mathf.Max(0, enemy != null ? enemy.expReward : 0);
+            if (exp <= 0 && enemy != null)
+            {
+                // Fallback EXP if not configured in data.
+                exp = Mathf.Max(1, Mathf.RoundToInt((enemy.maxHp + enemy.attack * 10f) * 0.25f));
+            }
             if (exp > 0)
                 exp = Mathf.FloorToInt(exp * ComputeExpMultiplier(level));
 
@@ -95,9 +109,8 @@ namespace Game.Battle
             if (string.IsNullOrWhiteSpace(itemId))
                 return false;
 
-            // Currency can be reduced to 0 by multipliers.
             if (amount <= 0)
-                return IsCurrencyId(itemId);
+                return false;
 
             if (IsGoldId(itemId))
             {
@@ -118,11 +131,6 @@ namespace Game.Battle
             }
 
             return false;
-        }
-
-        private static bool IsCurrencyId(string itemId)
-        {
-            return IsGoldId(itemId) || IsManaCrystalId(itemId) || IsDemonCrystalId(itemId);
         }
 
         private static bool IsGoldId(string itemId)

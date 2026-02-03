@@ -1,10 +1,12 @@
+using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace UDA2.UI.Game
 {
-    public sealed class InventoryItemSlotView : MonoBehaviour
+    public sealed class InventoryItemSlotView : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler
     {
         [Header("Wiring")]
         [SerializeField] private Image iconImage;
@@ -12,8 +14,72 @@ namespace UDA2.UI.Game
         [SerializeField] private GameObject emptyStateRoot;
         [SerializeField] private GameObject filledStateRoot;
 
+        [Header("Rendering")]
+        [Tooltip("If true, shows count even when it equals 1.")]
+        [SerializeField] private bool showCountWhenOne = false;
+
+        [Header("Optional: Icon Sources")]
+        [Tooltip("Optional. Assign ItemDatabase asset to resolve item icons by itemId. Kept as Object to avoid asmdef coupling.")]
+        [SerializeField] private UnityEngine.Object itemDatabase;
+
+        [Header("Input")]
+        [SerializeField] private bool enableInput = true;
+        [Tooltip("Seconds to trigger long press.")]
+        [SerializeField] private float longPressDuration = 0.7f;
+
+        [Header("Scroll/Drag Guard")]
+        [SerializeField] private ScrollRect parentScrollRect;
+        [Tooltip("If moved more than this (px), treat as scroll/drag and ignore tap. <=0 uses EventSystem.pixelDragThreshold")]
+        [SerializeField] private float dragThresholdPixels = -1f;
+        [Tooltip("If ScrollRect normalizedPosition changes more than this while pressed, cancel tap/long press.")]
+        [SerializeField] private float scrollCancelThreshold = 0.0005f;
+
+        public string ItemId { get; private set; } = string.Empty;
+        public int Count { get; private set; }
+
+        public event Action<InventoryItemSlotView, Vector2> Clicked;
+        public event Action<InventoryItemSlotView, Vector2> LongPressed;
+
+        private bool _isEmpty = true;
+        private bool _isPointerDown;
+        private bool _wasLongPressed;
+        private bool _canceledByScroll;
+        private Vector2 _pointerDownPosition;
+        private Vector2 _scrollPosOnPointerDown;
+        private float _pointerDownTime;
+        private global::LongPressHandler _longPress;
+
+        private void Awake()
+        {
+            if (parentScrollRect == null)
+                parentScrollRect = GetComponentInParent<ScrollRect>();
+
+            _longPress = new global::LongPressHandler(Mathf.Max(0.01f, longPressDuration));
+            _longPress.OnCompleted += HandleLongPressCompleted;
+            _longPress.OnCanceled += HandleLongPressCanceled;
+        }
+
+        private void Update()
+        {
+            if (!_isPointerDown || !enableInput)
+                return;
+
+            if (!_canceledByScroll && parentScrollRect != null)
+            {
+                var delta = parentScrollRect.normalizedPosition - _scrollPosOnPointerDown;
+                if (delta.sqrMagnitude > scrollCancelThreshold * scrollCancelThreshold)
+                    CancelByScroll();
+            }
+
+            _longPress?.Update(Time.unscaledDeltaTime);
+        }
+
         public void RenderEmpty()
         {
+            ItemId = string.Empty;
+            Count = 0;
+            _isEmpty = true;
+
             if (filledStateRoot != null) filledStateRoot.SetActive(false);
             if (emptyStateRoot != null) emptyStateRoot.SetActive(true);
 
@@ -29,6 +95,18 @@ namespace UDA2.UI.Game
 
         public void RenderItem(Sprite icon, int count)
         {
+            RenderItem(itemId: string.Empty, icon: icon, count: count);
+        }
+
+        public void RenderItem(string itemId, Sprite icon, int count)
+        {
+            ItemId = string.IsNullOrWhiteSpace(itemId) ? string.Empty : itemId.Trim();
+            Count = Mathf.Max(0, count);
+            _isEmpty = false;
+
+            if (icon == null)
+                icon = ResolveIcon(ItemId);
+
             if (emptyStateRoot != null) emptyStateRoot.SetActive(false);
             if (filledStateRoot != null) filledStateRoot.SetActive(true);
 
@@ -40,8 +118,128 @@ namespace UDA2.UI.Game
 
             if (countText != null)
             {
-                countText.text = count > 1 ? count.ToString() : string.Empty;
+                countText.text = (Count > 1 || (showCountWhenOne && Count > 0)) ? Count.ToString() : string.Empty;
             }
+        }
+
+        private Sprite ResolveIcon(string itemId)
+        {
+            if (string.IsNullOrWhiteSpace(itemId))
+                return null;
+
+            return TryResolveIconFromDatabase(itemId);
+        }
+
+        private Sprite TryResolveIconFromDatabase(string itemId)
+        {
+            if (itemDatabase == null)
+                return null;
+
+            try
+            {
+                var dbType = itemDatabase.GetType();
+                var getById = dbType.GetMethod("GetById");
+                if (getById == null)
+                    return null;
+
+                var def = getById.Invoke(itemDatabase, new object[] { itemId.Trim() });
+                if (def == null)
+                    return null;
+
+                var defType = def.GetType();
+                var iconProp = defType.GetProperty("Icon");
+                if (iconProp == null)
+                    return null;
+
+                return iconProp.GetValue(def) as Sprite;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            if (!enableInput || _isEmpty)
+                return;
+
+            _isPointerDown = true;
+            _canceledByScroll = false;
+            _wasLongPressed = false;
+
+            _pointerDownPosition = eventData != null ? eventData.position : Vector2.zero;
+            _pointerDownTime = Time.unscaledTime;
+
+            if (parentScrollRect != null)
+                _scrollPosOnPointerDown = parentScrollRect.normalizedPosition;
+
+            _longPress?.CancelPress();
+            _longPress?.StartPress();
+        }
+
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            if (!enableInput || _isEmpty)
+                return;
+
+            _isPointerDown = false;
+            _longPress?.CancelPress();
+
+            if (_canceledByScroll)
+                return;
+
+            // Drag guard.
+            if (eventData != null)
+            {
+                float threshold = dragThresholdPixels > 0f
+                    ? dragThresholdPixels
+                    : (EventSystem.current != null ? EventSystem.current.pixelDragThreshold : 10f);
+
+                var moved = (eventData.position - _pointerDownPosition).sqrMagnitude;
+                if (moved > threshold * threshold)
+                    return;
+
+                if (eventData.dragging)
+                    return;
+            }
+
+            // Click only if it wasn't a long press.
+            if (!_wasLongPressed)
+                Clicked?.Invoke(this, eventData != null ? eventData.position : _pointerDownPosition);
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            if (!enableInput || _isEmpty)
+                return;
+
+            _isPointerDown = false;
+            _canceledByScroll = true;
+            _longPress?.CancelPress();
+        }
+
+        private void HandleLongPressCompleted()
+        {
+            if (_isEmpty || _canceledByScroll)
+                return;
+
+            _wasLongPressed = true;
+            _isPointerDown = false;
+            LongPressed?.Invoke(this, _pointerDownPosition);
+        }
+
+        private void HandleLongPressCanceled()
+        {
+            // No-op.
+        }
+
+        private void CancelByScroll()
+        {
+            _canceledByScroll = true;
+            _isPointerDown = false;
+            _longPress?.CancelPress();
         }
     }
 }

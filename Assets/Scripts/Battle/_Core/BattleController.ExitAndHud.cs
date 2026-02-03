@@ -32,6 +32,11 @@ namespace Game.Battle
             turnPhase = TurnPhase.BattleOver;
             hudController?.SetInputEnabled(false);
 
+            // Persist player resources from battle back to SaveData (so leaving battle doesn't "heal to full").
+            // This must happen before we leave the battle scene.
+            var saveForResources = global::GameState.Instance?.CurrentSave;
+            bool resourcesChanged = ApplyPlayerResourcesToSave(saveForResources);
+
             // Tutorial flow: after victory we want an autosave when we arrive to StartCityScene.
             // Do NOT save here (we are still in battle scene and pendingBattle may still be set).
             if (playerWon && context != null && context.Mode == BattleMode.Tutorial)
@@ -62,6 +67,28 @@ namespace Game.Battle
                 itemsGained = loot.Items != null ? (loot.Items as BattleResultData.ItemReward[] ?? new System.Collections.Generic.List<BattleResultData.ItemReward>(loot.Items).ToArray()) : Array.Empty<BattleResultData.ItemReward>();
 
                 ApplyRewardsToSave(save, goldGained, manaCrystalsGained, demonCrystalsGained, expGained, itemsGained);
+
+                // Persist rewards by requesting a deferred autosave when we return to a non-battle scene.
+                // We do not save immediately here because sceneState.pendingBattle is cleared on scene change.
+                if (save?.sceneState != null)
+                {
+                    bool hasAnyReward = goldGained > 0 || manaCrystalsGained > 0 || demonCrystalsGained > 0 || expGained > 0 || (itemsGained != null && itemsGained.Length > 0);
+                    if (hasAnyReward || resourcesChanged)
+                    {
+                        // SaveSystem will autosave slot 0 when entering the target scene.
+                        save.sceneState.RequestAutosave(ResolveReturnSceneName());
+                    }
+                }
+            }
+            else
+            {
+                // Even on defeat we may want to persist consumed resources.
+                if (resourcesChanged)
+                {
+                    var save = global::GameState.Instance?.CurrentSave;
+                    if (save?.sceneState != null)
+                        save.sceneState.RequestAutosave(ResolveReturnSceneName());
+                }
             }
 
             var result = new BattleResultData(
@@ -101,6 +128,11 @@ namespace Game.Battle
             if (goldGained > 0)
                 save.inventory.gold += goldGained;
 
+            // Keep gold mirrored as an inventory item too (for integrity checks / UI consistency).
+            // We store TOTAL gold value as the gold-item count to guarantee sync.
+            EnsureItemList(save.inventory);
+            SetItemCount(save.inventory.items, "gold", save.inventory.gold);
+
             if (manaCrystalsGained > 0)
                 save.inventory.manaCrystals += manaCrystalsGained;
 
@@ -113,8 +145,7 @@ namespace Game.Battle
             if (items == null || items.Length == 0)
                 return;
 
-            if (save.inventory.items == null)
-                save.inventory.items = new System.Collections.Generic.List<SaveData.Item>();
+            EnsureItemList(save.inventory);
 
             for (int i = 0; i < items.Length; i++)
             {
@@ -124,6 +155,39 @@ namespace Game.Battle
 
                 AddOrStack(save.inventory.items, r.ItemId.Trim(), r.Count);
             }
+        }
+
+        private static void EnsureItemList(SaveData.Inventory inv)
+        {
+            if (inv == null)
+                return;
+
+            if (inv.items == null)
+                inv.items = new System.Collections.Generic.List<SaveData.Item>();
+        }
+
+        private static void SetItemCount(System.Collections.Generic.List<SaveData.Item> list, string itemId, int count)
+        {
+            if (list == null || string.IsNullOrWhiteSpace(itemId))
+                return;
+
+            count = Mathf.Max(0, count);
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                var it = list[i];
+                if (it == null)
+                    continue;
+
+                if (string.Equals(it.itemId, itemId, StringComparison.OrdinalIgnoreCase))
+                {
+                    it.count = count;
+                    return;
+                }
+            }
+
+            if (count > 0)
+                list.Add(new SaveData.Item { itemId = itemId, count = count });
         }
 
         private static void AddOrStack(System.Collections.Generic.List<SaveData.Item> list, string itemId, int count)
@@ -160,6 +224,37 @@ namespace Game.Battle
                 UDA2.SceneFlow.SceneFlowManager.Instance.LoadScene(targetScene);
             else
                 UnityEngine.SceneManagement.SceneManager.LoadScene(targetScene);
+        }
+
+        private bool ApplyPlayerResourcesToSave(SaveData save)
+        {
+            if (save == null)
+                return false;
+
+            if (save.player == null)
+                save.player = new SaveData.Player();
+
+            if (save.player.stats == null)
+                save.player.stats = new SaveData.Stats();
+
+            if (context == null || combatState == null)
+                return false;
+
+            var stats = save.player.stats;
+
+            int newHp = Mathf.Clamp(combatState.PlayerHp, 0, Mathf.Max(0, context.Player.MaxHP));
+            int newMp = Mathf.Clamp(combatState.PlayerMp, 0, Mathf.Max(0, context.Player.MaxMP));
+            int newSp = Mathf.Clamp(combatState.PlayerSp, 0, Mathf.Max(0, context.Player.MaxSP));
+            int newLp = Mathf.Clamp(combatState.PlayerLp, 0, Mathf.Max(0, context.Player.MaxLP));
+
+            bool changed = stats.hp != newHp || stats.mp != newMp || stats.sp != newSp || stats.lp != newLp;
+
+            stats.hp = newHp;
+            stats.mp = newMp;
+            stats.sp = newSp;
+            stats.lp = newLp;
+
+            return changed;
         }
 
         private string ResolveReturnSceneName()

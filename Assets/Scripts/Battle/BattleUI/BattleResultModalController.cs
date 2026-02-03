@@ -94,16 +94,16 @@ namespace Game.Battle.UI
             ClearChildren(rewardsContent);
 
             // Currency first (always in fixed order). The slot view decides how to render each id.
-            // Gold is always spawned first (even if 0, so layout stays consistent).
-            SpawnSlot("gold", data.GoldGained);
+            if (data.GoldGained > 0)
+                SpawnSlot("gold", data.GoldGained);
 
-            if (data.ManaCrystalsGained != 0)
+            if (data.ManaCrystalsGained > 0)
                 SpawnSlot("mana_crystal", data.ManaCrystalsGained);
-            if (data.DemonCrystalsGained != 0)
+            if (data.DemonCrystalsGained > 0)
                 SpawnSlot("demon_crystal", data.DemonCrystalsGained);
 
             // EXP as a pseudo-item entry.
-            if (showExpAsSlot)
+            if (showExpAsSlot && data.ExpGained > 0)
                 SpawnSlot("exp", data.ExpGained);
 
             // Then normal items.
@@ -137,7 +137,7 @@ namespace Game.Battle.UI
 
             var view = go.GetComponent<InventoryItemSlotView>();
             if (view != null)
-                view.RenderItem(icon: null, count: count);
+                view.RenderItem(rewardId, icon: null, count: count);
         }
 
         private static void ClearChildren(Transform parent)

@@ -6362,10 +6362,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: UDA2.Battle::Game.Battle.UI.BattleResultModalController
   root: {fileID: 1293380461}
   titleText: {fileID: 1613018946}
-  rewardsText: {fileID: 0}
-  lootText: {fileID: 0}
-  summaryText: {fileID: 0}
-  okButton: {fileID: 0}
+  okButton: {fileID: 791316135}
+  rewardsContent: {fileID: 441970799}
+  rewardSlotPrefab: {fileID: 4864919831078379385, guid: 7389e6dade38b994db8d6b3a339944ed, type: 3}
+  showExpAsSlot: 1
 --- !u!1 &804626554
 GameObject:
   m_ObjectHideFlags: 0
@@ -7437,7 +7437,7 @@ GameObject:
   - component: {fileID: 875795599}
   - component: {fileID: 875795598}
   m_Layer: 0
-  m_Name: lootView
+  m_Name: resultView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7478,7 +7478,7 @@ MonoBehaviour:
   m_Content: {fileID: 441970799}
   m_Horizontal: 1
   m_Vertical: 1
-  m_MovementType: 1
+  m_MovementType: 2
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135

@@ -1,0 +1,17 @@
+*key;ru;en;fr
+*item.exp.name;
+	Опыт;
+	Experience;
+	Expérience;
+*item.exp.desc;
+	Опыт это полученное мастерство во время боя. Она нужна для поднятия уровня.;
+	Experience is the skill gained during combat. It's needed to level up.;
+	L'expérience est la compétence acquise au combat. Elle est nécessaire pour monter de niveau.;
+*item.gold.name;
+	Золото;
+	Gold;
+	Or;
+*item.gold.desc;
+	Золото основная валюта этого мира. Большинство покупок совершаются благодаря ему.;
+	Gold is the primary currency of this world. Most purchases are made with it.;
+	L'or est la principale monnaie mondiale. La plupart des achats se font avec.;

@@ -28,6 +28,18 @@ MonoBehaviour:
   maxLp: 20
   attack: 6
   allowedActions: 00000000010000001400000016000000
+  expReward: 5
+  lootTable:
+  - item: {fileID: 11400000, guid: f46c9b197a9cda340bcd7ba96cb80378, type: 2}
+    itemId: gold
+    minCount: 3
+    maxCount: 10
+    dropChance: 0.09
+  - item: {fileID: 11400000, guid: 83a62c9618c6ab747b78873221b072d2, type: 2}
+    itemId: potion_hp_small
+    minCount: 3
+    maxCount: 10
+    dropChance: 0.09
   regenHpPerTurn: 2
   regenMpPerTurn: 0
   regenSpPerTurn: 2

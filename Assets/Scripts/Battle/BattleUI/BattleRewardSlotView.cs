@@ -18,12 +18,6 @@ namespace Game.Battle.UI
         [Tooltip("Optional. Assign ItemDatabase asset to resolve item icons by itemId. Kept as Object to avoid asmdef coupling.")]
         [SerializeField] private UnityEngine.Object itemDatabase;
 
-        [Header("Special Icons")]
-        [SerializeField] private Sprite goldIcon;
-        [SerializeField] private Sprite manaCrystalIcon;
-        [SerializeField] private Sprite demonCrystalIcon;
-        [SerializeField] private Sprite expIcon;
-
         public string RewardId { get; private set; }
         public int Count { get; private set; }
 
@@ -52,13 +46,11 @@ namespace Game.Battle.UI
             if (string.IsNullOrWhiteSpace(rewardId))
                 return null;
 
-            // Special entries.
-            if (IsGoldId(rewardId)) return goldIcon;
-            if (IsManaCrystalId(rewardId)) return manaCrystalIcon;
-            if (IsDemonCrystalId(rewardId)) return demonCrystalIcon;
-            if (IsExpId(rewardId)) return expIcon;
+            return TryResolveIconFromDatabase(rewardId);
+        }
 
-            // Regular items via ItemDatabase (reflection).
+        private Sprite TryResolveIconFromDatabase(string rewardId)
+        {
             if (itemDatabase == null)
                 return null;
 
@@ -86,30 +78,5 @@ namespace Game.Battle.UI
             }
         }
 
-        private static bool IsGoldId(string id)
-        {
-            return string.Equals(id, "gold", System.StringComparison.OrdinalIgnoreCase);
-        }
-
-        private static bool IsManaCrystalId(string id)
-        {
-            return string.Equals(id, "mana_crystal", System.StringComparison.OrdinalIgnoreCase)
-                   || string.Equals(id, "mana_crystals", System.StringComparison.OrdinalIgnoreCase)
-                   || string.Equals(id, "manaCrystal", System.StringComparison.OrdinalIgnoreCase);
-        }
-
-        private static bool IsDemonCrystalId(string id)
-        {
-            return string.Equals(id, "demon_crystal", System.StringComparison.OrdinalIgnoreCase)
-                   || string.Equals(id, "demon_crystals", System.StringComparison.OrdinalIgnoreCase)
-                   || string.Equals(id, "demonic_crystal", System.StringComparison.OrdinalIgnoreCase)
-                   || string.Equals(id, "demonic_crystals", System.StringComparison.OrdinalIgnoreCase);
-        }
-
-        private static bool IsExpId(string id)
-        {
-            return string.Equals(id, "exp", System.StringComparison.OrdinalIgnoreCase)
-                   || string.Equals(id, "experience", System.StringComparison.OrdinalIgnoreCase);
-        }
     }
 }
