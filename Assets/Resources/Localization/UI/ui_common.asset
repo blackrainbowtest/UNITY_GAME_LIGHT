@@ -85,4 +85,156 @@ MonoBehaviour:
       text: Lose
     - languageCode: fr
       text: lose
+  - key: currency
+    entries:
+    - languageCode: ru
+      text: "\u0412\u0430\u043B\u044E\u0442\u0430"
+    - languageCode: en
+      text: Currency
+    - languageCode: fr
+      text: Monnaie
+  - key: consumable
+    entries:
+    - languageCode: ru
+      text: "\u0420\u0430\u0441\u0445\u043E\u0434\u0443\u0435\u043C\u043E\u0435"
+    - languageCode: en
+      text: Consumable
+    - languageCode: fr
+      text: Consommable
+  - key: resource
+    entries:
+    - languageCode: ru
+      text: "\u0420\u0435\u0441\u0443\u0440\u0441"
+    - languageCode: en
+      text: Resource
+    - languageCode: fr
+      text: Ressource
+  - key: equipment
+    entries:
+    - languageCode: ru
+      text: "\u0421\u043D\u0430\u0440\u044F\u0436\u0435\u043D\u0438\u0435"
+    - languageCode: en
+      text: Equipment
+    - languageCode: fr
+      text: "\xC9quipement"
+  - key: common
+    entries:
+    - languageCode: ru
+      text: "\u041E\u0431\u044B\u0447\u043D\u044B\u0439"
+    - languageCode: en
+      text: Common
+    - languageCode: fr
+      text: Commun
+  - key: uncommon
+    entries:
+    - languageCode: ru
+      text: "\u041D\u0435\u043E\u0431\u044B\u0447\u043D\u044B\u0439"
+    - languageCode: en
+      text: Uncommon
+    - languageCode: fr
+      text: Inhabituel
+  - key: rare
+    entries:
+    - languageCode: ru
+      text: "\u0420\u0435\u0434\u043A\u0438\u0439"
+    - languageCode: en
+      text: Rare
+    - languageCode: fr
+      text: Rare
+  - key: epic
+    entries:
+    - languageCode: ru
+      text: "\u042D\u043F\u0438\u0447\u0435\u0441\u043A\u0438\u0439"
+    - languageCode: en
+      text: Epic
+    - languageCode: fr
+      text: "\xC9pique"
+  - key: legendary
+    entries:
+    - languageCode: ru
+      text: "\u041B\u0435\u0433\u0435\u043D\u0434\u0430\u0440\u043D\u044B\u0439"
+    - languageCode: en
+      text: Legendary
+    - languageCode: fr
+      text: "L\xE9gendaire"
+  - key: mythic
+    entries:
+    - languageCode: ru
+      text: "\u041C\u0438\u0444\u0438\u0447\u0435\u0441\u043A\u0438\u0439"
+    - languageCode: en
+      text: Mythic
+    - languageCode: fr
+      text: Mythique
+  - key: unique
+    entries:
+    - languageCode: ru
+      text: "\u0423\u043D\u0438\u043A\u0430\u043B\u044C\u043D\u044B\u0439"
+    - languageCode: en
+      text: Unique
+    - languageCode: fr
+      text: Unique
+  - key: type
+    entries:
+    - languageCode: ru
+      text: "\u0422\u0438\u043F"
+    - languageCode: en
+      text: Type
+    - languageCode: fr
+      text: Type
+  - key: rarity
+    entries:
+    - languageCode: ru
+      text: "\u0420\u0435\u0434\u043A\u043E\u0441\u0442\u044C"
+    - languageCode: en
+      text: Rarity
+    - languageCode: fr
+      text: "Raret\xE9"
+  - key: buy_price
+    entries:
+    - languageCode: ru
+      text: "\u041F\u043E\u043A\u0443\u043F\u043A\u0430"
+    - languageCode: en
+      text: Buy
+    - languageCode: fr
+      text: Achat
+  - key: sell_price
+    entries:
+    - languageCode: ru
+      text: "\u041F\u0440\u043E\u0434\u0430\u0436\u0430"
+    - languageCode: en
+      text: Sell
+    - languageCode: fr
+      text: Vente
+  - key: type_fmt
+    entries:
+    - languageCode: ru
+      text: "\u0422\u0438\u043F: {0}"
+    - languageCode: en
+      text: "Type: {0}"
+    - languageCode: fr
+      text: "Type : {0}"
+  - key: rarity_fmt
+    entries:
+    - languageCode: ru
+      text: "\u0420\u0435\u0434\u043A\u043E\u0441\u0442\u044C: {0}"
+    - languageCode: en
+      text: "Rarity: {0}"
+    - languageCode: fr
+      text: "Raret\xE9 : {0}"
+  - key: buy_price_fmt
+    entries:
+    - languageCode: ru
+      text: "\u041F\u043E\u043A\u0443\u043F\u043A\u0430: {0}"
+    - languageCode: en
+      text: "Buy: {0}"
+    - languageCode: fr
+      text: "Achat : {0}"
+  - key: sell_price_fmt
+    entries:
+    - languageCode: ru
+      text: "\u041F\u0440\u043E\u0434\u0430\u0436\u0430: {0}"
+    - languageCode: en
+      text: "Sell: {0}"
+    - languageCode: fr
+      text: "Vente : {0}"
   sourceCsvName: ui_common

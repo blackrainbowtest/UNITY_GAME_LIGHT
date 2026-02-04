@@ -24,6 +24,10 @@ namespace Game.Battle.UI
         [Tooltip("Prefab with InventoryItemSlotView for icon + count.")]
         [SerializeField] private GameObject rewardSlotPrefab;
 
+        [Header("Optional: data")]
+        [Tooltip("Optional. Assign ItemDatabase asset to resolve tooltip/name/rarity. Kept as Object to avoid assembly reference coupling.")]
+        [SerializeField] private UnityEngine.Object itemDatabase;
+
         [Header("Ordering")]
         [Tooltip("If true, EXP will be spawned as a reward entry with id 'exp'.")]
         [SerializeField] private bool showExpAsSlot = true;
@@ -35,6 +39,8 @@ namespace Game.Battle.UI
             if (okButton != null)
                 okButton.onClick.AddListener(OnOkClicked);
 
+            AutoWireIfMissing();
+
             Hide();
         }
 
@@ -44,9 +50,18 @@ namespace Game.Battle.UI
 
             ApplyLocalizedTitle(data);
 
+            AutoWireIfMissing();
+
+
             // Prefab list: we show ONLY slots (currencies first, then items).
             if (rewardsContent != null && rewardSlotPrefab != null)
+            {
                 RenderRewardsAsSlots(data);
+            }
+            else
+            {
+                Debug.LogWarning("[BattleResultModal] Rewards list is not wired (rewardsContent or rewardSlotPrefab is null). No reward slots will be spawned.", this);
+            }
 
             if (root != null)
                 root.SetActive(true);
@@ -93,6 +108,7 @@ namespace Game.Battle.UI
         {
             ClearChildren(rewardsContent);
 
+
             // Currency first (always in fixed order). The slot view decides how to render each id.
             if (data.GoldGained > 0)
                 SpawnSlot("gold", data.GoldGained);
@@ -120,6 +136,34 @@ namespace Game.Battle.UI
             }
         }
 
+        private void AutoWireIfMissing()
+        {
+            if (rewardsContent == null)
+            {
+                // Try to find a child named "RewardsContent" or "Content".
+                var rts = GetComponentsInChildren<RectTransform>(true);
+                for (int i = 0; i < rts.Length; i++)
+                {
+                    var rt = rts[i];
+                    if (rt == null) continue;
+                    if (string.Equals(rt.name, "RewardsContent", StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(rt.name, "Content", StringComparison.OrdinalIgnoreCase))
+                    {
+                        rewardsContent = rt;
+                        break;
+                    }
+                }
+            }
+
+            if (rewardSlotPrefab == null)
+            {
+                // Default: reuse inventory slot view prefab.
+                var slot = Resources.Load<InventoryItemSlotView>("Prefabs/UI/Profile/Inventory/InventoryItemSlotView");
+                if (slot != null)
+                    rewardSlotPrefab = slot.gameObject;
+            }
+        }
+
         private void SpawnSlot(string rewardId, int count)
         {
             if (rewardSlotPrefab == null || rewardsContent == null)
@@ -131,13 +175,24 @@ namespace Game.Battle.UI
             var rewardView = go.GetComponent<BattleRewardSlotView>();
             if (rewardView != null)
             {
+                rewardView.SetItemDatabase(itemDatabase);
                 rewardView.Render(rewardId, count);
                 return;
             }
 
             var view = go.GetComponent<InventoryItemSlotView>();
             if (view != null)
+            {
+                view.SetItemDatabase(itemDatabase);
                 view.RenderItem(rewardId, icon: null, count: count);
+
+                var trigger = view.GetComponent<ItemTooltipTrigger>();
+                if (trigger == null)
+                    trigger = view.gameObject.AddComponent<ItemTooltipTrigger>();
+
+                trigger.SetItemDatabase(itemDatabase);
+                trigger.SetMode(ItemTooltipTrigger.TriggerMode.Outside);
+            }
         }
 
         private static void ClearChildren(Transform parent)

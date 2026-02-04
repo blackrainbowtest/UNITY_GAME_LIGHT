@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UDA2.SceneFlow;
 using UDA2.SaveSystem;
+using UDA2.Platform;
 
 public class GameMenuController : MonoBehaviour
 {
@@ -100,7 +101,7 @@ public class GameMenuController : MonoBehaviour
     #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
     #else
-        Application.Quit();
+        AppExit.Quit(removeFromRecents: true);
     #endif
     }
 }

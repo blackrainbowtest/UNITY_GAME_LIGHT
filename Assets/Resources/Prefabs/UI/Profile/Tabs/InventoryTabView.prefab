@@ -699,10 +699,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UDA2.UI::UDA2.UI.Game.InventoryTabView
   content: {fileID: 1910407596530351001}
-  itemSlotPrefab: {fileID: 6129150956721093658, guid: 7389e6dade38b994db8d6b3a339944ed, type: 3}
+  itemSlotPrefab: {fileID: 6129150956721093658, guid: d93dd13feee39f54d9dd37470c8331b0, type: 3}
   filterById: {fileID: 1474530914136189160}
   filterByType: {fileID: 7905658254712538928}
   filterByRarity: {fileID: 6711677423403433781}
+  forceSelectedVisual: 1
   itemDatabase: {fileID: 11400000, guid: ea48e7814522e8849a7792d9d32df653, type: 2}
   showEmptySlots: 1
 --- !u!1 &5320956611343975624

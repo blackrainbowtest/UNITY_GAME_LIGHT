@@ -7,6 +7,12 @@ public class LocalizedTextSetter : MonoBehaviour
     // Removed UIStringsData reference; now uses UIStringsProvider
     public TMP_Text targetText;
 
+    private void Awake()
+    {
+        if (targetText == null)
+            targetText = GetComponent<TMP_Text>();
+    }
+
     void Start()
     {
         UpdateText();
@@ -24,6 +30,12 @@ public class LocalizedTextSetter : MonoBehaviour
 
     public void UpdateText(string lang)
     {
+        if (string.IsNullOrWhiteSpace(key))
+            return;
+
+        if (targetText == null)
+            targetText = GetComponent<TMP_Text>();
+
         if (targetText != null && UIStringsProvider.Instance != null)
         {
             targetText.text = UIStringsProvider.Instance.Get(key, lang);

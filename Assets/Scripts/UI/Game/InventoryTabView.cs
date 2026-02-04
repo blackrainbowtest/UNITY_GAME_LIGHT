@@ -313,7 +313,16 @@ namespace UDA2.UI.Game
             {
                 var inst = Instantiate(itemSlotPrefab, content);
                 if (inst != null)
+                {
                     inst.SetItemDatabase(itemDatabase);
+
+                    var trigger = inst.GetComponent<ItemTooltipTrigger>();
+                    if (trigger == null)
+                        trigger = inst.gameObject.AddComponent<ItemTooltipTrigger>();
+
+                    trigger.SetItemDatabase(itemDatabase);
+                    trigger.SetMode(ItemTooltipTrigger.TriggerMode.InventoryOrStorage);
+                }
                 _spawned.Add(inst);
             }
         }

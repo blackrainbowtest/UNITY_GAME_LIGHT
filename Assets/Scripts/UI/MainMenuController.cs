@@ -1,4 +1,5 @@
 using UnityEngine;
+using UDA2.Platform;
 
 namespace UDA2.UI
 {
@@ -65,7 +66,7 @@ namespace UDA2.UI
 
         public void OnExitPressed()
         {
-            Application.Quit();
+            AppExit.Quit(removeFromRecents: true);
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
 #endif

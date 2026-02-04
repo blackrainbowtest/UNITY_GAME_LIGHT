@@ -18,6 +18,15 @@ namespace Game.Battle.UI
         [Tooltip("Optional. Assign ItemDatabase asset to resolve item icons by itemId. Kept as Object to avoid asmdef coupling.")]
         [SerializeField] private UnityEngine.Object itemDatabase;
 
+        public void SetItemDatabase(UnityEngine.Object db)
+        {
+            if (db == null)
+                return;
+
+            if (itemDatabase == null)
+                itemDatabase = db;
+        }
+
         public string RewardId { get; private set; }
         public int Count { get; private set; }
 

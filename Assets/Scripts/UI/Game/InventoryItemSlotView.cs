@@ -36,6 +36,8 @@ namespace UDA2.UI.Game
         [Tooltip("Optional. Assign ItemDatabase asset to resolve item icons by itemId. Kept as Object to avoid asmdef coupling.")]
         [SerializeField] private UnityEngine.Object itemDatabase;
 
+        public UnityEngine.Object ItemDatabase => itemDatabase;
+
         public void SetItemDatabase(UnityEngine.Object db)
         {
             if (db == null)
@@ -49,6 +51,12 @@ namespace UDA2.UI.Game
         [SerializeField] private bool enableInput = true;
         [Tooltip("Seconds to trigger long press.")]
         [SerializeField] private float longPressDuration = 0.7f;
+
+        [Header("Long Press Visual")]
+        [Tooltip("If true, shows a circular progress indicator under the finger while holding.")]
+        [SerializeField] private bool showLongPressProgress = true;
+        [Tooltip("Delay before showing the progress UI (prevents flashing on quick taps).")]
+        [SerializeField] private float progressShowDelay = 0.15f;
 
         [Header("Scroll/Drag Guard")]
         [SerializeField] private ScrollRect parentScrollRect;
@@ -72,6 +80,8 @@ namespace UDA2.UI.Game
         private Vector2 _pointerDownPosition;
         private Vector2 _scrollPosOnPointerDown;
         private float _pointerDownTime;
+        private bool _waitingToShowProgress;
+        private float _progressShowTimer;
         private global::LongPressHandler _longPress;
 
         private void Awake()
@@ -91,6 +101,7 @@ namespace UDA2.UI.Game
             _longPress = new global::LongPressHandler(Mathf.Max(0.01f, longPressDuration));
             _longPress.OnCompleted += HandleLongPressCompleted;
             _longPress.OnCanceled += HandleLongPressCanceled;
+            _longPress.OnProgress += HandleLongPressProgress;
         }
 
         private void Update()
@@ -106,6 +117,16 @@ namespace UDA2.UI.Game
             }
 
             _longPress?.Update(Time.unscaledDeltaTime);
+
+            if (showLongPressProgress && _waitingToShowProgress)
+            {
+                _progressShowTimer += Time.unscaledDeltaTime;
+                if (_progressShowTimer >= Mathf.Max(0f, progressShowDelay))
+                {
+                    _waitingToShowProgress = false;
+                    LongPressProgressHud.Show(GetInstanceID(), _pointerDownPosition);
+                }
+            }
         }
 
         public void RenderEmpty()
@@ -295,6 +316,13 @@ namespace UDA2.UI.Game
             _pointerDownPosition = eventData != null ? eventData.position : Vector2.zero;
             _pointerDownTime = Time.unscaledTime;
 
+            if (showLongPressProgress)
+            {
+                _progressShowTimer = 0f;
+                _waitingToShowProgress = true;
+                LongPressProgressHud.Begin(GetInstanceID());
+            }
+
             if (parentScrollRect != null)
                 _scrollPosOnPointerDown = parentScrollRect.normalizedPosition;
 
@@ -308,7 +336,11 @@ namespace UDA2.UI.Game
                 return;
 
             _isPointerDown = false;
+            _waitingToShowProgress = false;
             _longPress?.CancelPress();
+
+            if (showLongPressProgress)
+                LongPressProgressHud.End(GetInstanceID());
 
             if (_canceledByScroll)
                 return;
@@ -339,8 +371,12 @@ namespace UDA2.UI.Game
                 return;
 
             _isPointerDown = false;
+            _waitingToShowProgress = false;
             _canceledByScroll = true;
             _longPress?.CancelPress();
+
+            if (showLongPressProgress)
+                LongPressProgressHud.End(GetInstanceID());
         }
 
         private void HandleLongPressCompleted()
@@ -350,19 +386,39 @@ namespace UDA2.UI.Game
 
             _wasLongPressed = true;
             _isPointerDown = false;
+            _waitingToShowProgress = false;
+
+            if (showLongPressProgress)
+                LongPressProgressHud.End(GetInstanceID());
+
             LongPressed?.Invoke(this, _pointerDownPosition);
+        }
+
+        private void HandleLongPressProgress(float progress)
+        {
+            if (!showLongPressProgress)
+                return;
+
+            LongPressProgressHud.SetProgress(GetInstanceID(), progress);
         }
 
         private void HandleLongPressCanceled()
         {
-            // No-op.
+            _waitingToShowProgress = false;
+
+            if (showLongPressProgress)
+                LongPressProgressHud.End(GetInstanceID());
         }
 
         private void CancelByScroll()
         {
             _canceledByScroll = true;
             _isPointerDown = false;
+            _waitingToShowProgress = false;
             _longPress?.CancelPress();
+
+            if (showLongPressProgress)
+                LongPressProgressHud.End(GetInstanceID());
         }
     }
 }

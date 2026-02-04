@@ -6365,6 +6365,7 @@ MonoBehaviour:
   okButton: {fileID: 791316135}
   rewardsContent: {fileID: 441970799}
   rewardSlotPrefab: {fileID: 4864919831078379385, guid: 7389e6dade38b994db8d6b3a339944ed, type: 3}
+  itemDatabase: {fileID: 11400000, guid: ea48e7814522e8849a7792d9d32df653, type: 2}
   showExpAsSlot: 1
 --- !u!1 &804626554
 GameObject:

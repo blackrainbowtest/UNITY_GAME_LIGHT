@@ -68,7 +68,7 @@ MonoBehaviour:
   m_text: 25
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: e73a58f6e2794ae7b1b7e50b7fb811b0, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -98,9 +98,9 @@ MonoBehaviour:
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 9
   m_HorizontalAlignment: 4
-  m_VerticalAlignment: 1024
+  m_VerticalAlignment: 8192
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -295,6 +295,7 @@ GameObject:
   - component: {fileID: 478426846316287950}
   - component: {fileID: 7653348559881947130}
   - component: {fileID: 6129150956721093658}
+  - component: {fileID: 3531878299681757461}
   m_Layer: 0
   m_Name: InventoryItemSlotView
   m_TagString: Untagged
@@ -344,7 +345,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.039215688, g: 0.039215688, b: 0.11764707, a: 0.78431374}
+  m_Color: {r: 0.039215688, g: 0.039215688, b: 0.11764707, a: 0.39215687}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -373,14 +374,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4ccdfb54a75ae942a5c74c8d06e1cb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.UI::UDA2.UI.Game.InventoryItemSlotView
+  backgroundImage: {fileID: 0}
   iconImage: {fileID: 165685127527865925}
   countText: {fileID: 4386997396968732088}
   emptyStateRoot: {fileID: 3131534179863395951}
   filledStateRoot: {fileID: 1569965929170508773}
   showCountWhenOne: 0
+  tintBackgroundByRarity: 1
+  commonColor: {r: 0.69803923, g: 0.69803923, b: 0.69803923, a: 0.39215687}
+  uncommonColor: {r: 0.35, g: 0.85, b: 0.35, a: 0.39215687}
+  rareColor: {r: 0.35, g: 0.55, b: 0.95, a: 0.39215687}
+  epicColor: {r: 0.75, g: 0.35, b: 0.95, a: 0.39215687}
+  legendaryColor: {r: 0.95, g: 0.65, b: 0.2, a: 0.39215687}
+  mythicColor: {r: 0.95, g: 0.25, b: 0.35, a: 0.39215687}
+  uniqueColor: {r: 0.95, g: 0.9, b: 0.25, a: 0.39215687}
   itemDatabase: {fileID: 11400000, guid: ea48e7814522e8849a7792d9d32df653, type: 2}
   enableInput: 1
   longPressDuration: 0.7
   parentScrollRect: {fileID: 0}
   dragThresholdPixels: -1
   scrollCancelThreshold: 0.0005
+--- !u!114 &3531878299681757461
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4864919831078379385}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a366efd922b1e6744be5efc61867eff0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UDA2.UI::UDA2.UI.UIButtonSound
