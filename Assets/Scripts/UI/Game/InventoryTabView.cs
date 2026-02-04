@@ -24,6 +24,10 @@ namespace UDA2.UI.Game
         [SerializeField] private Button filterByType;
         [SerializeField] private Button filterByRarity;
 
+        [Header("Sort Button Visuals")]
+        [Tooltip("If true, the selected sort button will be visually highlighted even if the prefab has no disabled-color tint configured.")]
+        [SerializeField] private bool forceSelectedVisual = true;
+
         [Header("Optional: data")]
         [Tooltip("Optional. Assign the ItemDatabase asset to resolve type/rarity/icons. Kept as Object to avoid assembly reference coupling.")]
         [SerializeField] private UnityEngine.Object itemDatabase;
@@ -34,18 +38,26 @@ namespace UDA2.UI.Game
         private readonly List<InventoryItemSlotView> _spawned = new List<InventoryItemSlotView>(128);
         private SortMode _sortMode = SortMode.ById;
 
+        private readonly Dictionary<Button, ButtonVisualCache> _buttonVisualCache = new Dictionary<Button, ButtonVisualCache>(8);
+
         private void Awake()
         {
             AutoWireIfMissing();
 
+            CacheButtonVisual(filterById);
+            CacheButtonVisual(filterByType);
+            CacheButtonVisual(filterByRarity);
+
             if (filterById != null)
-                filterById.onClick.AddListener(() => { _sortMode = SortMode.ById; Refresh(); });
+                filterById.onClick.AddListener(() => { _sortMode = SortMode.ById; Refresh(); UpdateFilterButtonsVisual(); });
 
             if (filterByType != null)
-                filterByType.onClick.AddListener(() => { _sortMode = SortMode.ByType; Refresh(); });
+                filterByType.onClick.AddListener(() => { _sortMode = SortMode.ByType; Refresh(); UpdateFilterButtonsVisual(); });
 
             if (filterByRarity != null)
-                filterByRarity.onClick.AddListener(() => { _sortMode = SortMode.ByRarity; Refresh(); });
+                filterByRarity.onClick.AddListener(() => { _sortMode = SortMode.ByRarity; Refresh(); UpdateFilterButtonsVisual(); });
+
+            UpdateFilterButtonsVisual();
         }
 
         private void AutoWireIfMissing()
@@ -111,6 +123,8 @@ namespace UDA2.UI.Game
             var entries = BuildEntries(inv);
             SortEntries(entries);
 
+            UpdateFilterButtonsVisual();
+
             int capacity = save != null ? InventoryCapacityRules.GetCapacity(save) : InventoryCapacityRules.BaseSlots;
             int slotCount = showEmptySlots ? Math.Max(capacity, entries.Count) : entries.Count;
 
@@ -129,6 +143,91 @@ namespace UDA2.UI.Game
                     _spawned[i].RenderEmpty();
                 }
             }
+        }
+
+        private void UpdateFilterButtonsVisual()
+        {
+            ApplyFilterButtonState(filterById, _sortMode == SortMode.ById);
+            ApplyFilterButtonState(filterByType, _sortMode == SortMode.ByType);
+            ApplyFilterButtonState(filterByRarity, _sortMode == SortMode.ByRarity);
+        }
+
+        private void CacheButtonVisual(Button button)
+        {
+            if (button == null)
+                return;
+
+            if (_buttonVisualCache.ContainsKey(button))
+                return;
+
+            var cache = new ButtonVisualCache
+            {
+                colors = button.colors,
+                hasGraphic = button.targetGraphic != null,
+                graphicColor = button.targetGraphic != null ? button.targetGraphic.color : Color.white,
+            };
+
+            _buttonVisualCache.Add(button, cache);
+        }
+
+        private void ApplyFilterButtonState(Button button, bool isSelected)
+        {
+            if (button == null)
+                return;
+
+            CacheButtonVisual(button);
+
+            if (!_buttonVisualCache.TryGetValue(button, out var cache))
+                return;
+
+            if (!forceSelectedVisual)
+            {
+                button.interactable = !isSelected;
+                return;
+            }
+
+            if (isSelected)
+            {
+                var selectedColor = DeriveSelectedColor(cache.colors, cache.hasGraphic ? cache.graphicColor : (Color?)null);
+
+                // Keep the same interaction model as tabs (selected is not interactable),
+                // but force a visible tint even if the prefab's disabled color is not configured.
+                var colors = cache.colors;
+                colors.disabledColor = selectedColor;
+                button.colors = colors;
+                button.interactable = false;
+
+                if (button.targetGraphic != null)
+                    button.targetGraphic.color = selectedColor;
+            }
+            else
+            {
+                button.interactable = true;
+                button.colors = cache.colors;
+
+                if (button.targetGraphic != null && cache.hasGraphic)
+                    button.targetGraphic.color = cache.graphicColor;
+            }
+        }
+
+        private static Color DeriveSelectedColor(ColorBlock baseColors, Color? baseGraphicColor)
+        {
+            // Prefer existing palette from the prefab.
+            if (baseColors.highlightedColor != baseColors.normalColor)
+                return ForceOpaque(baseColors.highlightedColor);
+
+            if (baseColors.pressedColor != baseColors.normalColor)
+                return ForceOpaque(baseColors.pressedColor);
+
+            // Fallback: slightly brighten whatever the button/graphic currently uses.
+            var c = baseGraphicColor ?? baseColors.normalColor;
+            return ForceOpaque(Color.Lerp(c, Color.white, 0.25f));
+        }
+
+        private static Color ForceOpaque(Color c)
+        {
+            c.a = 1f;
+            return c;
         }
 
         private List<Entry> BuildEntries(SaveData.Inventory inv)
@@ -213,6 +312,8 @@ namespace UDA2.UI.Game
             while (_spawned.Count < desired)
             {
                 var inst = Instantiate(itemSlotPrefab, content);
+                if (inst != null)
+                    inst.SetItemDatabase(itemDatabase);
                 _spawned.Add(inst);
             }
         }
@@ -230,7 +331,7 @@ namespace UDA2.UI.Game
         {
             if (string.IsNullOrWhiteSpace(type))
                 return 999;
-
+            // REMEMBERME: __type
             return type.Trim().ToLowerInvariant() switch
             {
                 "currency" => 0,
@@ -254,7 +355,7 @@ namespace UDA2.UI.Game
         {
             if (string.IsNullOrWhiteSpace(rarity))
                 return 999;
-
+            // REMEMBERME: __rarity
             return rarity.Trim().ToLowerInvariant() switch
             {
                 "common" => 0,
@@ -324,6 +425,13 @@ namespace UDA2.UI.Game
             public Sprite icon;
             public string typeId;
             public string rarityId;
+        }
+
+        private struct ButtonVisualCache
+        {
+            public ColorBlock colors;
+            public bool hasGraphic;
+            public Color graphicColor;
         }
     }
 }

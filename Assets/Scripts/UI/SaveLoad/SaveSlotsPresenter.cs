@@ -37,8 +37,8 @@ namespace UDA2.UI.SaveLoad
                 var meta = SaveSlotsManager.GetMeta(slotId);
                 if (meta != null)
                 {
-                    saveTimeText = meta.saveTime;
-                    levelGoldText = $"Lv {meta.playerLevel} • Gold {meta.playTimeSeconds}";
+                    saveTimeText = NormalizeSaveTime(meta.saveTime);
+                    levelGoldText = BuildLevelGoldText(meta.playerLevel, meta.playerGold);
                 }
                 else
                 {
@@ -62,6 +62,31 @@ namespace UDA2.UI.SaveLoad
                 emptyKey: emptyKey,
                 saveTimeText: saveTimeText,
                 levelGoldText: levelGoldText);
+        }
+
+        private static string BuildLevelGoldText(int level, int gold)
+        {
+            var settings = UDA2.Core.SettingsContext.Current;
+            string lang = (settings == null || string.IsNullOrEmpty(settings.language)) ? "en" : settings.language;
+
+            var provider = UIStringsProvider.Instance;
+            if (provider != null)
+                return provider.GetFormatted("save_load_level_gold", lang, level, gold);
+
+            // Hard fallback if localization provider isn't available.
+            return $"Lv {level} • Gold {gold}";
+        }
+
+        private static string NormalizeSaveTime(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return "—";
+
+            // Backward compatibility: older saves used ISO like "2026-02-04T12:34:56Z".
+            var s = value.Replace('T', ' ');
+            if (s.EndsWith("Z"))
+                s = s.Substring(0, s.Length - 1);
+            return s;
         }
     }
 }

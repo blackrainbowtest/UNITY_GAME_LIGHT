@@ -344,7 +344,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.08}
+  m_Color: {r: 0.039215688, g: 0.039215688, b: 0.11764707, a: 0.78431374}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -379,10 +379,6 @@ MonoBehaviour:
   filledStateRoot: {fileID: 1569965929170508773}
   showCountWhenOne: 0
   itemDatabase: {fileID: 11400000, guid: ea48e7814522e8849a7792d9d32df653, type: 2}
-  goldIcon: {fileID: 0}
-  manaCrystalIcon: {fileID: 0}
-  demonCrystalIcon: {fileID: 0}
-  expIcon: {fileID: 0}
   enableInput: 1
   longPressDuration: 0.7
   parentScrollRect: {fileID: 0}

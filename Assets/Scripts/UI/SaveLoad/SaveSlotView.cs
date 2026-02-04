@@ -337,15 +337,35 @@ namespace UDA2.UI.SaveLoad
             isEmpty = false;
 
             if (saveTimeText != null && !ReferenceEquals(saveTimeText, slotTitle))
-                saveTimeText.text = meta != null ? meta.saveTime : "—";
+                saveTimeText.text = meta != null ? NormalizeSaveTime(meta.saveTime) : "—";
 
             if (levelGoldText != null && !ReferenceEquals(levelGoldText, slotTitle))
                 levelGoldText.text = meta != null
-                    ? $"Lv {meta.playerLevel} • Gold {meta.playTimeSeconds}"
+                    ? BuildLevelGoldText(meta.playerLevel, meta.playerGold)
                     : "—";
 
             // Keep the title stable.
             SetSlotTitleKey($"save_load_slot_{slotId}");
+        }
+
+        private string BuildLevelGoldText(int level, int gold)
+        {
+            var provider = UIStringsProvider.Instance;
+            if (provider != null)
+                return provider.GetFormatted("save_load_level_gold", GetCurrentLang(), level, gold);
+
+            return $"Lv {level} • Gold {gold}";
+        }
+
+        private static string NormalizeSaveTime(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return "—";
+
+            var s = value.Replace('T', ' ');
+            if (s.EndsWith("Z"))
+                s = s.Substring(0, s.Length - 1);
+            return s;
         }
 
         public void SetAutosave(bool isAutosave)

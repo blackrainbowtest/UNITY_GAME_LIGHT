@@ -423,6 +423,7 @@ GameObject:
   - component: {fileID: 5266515158559341745}
   - component: {fileID: 8608777027876807723}
   - component: {fileID: 257509843842578721}
+  - component: {fileID: 6349600910548810696}
   m_Layer: 0
   m_Name: Skills
   m_TagString: Untagged
@@ -552,6 +553,18 @@ MonoBehaviour:
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &6349600910548810696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3031431479647004660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a366efd922b1e6744be5efc61867eff0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UDA2.UI::UDA2.UI.UIButtonSound
 --- !u!1 &3110222521314301059
 GameObject:
   m_ObjectHideFlags: 0
@@ -845,6 +858,7 @@ GameObject:
   - component: {fileID: 377602671513600690}
   - component: {fileID: 4377740139771334960}
   - component: {fileID: 5251236668923747367}
+  - component: {fileID: 8511645421372221206}
   m_Layer: 0
   m_Name: Profile
   m_TagString: Untagged
@@ -974,6 +988,18 @@ MonoBehaviour:
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &8511645421372221206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3988891513535609395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a366efd922b1e6744be5efc61867eff0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UDA2.UI::UDA2.UI.UIButtonSound
 --- !u!1 &4546072149787664822
 GameObject:
   m_ObjectHideFlags: 0
@@ -1239,6 +1265,7 @@ GameObject:
   - component: {fileID: 7390875806004449033}
   - component: {fileID: 5255522354850875252}
   - component: {fileID: 8443022680181504270}
+  - component: {fileID: 7337803009543866116}
   m_Layer: 0
   m_Name: Button
   m_TagString: Untagged
@@ -1348,6 +1375,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &7337803009543866116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4739585241029863833}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a366efd922b1e6744be5efc61867eff0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UDA2.UI::UDA2.UI.UIButtonSound
 --- !u!1 &4782734450935709705
 GameObject:
   m_ObjectHideFlags: 0
@@ -1361,6 +1400,7 @@ GameObject:
   - component: {fileID: 5634282117461537276}
   - component: {fileID: 2089552517721801415}
   - component: {fileID: 8016458547955670038}
+  - component: {fileID: 7806739622832636947}
   m_Layer: 0
   m_Name: Status
   m_TagString: Untagged
@@ -1490,6 +1530,18 @@ MonoBehaviour:
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &7806739622832636947
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4782734450935709705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a366efd922b1e6744be5efc61867eff0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UDA2.UI::UDA2.UI.UIButtonSound
 --- !u!1 &5265763018836032958
 GameObject:
   m_ObjectHideFlags: 0
@@ -1977,6 +2029,7 @@ GameObject:
   - component: {fileID: 2818231983284052083}
   - component: {fileID: 8890025381126034219}
   - component: {fileID: 6023717115253498165}
+  - component: {fileID: 2315259879164290566}
   m_Layer: 0
   m_Name: Inventory
   m_TagString: Untagged
@@ -2106,3 +2159,15 @@ MonoBehaviour:
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &2315259879164290566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8794115149694516009}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a366efd922b1e6744be5efc61867eff0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UDA2.UI::UDA2.UI.UIButtonSound

@@ -35,7 +35,37 @@ MonoBehaviour:
     itemId: potion_hp_small
     minCount: 1
     maxCount: 3
-    dropChance: 0.35
+    dropChance: 1
+  - item: {fileID: 11400000, guid: f8ea14cd21cd21344bb8adfbb8dd5162, type: 2}
+    itemId: potion_mana_small
+    minCount: 1
+    maxCount: 3
+    dropChance: 1
+  - item: {fileID: 11400000, guid: 834168cabf2018c4fb08c76d66fe9812, type: 2}
+    itemId: potion_mana_small
+    minCount: 1
+    maxCount: 3
+    dropChance: 1
+  - item: {fileID: 11400000, guid: 4c68a969a596e4c4e8a2980941fbb64d, type: 2}
+    itemId: potion_mana_small
+    minCount: 1
+    maxCount: 3
+    dropChance: 1
+  - item: {fileID: 11400000, guid: b8ee4a01ffedef94ebb691c8c5583976, type: 2}
+    itemId: potion_mana_small
+    minCount: 1
+    maxCount: 3
+    dropChance: 1
+  - item: {fileID: 11400000, guid: 1ed7716e91ac1e54e92fc773b5f66abd, type: 2}
+    itemId: potion_mana_small
+    minCount: 1
+    maxCount: 3
+    dropChance: 1
+  - item: {fileID: 11400000, guid: 483299c392fc1044cbeba649df800ac8, type: 2}
+    itemId: potion_mana_small
+    minCount: 1
+    maxCount: 3
+    dropChance: 1
   regenHpPerTurn: 2
   regenMpPerTurn: 0
   regenSpPerTurn: 2

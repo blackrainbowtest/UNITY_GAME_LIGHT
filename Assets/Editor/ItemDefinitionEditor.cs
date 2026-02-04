@@ -181,7 +181,13 @@ public sealed class ItemDefinitionEditor : Editor
 
         EditorGUILayout.Space(6);
         EditorGUILayout.LabelField("Economy", EditorStyles.boldLabel);
-        EditorGUILayout.PropertyField(_value, new GUIContent("Value"));
+        EditorGUILayout.PropertyField(_value, new GUIContent("Sell Price (Gold)"));
+        using (new EditorGUI.DisabledScope(true))
+        {
+            int sell = Mathf.Max(0, _value != null ? _value.intValue : 0);
+            int buy = sell * ItemDefinition.BuyPriceMultiplier;
+            EditorGUILayout.IntField(new GUIContent($"Buy Price (x{ItemDefinition.BuyPriceMultiplier})"), buy);
+        }
         EditorGUILayout.PropertyField(_weight);
 
         EditorGUILayout.Space(6);

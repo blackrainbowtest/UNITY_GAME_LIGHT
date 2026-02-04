@@ -6,7 +6,7 @@
       "nameKey": "item.gold.name",
       "descriptionKey": "item.gold.desc",
       "icon": "icon_gold",
-      "rarity": "Common",
+      "rarity": "unique",
       "stackable": true,
       "maxStack": 9999
     },
@@ -45,7 +45,7 @@
     "meta": {
       "nameKey": "item.potion_hp_small.name",
       "descriptionKey": "item.potion_hp_small.desc",
-      "icon": "Potions/icon_potion_hp_small",
+      "icon": "icon_potion_hp_small",
       "rarity": "Common",
       "stackable": true,
       "maxStack": 99
@@ -83,7 +83,7 @@
     "meta": {
       "nameKey": "item.potion_mana_small.name",
       "descriptionKey": "item.potion_mana_small.desc",
-      "icon": "Potions/icon_potion_mp_small",
+      "icon": "icon_potion_mp_small",
       "rarity": "Common",
       "stackable": true,
       "maxStack": 99
@@ -117,11 +117,11 @@
   },
   {
     "id": "potion_stamina_small",
-    "type": "Consumable",
+    "type": "consumable",
     "meta": {
       "nameKey": "item.potion_stamina_small.name",
       "descriptionKey": "item.potion_stamina_small.desc",
-      "icon": "Potions/icon_potion_st_small",
+      "icon": "icon_potion_st_small",
       "rarity": "Common",
       "stackable": true,
       "maxStack": 99
@@ -139,6 +139,424 @@
       "hp": 0,
       "mp": 0,
       "sp": 20,
+      "lp": 0,
+      "statuses": []
+    },
+    "equipment": {
+      "slot": null,
+      "stats": {}
+    },
+    "world": {
+      "canDrop": true,
+      "canDestroy": false,
+      "containerSize": -1
+    },
+    "flags": []
+  },
+  {
+    "id": "branch",
+    "type": "resource",
+    "meta": {
+      "nameKey": "item.branch.name",
+      "descriptionKey": "item.branch.desc",
+      "icon": "icon_resource_branch",
+      "rarity": "Common",
+      "stackable": true,
+      "maxStack": 99
+    },
+    "economy": {
+      "value": 1,
+      "weight": 0.0
+    },
+    "usage": {
+      "useType": "None",
+      "consumable": false,
+      "cooldown": 0
+    },
+    "effects": {
+      "hp": 0,
+      "mp": 0,
+      "sp": 0,
+      "lp": 0,
+      "statuses": []
+    },
+    "equipment": {
+      "slot": null,
+      "stats": {}
+    },
+    "world": {
+      "canDrop": true,
+      "canDestroy": false,
+      "containerSize": -1
+    },
+    "flags": []
+  },
+  {
+    "id": "stick",
+    "type": "resource",
+    "meta": {
+      "nameKey": "item.stick.name",
+      "descriptionKey": "item.stick.desc",
+      "icon": "icon_resource_stick",
+      "rarity": "Common",
+      "stackable": true,
+      "maxStack": 99
+    },
+    "economy": {
+      "value": 1,
+      "weight": 0.0
+    },
+    "usage": {
+      "useType": "None",
+      "consumable": false,
+      "cooldown": 0
+    },
+    "effects": {
+      "hp": 0,
+      "mp": 0,
+      "sp": 0,
+      "lp": 0,
+      "statuses": []
+    },
+    "equipment": {
+      "slot": null,
+      "stats": {}
+    },
+    "world": {
+      "canDrop": true,
+      "canDestroy": false,
+      "containerSize": -1
+    },
+    "flags": []
+  },
+  {
+    "id": "log",
+    "type": "resource",
+    "meta": {
+      "nameKey": "item.log.name",
+      "descriptionKey": "item.log.desc",
+      "icon": "icon_resource_log",
+      "rarity": "Common",
+      "stackable": true,
+      "maxStack": 99
+    },
+    "economy": {
+      "value": 2,
+      "weight": 0.0
+    },
+    "usage": {
+      "useType": "None",
+      "consumable": false,
+      "cooldown": 0
+    },
+    "effects": {
+      "hp": 0,
+      "mp": 0,
+      "sp": 0,
+      "lp": 0,
+      "statuses": []
+    },
+    "equipment": {
+      "slot": null,
+      "stats": {}
+    },
+    "world": {
+      "canDrop": true,
+      "canDestroy": false,
+      "containerSize": -1
+    },
+    "flags": []
+  },
+  {
+    "id": "plank",
+    "type": "resource",
+    "meta": {
+      "nameKey": "item.plank.name",
+      "descriptionKey": "item.plank.desc",
+      "icon": "icon_resource_plank",
+      "rarity": "Uncommon",
+      "stackable": true,
+      "maxStack": 99
+    },
+    "economy": {
+      "value": 4,
+      "weight": 0.0
+    },
+    "usage": {
+      "useType": "None",
+      "consumable": false,
+      "cooldown": 0
+    },
+    "effects": {
+      "hp": 0,
+      "mp": 0,
+      "sp": 0,
+      "lp": 0,
+      "statuses": []
+    },
+    "equipment": {
+      "slot": null,
+      "stats": {}
+    },
+    "world": {
+      "canDrop": true,
+      "canDestroy": false,
+      "containerSize": -1
+    },
+    "flags": []
+  },
+  {
+    "id": "nail",
+    "type": "resource",
+    "meta": {
+      "nameKey": "item.nail.name",
+      "descriptionKey": "item.nail.desc",
+      "icon": "icon_resource_nail",
+      "rarity": "Uncommon",
+      "stackable": true,
+      "maxStack": 99
+    },
+    "economy": {
+      "value": 8,
+      "weight": 0.0
+    },
+    "usage": {
+      "useType": "None",
+      "consumable": false,
+      "cooldown": 0
+    },
+    "effects": {
+      "hp": 0,
+      "mp": 0,
+      "sp": 0,
+      "lp": 0,
+      "statuses": []
+    },
+    "equipment": {
+      "slot": null,
+      "stats": {}
+    },
+    "world": {
+      "canDrop": true,
+      "canDestroy": false,
+      "containerSize": -1
+    },
+    "flags": []
+  },
+  {
+    "id": "wooden_glue",
+    "type": "resource",
+    "meta": {
+      "nameKey": "item.wooden_glue.name",
+      "descriptionKey": "item.wooden_glue.desc",
+      "icon": "icon_resource_wooden_glue",
+      "rarity": "rare",
+      "stackable": true,
+      "maxStack": 99
+    },
+    "economy": {
+      "value": 12,
+      "weight": 0.0
+    },
+    "usage": {
+      "useType": "None",
+      "consumable": false,
+      "cooldown": 0
+    },
+    "effects": {
+      "hp": 0,
+      "mp": 0,
+      "sp": 0,
+      "lp": 0,
+      "statuses": []
+    },
+    "equipment": {
+      "slot": null,
+      "stats": {}
+    },
+    "world": {
+      "canDrop": true,
+      "canDestroy": false,
+      "containerSize": -1
+    },
+    "flags": []
+  },
+  {
+    "id": "fiber",
+    "type": "resource",
+    "meta": {
+      "nameKey": "item.fiber.name",
+      "descriptionKey": "item.fiber.desc",
+      "icon": "icon_resource_fiber",
+      "rarity": "Common",
+      "stackable": true,
+      "maxStack": 99
+    },
+    "economy": {
+      "value": 1,
+      "weight": 0.0
+    },
+    "usage": {
+      "useType": "None",
+      "consumable": false,
+      "cooldown": 0
+    },
+    "effects": {
+      "hp": 0,
+      "mp": 0,
+      "sp": 0,
+      "lp": 0,
+      "statuses": []
+    },
+    "equipment": {
+      "slot": null,
+      "stats": {}
+    },
+    "world": {
+      "canDrop": true,
+      "canDestroy": false,
+      "containerSize": -1
+    },
+    "flags": []
+  },
+  {
+    "id": "stone",
+    "type": "resource",
+    "meta": {
+      "nameKey": "item.stone.name",
+      "descriptionKey": "item.stone.desc",
+      "icon": "icon_resource_stone",
+      "rarity": "Common",
+      "stackable": true,
+      "maxStack": 99
+    },
+    "economy": {
+      "value": 1,
+      "weight": 0.0
+    },
+    "usage": {
+      "useType": "None",
+      "consumable": false,
+      "cooldown": 0
+    },
+    "effects": {
+      "hp": 0,
+      "mp": 0,
+      "sp": 0,
+      "lp": 0,
+      "statuses": []
+    },
+    "equipment": {
+      "slot": null,
+      "stats": {}
+    },
+    "world": {
+      "canDrop": true,
+      "canDestroy": false,
+      "containerSize": -1
+    },
+    "flags": []
+  },
+  {
+    "id": "quartz",
+    "type": "resource",
+    "meta": {
+      "nameKey": "item.quartz.name",
+      "descriptionKey": "item.quartz.desc",
+      "icon": "icon_resource_quartz",
+      "rarity": "Uncommon",
+      "stackable": true,
+      "maxStack": 99
+    },
+    "economy": {
+      "value": 2,
+      "weight": 0.0
+    },
+    "usage": {
+      "useType": "None",
+      "consumable": false,
+      "cooldown": 0
+    },
+    "effects": {
+      "hp": 0,
+      "mp": 0,
+      "sp": 0,
+      "lp": 0,
+      "statuses": []
+    },
+    "equipment": {
+      "slot": null,
+      "stats": {}
+    },
+    "world": {
+      "canDrop": true,
+      "canDestroy": false,
+      "containerSize": -1
+    },
+    "flags": []
+  },
+  {
+    "id": "salt",
+    "type": "resource",
+    "meta": {
+      "nameKey": "item.salt.name",
+      "descriptionKey": "item.salt.desc",
+      "icon": "icon_resource_salt",
+      "rarity": "rare",
+      "stackable": true,
+      "maxStack": 99
+    },
+    "economy": {
+      "value": 25,
+      "weight": 0.0
+    },
+    "usage": {
+      "useType": "None",
+      "consumable": false,
+      "cooldown": 0
+    },
+    "effects": {
+      "hp": 0,
+      "mp": 0,
+      "sp": 0,
+      "lp": 0,
+      "statuses": []
+    },
+    "equipment": {
+      "slot": null,
+      "stats": {}
+    },
+    "world": {
+      "canDrop": true,
+      "canDestroy": false,
+      "containerSize": -1
+    },
+    "flags": []
+  },
+  {
+    "id": "glass",
+    "type": "resource",
+    "meta": {
+      "nameKey": "item.glass.name",
+      "descriptionKey": "item.glass.desc",
+      "icon": "icon_resource_glass",
+      "rarity": "epic",
+      "stackable": true,
+      "maxStack": 99
+    },
+    "economy": {
+      "value": 35,
+      "weight": 0.0
+    },
+    "usage": {
+      "useType": "None",
+      "consumable": false,
+      "cooldown": 0
+    },
+    "effects": {
+      "hp": 0,
+      "mp": 0,
+      "sp": 0,
       "lp": 0,
       "statuses": []
     },

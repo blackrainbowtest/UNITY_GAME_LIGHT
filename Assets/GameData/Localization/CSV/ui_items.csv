@@ -15,3 +15,11 @@
 	Золото основная валюта этого мира. Большинство покупок совершаются благодаря ему.;
 	Gold is the primary currency of this world. Most purchases are made with it.;
 	L'or est la principale monnaie mondiale. La plupart des achats se font avec.;
+*item.branch.name;
+	Ветка;
+	Stick;
+	Branche;
+*item.branch.desc;
+	Обычная ветка, найденная на земле.\nНе выглядит опасной, но многие легендарные приключения начинались именно с неё.;
+	A simple stick picked up from the ground.\nIt doesn’t look dangerous, but many legendary adventures started with something just like this.
+	Une simple branche ramassée par terre.\nElle n’a pas l’air dangereuse, mais bien des aventures légendaires ont commencé avec quelque chose comme ça.

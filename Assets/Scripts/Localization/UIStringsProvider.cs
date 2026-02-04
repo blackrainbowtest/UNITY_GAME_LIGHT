@@ -1,4 +1,6 @@
 using UnityEngine;
+using System;
+using System.Globalization;
 
 [DefaultExecutionOrder(-100)]
 public class UIStringsProvider : MonoBehaviour
@@ -52,6 +54,32 @@ public class UIStringsProvider : MonoBehaviour
                 return result;
         }
         return key; // fallback: return key if not found
+    }
+
+    /// <summary>
+    /// Gets a localized template and applies <see cref="string.Format(string,object[])"/>.
+    /// Use numbered placeholders like "Lv {0} • Gold {1}".
+    /// If formatting fails, returns the template as-is.
+    /// </summary>
+    public string GetFormatted(string key, string lang, params object[] args)
+    {
+        var template = Get(key, lang);
+        if (args == null || args.Length == 0)
+            return template;
+
+        try
+        {
+            return string.Format(CultureInfo.InvariantCulture, template, args);
+        }
+        catch (FormatException)
+        {
+            return template;
+        }
+    }
+
+    public string GetFormatted(string key, params object[] args)
+    {
+        return GetFormatted(key, currentLanguage, args);
     }
 
     public string CurrentLanguage => currentLanguage;

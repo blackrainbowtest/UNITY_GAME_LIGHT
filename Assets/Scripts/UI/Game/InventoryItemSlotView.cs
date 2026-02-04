@@ -9,6 +9,8 @@ namespace UDA2.UI.Game
     public sealed class InventoryItemSlotView : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler
     {
         [Header("Wiring")]
+        [Tooltip("Optional. If not assigned, will try to use Image on the same GameObject.")]
+        [SerializeField] private Image backgroundImage;
         [SerializeField] private Image iconImage;
         [SerializeField] private TMP_Text countText;
         [SerializeField] private GameObject emptyStateRoot;
@@ -18,9 +20,30 @@ namespace UDA2.UI.Game
         [Tooltip("If true, shows count even when it equals 1.")]
         [SerializeField] private bool showCountWhenOne = false;
 
+        [Tooltip("If true, tints the slot background based on item rarity (for filled slots only).")]
+        [SerializeField] private bool tintBackgroundByRarity = true;
+
+        [Header("Rarity Colors")]
+        [SerializeField] private Color commonColor = new Color(0.70f, 0.70f, 0.70f, 1f);
+        [SerializeField] private Color uncommonColor = new Color(0.35f, 0.85f, 0.35f, 1f);
+        [SerializeField] private Color rareColor = new Color(0.35f, 0.55f, 0.95f, 1f);
+        [SerializeField] private Color epicColor = new Color(0.75f, 0.35f, 0.95f, 1f);
+        [SerializeField] private Color legendaryColor = new Color(0.95f, 0.65f, 0.20f, 1f);
+        [SerializeField] private Color mythicColor = new Color(0.95f, 0.25f, 0.35f, 1f);
+        [SerializeField] private Color uniqueColor = new Color(0.95f, 0.90f, 0.25f, 1f);
+
         [Header("Optional: Icon Sources")]
         [Tooltip("Optional. Assign ItemDatabase asset to resolve item icons by itemId. Kept as Object to avoid asmdef coupling.")]
         [SerializeField] private UnityEngine.Object itemDatabase;
+
+        public void SetItemDatabase(UnityEngine.Object db)
+        {
+            if (db == null)
+                return;
+
+            if (itemDatabase == null)
+                itemDatabase = db;
+        }
 
         [Header("Input")]
         [SerializeField] private bool enableInput = true;
@@ -41,6 +64,8 @@ namespace UDA2.UI.Game
         public event Action<InventoryItemSlotView, Vector2> LongPressed;
 
         private bool _isEmpty = true;
+        private bool _hasCachedEmptyColor;
+        private Color _emptyBackgroundColor;
         private bool _isPointerDown;
         private bool _wasLongPressed;
         private bool _canceledByScroll;
@@ -51,6 +76,15 @@ namespace UDA2.UI.Game
 
         private void Awake()
         {
+            if (backgroundImage == null)
+                backgroundImage = GetComponent<Image>();
+
+            if (backgroundImage != null)
+            {
+                _emptyBackgroundColor = backgroundImage.color;
+                _hasCachedEmptyColor = true;
+            }
+
             if (parentScrollRect == null)
                 parentScrollRect = GetComponentInParent<ScrollRect>();
 
@@ -79,6 +113,9 @@ namespace UDA2.UI.Game
             ItemId = string.Empty;
             Count = 0;
             _isEmpty = true;
+
+            if (backgroundImage != null && _hasCachedEmptyColor)
+                backgroundImage.color = _emptyBackgroundColor;
 
             if (filledStateRoot != null) filledStateRoot.SetActive(false);
             if (emptyStateRoot != null) emptyStateRoot.SetActive(true);
@@ -120,6 +157,92 @@ namespace UDA2.UI.Game
             {
                 countText.text = (Count > 1 || (showCountWhenOne && Count > 0)) ? Count.ToString() : string.Empty;
             }
+
+            if (tintBackgroundByRarity)
+                ApplyRarityTint(ItemId);
+        }
+
+        private void ApplyRarityTint(string itemId)
+        {
+            if (backgroundImage == null)
+                return;
+
+            if (string.IsNullOrWhiteSpace(itemId))
+                return;
+
+            // If we can't resolve rarity, default to Common.
+            var rarity = ResolveRarityKey(itemId);
+            backgroundImage.color = GetColorForRarity(rarity);
+        }
+
+        private enum RarityKey
+        {
+            Common,
+            Uncommon,
+            Rare,
+            Epic,
+            Legendary,
+            Mythic,
+            Unique,
+        }
+
+        private RarityKey ResolveRarityKey(string itemId)
+        {
+            if (itemDatabase == null || string.IsNullOrWhiteSpace(itemId))
+                return RarityKey.Common;
+
+            try
+            {
+                var dbType = itemDatabase.GetType();
+                var getById = dbType.GetMethod("GetById");
+                if (getById == null)
+                    return RarityKey.Common;
+
+                var def = getById.Invoke(itemDatabase, new object[] { itemId.Trim() });
+                if (def == null)
+                    return RarityKey.Common;
+
+                var defType = def.GetType();
+
+                // Prefer strongly typed enum property if present.
+                var rarityProp = defType.GetProperty("Rarity");
+                if (rarityProp != null)
+                {
+                    var r = rarityProp.GetValue(def);
+                    if (r != null && System.Enum.TryParse(r.ToString(), ignoreCase: true, out RarityKey parsedEnum))
+                        return parsedEnum;
+                }
+
+                // Fallback: string rarity id.
+                var rarityIdProp = defType.GetProperty("RarityId");
+                if (rarityIdProp != null)
+                {
+                    var raw = rarityIdProp.GetValue(def)?.ToString();
+                    if (!string.IsNullOrWhiteSpace(raw) && System.Enum.TryParse(raw.Trim(), ignoreCase: true, out RarityKey parsed))
+                        return parsed;
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return RarityKey.Common;
+        }
+
+        private Color GetColorForRarity(RarityKey rarity)
+        {
+            return rarity switch
+            {
+                RarityKey.Uncommon => uncommonColor,
+                RarityKey.Rare => rareColor,
+                RarityKey.Epic => epicColor,
+                RarityKey.Legendary => legendaryColor,
+                RarityKey.Mythic => mythicColor,
+                RarityKey.Unique => uniqueColor,
+                RarityKey.Common => commonColor,
+                _ => commonColor,
+            };
         }
 
         private Sprite ResolveIcon(string itemId)

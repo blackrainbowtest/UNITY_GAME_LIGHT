@@ -125,4 +125,12 @@ MonoBehaviour:
       text: Empty slot
     - languageCode: fr
       text: Empty slot
+  - key: save_load_level_gold
+    entries:
+    - languageCode: ru
+      text: "\u0423\u0440. {0} \u2022 \u0417\u043E\u043B\u043E\u0442\u043E {1}"
+    - languageCode: en
+      text: Lv {0} \u2022 Gold {1}
+    - languageCode: fr
+      text: Niv {0} \u2022 Or {1}
   sourceCsvName: ui_save_load

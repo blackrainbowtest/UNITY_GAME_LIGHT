@@ -24,8 +24,8 @@ MonoBehaviour:
   equipSlotId: 
   inventorySlotsBonus: 0
   equipmentStats: []
-  rarityId: Common
-  rarity: 0
+  rarityId: unique
+  rarity: 6
   weight: 0
   useType: None
   consumable: 0

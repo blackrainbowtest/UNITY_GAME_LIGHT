@@ -131,7 +131,10 @@ public class ItemDefinition : ScriptableObject
 
     [Header("Consumable")]
     [SerializeField] private ConsumableEffect effect;
+    [Tooltip("Economy value in gold. Used as SELL price. Buying price is SellPrice * BuyPriceMultiplier.")]
     [SerializeField] private int value;
+
+    public const int BuyPriceMultiplier = 3;
 
     public string Id => id;
     public ItemType Type => type;
@@ -264,6 +267,17 @@ public class ItemDefinition : ScriptableObject
     }
     public ConsumableEffect Effect => effect;
     public int Value => value;
+
+    /// <summary>
+    /// Sell price in gold.
+    /// </summary>
+    public int SellPrice => Mathf.Max(0, value);
+
+    /// <summary>
+    /// Buy price in gold.
+    /// Rule: buy = sell * 3.
+    /// </summary>
+    public int BuyPrice => SellPrice * BuyPriceMultiplier;
 
 #if UNITY_EDITOR
     public bool EditorApplyDefinition(

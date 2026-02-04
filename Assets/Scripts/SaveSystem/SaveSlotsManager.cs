@@ -9,6 +9,7 @@ public class SaveMeta
     public string saveTime;
     public int playTimeSeconds;
     public int playerLevel;
+    public int playerGold;
 }
 
 public static class SaveSlotsManager
@@ -47,7 +48,8 @@ public static class SaveSlotsManager
             version = save.meta.version,
             saveTime = save.meta.saveTime,
             playTimeSeconds = save.meta.playTimeSeconds,
-            playerLevel = save.player.level
+            playerLevel = save.player.level,
+            playerGold = save.inventory != null ? save.inventory.gold : 0,
         };
     }
 
@@ -72,7 +74,8 @@ public static class SaveSlotsManager
         var dir = Path.GetDirectoryName(path);
         if (!Directory.Exists(dir))
             Directory.CreateDirectory(dir);
-        data.meta.saveTime = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
+        // Friendly human-readable time (no ISO 'T'/'Z').
+        data.meta.saveTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         var json = JsonUtility.ToJson(data, true);
         File.WriteAllText(path, json);
     }

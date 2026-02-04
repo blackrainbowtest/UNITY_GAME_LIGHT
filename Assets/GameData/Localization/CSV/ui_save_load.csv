@@ -55,3 +55,7 @@
 	Пустой слот;
 	Empty slot;
 	Empty slot;
+*save_load_level_gold;
+	Ур. {0} • Золото {1};
+	Lv {0} • Gold {1};
+	Niv {0} • Or {1};
