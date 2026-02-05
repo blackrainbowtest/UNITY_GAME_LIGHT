@@ -21,7 +21,8 @@ MonoBehaviour:
   hitVariations: []
   fastAttackVariations:
   - {fileID: 11400000, guid: 74deed90e6bed1547ae16a2a6fe73e31, type: 2}
-  normalAttackVariations: []
+  normalAttackVariations:
+  - {fileID: 11400000, guid: 4af0d8f79100d1b43b04759c6ab7891e, type: 2}
   heavyAttackVariations: []
   counterAttackVariations: []
   castVariations: []

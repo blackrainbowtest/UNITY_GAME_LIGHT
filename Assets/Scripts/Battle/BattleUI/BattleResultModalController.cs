@@ -33,20 +33,34 @@ namespace Game.Battle.UI
         [SerializeField] private bool showExpAsSlot = true;
 
         private Action onOk;
+        private bool _suppressHideOnAwake;
 
         private void Awake()
         {
+            AutoWireIfMissing();
+
             if (okButton != null)
                 okButton.onClick.AddListener(OnOkClicked);
 
-            AutoWireIfMissing();
-
-            Hide();
+            if (!_suppressHideOnAwake)
+                Hide();
         }
 
         public void Show(Game.Battle.BattleResultData data, Action onOkClicked)
         {
             onOk = onOkClicked;
+
+            // This modal might be instantiated hidden (inactive GameObject). Ensure it's enabled before toggling child roots.
+            _suppressHideOnAwake = true;
+            gameObject.SetActive(true);
+            _suppressHideOnAwake = false;
+
+            // Bring to front so it isn't hidden behind other panels.
+            transform.SetAsLastSibling();
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Debug.Log($"[BattleResultModal] Show called. Won={data.PlayerWon}, Gold={data.GoldGained}, Items={(data.Items != null ? data.Items.Count : 0)}", this);
+#endif
 
             ApplyLocalizedTitle(data);
 
@@ -138,6 +152,53 @@ namespace Game.Battle.UI
 
         private void AutoWireIfMissing()
         {
+            if (root == null)
+                root = gameObject;
+
+            if (titleText == null)
+            {
+                var texts = GetComponentsInChildren<TMP_Text>(true);
+                for (int i = 0; i < texts.Length; i++)
+                {
+                    var t = texts[i];
+                    if (t == null) continue;
+                    if (t.name.IndexOf("title", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        titleText = t;
+                        break;
+                    }
+                }
+
+                if (titleText == null)
+                    titleText = GetComponentInChildren<TMP_Text>(true);
+            }
+
+            if (okButton == null)
+            {
+                var buttons = GetComponentsInChildren<Button>(true);
+                for (int i = 0; i < buttons.Length; i++)
+                {
+                    var b = buttons[i];
+                    if (b == null) continue;
+
+                    var n = b.name;
+                    if (n.IndexOf("ok", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        n.IndexOf("confirm", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        n.IndexOf("continue", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        okButton = b;
+                        break;
+                    }
+                }
+
+                if (okButton == null)
+                {
+                    // Fallback: if there's exactly one button, it's probably OK.
+                    if (buttons != null && buttons.Length == 1)
+                        okButton = buttons[0];
+                }
+            }
+
             if (rewardsContent == null)
             {
                 // Try to find a child named "RewardsContent" or "Content".
@@ -169,7 +230,10 @@ namespace Game.Battle.UI
             if (rewardSlotPrefab == null || rewardsContent == null)
                 return;
 
-            var go = Instantiate(rewardSlotPrefab, rewardsContent);
+            // Unity cannot Instantiate(prefab, parent) if parent is in a persistent (DontDestroyOnLoad) scene.
+            // Instantiate first, then SetParent.
+            var go = Instantiate(rewardSlotPrefab);
+            go.transform.SetParent(rewardsContent, worldPositionStays: false);
             go.SetActive(true);
 
             var rewardView = go.GetComponent<BattleRewardSlotView>();
@@ -212,8 +276,9 @@ namespace Game.Battle.UI
         {
             if (root != null)
                 root.SetActive(false);
-            else
-                gameObject.SetActive(false);
+
+            // Always disable the whole modal object to avoid leaving any overlay elements active.
+            gameObject.SetActive(false);
         }
 
         private void OnOkClicked()

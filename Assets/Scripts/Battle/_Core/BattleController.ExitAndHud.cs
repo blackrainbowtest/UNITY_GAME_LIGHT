@@ -26,11 +26,26 @@ namespace Game.Battle
 {
     public partial class BattleController
     {
-        private void FinishBattle(bool playerWon)
+        [Header("Defeat Rewards")]
+        [Tooltip("Gold granted to the player even on Defeat (inclusive).")]
+        [SerializeField] private int defeatGoldMin = 1;
+        [Tooltip("Gold granted to the player even on Defeat (inclusive).")]
+        [SerializeField] private int defeatGoldMax = 3;
+
+        private void FinishBattle(bool playerWon, BattleFinishReason reason = BattleFinishReason.Defeat)
         {
             battleStarted = false;
             turnPhase = TurnPhase.BattleOver;
             hudController?.SetInputEnabled(false);
+
+            // Battle is over: stop battle music immediately.
+            if (UDA2.Audio.AudioManager.Instance != null)
+                UDA2.Audio.AudioManager.Instance.StopMusic();
+
+            if (playerWon)
+                reason = BattleFinishReason.Victory;
+            else if (reason == BattleFinishReason.Victory)
+                reason = BattleFinishReason.Defeat;
 
             // Persist player resources from battle back to SaveData (so leaving battle doesn't "heal to full").
             // This must happen before we leave the battle scene.
@@ -82,8 +97,27 @@ namespace Game.Battle
             }
             else
             {
+                // Design requirement: even on defeat the player gets a small gold consolation prize.
+                // (This also helps validate the result modal shows resources for loss outcomes.)
+                if (reason == BattleFinishReason.Defeat || reason == BattleFinishReason.Surrender || reason == BattleFinishReason.EscapeFailed)
+                {
+                    int min = Mathf.Min(defeatGoldMin, defeatGoldMax);
+                    int max = Mathf.Max(defeatGoldMin, defeatGoldMax);
+                    min = Mathf.Max(0, min);
+                    max = Mathf.Max(0, max);
+
+                    if (max > 0)
+                    {
+                        // rng.Next upper bound is exclusive.
+                        goldGained = rng.Next(min, max + 1);
+
+                        var save = global::GameState.Instance?.CurrentSave;
+                        ApplyRewardsToSave(save, goldGained, manaCrystalsGained, demonCrystalsGained, expGained, itemsGained);
+                    }
+                }
+
                 // Even on defeat we may want to persist consumed resources.
-                if (resourcesChanged)
+                if (resourcesChanged || goldGained > 0)
                 {
                     var save = global::GameState.Instance?.CurrentSave;
                     if (save?.sceneState != null)
@@ -104,13 +138,34 @@ namespace Game.Battle
                 ? true
                 : UDA2.Core.SettingsContext.Current.showBattleResultModal;
 
-            if (resultModal != null && showResult)
+            void ShowResultsOrExit()
             {
-                resultModal.Show(result, ExitBattle);
+                if (resultModal != null && showResult)
+                {
+                    resultModal.Show(result, ExitBattle);
+                }
+                else
+                {
+                    ExitBattle();
+                }
+            }
+
+            bool shouldShowOutcomeModal = reason == BattleFinishReason.Defeat
+                || reason == BattleFinishReason.Surrender
+                || reason == BattleFinishReason.EscapeFailed;
+
+            if (shouldShowOutcomeModal && outcomeAnimationModal == null)
+            {
+                Logger.LogWarning($"[BattleController] Outcome modal should be shown for reason={reason}, but outcomeAnimationModal is null. Assign a prefab (Project) or a scene instance (Hierarchy) to BattleController.outcomeAnimationModal.");
+            }
+
+            if (outcomeAnimationModal != null && shouldShowOutcomeModal)
+            {
+                outcomeAnimationModal.Show(reason, ShowResultsOrExit);
             }
             else
             {
-                ExitBattle();
+                ShowResultsOrExit();
             }
         }
 

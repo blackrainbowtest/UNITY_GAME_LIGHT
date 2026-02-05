@@ -54,7 +54,12 @@ namespace Game.Battle
         [Header("Scene References")]
         [SerializeField] private BattleEnvironmentController environmentController;
         [SerializeField] private BattleHUDController hudController;
+        [Tooltip("Optional. If assigned, all battle modals instantiated at runtime will be parented here (e.g. Canvas/Modals).")]
+        [SerializeField] private Transform modalsRoot;
+        [Tooltip("Battle results modal reference. Can be either a scene instance (Hierarchy) OR a prefab asset (Project). If a prefab is assigned, BattleController will instantiate it into the scene at runtime.")]
         [SerializeField] private BattleResultModalController resultModal;
+        [Tooltip("Outcome animation modal reference. Can be either a scene instance (Hierarchy) OR a prefab asset (Project). If a prefab is assigned, BattleController will instantiate it into the scene at runtime.")]
+        [SerializeField] private BattleOutcomeAnimationModalController outcomeAnimationModal;
 
         [Header("Visuals (Optional)")]
         [SerializeField] private BattleCharacterView playerView;
@@ -70,6 +75,16 @@ namespace Game.Battle
         [SerializeField] private float enemyTurnDelaySeconds = 0.35f;
         [SerializeField] private float endOfRoundDelaySeconds = 0.8f;
 
+        [Header("Escape")]
+        [Range(0f, 1f)]
+        [SerializeField] private float minEscapeChance = 0.05f;
+        [Range(0f, 1f)]
+        [SerializeField] private float maxEscapeChance = 0.95f;
+        [Range(0f, 1f)]
+        [SerializeField] private float escapeStaminaWeight = 0.6f;
+        [Range(0f, 1f)]
+        [SerializeField] private float escapeLustWeight = 0.4f;
+
         private void Awake()
         {
             if (resultModal == null)
@@ -82,6 +97,97 @@ namespace Game.Battle
                 resultModal = FindObjectOfType<BattleResultModalController>(includeInactive: true);
 #endif
             }
+
+            if (outcomeAnimationModal == null)
+            {
+#if UNITY_2023_1_OR_NEWER
+                outcomeAnimationModal = FindAnyObjectByType<BattleOutcomeAnimationModalController>(FindObjectsInactive.Include);
+#elif UNITY_2022_2_OR_NEWER
+                outcomeAnimationModal = FindAnyObjectByType<BattleOutcomeAnimationModalController>(FindObjectsInactive.Include);
+#else
+                outcomeAnimationModal = FindObjectOfType<BattleOutcomeAnimationModalController>(includeInactive: true);
+#endif
+            }
+
+            // If a prefab-asset (Project) was accidentally assigned instead of a scene instance,
+            // Unity will refuse parenting/spawning under it ("Prefab Asset" warnings).
+            // Auto-instantiate such references into the battle scene Canvas.
+            resultModal = EnsureSceneInstance(resultModal, "resultModal");
+            outcomeAnimationModal = EnsureSceneInstance(outcomeAnimationModal, "outcomeAnimationModal");
+        }
+
+        private Transform ResolveModalParent()
+        {
+            if (modalsRoot != null)
+                return modalsRoot;
+
+            // Prefer HUD's canvas.
+            if (hudController != null)
+            {
+                var canvas = hudController.GetComponentInParent<Canvas>(includeInactive: true);
+                if (canvas != null)
+                    return canvas.transform;
+            }
+
+            // Fallback: any canvas in scene.
+#if UNITY_2023_1_OR_NEWER
+            var anyCanvas = FindAnyObjectByType<Canvas>(FindObjectsInactive.Include);
+#else
+            var anyCanvas = FindObjectOfType<Canvas>(includeInactive: true);
+#endif
+            if (anyCanvas != null)
+                return anyCanvas.transform;
+
+            return null;
+        }
+
+        private T EnsureSceneInstance<T>(T modal, string fieldName) where T : MonoBehaviour
+        {
+            if (modal == null)
+                return null;
+
+            bool looksLikePrefabAsset = false;
+
+            // Runtime heuristic: prefab assets typically have no real scene path and are not loaded.
+            // (This also covers objects from Prefab Stage.)
+            var scene = modal.gameObject.scene;
+            if (!scene.IsValid() || !scene.isLoaded || string.IsNullOrEmpty(scene.path))
+                looksLikePrefabAsset = true;
+
+            // Persistent "DontDestroyOnLoad" scene is also wrong for battle UI.
+            if (string.Equals(scene.name, "DontDestroyOnLoad", System.StringComparison.OrdinalIgnoreCase))
+                looksLikePrefabAsset = true;
+
+#if UNITY_EDITOR
+            // More reliable in Editor.
+            if (UnityEditor.PrefabUtility.IsPartOfPrefabAsset(modal))
+                looksLikePrefabAsset = true;
+#endif
+
+            if (!looksLikePrefabAsset)
+                return modal;
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Logger.LogInfo($"[BattleController] '{fieldName}' is a prefab/persistent reference ('{modal.name}'). Instantiating a scene instance for battle UI.");
+#endif
+
+            var parent = ResolveModalParent();
+            var instance = Instantiate(modal);
+            instance.name = modal.name; // keep readable name
+
+            // Keep hidden immediately (prevents any accidental visible frame on battle start).
+            instance.gameObject.SetActive(false);
+
+            if (parent != null)
+            {
+                instance.transform.SetParent(parent, worldPositionStays: false);
+            }
+            else
+            {
+                Logger.LogWarning($"[BattleController] No modal parent resolved for '{fieldName}'. Assign BattleController.modalsRoot (Canvas/Modals) or ensure there is an active Canvas in the scene.");
+            }
+
+            return instance;
         }
 
         private void OnDisable()
@@ -245,9 +351,24 @@ namespace Game.Battle
             if (!battleStarted)
                 return;
 
-            Logger.LogInfo("BattleController: Run pressed (escape placeholder)");
-            battleStarted = false;
-            ExitBattle();
+            if (turnPhase != TurnPhase.PlayerTurn)
+                return;
+
+            float chance = CalculateEscapeChance01();
+            float roll = (float)rng.NextDouble();
+
+            Logger.LogInfo($"[BattleController] Run pressed. EscapeChance={chance:0.000}, Roll={roll:0.000}");
+
+            if (roll <= chance)
+            {
+                // Escape success: no rewards, but still show results (same old scheme).
+                FinishBattle(playerWon: false, reason: BattleFinishReason.EscapeSuccess);
+            }
+            else
+            {
+                // Escape failed: show outcome animation modal first, then results.
+                FinishBattle(playerWon: false, reason: BattleFinishReason.EscapeFailed);
+            }
         }
 
         public void OnSurrenderPressed()
@@ -256,7 +377,39 @@ namespace Game.Battle
                 return;
 
             Logger.LogInfo("BattleController: Surrender pressed");
-            FinishBattle(playerWon: false);
+            FinishBattle(playerWon: false, reason: BattleFinishReason.Surrender);
+        }
+
+        private float CalculateEscapeChance01()
+        {
+            if (context == null || combatState == null)
+                return minEscapeChance;
+
+            static float Safe01(int value, int max)
+            {
+                if (max <= 0)
+                    return 0f;
+                return Mathf.Clamp01((float)value / max);
+            }
+
+            float playerStamina01 = Safe01(combatState.PlayerSp, context.Player != null ? context.Player.MaxSP : 0);
+            float enemyStamina01 = Safe01(combatState.EnemySp, context.Enemy != null ? context.Enemy.maxSp : 0);
+
+            float playerLust01 = Safe01(combatState.PlayerLp, context.Player != null ? context.Player.MaxLP : 0);
+            float enemyLust01 = Safe01(combatState.EnemyLp, context.Enemy != null ? context.Enemy.maxLp : 0);
+
+            // Requirement:
+            // - Player: less lust + more stamina => higher chance
+            // - Enemy: less stamina + less lust => higher chance
+            float staminaScore01 = Mathf.Clamp01(0.5f + 0.5f * (playerStamina01 - enemyStamina01));
+            float lustScore01 = Mathf.Clamp01(1f - 0.5f * (playerLust01 + enemyLust01));
+
+            float wSum = Mathf.Max(0.0001f, escapeStaminaWeight + escapeLustWeight);
+            float combined01 = (escapeStaminaWeight * staminaScore01 + escapeLustWeight * lustScore01) / wSum;
+
+            float lo = Mathf.Clamp01(minEscapeChance);
+            float hi = Mathf.Clamp01(Mathf.Max(minEscapeChance, maxEscapeChance));
+            return Mathf.Clamp01(Mathf.Lerp(lo, hi, combined01));
         }
 
         public void OnSkipTurnPressed()
@@ -393,7 +546,7 @@ namespace Game.Battle
 
             if (combatState.IsEnemyDead)
             {
-                FinishBattle(playerWon: true);
+                FinishBattle(playerWon: true, reason: BattleFinishReason.Victory);
                 yield break;
             }
 
@@ -431,7 +584,7 @@ namespace Game.Battle
 
                 if (combatState.IsPlayerDead)
                 {
-                    FinishBattle(playerWon: false);
+                    FinishBattle(playerWon: false, reason: BattleFinishReason.Defeat);
                     enemyTurnRoutine = null;
                     yield break;
                 }
@@ -444,7 +597,7 @@ namespace Game.Battle
 
             if (combatState.IsPlayerDead)
             {
-                FinishBattle(playerWon: false);
+                FinishBattle(playerWon: false, reason: BattleFinishReason.Defeat);
                 yield break;
             }
 
