@@ -1,11 +1,24 @@
 using UnityEngine;
 using TMPro;
+using System;
 
 public class LocalizedTextSetter : MonoBehaviour
 {
     public string key;
     // Removed UIStringsData reference; now uses UIStringsProvider
     public TMP_Text targetText;
+
+    private object[] formatArgs;
+
+    public void SetFormatArgs(params object[] args)
+    {
+        formatArgs = args;
+    }
+
+    public void ClearFormatArgs()
+    {
+        formatArgs = null;
+    }
 
     private void Awake()
     {
@@ -36,10 +49,23 @@ public class LocalizedTextSetter : MonoBehaviour
         if (targetText == null)
             targetText = GetComponent<TMP_Text>();
 
-        if (targetText != null && UIStringsProvider.Instance != null)
+        if (targetText == null || UIStringsProvider.Instance == null)
+            return;
+
+        var template = UIStringsProvider.Instance.Get(key, lang);
+        if (formatArgs != null && formatArgs.Length > 0)
         {
-            targetText.text = UIStringsProvider.Instance.Get(key, lang);
+            try
+            {
+                template = string.Format(template, formatArgs);
+            }
+            catch (FormatException)
+            {
+                // Keep template as-is if args/key mismatch.
+            }
         }
+
+        targetText.text = template;
     }
 
     /// <summary>

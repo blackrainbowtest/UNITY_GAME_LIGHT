@@ -20,6 +20,7 @@ using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Game.Battle.UI;
+using UDA2.Audio;
 using Logger = UDA2.Logging.Logger;
 
 namespace Game.Battle
@@ -32,15 +33,36 @@ namespace Game.Battle
         [Tooltip("Gold granted to the player even on Defeat (inclusive).")]
         [SerializeField] private int defeatGoldMax = 3;
 
+        [Header("Result Music (Optional)")]
+        [Tooltip("If assigned, plays this music when the battle ends and the results modal is shown.")]
+        [SerializeField] private AudioCue resultsMusicCue;
+        [Tooltip("Fallback (legacy): if no cue is assigned, plays this clip when the battle ends and the results modal is shown.")]
+        [SerializeField] private AudioClip resultsMusic;
+
         private void FinishBattle(bool playerWon, BattleFinishReason reason = BattleFinishReason.Defeat)
         {
             battleStarted = false;
             turnPhase = TurnPhase.BattleOver;
             hudController?.SetInputEnabled(false);
 
+            var showResult = UDA2.Core.SettingsContext.Current == null
+                ? true
+                : UDA2.Core.SettingsContext.Current.showBattleResultModal;
+
             // Battle is over: stop battle music immediately.
             if (UDA2.Audio.AudioManager.Instance != null)
+            {
                 UDA2.Audio.AudioManager.Instance.StopMusic();
+
+                // Optional: play separate results music while the results modal is on screen.
+                if (showResult)
+                {
+                    if (resultsMusicCue != null)
+                        UDA2.Audio.AudioManager.Instance.Play(resultsMusicCue);
+                    else if (resultsMusic != null)
+                        UDA2.Audio.AudioManager.Instance.PlayMusic(resultsMusic);
+                }
+            }
 
             if (playerWon)
                 reason = BattleFinishReason.Victory;
@@ -133,10 +155,6 @@ namespace Game.Battle
                 expGained: expGained,
                 items: itemsGained
             );
-
-            var showResult = UDA2.Core.SettingsContext.Current == null
-                ? true
-                : UDA2.Core.SettingsContext.Current.showBattleResultModal;
 
             void ShowResultsOrExit()
             {

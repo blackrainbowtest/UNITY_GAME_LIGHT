@@ -290,6 +290,11 @@ namespace UDA2.Audio
         {
             int index = 0;
 
+            // If the scene has more than one music track, start from a random one.
+            // (Avoids hearing the same first track every time the scene loads.)
+            if (playlist != null && playlist.Length > 1)
+                index = UnityEngine.Random.Range(0, playlist.Length);
+
             while (sessionId == sceneMusicSessionId)
             {
                 // Find next valid cue.

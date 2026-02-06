@@ -25,6 +25,9 @@ namespace UDA2.UI
 
         public void OnNewGamePressed()
         {
+            // New Game must always start from a fresh save (full HP/SP/etc), regardless of what GameBootstrapper loaded.
+            SaveSlotsManager.DeleteAutosave();
+            global::GameState.Instance.CurrentSave = SaveData.CreateDefault(Application.version, "IntroScene");
             UDA2.SceneFlow.SceneFlowManager.Instance.LoadScene("IntroScene");
         }
 

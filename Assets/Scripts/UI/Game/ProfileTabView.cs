@@ -22,6 +22,9 @@ namespace UDA2.UI.Game
         [Tooltip("Optional. Assign the ItemDatabase asset to resolve names/icons. Kept as Object to avoid assembly reference coupling.")]
         [SerializeField] private UnityEngine.Object itemDatabase;
 
+        [Tooltip("Optional. If assigned, overrides the outfit sprite mapping below (default + outfitId->sprite table in an asset).")]
+        [SerializeField] private ProfileOutfitSpriteConfig outfitSpriteConfig;
+
         [Header("Outfit")]
         [Tooltip("Sprite shown when outfit sprite is missing/unresolved.")]
         [SerializeField] private Sprite defaultCharacterSprite;
@@ -124,6 +127,9 @@ namespace UDA2.UI.Game
 
         private Sprite ResolveOutfitSprite(string outfitId)
         {
+            if (outfitSpriteConfig != null)
+                return outfitSpriteConfig.Resolve(outfitId);
+
             if (!string.IsNullOrEmpty(outfitId) && outfitSprites != null)
             {
                 for (int i = 0; i < outfitSprites.Length; i++)

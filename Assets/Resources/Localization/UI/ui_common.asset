@@ -237,4 +237,28 @@ MonoBehaviour:
       text: "Sell: {0}"
     - languageCode: fr
       text: "Vente : {0}"
+  - key: lvl
+    entries:
+    - languageCode: ru
+      text: "Уровень: {0}"
+    - languageCode: en
+      text: "Level: {0}"
+    - languageCode: fr
+      text: "Niveau: {0}"
+  - key: exp
+    entries:
+    - languageCode: ru
+      text: "Опыт: {0}/{1}"
+    - languageCode: en
+      text: "Experience: {0}/{1}"
+    - languageCode: fr
+      text: "Expérience: {0}/{1}"
+  - key: next
+    entries:
+    - languageCode: ru
+      text: "До сл․ уровня: {0}"
+    - languageCode: en
+      text: "To next level: {0}"
+    - languageCode: fr
+      text: "Au niveau suivant: {0}"
   sourceCsvName: ui_common

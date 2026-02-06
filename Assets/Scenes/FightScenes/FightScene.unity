@@ -13034,6 +13034,8 @@ MonoBehaviour:
   escapeLustWeight: 0.4
   defeatGoldMin: 1
   defeatGoldMax: 3
+  resultsMusicCue: {fileID: 11400000, guid: b694056ca0dab7244b35a6fde989f4d9, type: 2}
+  resultsMusic: {fileID: 8300000, guid: c28a8b377d8b1fb4ea9b345f7552c515, type: 3}
 --- !u!1 &1906920320
 GameObject:
   m_ObjectHideFlags: 0

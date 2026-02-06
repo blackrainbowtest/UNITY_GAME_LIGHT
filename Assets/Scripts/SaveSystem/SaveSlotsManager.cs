@@ -21,6 +21,13 @@ public static class SaveSlotsManager
         return Path.Combine(SavesDir, $"slot_{slotId:D2}.json");
     }
 
+    public static void DeleteAutosave()
+    {
+        var path = GetSlotPath(0);
+        if (File.Exists(path))
+            File.Delete(path);
+    }
+
     public static bool HasSave(int slotId)
     {
         return File.Exists(GetSlotPath(slotId));
