@@ -70,7 +70,7 @@ namespace Game.Battle.Combat.Actions
                     new CombatActionData(
                         CombatActionId.CounterAttack,
                         CombatActionCategory.Attack,
-                        hpDamage: 45,
+                        hpDamage: 30,
                         mpCost: 0,
                         spCost: 8,
                         lpCost: 0,

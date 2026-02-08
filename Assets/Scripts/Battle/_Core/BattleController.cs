@@ -21,6 +21,7 @@ using UnityEngine;
 using Game.Battle.Combat;
 using Game.Battle.Combat.Actions;
 using Game.Battle.Combat.EnemyAI;
+using Game.Battle.Statuses;
 using Logger = UDA2.Logging.Logger;
 
 using Game.Battle.UI;
@@ -259,6 +260,7 @@ namespace Game.Battle
                 return;
 
             turnPhase = TurnPhase.PlayerTurn;
+            ResetPerTurnNonCombatActions();
             hudController?.SetInputEnabled(true);
         }
 
@@ -343,7 +345,13 @@ namespace Game.Battle
 
         public void OnItemPressed()
         {
-            Logger.LogInfo("Item pressed");
+            if (!battleStarted)
+                return;
+
+            if (turnPhase != TurnPhase.PlayerTurn)
+                return;
+
+            OpenInventoryForBattleItemUse();
         }
 
         public void OnRunPressed()
@@ -419,6 +427,12 @@ namespace Game.Battle
 
             if (turnPhase != TurnPhase.PlayerTurn)
                 return;
+
+            // CounterAttack window should last only until the end of the next player turn.
+            // If the player skips the turn, they lose the opportunity.
+            combatState = combatState
+                .WithPlayerBlockedLastTurn(false)
+                .WithPlayerBlockArmorAbsorbedLastEnemyAction(0);
 
             BeginEnemyTurn();
         }
@@ -540,6 +554,10 @@ namespace Game.Battle
             // 2) Apply results after animation.
             combatState = ClampPlayerResourcesToMax(resolution.State);
             ApplyPostActionEffects(actionId, actorIsPlayer: true);
+
+            if (combatState.EnemyBlockArmor <= 0)
+                RemoveStatus(enemyStatuses, StatusEffectId.Block);
+
             PushHudState();
 
             playerActionRoutine = null;
@@ -580,6 +598,14 @@ namespace Game.Battle
 
                 combatState = ClampEnemyResourcesToMax(enemyResolution.State);
                 ApplyPostActionEffects(enemyActionId, actorIsPlayer: false);
+
+                // If block armor got fully consumed, remove the status icon immediately.
+                if (combatState.PlayerBlockArmor <= 0)
+                    RemoveStatus(playerStatuses, StatusEffectId.Block);
+
+                if (combatState.EnemyBlockArmor <= 0)
+                    RemoveStatus(enemyStatuses, StatusEffectId.Block);
+
                 PushHudState();
 
                 if (combatState.IsPlayerDead)

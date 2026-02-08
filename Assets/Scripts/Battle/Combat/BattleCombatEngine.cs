@@ -52,6 +52,84 @@ namespace Game.Battle.Combat
     /// </summary>
     public sealed class BattleCombatEngine
     {
+        private const int BlockArmorAmount = 12;
+
+        private static CombatState ApplyHpDamageToPlayerWithBlockArmor(
+            CombatState state,
+            int incomingDamage,
+            out int absorbedByArmor,
+            out int actualHpDamage)
+        {
+            absorbedByArmor = 0;
+            actualHpDamage = 0;
+
+            if (incomingDamage <= 0)
+                return state
+                    .WithPlayerBlockedLastTurn(false)
+                    .WithPlayerBlockArmorAbsorbedLastEnemyAction(0);
+
+            var armor = state.PlayerBlockArmor;
+
+            absorbedByArmor = armor > 0 ? System.Math.Min(armor, incomingDamage) : 0;
+            var hpDamage = incomingDamage - absorbedByArmor;
+
+            actualHpDamage = hpDamage > 0 ? System.Math.Min(state.PlayerHp, hpDamage) : 0;
+
+            var newHp = state.PlayerHp - actualHpDamage;
+            if (newHp < 0)
+                newHp = 0;
+
+            var newArmor = armor - absorbedByArmor;
+            if (newArmor < 0)
+                newArmor = 0;
+
+            var blocked = absorbedByArmor > 0;
+
+            return state
+                .WithPlayerHp(newHp)
+                .WithPlayerBlockArmor(newArmor)
+                .WithPlayerBlockedLastTurn(blocked)
+                .WithPlayerBlockArmorAbsorbedLastEnemyAction(absorbedByArmor);
+        }
+
+        private static CombatState ApplyHpDamageToEnemyWithBlockArmor(
+            CombatState state,
+            int incomingDamage,
+            out int absorbedByArmor,
+            out int actualHpDamage)
+        {
+            absorbedByArmor = 0;
+            actualHpDamage = 0;
+
+            if (incomingDamage <= 0)
+                return state
+                    .WithEnemyBlockedLastTurn(false)
+                    .WithEnemyBlockArmorAbsorbedLastPlayerAction(0);
+
+            var armor = state.EnemyBlockArmor;
+
+            absorbedByArmor = armor > 0 ? System.Math.Min(armor, incomingDamage) : 0;
+            var hpDamage = incomingDamage - absorbedByArmor;
+
+            actualHpDamage = hpDamage > 0 ? System.Math.Min(state.EnemyHp, hpDamage) : 0;
+
+            var newHp = state.EnemyHp - actualHpDamage;
+            if (newHp < 0)
+                newHp = 0;
+
+            var newArmor = armor - absorbedByArmor;
+            if (newArmor < 0)
+                newArmor = 0;
+
+            var blocked = absorbedByArmor > 0;
+
+            return state
+                .WithEnemyHp(newHp)
+                .WithEnemyBlockArmor(newArmor)
+                .WithEnemyBlockedLastTurn(blocked)
+                .WithEnemyBlockArmorAbsorbedLastPlayerAction(absorbedByArmor);
+        }
+
         public CombatResolution ResolvePlayerAction(
             CombatState state,
             Actions.CombatActionData action)
@@ -82,7 +160,14 @@ namespace Game.Battle.Combat
                 enemySp: state.EnemySp,
                 enemyLp: state.EnemyLp,
 
-                playerBlockedLastTurn: false
+                // Any player action consumes the "blocked last enemy action" window.
+                playerBlockedLastTurn: false,
+                playerBlockArmor: state.PlayerBlockArmor,
+                playerBlockArmorAbsorbedLastEnemyAction: 0,
+                // Player action does not consume enemy's "blocked last player action" window.
+                enemyBlockedLastTurn: state.EnemyBlockedLastTurn,
+                enemyBlockArmor: state.EnemyBlockArmor,
+                enemyBlockArmorAbsorbedLastPlayerAction: state.EnemyBlockArmorAbsorbedLastPlayerAction
             );
 
             // 4. Apply action effects
@@ -115,10 +200,20 @@ namespace Game.Battle.Combat
                 // Default: damage enemy
                 if (action.HpDamage > 0)
                 {
-                    var newEnemyHp = newState.EnemyHp - action.HpDamage;
-                    if (newEnemyHp < 0)
-                        newEnemyHp = 0;
-                    newState = newState.WithEnemyHp(newEnemyHp);
+                    var damage = action.HpDamage;
+
+                    // CounterAttack bonus scales with the armor that was actually consumed by the last enemy hit.
+                    if (action.Id == Actions.CombatActionId.CounterAttack)
+                        damage += state.PlayerBlockArmorAbsorbedLastEnemyAction;
+
+                    newState = ApplyHpDamageToEnemyWithBlockArmor(newState, damage, out _, out _);
+                }
+                else
+                {
+                    // Non-damaging player action clears enemy counter window.
+                    newState = newState
+                        .WithEnemyBlockedLastTurn(false)
+                        .WithEnemyBlockArmorAbsorbedLastPlayerAction(0);
                 }
             }
 
@@ -129,7 +224,12 @@ namespace Game.Battle.Combat
                 // Example: cost 5 -> restore 15 (net +10), clamped later by controller to MaxSP.
                 if (action.SpCost > 0)
                     newState = newState.WithPlayerSp(newState.PlayerSp + (action.SpCost * 3));
-                newState = newState.WithPlayerBlockedLastTurn(true);
+
+                // Apply block armor. CounterAttack should NOT become available until armor actually absorbs damage.
+                newState = newState
+                    .WithPlayerBlockArmor(BlockArmorAmount)
+                    .WithPlayerBlockedLastTurn(false)
+                    .WithPlayerBlockArmorAbsorbedLastEnemyAction(0);
             }
 
             return new CombatResolution(newState, CombatActionResult.Executed);
@@ -139,6 +239,10 @@ namespace Game.Battle.Combat
             CombatState state,
             Actions.CombatActionData action)
         {
+            // 0. Enemy requirements (counterattack requires actual absorbed damage).
+            if (action.Id == Actions.CombatActionId.CounterAttack && state.EnemyBlockedLastTurn == false)
+                return new CombatResolution(state, CombatActionResult.Rejected_RequirementsNotMet);
+
             // 1. Check resources
             if (state.EnemyMp < action.MpCost ||
                 state.EnemySp < action.SpCost ||
@@ -159,8 +263,14 @@ namespace Game.Battle.Combat
                 enemySp: state.EnemySp - action.SpCost,
                 enemyLp: state.EnemyLp - action.LpCost,
 
-                // Enemy action should not change whether the player blocked last turn.
-                playerBlockedLastTurn: state.PlayerBlockedLastTurn
+                // Enemy action updates whether block absorbed any damage.
+                playerBlockedLastTurn: false,
+                playerBlockArmor: state.PlayerBlockArmor,
+                playerBlockArmorAbsorbedLastEnemyAction: 0,
+                // Any enemy action consumes its own "blocked last player action" window.
+                enemyBlockedLastTurn: false,
+                enemyBlockArmor: state.EnemyBlockArmor,
+                enemyBlockArmorAbsorbedLastPlayerAction: 0
             );
 
             // 3. Apply effects
@@ -175,17 +285,14 @@ namespace Game.Battle.Combat
                 // Dark = lifesteal (enemy heals for actual damage dealt)
                 if (action.HpDamage > 0)
                 {
-                    var dealt = action.HpDamage;
-                    if (dealt > newState.PlayerHp)
-                        dealt = newState.PlayerHp;
+                    // With block armor, "effective HP" includes armor.
+                    var effectiveHp = newState.PlayerHp + newState.PlayerBlockArmor;
+                    var incoming = action.HpDamage;
+                    if (incoming > effectiveHp)
+                        incoming = effectiveHp;
 
-                    var newPlayerHp = newState.PlayerHp - dealt;
-                    if (newPlayerHp < 0)
-                        newPlayerHp = 0;
-
-                    newState = newState
-                        .WithPlayerHp(newPlayerHp)
-                        .WithEnemyHp(newState.EnemyHp + dealt);
+                    newState = ApplyHpDamageToPlayerWithBlockArmor(newState, incoming, out _, out var hpDealt);
+                    newState = newState.WithEnemyHp(newState.EnemyHp + hpDealt);
                 }
             }
             else
@@ -193,11 +300,32 @@ namespace Game.Battle.Combat
                 // Default: enemy damages player
                 if (action.HpDamage > 0)
                 {
-                    var newPlayerHp = newState.PlayerHp - action.HpDamage;
-                    if (newPlayerHp < 0)
-                        newPlayerHp = 0;
-                    newState = newState.WithPlayerHp(newPlayerHp);
+                    var damage = action.HpDamage;
+
+                    if (action.Id == Actions.CombatActionId.CounterAttack)
+                        damage += state.EnemyBlockArmorAbsorbedLastPlayerAction;
+
+                    newState = ApplyHpDamageToPlayerWithBlockArmor(newState, damage, out _, out _);
                 }
+                else
+                {
+                    // Non-damaging enemy action clears the counter window.
+                    newState = newState
+                        .WithPlayerBlockedLastTurn(false)
+                        .WithPlayerBlockArmorAbsorbedLastEnemyAction(0);
+                }
+            }
+
+            // Enemy block mirrors player block.
+            if (action.Id == Actions.CombatActionId.Block)
+            {
+                if (action.SpCost > 0)
+                    newState = newState.WithEnemySp(newState.EnemySp + (action.SpCost * 3));
+
+                newState = newState
+                    .WithEnemyBlockArmor(BlockArmorAmount)
+                    .WithEnemyBlockedLastTurn(false)
+                    .WithEnemyBlockArmorAbsorbedLastPlayerAction(0);
             }
 
             return new CombatResolution(newState, CombatActionResult.Executed);

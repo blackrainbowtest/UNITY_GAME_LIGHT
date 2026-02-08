@@ -58,6 +58,45 @@ namespace Game.Battle
             AddOrRefreshStatus(enemyStatuses, id, turns);
         }
 
+        private static void SetStatusExact(List<StatusInstance> list, StatusEffectId id, int turns)
+        {
+            if (list == null)
+                return;
+
+            if (turns < 0)
+                turns = 0;
+
+            for (var i = 0; i < list.Count; i++)
+            {
+                if (list[i].Id != id)
+                    continue;
+
+                if (turns <= 0)
+                    list.RemoveAt(i);
+                else
+                    list[i] = new StatusInstance(id, turns);
+                return;
+            }
+
+            if (turns > 0)
+                list.Add(new StatusInstance(id, turns));
+        }
+
+        private static void RemoveStatus(List<StatusInstance> list, StatusEffectId id)
+        {
+            if (list == null || list.Count == 0)
+                return;
+
+            for (var i = 0; i < list.Count; i++)
+            {
+                if (list[i].Id != id)
+                    continue;
+
+                list.RemoveAt(i);
+                return;
+            }
+        }
+
         private static void AddOrRefreshStatus(List<StatusInstance> list, StatusEffectId id, int turns)
         {
             if (list == null)

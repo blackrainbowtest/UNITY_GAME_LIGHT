@@ -13036,6 +13036,10 @@ MonoBehaviour:
   defeatGoldMax: 3
   resultsMusicCue: {fileID: 11400000, guid: b694056ca0dab7244b35a6fde989f4d9, type: 2}
   resultsMusic: {fileID: 8300000, guid: c28a8b377d8b1fb4ea9b345f7552c515, type: 3}
+  playerCharacterWindowPrefab: {fileID: 5819298412677635782, guid: 58ce046522378304398939ad1289ac0b, type: 3}
+  inventoryParentOverride: {fileID: 1962314100}
+  itemDatabase: {fileID: 11400000, guid: ea48e7814522e8849a7792d9d32df653, type: 2}
+  blockOpeningInventoryAfterUse: 1
 --- !u!1 &1906920320
 GameObject:
   m_ObjectHideFlags: 0
@@ -13387,6 +13391,8 @@ MonoBehaviour:
     icon: {fileID: 21300000, guid: 39e456e73bbcd7d42890ffb83d46f308, type: 3}
   - id: 4
     icon: {fileID: 21300000, guid: 6e191723f027c3c4cafb980f5d1ef239, type: 3}
+  - id: 5
+    icon: {fileID: 21300000, guid: 104f7d0fc4f6a6a49877b4d88e07303a, type: 3}
 --- !u!1 &1922339470
 GameObject:
   m_ObjectHideFlags: 0

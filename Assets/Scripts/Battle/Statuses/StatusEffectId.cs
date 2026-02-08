@@ -10,6 +10,7 @@ namespace Game.Battle.Statuses
         Bleeding = 1,
         Burning = 2,
         Freeze = 3,
-        Silence = 4
+        Silence = 4,
+        Block = 5
     }
 }

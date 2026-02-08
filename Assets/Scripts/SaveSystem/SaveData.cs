@@ -239,6 +239,30 @@ public class SaveData
         save.time.day = 1;
         save.time.minuteOfDay = 8 * 60;
 
+        // DELETEME: starter consumable for quick testing (battle inventory consumption).
+        // Give the player 1 small HP potion on a brand new save.
+        if (save.inventory != null)
+        {
+            if (save.inventory.items == null)
+                save.inventory.items = new List<Item>();
+
+            bool hasPotion = false;
+            for (int i = 0; i < save.inventory.items.Count; i++)
+            {
+                var it = save.inventory.items[i];
+                if (it == null) continue;
+                if (string.Equals(it.itemId, "potion_hp_small", StringComparison.OrdinalIgnoreCase))
+                {
+                    it.count = Math.Max(1, it.count);
+                    hasPotion = true;
+                    break;
+                }
+            }
+
+            if (!hasPotion)
+                save.inventory.items.Add(new Item { itemId = "potion_hp_small", count = 1 });
+        }
+
         return save;
     }
 }

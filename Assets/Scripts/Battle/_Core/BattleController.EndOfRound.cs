@@ -170,6 +170,22 @@ namespace Game.Battle
             pendingEndOfRoundEffects.Clear();
 
             TickStatuses();
+
+            // If Block expired by duration, clear remaining armor.
+            // NOTE: Do NOT clear PlayerBlockedLastTurn / absorbed amount here:
+            // the Block status icon can be removed early when armor is fully consumed,
+            // but the player should still be able to CounterAttack on the next turn.
+            if (!HasStatus(playerStatuses, StatusEffectId.Block))
+            {
+                combatState = combatState
+                    .WithPlayerBlockArmor(0);
+            }
+
+            if (!HasStatus(enemyStatuses, StatusEffectId.Block))
+            {
+                combatState = combatState
+                    .WithEnemyBlockArmor(0);
+            }
         }
 
         private static bool HasStatus(List<StatusInstance> list, StatusEffectId id)

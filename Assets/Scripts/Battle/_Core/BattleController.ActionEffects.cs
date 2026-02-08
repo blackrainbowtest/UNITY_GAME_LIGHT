@@ -24,6 +24,7 @@ namespace Game.Battle
     public partial class BattleController
     {
     private const int FireSpellBurningTurns = 2;
+    private const int BlockTurns = 2;
 
         // Future hook: data-driven mapping from actions/weapons to statuses.
         // Keep this hook isolated so BattleController doesn't grow again.
@@ -89,6 +90,7 @@ namespace Game.Battle
         //
         // When you’re ready, we can implement that by extending StatusInstance and updating the UI (turns text stays the same).
 
+        // REMEMBERME: apply new statuses here
         private void ApplyPostActionEffects(CombatActionId actionId, bool actorIsPlayer)
         {
             // Minimal hardcoded table (will become ScriptableObject/data later).
@@ -101,6 +103,17 @@ namespace Game.Battle
                         AddOrRefreshEnemyStatusInternal(StatusEffectId.Burning, FireSpellBurningTurns);
                     else
                         AddOrRefreshPlayerStatusInternal(StatusEffectId.Burning, FireSpellBurningTurns);
+                    break;
+                }
+
+                case CombatActionId.Block:
+                {
+                    // Block applies a visible status on the actor.
+                    // The actual armor mechanics are handled by CombatState in BattleCombatEngine.
+                    if (actorIsPlayer)
+                        SetStatusExact(playerStatuses, StatusEffectId.Block, BlockTurns);
+                    else
+                        SetStatusExact(enemyStatuses, StatusEffectId.Block, BlockTurns);
                     break;
                 }
             }

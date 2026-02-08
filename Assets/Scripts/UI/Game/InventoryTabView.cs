@@ -32,6 +32,15 @@ namespace UDA2.UI.Game
         [Tooltip("Optional. Assign the ItemDatabase asset to resolve type/rarity/icons. Kept as Object to avoid assembly reference coupling.")]
         [SerializeField] private UnityEngine.Object itemDatabase;
 
+        public void SetItemDatabase(UnityEngine.Object db)
+        {
+            if (db == null)
+                return;
+
+            if (itemDatabase == null)
+                itemDatabase = db;
+        }
+
         [Header("Behavior")]
         [SerializeField] private bool showEmptySlots = true;
 

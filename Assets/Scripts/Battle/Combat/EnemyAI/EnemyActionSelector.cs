@@ -52,17 +52,49 @@ namespace Game.Battle.Combat.EnemyAI
                 if (action == null)
                     continue;
 
+                var hpRatio = enemy.maxHp > 0 ? (float)state.EnemyHp / enemy.maxHp : 1f;
+
+                // Special-case: allow defensive actions if they are meaningful.
+                if (action.Id == CombatActionId.Block)
+                {
+                    // Use Block only when: enemy is under pressure AND doesn't already have armor.
+                    // Keeps AI from spamming a 0-damage action.
+                    if (state.EnemyBlockArmor > 0)
+                        continue;
+
+                    if (hpRatio >= 0.45f)
+                        continue;
+
+                    // Must be affordable for enemy.
+                    if (state.EnemyMp < action.MpCost || state.EnemySp < action.SpCost || state.EnemyLp < action.LpCost)
+                        continue;
+
+                    candidates.Add(action);
+                    continue;
+                }
+
+                if (action.Id == CombatActionId.CounterAttack)
+                {
+                    // CounterAttack is allowed only if the enemy actually blocked some damage on the last player action.
+                    if (!state.EnemyBlockedLastTurn)
+                        continue;
+
+                    if (state.EnemyMp < action.MpCost || state.EnemySp < action.SpCost || state.EnemyLp < action.LpCost)
+                        continue;
+
+                    candidates.Add(action);
+                    continue;
+                }
+
                 // Enemy turn: action is meaningful if it damages the player OR heals the enemy.
                 // Heal should only be considered when enemy is below 60% HP.
                 var canDamagePlayer = action.HpDamage > 0;
-                var hpRatio = enemy.maxHp > 0 ? (float)state.EnemyHp / enemy.maxHp : 1f;
                 var canHealSelf = action.HpHealSelf > 0 && hpRatio < 0.60f;
                 if (!canDamagePlayer && !canHealSelf)
                     continue;
 
-                // Don't let enemy use "player-only" gated actions.
-                if (action.RequiresPlayerBlockedLastTurn)
-                    continue;
+                // NOTE: action.RequiresPlayerBlockedLastTurn is a player-side gate.
+                // For enemy, we ignore it (CounterAttack eligibility handled above).
 
                 // Must be affordable for enemy.
                 if (state.EnemyMp < action.MpCost || state.EnemySp < action.SpCost || state.EnemyLp < action.LpCost)
