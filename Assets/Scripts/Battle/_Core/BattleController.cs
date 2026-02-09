@@ -66,6 +66,9 @@ namespace Game.Battle
         [SerializeField] private BattleCharacterView playerView;
         [SerializeField] private BattleCharacterView enemyView;
 
+        [Tooltip("Optional parent for spawned spell projectiles (keeps hierarchy tidy).")]
+        [SerializeField] private Transform projectilesRoot;
+
         [SerializeField] private CharacterVisualProfile playerVisualProfile;
 
         [Header("Exit")]
@@ -488,6 +491,100 @@ namespace Game.Battle
             }
         }
 
+        private IEnumerator PlayActionWithTargetHitAndWait(
+            CombatActionId actionId,
+            bool actorIsPlayer,
+            CombatState before,
+            CombatState after)
+        {
+            var attackerView = actorIsPlayer ? playerView : enemyView;
+            var targetView = actorIsPlayer ? enemyView : playerView;
+
+            if (attackerView == null)
+                yield break;
+
+            if (!TryGetVisualAnimId(actionId, out var attackerAnimId))
+                yield break;
+
+            bool attackerFinished = false;
+            bool targetFinished = true; // default: no hit requested
+
+            // Optional: spell projectile config (comes from attacker's outfit visuals)
+            OutfitVisuals.SpellProjectileConfig projectileConfig = default;
+            bool hasProjectile = false;
+            var attackerOutfit = attackerView != null ? attackerView.ResolveOutfitVisuals() : null;
+            if (attackerOutfit != null)
+                hasProjectile = attackerOutfit.TryGetProjectileConfig(attackerAnimId, out projectileConfig);
+
+            bool projectileSpawned = false;
+            float projectileAnimStartTime = -1f;
+            float projectileCasterFps = 0f;
+
+            void HandleOneShotStarted(BattleVisualAnimId id, IdleAnimation anim)
+            {
+                if (id != attackerAnimId)
+                    return;
+
+                projectileAnimStartTime = Time.time;
+                projectileCasterFps = anim != null ? anim.FrameRate : 0f;
+            }
+
+            attackerView.OnOneShotStarted += HandleOneShotStarted;
+
+            attackerView.RequestPlayAfterCurrent(attackerAnimId, onFinished: () => attackerFinished = true);
+
+            bool targetTookHpDamage = false;
+            if (before != null && after != null)
+            {
+                targetTookHpDamage = actorIsPlayer
+                    ? after.EnemyHp < before.EnemyHp
+                    : after.PlayerHp < before.PlayerHp;
+            }
+
+            if (targetTookHpDamage && targetView != null)
+            {
+                targetFinished = false;
+                targetView.RequestPlayAfterCurrent(BattleVisualAnimId.Hit, onFinished: () => targetFinished = true);
+            }
+
+            // Safety timeout to avoid soft-lock if something is miswired.
+            float timeout = 5f;
+            while ((!attackerFinished || !targetFinished) && timeout > 0f)
+            {
+                if (hasProjectile && !projectileSpawned && projectileAnimStartTime >= 0f)
+                {
+                    var delay = projectileConfig.FrameDelaySeconds(projectileCasterFps);
+                    if (Time.time - projectileAnimStartTime >= delay)
+                    {
+                        projectileSpawned = true;
+
+                        int dir = actorIsPlayer ? 1 : -1;
+                        var spawnOffsetUnits = new Vector3(
+                            projectileConfig.ToUnits(projectileConfig.spawnOffsetPixels.x) * dir,
+                            projectileConfig.ToUnits(projectileConfig.spawnOffsetPixels.y),
+                            0f);
+
+                        var start = attackerView.transform.position + spawnOffsetUnits;
+                        var end = start + Vector3.right * (projectileConfig.ToUnits(projectileConfig.travelDistancePixels) * dir);
+
+                        var parent = projectilesRoot != null ? projectilesRoot : null;
+                        var go = Instantiate(projectileConfig.projectilePrefab, start, Quaternion.identity, parent);
+                        var proj = go.GetComponent<Game.Battle.Visual.BattleSpellProjectile>();
+                        if (proj == null)
+                            proj = go.AddComponent<Game.Battle.Visual.BattleSpellProjectile>();
+
+                        bool flipX = dir < 0;
+                        proj.Initialize(start, end, projectileConfig.travelTimeSeconds, projectileConfig.projectileAnimation, flipX);
+                    }
+                }
+
+                timeout -= Time.deltaTime;
+                yield return null;
+            }
+
+            attackerView.OnOneShotStarted -= HandleOneShotStarted;
+        }
+
         public void OnExitPressed()
         {
             if (!battleStarted)
@@ -548,8 +645,8 @@ namespace Game.Battle
                 yield break;
             }
 
-            // 1) Play the action animation first.
-            yield return PlayActionVisualAndWait(actionId, actorIsPlayer: true);
+            // 1) Play attacker animation and (if HP damage happened) target Hit starting together.
+            yield return PlayActionWithTargetHitAndWait(actionId, actorIsPlayer: true, combatState, resolution.State);
 
             // 2) Apply results after animation.
             combatState = ClampPlayerResourcesToMax(resolution.State);
@@ -594,7 +691,8 @@ namespace Game.Battle
             // Resolve enemy action (but apply AFTER playing its animation).
             if (TryResolveEnemyAction(out var enemyActionId, out var enemyAction, out var enemyResolution))
             {
-                yield return PlayActionVisualAndWait(enemyActionId, actorIsPlayer: false);
+                // Play enemy animation and (if HP damage happened) player Hit starting together.
+                yield return PlayActionWithTargetHitAndWait(enemyActionId, actorIsPlayer: false, combatState, enemyResolution.State);
 
                 combatState = ClampEnemyResourcesToMax(enemyResolution.State);
                 ApplyPostActionEffects(enemyActionId, actorIsPlayer: false);

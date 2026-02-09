@@ -23,6 +23,48 @@ namespace Game.Battle.Visual
     [CreateAssetMenu(menuName = "Game/Battle/Visuals/Outfit Visuals")]
     public sealed class OutfitVisuals : ScriptableObject
     {
+        [System.Serializable]
+        public struct SpellProjectileConfig
+        {
+            [Tooltip("Prefab to spawn as projectile. Should have BattleSpellProjectile component (or it will be added at runtime).")]
+            public GameObject projectilePrefab;
+
+            [Tooltip("Optional animated projectile frames. If set, projectile will auto-play this animation while traveling.")]
+            public IdleAnimation projectileAnimation;
+
+            [Tooltip("When to spawn projectile relative to the caster animation, in frames (1 = immediately on animation start).")]
+            [Min(1)] public int spawnAtFrame;
+
+            [Tooltip("Pixels-per-unit conversion used for the pixel-based offsets and distances below.")]
+            [Min(0.01f)] public float pixelsPerUnit;
+
+            [Tooltip("Spawn offset relative to caster position, in pixels. X is automatically mirrored for enemy casts.")]
+            public Vector2 spawnOffsetPixels;
+
+            [Tooltip("How far the projectile should travel, in pixels (to the right for player, to the left for enemy).")]
+            [Min(0f)] public float travelDistancePixels;
+
+            [Tooltip("How long (seconds) the projectile should travel before being destroyed.")]
+            [Min(0.01f)] public float travelTimeSeconds;
+
+            public bool IsEnabled => projectilePrefab != null;
+
+            public float FrameDelaySeconds(float casterFps)
+            {
+                if (spawnAtFrame <= 1)
+                    return 0f;
+                if (casterFps <= 0f)
+                    return 0f;
+                return (spawnAtFrame - 1) / casterFps;
+            }
+
+            public float ToUnits(float pixels)
+            {
+                var ppu = pixelsPerUnit > 0f ? pixelsPerUnit : 100f;
+                return pixels / ppu;
+            }
+        }
+
         [Header("Identity")]
         [Tooltip("Must match outfitId, e.g. 'outfit_01'.")]
         public string outfitId = "outfit_01";
@@ -54,6 +96,18 @@ namespace Game.Battle.Visual
         public IdleAnimation[] holySpellVariations;
         [Tooltip("Optional variations for Dark Spell.")]
         public IdleAnimation[] darkSpellVariations;
+
+        [Header("Magic Projectiles (Optional)")]
+        [Tooltip("Projectile settings for generic Cast (also used as fallback for spells if their projectile is not set).")]
+        public SpellProjectileConfig castProjectile;
+        [Tooltip("Projectile settings for Fire Spell.")]
+        public SpellProjectileConfig fireSpellProjectile;
+        [Tooltip("Projectile settings for Ice Spell.")]
+        public SpellProjectileConfig iceSpellProjectile;
+        [Tooltip("Projectile settings for Holy Spell.")]
+        public SpellProjectileConfig holySpellProjectile;
+        [Tooltip("Projectile settings for Dark Spell.")]
+        public SpellProjectileConfig darkSpellProjectile;
 
         [Header("Seduction")]
         [Tooltip("Optional variations for Seduction Act 1.")]
@@ -121,6 +175,36 @@ namespace Game.Battle.Visual
             }
 
             return list != null && list.Length > 0 ? list : null;
+        }
+
+        public bool TryGetProjectileConfig(BattleVisualAnimId id, out SpellProjectileConfig config)
+        {
+            config = default;
+
+            switch (id)
+            {
+                case BattleVisualAnimId.Cast:
+                    config = castProjectile;
+                    return config.IsEnabled;
+
+                case BattleVisualAnimId.FireSpell:
+                    config = fireSpellProjectile.IsEnabled ? fireSpellProjectile : castProjectile;
+                    return config.IsEnabled;
+
+                case BattleVisualAnimId.IceSpell:
+                    config = iceSpellProjectile.IsEnabled ? iceSpellProjectile : castProjectile;
+                    return config.IsEnabled;
+
+                case BattleVisualAnimId.HolySpell:
+                    config = holySpellProjectile.IsEnabled ? holySpellProjectile : castProjectile;
+                    return config.IsEnabled;
+
+                case BattleVisualAnimId.DarkSpell:
+                    config = darkSpellProjectile.IsEnabled ? darkSpellProjectile : castProjectile;
+                    return config.IsEnabled;
+            }
+
+            return false;
         }
 
         public IdleAnimation[] GetIdleVariationsOrNull()

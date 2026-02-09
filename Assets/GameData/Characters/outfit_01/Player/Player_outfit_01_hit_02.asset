@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
+  m_Name: Player_outfit_01_hit_02
+  m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
+  id: heal_01
+  frames:
+  - {fileID: 21300000, guid: 4bbe2f44a620afb45884377b93377ff0, type: 3}
+  - {fileID: 21300000, guid: a9797ceef0edcd2499f560aa5a76c3cd, type: 3}
+  - {fileID: 21300000, guid: 4bc83676540445342a43d419a75f7c78, type: 3}
+  - {fileID: 21300000, guid: 89a1ec62db69fec48ace550932c0da2a, type: 3}
+  - {fileID: 21300000, guid: 5c4c8e9abe0dd184a9166622eb1cdf10, type: 3}
+  - {fileID: 21300000, guid: 546f2d03f9e76374fb7e305a90db0454, type: 3}
+  - {fileID: 21300000, guid: 563cb0a24045696419038e00364fc31f, type: 3}
+  - {fileID: 21300000, guid: 77d5da8a4e8ae8942b0bf3a3c052e48f, type: 3}
+  - {fileID: 21300000, guid: a26de040b8e862147a92d796b9f6dfe7, type: 3}
+  - {fileID: 21300000, guid: 34b0f04b77ee02d47a9a12ddd3bff154, type: 3}
+  frameRate: 12

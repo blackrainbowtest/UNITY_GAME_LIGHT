@@ -6,6 +6,8 @@ namespace Game.Battle.Visual
     {
         private const float DefaultIdleFramesPerSecond = 12f;
 
+        public event System.Action<BattleVisualAnimId, IdleAnimation> OnOneShotStarted;
+
         private bool hasPendingAnim;
         private BattleVisualAnimId pendingAnimId;
         private System.Action pendingAnimFinished;
@@ -169,6 +171,13 @@ namespace Game.Battle.Visual
             outfitId = string.IsNullOrEmpty(id) ? "outfit_01" : id;
         }
 
+        public OutfitVisuals ResolveOutfitVisuals()
+        {
+            if (visualProfile == null)
+                return null;
+            return visualProfile.ResolveOutfit(outfitId);
+        }
+
         private Sprite[] ResolveIdleFrames(out float fps)
         {
             fps = 0f;
@@ -312,6 +321,8 @@ namespace Game.Battle.Visual
                 finished?.Invoke();
                 return false;
             }
+
+            OnOneShotStarted?.Invoke(animId, anim);
 
             currentOneShotAnimId = animId;
             currentOneShotFinished = finished;

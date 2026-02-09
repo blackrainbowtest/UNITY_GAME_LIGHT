@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
+  m_Name: Player_outfit_01_CountrAttack
+  m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
+  id: heal_01
+  frames:
+  - {fileID: 21300000, guid: e1f9252ffdf06c84f85b0a5aaee2ee70, type: 3}
+  - {fileID: 21300000, guid: b5fd1c48ae35dea4ea6bf8996a446597, type: 3}
+  - {fileID: 21300000, guid: ce3faba9ebe0a6647aed1e5463140f28, type: 3}
+  - {fileID: 21300000, guid: d363fb7f3cbe6934f9a5d83c398878f8, type: 3}
+  - {fileID: 21300000, guid: 00c52fc63d6096c49a61baf153c8e6dc, type: 3}
+  - {fileID: 21300000, guid: 8c747bf72bd54f2439bdd0f329ec0a3d, type: 3}
+  - {fileID: 21300000, guid: 158c9a56c59cdf54691373cc49b5c7fa, type: 3}
+  - {fileID: 21300000, guid: d967fbe9b60537642b5cc0cfc0d0ea22, type: 3}
+  - {fileID: 21300000, guid: e418c37bba7d11c4b85d4089488f670f, type: 3}
+  - {fileID: 21300000, guid: 13bf1e6958754d949b4bcb8fcc98bae8, type: 3}
+  - {fileID: 21300000, guid: d248519dc5bf5ea4da9c9e3f9fe63b68, type: 3}
+  - {fileID: 21300000, guid: 4ae8ce1987604ce4b910e3852a0ec8f9, type: 3}
+  - {fileID: 21300000, guid: e5192fcd371928448b6580727295a4e3, type: 3}
+  frameRate: 12

@@ -18,13 +18,16 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f323b3b9f79d4214ca173f3308fe30d4, type: 2}
   - {fileID: 11400000, guid: 248f85fff92dcc24d9a743e9bcbe5977, type: 2}
   - {fileID: 11400000, guid: 248f85fff92dcc24d9a743e9bcbe5977, type: 2}
-  hitVariations: []
+  hitVariations:
+  - {fileID: 11400000, guid: c7d8c3efc759108428ac17c90bd3dd2c, type: 2}
+  - {fileID: 11400000, guid: f843d9c639111c74e86dcecf64e756a2, type: 2}
   fastAttackVariations:
   - {fileID: 11400000, guid: 74deed90e6bed1547ae16a2a6fe73e31, type: 2}
   normalAttackVariations:
   - {fileID: 11400000, guid: 4af0d8f79100d1b43b04759c6ab7891e, type: 2}
   heavyAttackVariations: []
-  counterAttackVariations: []
+  counterAttackVariations:
+  - {fileID: 11400000, guid: df180dde1899f9b4b9d68e098c19e9fb, type: 2}
   castVariations: []
   fireSpellVariations:
   - {fileID: 11400000, guid: 9501f20141a136e4d915ad9eaa59991a, type: 2}
@@ -42,5 +45,6 @@ MonoBehaviour:
   actionAct2Variations: []
   actionAct3Variations: []
   actionAct4Variations: []
-  blockVariations: []
+  blockVariations:
+  - {fileID: 11400000, guid: 900622788c292fd46966577e60a419c2, type: 2}
   deathVariations: []
