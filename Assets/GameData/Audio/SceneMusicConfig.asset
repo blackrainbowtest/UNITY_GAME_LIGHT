@@ -46,3 +46,21 @@ MonoBehaviour:
     musicCue: {fileID: 11400000, guid: b694056ca0dab7244b35a6fde989f4d9, type: 2}
     playlist: []
     loopPlaylist: 0
+  - sceneName: GuildScene
+    musicCue: {fileID: 11400000, guid: 8cb448416fcdbba4cbb7f373166ef1e6, type: 2}
+    playlist:
+    - {fileID: 11400000, guid: 8cb448416fcdbba4cbb7f373166ef1e6, type: 2}
+    - {fileID: 11400000, guid: 24df93068357dcb4a9872074edcb9e72, type: 2}
+    loopPlaylist: 1
+  - sceneName: TavernScene
+    musicCue: {fileID: 11400000, guid: c61cc2c6eba52d34a935f441f56dce49, type: 2}
+    playlist:
+    - {fileID: 11400000, guid: c61cc2c6eba52d34a935f441f56dce49, type: 2}
+    - {fileID: 11400000, guid: 50a88e4d20d7fe14fb1a26cbc14e32b5, type: 2}
+    loopPlaylist: 1
+  - sceneName: HealerHouseScene
+    musicCue: {fileID: 11400000, guid: 5b8595b91aad2d1438a0a7045165f82d, type: 2}
+    playlist:
+    - {fileID: 11400000, guid: 5b8595b91aad2d1438a0a7045165f82d, type: 2}
+    - {fileID: 11400000, guid: 3bdd00fc0ef6a0244a68c98b691021f5, type: 2}
+    loopPlaylist: 1
