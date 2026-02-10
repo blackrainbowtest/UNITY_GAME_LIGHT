@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
+  m_Name: Player_outfit_01_HeavyAttack
+  m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
+  id: heal_01
+  frames:
+  - {fileID: 21300000, guid: 94450dab0c325044bb0b95279e4b5e5a, type: 3}
+  - {fileID: 21300000, guid: d79bf896c01dd8b41a6eaa5da13e719c, type: 3}
+  - {fileID: 21300000, guid: d9f103fe079273942a196e4fd6fe2af6, type: 3}
+  - {fileID: 21300000, guid: 425f232f0d4694149aced4e70eedf039, type: 3}
+  - {fileID: 21300000, guid: b92dbf7c5ee9b2845989df6b7f6baee0, type: 3}
+  - {fileID: 21300000, guid: adcbe23c89cf3ac448a4090525098b54, type: 3}
+  - {fileID: 21300000, guid: 49a2fdc3a1801a64fb893bf489b1e630, type: 3}
+  - {fileID: 21300000, guid: 6ee19479b57118d46bd471991faf1dec, type: 3}
+  - {fileID: 21300000, guid: e55e13b5dffe292488ecaa875294d6b8, type: 3}
+  - {fileID: 21300000, guid: 53aa101a3033b51418ca87c9530c98b9, type: 3}
+  - {fileID: 21300000, guid: 3b43bf98158ff594a9ec31c78efc2578, type: 3}
+  - {fileID: 21300000, guid: 5a41919d1ffc1f74592ec7f6c68cd7e0, type: 3}
+  - {fileID: 21300000, guid: 2b268f13eac7a604295d8b06a4dc3943, type: 3}
+  frameRate: 12

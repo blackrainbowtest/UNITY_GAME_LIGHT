@@ -208,7 +208,14 @@ namespace Game.Battle.Combat
 
                     newState = ApplyHpDamageToEnemyWithBlockArmor(newState, damage, out _, out _);
                 }
-                else
+
+                if (action.LpDamage > 0)
+                {
+                    // Emotional damage: increases target LP.
+                    newState = newState.WithEnemyLp(newState.EnemyLp + action.LpDamage);
+                }
+
+                if (action.HpDamage <= 0 && action.LpDamage <= 0)
                 {
                     // Non-damaging player action clears enemy counter window.
                     newState = newState
@@ -307,7 +314,14 @@ namespace Game.Battle.Combat
 
                     newState = ApplyHpDamageToPlayerWithBlockArmor(newState, damage, out _, out _);
                 }
-                else
+
+                if (action.LpDamage > 0)
+                {
+                    // Emotional damage: increases target LP.
+                    newState = newState.WithPlayerLp(newState.PlayerLp + action.LpDamage);
+                }
+
+                if (action.HpDamage <= 0 && action.LpDamage <= 0)
                 {
                     // Non-damaging enemy action clears the counter window.
                     newState = newState

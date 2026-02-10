@@ -1973,6 +1973,37 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!1 &174536071
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 174536072}
+  m_Layer: 0
+  m_Name: ProjectiesRoot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &174536072
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 174536071}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1266566169}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &279821464
 GameObject:
   m_ObjectHideFlags: 0
@@ -4976,6 +5007,8 @@ MonoBehaviour:
   idleAnimation: {fileID: 11400000, guid: 3d337397ce62bbc43aec799c7c4f89a2, type: 2}
   randomizeIdle: 0
   idleVariations: []
+  useAmbientIdle: 0
+  ambientIdleIntervalSeconds: 4
   avoidImmediateIdleRepeat: 1
   minIdleVariationRepeats: 1
   maxIdleVariationRepeats: 1
@@ -9184,6 +9217,7 @@ Transform:
   m_Children:
   - {fileID: 988640863}
   - {fileID: 1106221861}
+  - {fileID: 174536072}
   m_Father: {fileID: 2107604759}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1267345184
@@ -9554,7 +9588,7 @@ GameObject:
   - component: {fileID: 1356038807}
   - component: {fileID: 1356038806}
   m_Layer: 0
-  m_Name: Button_Act3
+  m_Name: Button_Seduction3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9948,7 +9982,7 @@ GameObject:
   - component: {fileID: 1438156028}
   - component: {fileID: 1438156027}
   m_Layer: 0
-  m_Name: Button_Act4
+  m_Name: Button_Seduction4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11604,7 +11638,7 @@ GameObject:
   - component: {fileID: 1780403651}
   - component: {fileID: 1780403650}
   m_Layer: 0
-  m_Name: Button_Act2
+  m_Name: Button_Seduction2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12151,6 +12185,8 @@ MonoBehaviour:
   idleAnimation: {fileID: 11400000, guid: 248f85fff92dcc24d9a743e9bcbe5977, type: 2}
   randomizeIdle: 0
   idleVariations: []
+  useAmbientIdle: 0
+  ambientIdleIntervalSeconds: 4
   avoidImmediateIdleRepeat: 1
   minIdleVariationRepeats: 1
   maxIdleVariationRepeats: 1
@@ -13023,6 +13059,7 @@ MonoBehaviour:
   outcomeAnimationModal: {fileID: 7779633668407957838, guid: 83c613707bf1e8b4295ed7a824751d8e, type: 3}
   playerView: {fileID: 1816342352}
   enemyView: {fileID: 625450547}
+  projectilesRoot: {fileID: 174536072}
   playerVisualProfile: {fileID: 11400000, guid: 7e45624e404755f4da2d7ea28db073ae, type: 2}
   tutorialReturnSceneName: StartCityScene
   defaultReturnSceneName: StartCityScene
@@ -13200,7 +13237,7 @@ GameObject:
   - component: {fileID: 1907161143}
   - component: {fileID: 1907161142}
   m_Layer: 0
-  m_Name: Button_Act1
+  m_Name: Button_Seduction1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

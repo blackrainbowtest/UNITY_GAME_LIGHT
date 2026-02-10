@@ -509,6 +509,10 @@ namespace Game.Battle
             bool attackerFinished = false;
             bool targetFinished = true; // default: no hit requested
 
+            float attackerAnimStartTime = -1f;
+            float attackerFps = 0f;
+            int attackerFrameCount = 0;
+
             // Optional: spell projectile config (comes from attacker's outfit visuals)
             OutfitVisuals.SpellProjectileConfig projectileConfig = default;
             bool hasProjectile = false;
@@ -516,17 +520,44 @@ namespace Game.Battle
             if (attackerOutfit != null)
                 hasProjectile = attackerOutfit.TryGetProjectileConfig(attackerAnimId, out projectileConfig);
 
+            // Optional: hit timing config (comes from attacker's outfit visuals)
+            int hitAtFrame = 1;
+            bool useLustHit = false;
+            if (attackerOutfit != null && attackerOutfit.TryGetHitTiming(attackerAnimId, out var hitTiming))
+            {
+                hitAtFrame = hitTiming.hitAtFrame;
+                useLustHit = hitTiming.useLustHit;
+            }
+
             bool projectileSpawned = false;
             float projectileAnimStartTime = -1f;
             float projectileCasterFps = 0f;
+            bool targetHitTriggered = false;
+            float targetHitDelaySeconds = 0f;
+            BattleVisualAnimId targetHitAnimId = BattleVisualAnimId.Hit;
+            bool willPlayTargetHit = false;
 
             void HandleOneShotStarted(BattleVisualAnimId id, IdleAnimation anim)
             {
                 if (id != attackerAnimId)
                     return;
 
-                projectileAnimStartTime = Time.time;
-                projectileCasterFps = anim != null ? anim.FrameRate : 0f;
+                attackerAnimStartTime = Time.time;
+                attackerFps = anim != null ? anim.FrameRate : 0f;
+                attackerFrameCount = anim != null && anim.FramesArray != null ? anim.FramesArray.Length : 0;
+
+                projectileAnimStartTime = attackerAnimStartTime;
+                projectileCasterFps = attackerFps;
+
+                if (hitAtFrame > 1 && attackerFps > 0f)
+                {
+                    int clampedFrame = attackerFrameCount > 0 ? Mathf.Clamp(hitAtFrame, 1, attackerFrameCount) : hitAtFrame;
+                    targetHitDelaySeconds = (clampedFrame - 1) / attackerFps;
+                }
+                else
+                {
+                    targetHitDelaySeconds = 0f;
+                }
             }
 
             attackerView.OnOneShotStarted += HandleOneShotStarted;
@@ -541,16 +572,56 @@ namespace Game.Battle
                     : after.PlayerHp < before.PlayerHp;
             }
 
-            if (targetTookHpDamage && targetView != null)
+            bool targetTookLpDamage = false;
+            if (before != null && after != null)
             {
-                targetFinished = false;
-                targetView.RequestPlayAfterCurrent(BattleVisualAnimId.Hit, onFinished: () => targetFinished = true);
+                // Lust "damage" is represented as LP INCREASE on the target.
+                targetTookLpDamage = actorIsPlayer
+                    ? after.EnemyLp > before.EnemyLp
+                    : after.PlayerLp > before.PlayerLp;
             }
+
+            // Decide which target hit anim to play (physical vs emotional) and whether it should play at all.
+            if (useLustHit)
+            {
+                targetHitAnimId = BattleVisualAnimId.LustHit;
+                willPlayTargetHit = targetTookLpDamage;
+            }
+            else
+            {
+                targetHitAnimId = BattleVisualAnimId.Hit;
+                willPlayTargetHit = targetTookHpDamage;
+            }
+
+            // hitAtFrame == -1 means: ignore hit animation even if damage happened.
+            if (hitAtFrame == -1)
+                willPlayTargetHit = false;
+
+            if (willPlayTargetHit && targetView != null)
+                targetFinished = false;
 
             // Safety timeout to avoid soft-lock if something is miswired.
             float timeout = 5f;
             while ((!attackerFinished || !targetFinished) && timeout > 0f)
             {
+                if (willPlayTargetHit && !targetHitTriggered && targetView != null)
+                {
+                    // If we never received OnOneShotStarted (missing anim / fallback), trigger immediately when attacker finishes.
+                    if (attackerFinished && attackerAnimStartTime < 0f)
+                    {
+                        targetHitTriggered = true;
+                        targetView.RequestPlayAfterCurrent(targetHitAnimId, onFinished: () => targetFinished = true);
+                    }
+                    else if (attackerAnimStartTime >= 0f)
+                    {
+                        if (Time.time - attackerAnimStartTime >= targetHitDelaySeconds)
+                        {
+                            targetHitTriggered = true;
+                            targetView.RequestPlayAfterCurrent(targetHitAnimId, onFinished: () => targetFinished = true);
+                        }
+                    }
+                }
+
                 if (hasProjectile && !projectileSpawned && projectileAnimStartTime >= 0f)
                 {
                     var delay = projectileConfig.FrameDelaySeconds(projectileCasterFps);

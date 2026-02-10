@@ -145,7 +145,8 @@ namespace Game.Battle.Combat.Actions
                         mpCost: 0,
                         spCost: 0,
                         lpCost: 10,
-                        requiresPlayerBlockedLastTurn: false)
+                        requiresPlayerBlockedLastTurn: false,
+                        lpDamage: 10)
                 },
                 {
                     CombatActionId.SeductionAct2,
@@ -156,7 +157,8 @@ namespace Game.Battle.Combat.Actions
                         mpCost: 0,
                         spCost: 0,
                         lpCost: 20,
-                        requiresPlayerBlockedLastTurn: false)
+                        requiresPlayerBlockedLastTurn: false,
+                        lpDamage: 20)
                 },
                 {
                     CombatActionId.SeductionAct3,
@@ -167,7 +169,8 @@ namespace Game.Battle.Combat.Actions
                         mpCost: 0,
                         spCost: 0,
                         lpCost: 30,
-                        requiresPlayerBlockedLastTurn: false)
+                        requiresPlayerBlockedLastTurn: false,
+                        lpDamage: 30)
                 },
                 {
                     CombatActionId.SeductionAct4,
@@ -178,7 +181,8 @@ namespace Game.Battle.Combat.Actions
                         mpCost: 0,
                         spCost: 0,
                         lpCost: 40,
-                        requiresPlayerBlockedLastTurn: false)
+                        requiresPlayerBlockedLastTurn: false,
+                        lpDamage: 40)
                 },
 
                 // ===== Actions (placeholder effects for now) =====

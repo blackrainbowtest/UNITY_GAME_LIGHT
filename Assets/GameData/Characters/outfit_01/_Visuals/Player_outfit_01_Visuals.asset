@@ -21,14 +21,52 @@ MonoBehaviour:
   hitVariations:
   - {fileID: 11400000, guid: c7d8c3efc759108428ac17c90bd3dd2c, type: 2}
   - {fileID: 11400000, guid: f843d9c639111c74e86dcecf64e756a2, type: 2}
+  lustHitVariations:
+  - {fileID: 11400000, guid: f843d9c639111c74e86dcecf64e756a2, type: 2}
+  hitTimings:
+  - attackAnimId: 2
+    hitAtFrame: 1
+    useLustHit: 0
+  - attackAnimId: 3
+    hitAtFrame: 3
+    useLustHit: 0
+  - attackAnimId: 4
+    hitAtFrame: 5
+    useLustHit: 0
+  - attackAnimId: 11
+    hitAtFrame: 5
+    useLustHit: 0
+  - attackAnimId: 12
+    hitAtFrame: 5
+    useLustHit: 0
+  - attackAnimId: 13
+    hitAtFrame: -1
+    useLustHit: 0
+  - attackAnimId: 14
+    hitAtFrame: 5
+    useLustHit: 0
+  - attackAnimId: 20
+    hitAtFrame: 5
+    useLustHit: 1
+  - attackAnimId: 21
+    hitAtFrame: 5
+    useLustHit: 1
+  - attackAnimId: 22
+    hitAtFrame: 5
+    useLustHit: 1
+  - attackAnimId: 23
+    hitAtFrame: 5
+    useLustHit: 1
   fastAttackVariations:
   - {fileID: 11400000, guid: 74deed90e6bed1547ae16a2a6fe73e31, type: 2}
   normalAttackVariations:
   - {fileID: 11400000, guid: 4af0d8f79100d1b43b04759c6ab7891e, type: 2}
-  heavyAttackVariations: []
+  heavyAttackVariations:
+  - {fileID: 11400000, guid: 3a5e0a68db65fef40acf287295b4e081, type: 2}
   counterAttackVariations:
   - {fileID: 11400000, guid: df180dde1899f9b4b9d68e098c19e9fb, type: 2}
-  castVariations: []
+  castVariations:
+  - {fileID: 11400000, guid: 9501f20141a136e4d915ad9eaa59991a, type: 2}
   fireSpellVariations:
   - {fileID: 11400000, guid: 9501f20141a136e4d915ad9eaa59991a, type: 2}
   iceSpellVariations:
@@ -37,6 +75,46 @@ MonoBehaviour:
   - {fileID: 11400000, guid: cf34e98a186f5f34381e65a0920055bf, type: 2}
   darkSpellVariations:
   - {fileID: 11400000, guid: 555bacb1ee2da184ead9131223c8b170, type: 2}
+  castProjectile:
+    projectilePrefab: {fileID: 0}
+    projectileAnimation: {fileID: 0}
+    spawnAtFrame: 0
+    pixelsPerUnit: 0
+    spawnOffsetPixels: {x: 0, y: 0}
+    travelDistancePixels: 0
+    travelTimeSeconds: 0
+  fireSpellProjectile:
+    projectilePrefab: {fileID: 9137764033155392843, guid: 9b0929501d22190488c2bc22c943f167, type: 3}
+    projectileAnimation: {fileID: 11400000, guid: 9501f20141a136e4d915ad9eaa59991a, type: 2}
+    spawnAtFrame: 3
+    pixelsPerUnit: 100
+    spawnOffsetPixels: {x: 0, y: 0}
+    travelDistancePixels: 600
+    travelTimeSeconds: 1
+  iceSpellProjectile:
+    projectilePrefab: {fileID: 0}
+    projectileAnimation: {fileID: 0}
+    spawnAtFrame: 0
+    pixelsPerUnit: 0
+    spawnOffsetPixels: {x: 0, y: 0}
+    travelDistancePixels: 0
+    travelTimeSeconds: 0
+  holySpellProjectile:
+    projectilePrefab: {fileID: 0}
+    projectileAnimation: {fileID: 0}
+    spawnAtFrame: 0
+    pixelsPerUnit: 0
+    spawnOffsetPixels: {x: 0, y: 0}
+    travelDistancePixels: 0
+    travelTimeSeconds: 0
+  darkSpellProjectile:
+    projectilePrefab: {fileID: 0}
+    projectileAnimation: {fileID: 0}
+    spawnAtFrame: 0
+    pixelsPerUnit: 0
+    spawnOffsetPixels: {x: 0, y: 0}
+    travelDistancePixels: 0
+    travelTimeSeconds: 0
   seductionAct1Variations: []
   seductionAct2Variations: []
   seductionAct3Variations: []

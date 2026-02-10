@@ -15,7 +15,10 @@ MonoBehaviour:
   outfitId: outfit_01
   idleVariations:
   - {fileID: 11400000, guid: f323b3b9f79d4214ca173f3308fe30d4, type: 2}
-  hitVariations: []
+  hitVariations:
+  - {fileID: 11400000, guid: f843d9c639111c74e86dcecf64e756a2, type: 2}
+  lustHitVariations: []
+  hitTimings: []
   fastAttackVariations:
   - {fileID: 11400000, guid: 74deed90e6bed1547ae16a2a6fe73e31, type: 2}
   normalAttackVariations:
@@ -30,6 +33,46 @@ MonoBehaviour:
   holySpellVariations:
   - {fileID: 11400000, guid: cf34e98a186f5f34381e65a0920055bf, type: 2}
   darkSpellVariations: []
+  castProjectile:
+    projectilePrefab: {fileID: 0}
+    projectileAnimation: {fileID: 0}
+    spawnAtFrame: 0
+    pixelsPerUnit: 0
+    spawnOffsetPixels: {x: 0, y: 0}
+    travelDistancePixels: 0
+    travelTimeSeconds: 0
+  fireSpellProjectile:
+    projectilePrefab: {fileID: 0}
+    projectileAnimation: {fileID: 0}
+    spawnAtFrame: 0
+    pixelsPerUnit: 0
+    spawnOffsetPixels: {x: 0, y: 0}
+    travelDistancePixels: 0
+    travelTimeSeconds: 0
+  iceSpellProjectile:
+    projectilePrefab: {fileID: 0}
+    projectileAnimation: {fileID: 0}
+    spawnAtFrame: 0
+    pixelsPerUnit: 0
+    spawnOffsetPixels: {x: 0, y: 0}
+    travelDistancePixels: 0
+    travelTimeSeconds: 0
+  holySpellProjectile:
+    projectilePrefab: {fileID: 0}
+    projectileAnimation: {fileID: 0}
+    spawnAtFrame: 0
+    pixelsPerUnit: 0
+    spawnOffsetPixels: {x: 0, y: 0}
+    travelDistancePixels: 0
+    travelTimeSeconds: 0
+  darkSpellProjectile:
+    projectilePrefab: {fileID: 0}
+    projectileAnimation: {fileID: 0}
+    spawnAtFrame: 0
+    pixelsPerUnit: 0
+    spawnOffsetPixels: {x: 0, y: 0}
+    travelDistancePixels: 0
+    travelTimeSeconds: 0
   seductionAct1Variations: []
   seductionAct2Variations: []
   seductionAct3Variations: []

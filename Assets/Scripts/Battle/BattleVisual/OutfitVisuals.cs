@@ -24,6 +24,19 @@ namespace Game.Battle.Visual
     public sealed class OutfitVisuals : ScriptableObject
     {
         [System.Serializable]
+        public struct HitTimingConfig
+        {
+            [Tooltip("Attacker animation id (e.g. FastAttack, FireSpell, SeductionAct1, etc).")]
+            public BattleVisualAnimId attackAnimId;
+
+            [Tooltip("Frame when the hit should be applied (1 = immediately on animation start). Set -1 to ignore target hit animation.")]
+            public int hitAtFrame;
+
+            [Tooltip("If enabled, the target will play LustHit variations instead of Hit when the hit moment is reached.")]
+            public bool useLustHit;
+        }
+
+        [System.Serializable]
         public struct SpellProjectileConfig
         {
             [Tooltip("Prefab to spawn as projectile. Should have BattleSpellProjectile component (or it will be added at runtime).")]
@@ -74,6 +87,12 @@ namespace Game.Battle.Visual
         public IdleAnimation[] idleVariations;
         [Tooltip("Optional variations for Hit.")]
         public IdleAnimation[] hitVariations;
+        [Tooltip("Optional variations for LustHit (emotional hit).")]
+        public IdleAnimation[] lustHitVariations;
+
+        [Header("Hit Timing")]
+        [Tooltip("Per-attack frame timing for when the target hit animation should start. If an entry is missing, defaults to frame 1 (immediate) and physical Hit.")]
+        public HitTimingConfig[] hitTimings;
 
         [Header("Attacks")]
         [Tooltip("Optional variations for Fast Attack.")]
@@ -148,6 +167,7 @@ namespace Game.Battle.Visual
             {
                 case BattleVisualAnimId.Idle: list = idleVariations; break;
                 case BattleVisualAnimId.Hit: list = hitVariations; break;
+                case BattleVisualAnimId.LustHit: list = lustHitVariations; break;
                 case BattleVisualAnimId.FastAttack: list = fastAttackVariations; break;
                 case BattleVisualAnimId.NormalAttack: list = normalAttackVariations; break;
                 case BattleVisualAnimId.HeavyAttack: list = heavyAttackVariations; break;
@@ -175,6 +195,25 @@ namespace Game.Battle.Visual
             }
 
             return list != null && list.Length > 0 ? list : null;
+        }
+
+        public bool TryGetHitTiming(BattleVisualAnimId attackAnimId, out HitTimingConfig timing)
+        {
+            timing = default;
+
+            if (hitTimings == null || hitTimings.Length == 0)
+                return false;
+
+            for (int i = 0; i < hitTimings.Length; i++)
+            {
+                if (hitTimings[i].attackAnimId != attackAnimId)
+                    continue;
+
+                timing = hitTimings[i];
+                return true;
+            }
+
+            return false;
         }
 
         public bool TryGetProjectileConfig(BattleVisualAnimId id, out SpellProjectileConfig config)

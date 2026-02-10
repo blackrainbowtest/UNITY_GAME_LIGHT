@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Game.Battle.Visual
@@ -24,6 +26,11 @@ namespace Game.Battle.Visual
         [SerializeField] private IdleAnimation idleAnimation;
         [SerializeField] private bool randomizeIdle;
         [SerializeField] private IdleAnimation[] idleVariations;
+        [Header("Ambient Idle (Optional)")]
+        [Tooltip("If enabled, idleVariations[0] is used as the default idle loop, and idleVariations[1..] are treated as ambient idles that play occasionally (then return to default idle).")]
+        [SerializeField] private bool useAmbientIdle;
+        [Tooltip("How often (seconds) to attempt playing an ambient idle while looping default idle.")]
+        [SerializeField, Min(0.1f)] private float ambientIdleIntervalSeconds = 4f;
         [SerializeField] private bool avoidImmediateIdleRepeat = true;
         [SerializeField, Min(1)] private int minIdleVariationRepeats = 1;
         [SerializeField, Min(1)] private int maxIdleVariationRepeats = 1;
@@ -36,6 +43,13 @@ namespace Game.Battle.Visual
         private int idleToken;
         private int lastIdleVariationIndex = -1;
         private IdleAnimation[] resolvedIdleVariations;
+
+        private Coroutine ambientIdleRoutine;
+        private int ambientIdleToken;
+        private IdleAnimation defaultIdleAnim;
+        private List<IdleAnimation> ambientIdleBag;
+        private int ambientIdleBagPos;
+        private IdleAnimation lastAmbientIdlePlayed;
 
         private void Reset()
         {
@@ -71,6 +85,9 @@ namespace Game.Battle.Visual
             if (animator == null)
                 return;
 
+            if (useAmbientIdle && TryStartDefaultPlusAmbientIdle())
+                return;
+
             var variations = ResolveIdleVariations();
             int validVariationCount = CountValid(variations);
 
@@ -104,6 +121,157 @@ namespace Game.Battle.Visual
                 animator.SetFramesPerSecond(fps);
 
             animator.PlayLoop(frames);
+        }
+
+        private bool TryStartDefaultPlusAmbientIdle()
+        {
+            var variations = ResolveIdleVariations();
+            if (variations == null || variations.Length == 0)
+                return false;
+
+            // Default idle must be the first item in the list (as requested).
+            defaultIdleAnim = variations[0] != null && variations[0].IsValid() ? variations[0] : PickFirstValid(variations);
+            if (defaultIdleAnim == null || !defaultIdleAnim.IsValid())
+                return false;
+
+            // Build ambient pool from the rest of the list.
+            EnsureAmbientBagInitialized(variations);
+
+            animator.SetFramesPerSecond(defaultIdleAnim.FrameRate);
+            animator.PlayLoop(defaultIdleAnim.FramesArray);
+
+            StartAmbientIdleLoop();
+            return true;
+        }
+
+        private void EnsureAmbientBagInitialized(IdleAnimation[] variations)
+        {
+            if (ambientIdleBag == null)
+                ambientIdleBag = new List<IdleAnimation>(8);
+
+            ambientIdleBag.Clear();
+            ambientIdleBagPos = 0;
+            lastAmbientIdlePlayed = null;
+
+            if (variations == null)
+                return;
+
+            for (int i = 1; i < variations.Length; i++)
+            {
+                var a = variations[i];
+                if (a != null && a.IsValid())
+                    ambientIdleBag.Add(a);
+            }
+
+            ShuffleAmbientBag();
+        }
+
+        private void ShuffleAmbientBag()
+        {
+            if (ambientIdleBag == null || ambientIdleBag.Count <= 1)
+                return;
+
+            // Fisher-Yates shuffle.
+            for (int i = ambientIdleBag.Count - 1; i > 0; i--)
+            {
+                int j = Random.Range(0, i + 1);
+                (ambientIdleBag[i], ambientIdleBag[j]) = (ambientIdleBag[j], ambientIdleBag[i]);
+            }
+
+            // Avoid repeating the last played ambient when starting a new cycle.
+            if (lastAmbientIdlePlayed != null && ambientIdleBag.Count > 1 && ambientIdleBag[0] == lastAmbientIdlePlayed)
+            {
+                int swapIdx = Random.Range(1, ambientIdleBag.Count);
+                (ambientIdleBag[0], ambientIdleBag[swapIdx]) = (ambientIdleBag[swapIdx], ambientIdleBag[0]);
+            }
+        }
+
+        private void StartAmbientIdleLoop()
+        {
+            // Stop any previous routine.
+            if (ambientIdleRoutine != null)
+            {
+                StopCoroutine(ambientIdleRoutine);
+                ambientIdleRoutine = null;
+            }
+
+            // Only run if we have ambient idles to play.
+            if (ambientIdleBag == null || ambientIdleBag.Count == 0)
+                return;
+
+            ambientIdleToken++;
+            int token = ambientIdleToken;
+            ambientIdleRoutine = StartCoroutine(AmbientIdleRoutine(token));
+        }
+
+        private IEnumerator AmbientIdleRoutine(int token)
+        {
+            while (token == ambientIdleToken)
+            {
+                yield return new WaitForSeconds(ambientIdleIntervalSeconds);
+
+                if (token != ambientIdleToken)
+                    yield break;
+
+                if (!useAmbientIdle)
+                    yield break;
+
+                // Only play ambient when we are safely looping idle and nothing is pending.
+                if (animator == null || !animator.IsPlaying || !animator.IsLooping)
+                    continue;
+
+                if (hasPendingAnim)
+                    continue;
+
+                var ambient = NextAmbientIdleOrNull();
+                if (ambient == null || !ambient.IsValid())
+                    continue;
+
+                lastAmbientIdlePlayed = ambient;
+
+                // Play ambient once, then return to default idle (or pending combat anim, if any).
+                animator.SetFramesPerSecond(ambient.FrameRate);
+                animator.PlayOnce(ambient.FramesArray, finished: () =>
+                {
+                    if (token != ambientIdleToken)
+                        return;
+
+                    if (TryPlayPendingNow())
+                        return;
+
+                    if (defaultIdleAnim != null && defaultIdleAnim.IsValid())
+                    {
+                        animator.SetFramesPerSecond(defaultIdleAnim.FrameRate);
+                        animator.PlayLoop(defaultIdleAnim.FramesArray);
+                    }
+                    else
+                    {
+                        PlayIdle();
+                    }
+                });
+            }
+        }
+
+        private IdleAnimation NextAmbientIdleOrNull()
+        {
+            if (ambientIdleBag == null || ambientIdleBag.Count == 0)
+                return null;
+
+            if (ambientIdleBagPos >= ambientIdleBag.Count)
+            {
+                ambientIdleBagPos = 0;
+                ShuffleAmbientBag();
+            }
+
+            // If we only have 1 ambient idle, repeats are unavoidable.
+            if (ambientIdleBagPos < ambientIdleBag.Count)
+            {
+                var anim = ambientIdleBag[ambientIdleBagPos];
+                ambientIdleBagPos++;
+                return anim;
+            }
+
+            return null;
         }
 
         public void Play(BattleVisualAnimId animId)
@@ -239,6 +407,14 @@ namespace Game.Battle.Visual
             hasPendingAnim = false;
             pendingAnimFinished = null;
             currentOneShotFinished = null;
+
+            ambientIdleToken++;
+            if (ambientIdleRoutine != null)
+            {
+                StopCoroutine(ambientIdleRoutine);
+                ambientIdleRoutine = null;
+            }
+
             animator?.Stop();
         }
 

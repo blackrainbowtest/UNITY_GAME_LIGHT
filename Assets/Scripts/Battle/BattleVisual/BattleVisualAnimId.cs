@@ -4,6 +4,7 @@ namespace Game.Battle.Visual
     {
         Idle = 0,
         Hit = 1,
+        LustHit = 6,
         FastAttack = 2,
         NormalAttack = 3,
         HeavyAttack = 4,
