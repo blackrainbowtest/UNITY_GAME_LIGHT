@@ -16,8 +16,7 @@ MonoBehaviour:
   idleVariations:
   - {fileID: 11400000, guid: 248f85fff92dcc24d9a743e9bcbe5977, type: 2}
   - {fileID: 11400000, guid: f323b3b9f79d4214ca173f3308fe30d4, type: 2}
-  - {fileID: 11400000, guid: 248f85fff92dcc24d9a743e9bcbe5977, type: 2}
-  - {fileID: 11400000, guid: 248f85fff92dcc24d9a743e9bcbe5977, type: 2}
+  - {fileID: 11400000, guid: 02da1bbf2161672469b87d6d0e6b61ec, type: 2}
   hitVariations:
   - {fileID: 11400000, guid: c7d8c3efc759108428ac17c90bd3dd2c, type: 2}
   - {fileID: 11400000, guid: f843d9c639111c74e86dcecf64e756a2, type: 2}
