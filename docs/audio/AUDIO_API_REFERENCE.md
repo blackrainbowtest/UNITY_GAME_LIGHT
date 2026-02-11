@@ -1,3 +1,5 @@
+﻿> **Game Version:** 0.0.194
+
 # Audio System (AudioCue + SceneMusicConfig)
 
 Этот документ описывает текущую аудио-систему UDA2: музыка по сценам, UI-клики и игровые звуки через **AudioCue**.
@@ -175,3 +177,5 @@ public sealed class AttackSfx : MonoBehaviour
 
 Если `AudioManager` живёт через `DontDestroyOnLoad`, а его `AudioSource`/`sfxParent` были объектами сцены, они могут уничтожаться при смене сцен. В `AudioManager` есть защита, которая перепривязывает их под себя и пересоздаёт пул при необходимости.
 </details>
+
+

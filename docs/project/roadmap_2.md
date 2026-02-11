@@ -1,3 +1,5 @@
+﻿> **Game Version:** 0.0.194
+
 # Development Roadmap
 
 ## Status legend
@@ -115,3 +117,4 @@
 Completion of the minimum implementation of the combat system
 Creating the first main location, the ruined city
 Creating locations for this city /flea market, broken shelter, small shop, tavern, adventurer's guild/
+

@@ -1,3 +1,5 @@
+﻿> **Game Version:** 0.0.194
+
 god rules
 
 - Single Source of Truth
@@ -6,3 +8,4 @@ god rules
   - No direct data mutations
   - No static UI / no FindObjectOfType
   - Все UI — prefab’ы, создаются через Instantiate
+

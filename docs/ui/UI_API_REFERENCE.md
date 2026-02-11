@@ -1,3 +1,5 @@
+﻿> **Game Version:** 0.0.194
+
 # UI API Reference / Справочник UI API
 
 See also:
@@ -179,3 +181,4 @@ audio.SetUiVolume(1.0f);
 **Все методы доступны из любого кода через AudioManager.Instance. Singleton создаётся автоматически и не уничтожается между сценами.**
 
 main frame color 0b010c
+

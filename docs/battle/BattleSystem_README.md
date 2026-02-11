@@ -1,3 +1,5 @@
+﻿> **Game Version:** 0.0.194
+
 # Battle System Integration Guide
 
 ## Архитектура входа в бой
@@ -64,3 +66,5 @@ SceneFlowManager.Instance.LoadScene("FightScene");
 ---
 
 > Документ поддерживает актуальную архитектуру на январь 2026. Для изменений обновляйте этот файл.
+
+

@@ -1,3 +1,5 @@
+﻿> **Game Version:** 0.0.194
+
 # Battle TODOs (UI + Flow)
 
 ## 1) Result modal wiring (scene)
@@ -10,7 +12,7 @@
   - `rewardsText` (TMP_Text)
   - `okButton` (UnityEngine.UI.Button)
 - In `BattleController` (in the battle scene), assign reference:
-  - `resultModal` → your modal controller
+  - `resultModal` в†’ your modal controller
 
 ## 2) Configure tutorial exit
 - In `BattleController` Inspector:
@@ -38,7 +40,7 @@ When entering the battle from any non-intro scene:
   - Save to slot if needed
 
 ## 6) UI action menus (later)
-- Replace `OnAttackPressed()` → show categories/menu:
+- Replace `OnAttackPressed()` в†’ show categories/menu:
   - Use `CombatActionRegistry.GetByCategory(...)`
   - UI sends `CombatActionId` back to controller
 
@@ -48,3 +50,4 @@ Notes:
 - `BattleController` orchestrates only.
 - `BattleCombatEngine` has pure logic.
 - Result modal is UI-only and calls back to controller on OK.
+

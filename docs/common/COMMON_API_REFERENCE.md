@@ -1,3 +1,5 @@
+﻿> **Game Version:** 0.0.194
+
 
 # Common API Reference
 
@@ -80,4 +82,5 @@ Attach `UDA2.UI.Game.GameTimeHUDController` to a UI object.
 Assign two `TMP_Text` references:
 - Day value text (top-left number only; label like "Day" should be a separate localized TMP_Text)
 - Time text (under the day)
+
 

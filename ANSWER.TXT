@@ -1,0 +1,231 @@
+АНАЛИЗ ТЕКУЩЕЙ АНИМАЦИОННОЙ СИСТЕМЫ (без предложений по улучшению)
+Дата: 2026-02-11
+
+Ниже — описание текущей реализации и control flow на основании кода в проекте:
+- Assets/Scripts/Battle/_Core/BattleController.cs
+- Assets/Scripts/Battle/BattleVisual/BattleCharacterView.cs
+- Assets/Scripts/Battle/BattleVisual/SpriteFrameAnimator.cs
+- Assets/Scripts/Battle/Combat/BattleCombatEngine.cs
+- Assets/Scripts/Battle/BattleUI/BattleHUDController.cs
+
+================================================================================
+1) Как сейчас триггерятся attack-анимации
+================================================================================
+
+1.1. Откуда приходит команда атаки
+- UI слой вызывает IBattleUIActions.OnCombatActionSelected(actionId).
+- Это делается из BattleHUDController: метод SelectAction(...) вызывает:
+  actions.OnCombatActionSelected(actionId);
+  (файл: Assets/Scripts/Battle/BattleUI/BattleHUDController.cs)
+
+1.2. Какой метод стартует attack-анимацию
+- В BattleController метод OnCombatActionSelected(actionId) проверяет состояние (battleStarted, turnPhase) и вызывает:
+  ExecutePlayerAction(actionId)
+  (файл: Assets/Scripts/Battle/_Core/BattleController.cs)
+
+- Внутри корутины ExecutePlayerActionRoutine(actionId) (после резолва в engine) запускается визуал:
+  yield return PlayActionWithTargetHitAndWait(actionId, actorIsPlayer: true, beforeState, afterState);
+
+- В PlayActionWithTargetHitAndWait атакующая анимация запускается через:
+  attackerView.RequestPlayAfterCurrent(attackerAnimId, onFinished: () => attackerFinished = true);
+
+Итого: attack-анимацию фактически инициирует BattleController через BattleCharacterView.RequestPlayAfterCurrent(...).
+
+1.3. Это PlayOnce или PlayLoop?
+- Атаки (и hit) проигрываются как one-shot.
+- BattleController вызывает RequestPlayAfterCurrent(...), а BattleCharacterView внутри TryPlayOnceInternal(...) использует:
+  animator.PlayOnce(anim.FramesArray, finished: () => HandleNonLoopFinished(animId));
+
+- PlayLoop используется для idle (и для projectile-анимаций), но не для атак.
+
+Ключевые фрагменты:
+
+[BattleController.cs]
+- ExecutePlayerActionRoutine:
+  var resolution = combatEngine.ResolvePlayerAction(combatState, action);
+  yield return PlayActionWithTargetHitAndWait(actionId, actorIsPlayer: true, combatState, resolution.State);
+
+- PlayActionWithTargetHitAndWait:
+  attackerView.RequestPlayAfterCurrent(attackerAnimId, onFinished: () => attackerFinished = true);
+
+[BattleCharacterView.cs]
+- TryPlayOnceInternal:
+  animator.PlayOnce(anim.FramesArray, finished: () => HandleNonLoopFinished(animId));
+
+================================================================================
+2) Как система ждёт завершения анимации
+================================================================================
+
+2.1. Есть ли callback?
+- Да.
+- На уровне SpriteFrameAnimator: PlayOnce принимает Action finished.
+- Когда non-loop клип доходит до конца, SpriteFrameAnimator вызывает сохранённый onFinished.
+- BattleCharacterView прокидывает это через HandleNonLoopFinished → вызывает currentOneShotFinished (callback, который передали в RequestPlayAfterCurrent).
+- BattleController передаёт callback, который выставляет флаг attackerFinished/targetFinished.
+
+Цепочка callback’ов:
+BattleController → BattleCharacterView.RequestPlayAfterCurrent(onFinished) →
+BattleCharacterView.TryPlayOnceInternal → SpriteFrameAnimator.PlayOnce(finished) →
+SpriteFrameAnimator.StopInternal(invokeFinished: true) → finished() →
+BattleCharacterView.HandleNonLoopFinished → currentOneShotFinished() →
+BattleController выставляет attackerFinished/targetFinished.
+
+2.2. Есть ли coroutine waiting?
+- Да.
+- BattleController использует корутину и polling в while:
+  while ((!attackerFinished || !targetFinished) && timeout > 0f) { yield return null; }
+- Присутствует safety timeout (5 секунд) чтобы не словить soft-lock.
+
+2.3. Есть ли очередь?
+- Есть “одна ячейка pending” в BattleCharacterView, но это не полноценная очередь из множества элементов.
+- RequestPlayAfterCurrent сохраняет:
+  hasPendingAnim + pendingAnimId + pendingAnimFinished
+- Pending-элемент запускается:
+  - на границе лупа (OnLooped) если персонаж сейчас в idle loop
+  - либо сразу, если animator не играет
+  - либо сразу после завершения текущего one-shot (в HandleNonLoopFinished).
+
+Ключевые фрагменты:
+
+[BattleController.cs]
+- ожидание:
+  float timeout = 5f;
+  while ((!attackerFinished || !targetFinished) && timeout > 0f) {
+      timeout -= Time.deltaTime;
+      yield return null;
+  }
+
+[BattleCharacterView.cs]
+- RequestPlayAfterCurrent:
+  hasPendingAnim = true;
+  pendingAnimId = animId;
+  pendingAnimFinished = onFinished;
+  if (!animator.IsPlaying) TryPlayPendingNow();
+
+- HandleAnimatorLooped:
+  if (animator.IsLooping) TryPlayPendingNow();
+
+================================================================================
+3) Как триггерится hit-анимация защищающегося
+================================================================================
+
+3.1. Какой метод стартует hit
+- В BattleController.PlayActionWithTargetHitAndWait(...) при наступлении момента удара вызывается:
+  targetView.RequestPlayAfterCurrent(targetHitAnimId, onFinished: () => targetFinished = true);
+
+- Где targetHitAnimId выбирается между Hit и LustHit.
+
+3.2. Это queued или immediate?
+- Это запускается через RequestPlayAfterCurrent, то есть “после текущего” для targetView.
+- Если target сейчас в idle loop, pending hit стартует на следующей границе лупа (через SpriteFrameAnimator.OnLooped → BattleCharacterView.HandleAnimatorLooped).
+- Если animator у цели не играет, RequestPlayAfterCurrent пытается стартовать pending сразу.
+
+3.3. Interrupt’ит ли idle?
+- Да: когда pending hit реально стартует, BattleCharacterView играет one-shot через SpriteFrameAnimator.PlayOnce.
+- После завершения one-shot, BattleCharacterView возвращается в idle через PlayIdle(), если нет следующего pending.
+
+Ключевые фрагменты:
+
+[BattleController.cs]
+- запуск hit:
+  targetView.RequestPlayAfterCurrent(targetHitAnimId, onFinished: () => targetFinished = true);
+
+[BattleCharacterView.cs]
+- HandleAnimatorLooped:
+  // Only trigger pending anim at a clean boundary of a looping clip (idle).
+  TryPlayPendingNow();
+
+- HandleNonLoopFinished:
+  if (TryPlayPendingNow()) return;
+  PlayIdle();
+
+================================================================================
+4) Поддерживает ли SpriteFrameAnimator callbacks кроме “onFinished”?
+================================================================================
+
+Да, на текущий момент есть 2 механизма:
+- Action onFinished (только для PlayOnce), передаётся параметром finished.
+- Event OnLooped (для loop-анимаций), вызывается каждый раз при переходе с последнего кадра на первый в режиме loop.
+
+Иных callback’ов (например “onFrame”, “onMarker”, “onStart”) в SpriteFrameAnimator сейчас нет.
+
+Ключевой фрагмент:
+
+[SpriteFrameAnimator.cs]
+public event Action OnLooped;
+public void PlayOnce(Sprite[] newFrames, Action finished = null)
+
+if (index >= frames.Length)
+{
+    if (loop)
+    {
+        index = 0;
+        OnLooped?.Invoke();
+    }
+    else
+    {
+        index = frames.Length - 1;
+        ApplyFrame(index);
+        StopInternal(invokeFinished: true);
+        return;
+    }
+}
+
+================================================================================
+5) Как BattleController определяет момент применения урона
+================================================================================
+
+Важно: “урон” (изменения HP/LP) вычисляется заранее в combat engine, но “коммит” в BattleController происходит ПОСЛЕ ожидания анимаций.
+
+5.1. Где вычисляется урон
+- В BattleCombatEngine.ResolvePlayerAction(...) и ResolveEnemyAction(...).
+- Эти методы возвращают CombatResolution со State = новый CombatState, где HP/LP уже изменены.
+- Например HP damage применён через ApplyHpDamageToEnemyWithBlockArmor(...) или ApplyHpDamageToPlayerWithBlockArmor(...).
+- Emotional damage представлен как LP INCREASE у цели:
+  newState = newState.WithEnemyLp(newState.EnemyLp + action.LpDamage);
+  или
+  newState = newState.WithPlayerLp(newState.PlayerLp + action.LpDamage);
+
+5.2. Когда BattleController применяет (коммитит) результат
+- В ExecutePlayerActionRoutine:
+  1) сначала yield return PlayActionWithTargetHitAndWait(..., beforeState, afterState)
+  2) затем combatState = ClampPlayerResourcesToMax(resolution.State);
+- Аналогично в EnemyTurnRoutine:
+  1) yield return PlayActionWithTargetHitAndWait(...)
+  2) combatState = ClampEnemyResourcesToMax(enemyResolution.State);
+
+Итого:
+- Урон НЕ применяется “внутри анимации”.
+- Урон НЕ применяется “после завершения анимации” в engine.
+- Engine вычисляет новый state сразу, но BattleController обновляет свой combatState после ожидания визуалов.
+
+================================================================================
+6) Запрошенные релевантные фрагменты (сводка)
+================================================================================
+
+6.1. SpriteFrameAnimator
+Файл: Assets/Scripts/Battle/BattleVisual/SpriteFrameAnimator.cs
+- Методы: PlayLoop(...), PlayOnce(..., Action finished), Stop()
+- Callback’и: event OnLooped; finished callback через onFinished.
+
+6.2. BattleController attack logic
+Файл: Assets/Scripts/Battle/_Core/BattleController.cs
+- OnCombatActionSelected → ExecutePlayerAction → coroutine ExecutePlayerActionRoutine
+- Визуальный запуск: PlayActionWithTargetHitAndWait(...)
+- Ожидание: while loop по attackerFinished/targetFinished
+
+6.3. Где применяется урон
+Файл: Assets/Scripts/Battle/Combat/BattleCombatEngine.cs
+- Внутри ResolvePlayerAction/ResolveEnemyAction (pure logic)
+- HP damage через ApplyHpDamageTo*WithBlockArmor
+- LP damage через WithEnemyLp/WithPlayerLp (увеличение LP цели)
+
+6.4. Где вызывается defender.Play(Hit)
+В текущем коде напрямую defender.Play(Hit) не используется для синхронизации удара.
+Вместо этого используется:
+  targetView.RequestPlayAfterCurrent(targetHitAnimId, onFinished: () => targetFinished = true);
+(файл: Assets/Scripts/Battle/_Core/BattleController.cs)
+А фактический запуск внутри BattleCharacterView приводит к SpriteFrameAnimator.PlayOnce.
+
+================================================================================
+КОНЕЦ
