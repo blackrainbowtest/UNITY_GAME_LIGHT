@@ -13,6 +13,8 @@ namespace Game.Battle.Visual
         private bool hasPendingAnim;
         private BattleVisualAnimId pendingAnimId;
         private System.Action pendingAnimFinished;
+        private System.Action pendingAnimImpact;
+        private int pendingAnimImpactFrameIndexOverride;
         private BattleVisualAnimId currentOneShotAnimId;
         private System.Action currentOneShotFinished;
 
@@ -288,11 +290,47 @@ namespace Game.Battle.Visual
             TryPlayOnceInternal(animId, finished: null);
         }
 
+        public void PlayImmediate(BattleVisualAnimId animId, System.Action onFinished = null)
+        {
+            PlayImmediate(animId, onFinished, onImpact: null, impactFrameIndexOverride: -1);
+        }
+
+        public void PlayImmediate(
+            BattleVisualAnimId animId,
+            System.Action onFinished,
+            System.Action onImpact,
+            int impactFrameIndexOverride = -1)
+        {
+            if (animator == null)
+            {
+                onFinished?.Invoke();
+                return;
+            }
+
+            if (animId == BattleVisualAnimId.Idle)
+            {
+                PlayIdle();
+                onFinished?.Invoke();
+                return;
+            }
+
+            // Immediate one-shot play (interrupts current playback).
+            TryPlayOnceInternal(
+                animId,
+                finished: onFinished,
+                onImpact: onImpact,
+                impactFrameIndexOverride: impactFrameIndexOverride);
+        }
+
         /// <summary>
         /// Requests an animation to play after the current animation finishes.
         /// If we are looping (idle), it starts on the next loop boundary.
         /// </summary>
-        public bool RequestPlayAfterCurrent(BattleVisualAnimId animId, System.Action onFinished = null)
+        public bool RequestPlayAfterCurrent(
+            BattleVisualAnimId animId,
+            System.Action onFinished = null,
+            System.Action onImpact = null,
+            int impactFrameIndexOverride = -1)
         {
             if (animator == null)
             {
@@ -310,6 +348,8 @@ namespace Game.Battle.Visual
             hasPendingAnim = true;
             pendingAnimId = animId;
             pendingAnimFinished = onFinished;
+            pendingAnimImpact = onImpact;
+            pendingAnimImpactFrameIndexOverride = impactFrameIndexOverride;
 
             // If nothing is playing, start immediately.
             if (!animator.IsPlaying)
@@ -406,6 +446,7 @@ namespace Game.Battle.Visual
             resolvedIdleVariations = null;
             hasPendingAnim = false;
             pendingAnimFinished = null;
+            pendingAnimImpact = null;
             currentOneShotFinished = null;
 
             ambientIdleToken++;
@@ -453,11 +494,15 @@ namespace Game.Battle.Visual
 
             var id = pendingAnimId;
             var finished = pendingAnimFinished;
+            var impact = pendingAnimImpact;
+            var impactFrameIndexOverride = pendingAnimImpactFrameIndexOverride;
             hasPendingAnim = false;
             pendingAnimFinished = null;
+            pendingAnimImpact = null;
+            pendingAnimImpactFrameIndexOverride = -1;
 
             // Try start immediately; if missing animation, invoke callback and return to idle.
-            if (!TryPlayOnceInternal(id, finished))
+            if (!TryPlayOnceInternal(id, finished, impact, impactFrameIndexOverride))
             {
                 finished?.Invoke();
                 return false;
@@ -466,7 +511,11 @@ namespace Game.Battle.Visual
             return true;
         }
 
-        private bool TryPlayOnceInternal(BattleVisualAnimId animId, System.Action finished)
+        private bool TryPlayOnceInternal(
+            BattleVisualAnimId animId,
+            System.Action finished,
+            System.Action onImpact = null,
+            int impactFrameIndexOverride = -1)
         {
             if (animator == null)
                 return false;
@@ -503,8 +552,25 @@ namespace Game.Battle.Visual
             currentOneShotAnimId = animId;
             currentOneShotFinished = finished;
 
+            int impactFrameIndex1Based = -1;
+            if (onImpact != null)
+            {
+                if (impactFrameIndexOverride > 0)
+                {
+                    impactFrameIndex1Based = impactFrameIndexOverride;
+                }
+                else if (anim != null)
+                {
+                    anim.TryGetImpactFrameIndex(out impactFrameIndex1Based);
+                }
+            }
+
             animator.SetFramesPerSecond(anim.FrameRate);
-            animator.PlayOnce(anim.FramesArray, finished: () => HandleNonLoopFinished(animId));
+            animator.PlayOnce(
+                anim.FramesArray,
+                finished: () => HandleNonLoopFinished(animId),
+                impactFrameIndex: impactFrameIndex1Based,
+                onImpact: onImpact);
             return true;
         }
 

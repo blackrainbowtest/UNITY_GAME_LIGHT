@@ -155,3 +155,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UDA2.Battle::Game.Battle.Visual.BattleSpellProjectile
   spriteRenderer: {fileID: 883140883060506684}
   animator: {fileID: 3231889841325113580}
+  visualRoot: {fileID: 0}
+  scaleOverTravel: 1
+  startScale: {x: 0.125, y: 0.125, z: 1}
+  endScale: {x: 0.5, y: 0.5, z: 1}

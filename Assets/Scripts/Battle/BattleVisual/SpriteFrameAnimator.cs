@@ -39,6 +39,10 @@ namespace Game.Battle.Visual
         private bool isPlaying;
         private Action onFinished;
 
+        private int impactFrameIndex0Based;
+        private bool impactInvoked;
+        private Action onImpact;
+
         public bool IsPlaying => isPlaying;
         public bool IsLooping => isPlaying && loop;
 
@@ -81,11 +85,13 @@ namespace Game.Battle.Visual
                     {
                         index = frames.Length - 1;
                         ApplyFrame(index);
+                        TryInvokeImpact();
                         StopInternal(invokeFinished: true);
                         return;
                     }
                 }
 
+                TryInvokeImpact();
                 ApplyFrame(index);
             }
         }
@@ -102,12 +108,17 @@ namespace Game.Battle.Visual
 
         public void PlayLoop(Sprite[] newFrames)
         {
-            PlayInternal(newFrames, shouldLoop: true, finished: null);
+            PlayInternal(newFrames, shouldLoop: true, finished: null, impactFrameIndex: -1, impact: null);
         }
 
         public void PlayOnce(Sprite[] newFrames, Action finished = null)
         {
-            PlayInternal(newFrames, shouldLoop: false, finished);
+            PlayInternal(newFrames, shouldLoop: false, finished, impactFrameIndex: -1, impact: null);
+        }
+
+        public void PlayOnce(Sprite[] newFrames, Action finished = null, int impactFrameIndex = -1, Action onImpact = null)
+        {
+            PlayInternal(newFrames, shouldLoop: false, finished, impactFrameIndex, onImpact);
         }
 
         public void Stop()
@@ -115,23 +126,35 @@ namespace Game.Battle.Visual
             StopInternal(invokeFinished: false);
         }
 
-        private void PlayInternal(Sprite[] newFrames, bool shouldLoop, Action finished)
+        private void PlayInternal(Sprite[] newFrames, bool shouldLoop, Action finished, int impactFrameIndex, Action impact)
         {
             frames = newFrames;
             loop = shouldLoop;
             onFinished = finished;
+
+            // Impact is only supported for one-shot playback.
+            this.onImpact = shouldLoop ? null : impact;
+            impactInvoked = false;
+            impactFrameIndex0Based = (!shouldLoop && impactFrameIndex > 0) ? impactFrameIndex - 1 : -1;
 
             accumulator = 0f;
             index = 0;
             isPlaying = true;
 
             ApplyFrame(index);
+
+            // If impact is on the first frame, trigger immediately.
+            TryInvokeImpact();
         }
 
         private void StopInternal(bool invokeFinished)
         {
             isPlaying = false;
             accumulator = 0f;
+
+            onImpact = null;
+            impactInvoked = false;
+            impactFrameIndex0Based = -1;
 
             if (invokeFinished)
             {
@@ -154,6 +177,23 @@ namespace Game.Battle.Visual
                 return;
 
             target.sprite = frames[Mathf.Clamp(i, 0, frames.Length - 1)];
+        }
+
+        private void TryInvokeImpact()
+        {
+            if (impactInvoked)
+                return;
+
+            if (impactFrameIndex0Based < 0)
+                return;
+
+            if (index < impactFrameIndex0Based)
+                return;
+
+            impactInvoked = true;
+            var cb = onImpact;
+            onImpact = null;
+            cb?.Invoke();
         }
     }
 }

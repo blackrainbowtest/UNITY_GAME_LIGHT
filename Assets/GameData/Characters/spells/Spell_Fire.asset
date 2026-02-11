@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
+  m_Name: Spell_Fire
+  m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
+  id: heal_01
+  frames:
+  - {fileID: 21300000, guid: e3182cd2cb8a3044da4e078b42002ae9, type: 3}
+  - {fileID: 21300000, guid: 1bbfd3791fda1cc4999b7b69d5c133be, type: 3}
+  - {fileID: 21300000, guid: 10243602d291f984cb93d644093d2096, type: 3}
+  - {fileID: 21300000, guid: 35bdea474e85a014a995fd2aa3760813, type: 3}
+  - {fileID: 21300000, guid: 736cf9116b309f146a8ab3d1ac369cb0, type: 3}
+  - {fileID: 21300000, guid: c52382dcd981f9e4da6f1e77757bff34, type: 3}
+  - {fileID: 21300000, guid: 5113033a0bc236a4abddd6122f8c225f, type: 3}
+  - {fileID: 21300000, guid: acd370d4dfe5d2c42940c69cfe059edb, type: 3}
+  - {fileID: 21300000, guid: 3f326cb89e6c503459b1af851ce111a4, type: 3}
+  - {fileID: 21300000, guid: 6a51361598704cb45b440a81c9c5dfb2, type: 3}
+  - {fileID: 21300000, guid: 7c86cbcb143b2af4ea6ead68db75a976, type: 3}
+  - {fileID: 21300000, guid: 912d7aa32a061124dbc9a554f79da1f8, type: 3}
+  - {fileID: 21300000, guid: 67ed572c42938e34d9fb7e78140b8c3f, type: 3}
+  frameRate: 12
+  hasImpact: 0
+  impactTimeNormalized: 0.5
+  impactFrameIndex: -1

@@ -45,8 +45,11 @@ namespace Game.Battle.Visual
             [Tooltip("Optional animated projectile frames. If set, projectile will auto-play this animation while traveling.")]
             public IdleAnimation projectileAnimation;
 
-            [Tooltip("When to spawn projectile relative to the caster animation, in frames (1 = immediately on animation start).")]
-            [Min(1)] public int spawnAtFrame;
+            [Tooltip("When to spawn projectile relative to the caster animation, in frames (1 = immediately on animation start). Values <= 1 spawn immediately.")]
+            public int spawnAtFrame;
+
+            [Tooltip("When to trigger impact (damage/hit) relative to the projectile animation, in frames. -1 = last frame. 1..N = exact frame. 0 or less (except -1) = at the end (fallback).")]
+            public int impactAtFrame;
 
             [Tooltip("Pixels-per-unit conversion used for the pixel-based offsets and distances below.")]
             [Min(0.01f)] public float pixelsPerUnit;

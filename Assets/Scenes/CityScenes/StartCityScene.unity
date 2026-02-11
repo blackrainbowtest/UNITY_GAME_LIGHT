@@ -172,7 +172,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 853554bcaf5adb94d8f6279d9906dffe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UDA2.City.CityMapBuildingHotspot
-  targetSceneName: WatchtowerScenez
+  targetSceneName: WatchtowerScene
   highlightObject: {fileID: 1906062447}
   highlightGraphic: {fileID: 0}
 --- !u!114 &47930915

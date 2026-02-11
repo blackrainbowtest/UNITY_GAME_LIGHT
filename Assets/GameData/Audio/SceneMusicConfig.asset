@@ -64,3 +64,14 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 5b8595b91aad2d1438a0a7045165f82d, type: 2}
     - {fileID: 11400000, guid: 3bdd00fc0ef6a0244a68c98b691021f5, type: 2}
     loopPlaylist: 1
+  - sceneName: CampfireScene
+    musicCue: {fileID: 11400000, guid: b8ab2213de5a7c34a9898d31dceb5749, type: 2}
+    playlist: []
+    loopPlaylist: 0
+  - sceneName: PlayerShelterScene
+    musicCue: {fileID: 11400000, guid: ab3bcec20deb06342af0e92ea7cbf621, type: 2}
+    playlist:
+    - {fileID: 11400000, guid: ab3bcec20deb06342af0e92ea7cbf621, type: 2}
+    - {fileID: 11400000, guid: a21fc16172fe8b84c921714d65d92273, type: 2}
+    - {fileID: 11400000, guid: 36a4e4c7e6f9d0f48a53886ee35c981f, type: 2}
+    loopPlaylist: 1

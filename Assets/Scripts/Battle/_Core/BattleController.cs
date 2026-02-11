@@ -507,11 +507,7 @@ namespace Game.Battle
                 yield break;
 
             bool attackerFinished = false;
-            bool targetFinished = true; // default: no hit requested
-
-            float attackerAnimStartTime = -1f;
-            float attackerFps = 0f;
-            int attackerFrameCount = 0;
+            bool targetFinished = true; // updated after we decide willPlayTargetHit
 
             // Optional: spell projectile config (comes from attacker's outfit visuals)
             OutfitVisuals.SpellProjectileConfig projectileConfig = default;
@@ -530,39 +526,68 @@ namespace Game.Battle
             }
 
             bool projectileSpawned = false;
-            float projectileAnimStartTime = -1f;
-            float projectileCasterFps = 0f;
             bool targetHitTriggered = false;
-            float targetHitDelaySeconds = 0f;
             BattleVisualAnimId targetHitAnimId = BattleVisualAnimId.Hit;
             bool willPlayTargetHit = false;
+
+            void SpawnProjectileNow()
+            {
+                if (!hasProjectile)
+                    return;
+                if (projectileSpawned)
+                    return;
+                if (!projectileConfig.IsEnabled)
+                    return;
+                if (attackerView == null)
+                    return;
+
+                projectileSpawned = true;
+
+                int dir = actorIsPlayer ? 1 : -1;
+                var spawnOffsetUnits = new Vector3(
+                    projectileConfig.ToUnits(projectileConfig.spawnOffsetPixels.x) * dir,
+                    projectileConfig.ToUnits(projectileConfig.spawnOffsetPixels.y),
+                    0f);
+
+                var start = attackerView.transform.position + spawnOffsetUnits;
+                var end = start + Vector3.right * (projectileConfig.ToUnits(projectileConfig.travelDistancePixels) * dir);
+
+                var parent = projectilesRoot != null ? projectilesRoot : null;
+                var go = Instantiate(projectileConfig.projectilePrefab, start, Quaternion.identity, parent);
+                var proj = go.GetComponent<Game.Battle.Visual.BattleSpellProjectile>();
+                if (proj == null)
+                    proj = go.AddComponent<Game.Battle.Visual.BattleSpellProjectile>();
+
+                bool flipX = dir < 0;
+
+                // Impact moment for magic should be driven by the projectile animation.
+                // If impactAtFrame is not set (<= 0), projectile will trigger impact at the end of its animation.
+                proj.Initialize(
+                    start,
+                    end,
+                    projectileConfig.travelTimeSeconds,
+                    projectileConfig.projectileAnimation,
+                    flipX,
+                    impactAtFrame: projectileConfig.impactAtFrame,
+                    onImpact: () => TriggerTargetHitNow());
+            }
 
             void HandleOneShotStarted(BattleVisualAnimId id, IdleAnimation anim)
             {
                 if (id != attackerAnimId)
                     return;
 
-                attackerAnimStartTime = Time.time;
-                attackerFps = anim != null ? anim.FrameRate : 0f;
-                attackerFrameCount = anim != null && anim.FramesArray != null ? anim.FramesArray.Length : 0;
-
-                projectileAnimStartTime = attackerAnimStartTime;
-                projectileCasterFps = attackerFps;
-
-                if (hitAtFrame > 1 && attackerFps > 0f)
+                // If the attacker animation has no impact marker configured,
+                // spawn projectile immediately when the animation starts.
+                if (hasProjectile && !projectileSpawned)
                 {
-                    int clampedFrame = attackerFrameCount > 0 ? Mathf.Clamp(hitAtFrame, 1, attackerFrameCount) : hitAtFrame;
-                    targetHitDelaySeconds = (clampedFrame - 1) / attackerFps;
-                }
-                else
-                {
-                    targetHitDelaySeconds = 0f;
+                    bool hasImpactMarker = anim != null && anim.HasImpact;
+                    if (!hasImpactMarker)
+                        SpawnProjectileNow();
                 }
             }
 
             attackerView.OnOneShotStarted += HandleOneShotStarted;
-
-            attackerView.RequestPlayAfterCurrent(attackerAnimId, onFinished: () => attackerFinished = true);
 
             bool targetTookHpDamage = false;
             if (before != null && after != null)
@@ -597,56 +622,62 @@ namespace Game.Battle
             if (hitAtFrame == -1)
                 willPlayTargetHit = false;
 
-            if (willPlayTargetHit && targetView != null)
+            // If we expect a hit, keep coroutine waiting until it actually happens and finishes.
+            targetFinished = !willPlayTargetHit;
+
+            void TriggerTargetHitNow()
+            {
+                if (!willPlayTargetHit)
+                    return;
+                if (targetHitTriggered)
+                    return;
+                if (targetView == null)
+                    return;
+
+                targetHitTriggered = true;
                 targetFinished = false;
+
+                // Immediate hit to avoid waiting for idle loop boundaries.
+                targetView.PlayImmediate(targetHitAnimId, onFinished: () => targetFinished = true);
+            }
+
+            // Start attacker animation immediately (do not wait for idle loop/ambient to finish).
+            // - For magic projectile attacks: onImpact is used to spawn the projectile at a specific caster frame.
+            // - For non-projectile attacks: onImpact triggers the target hit.
+            if (hasProjectile)
+            {
+                int spawnFrame = projectileConfig.spawnAtFrame;
+                if (spawnFrame <= 1)
+                    spawnFrame = 1;
+
+                attackerView.PlayImmediate(
+                    attackerAnimId,
+                    onFinished: () => attackerFinished = true,
+                    onImpact: () => SpawnProjectileNow(),
+                    impactFrameIndexOverride: spawnFrame);
+            }
+            else
+            {
+                attackerView.PlayImmediate(
+                    attackerAnimId,
+                    onFinished: () => attackerFinished = true,
+                    onImpact: () => TriggerTargetHitNow(),
+                    impactFrameIndexOverride: -1);
+            }
 
             // Safety timeout to avoid soft-lock if something is miswired.
             float timeout = 5f;
             while ((!attackerFinished || !targetFinished) && timeout > 0f)
             {
-                if (willPlayTargetHit && !targetHitTriggered && targetView != null)
+                // Fallbacks for misconfiguration.
+                if (attackerFinished)
                 {
-                    // If we never received OnOneShotStarted (missing anim / fallback), trigger immediately when attacker finishes.
-                    if (attackerFinished && attackerAnimStartTime < 0f)
-                    {
-                        targetHitTriggered = true;
-                        targetView.RequestPlayAfterCurrent(targetHitAnimId, onFinished: () => targetFinished = true);
-                    }
-                    else if (attackerAnimStartTime >= 0f)
-                    {
-                        if (Time.time - attackerAnimStartTime >= targetHitDelaySeconds)
-                        {
-                            targetHitTriggered = true;
-                            targetView.RequestPlayAfterCurrent(targetHitAnimId, onFinished: () => targetFinished = true);
-                        }
-                    }
-                }
+                    if (hasProjectile && !projectileSpawned)
+                        SpawnProjectileNow();
 
-                if (hasProjectile && !projectileSpawned && projectileAnimStartTime >= 0f)
-                {
-                    var delay = projectileConfig.FrameDelaySeconds(projectileCasterFps);
-                    if (Time.time - projectileAnimStartTime >= delay)
-                    {
-                        projectileSpawned = true;
-
-                        int dir = actorIsPlayer ? 1 : -1;
-                        var spawnOffsetUnits = new Vector3(
-                            projectileConfig.ToUnits(projectileConfig.spawnOffsetPixels.x) * dir,
-                            projectileConfig.ToUnits(projectileConfig.spawnOffsetPixels.y),
-                            0f);
-
-                        var start = attackerView.transform.position + spawnOffsetUnits;
-                        var end = start + Vector3.right * (projectileConfig.ToUnits(projectileConfig.travelDistancePixels) * dir);
-
-                        var parent = projectilesRoot != null ? projectilesRoot : null;
-                        var go = Instantiate(projectileConfig.projectilePrefab, start, Quaternion.identity, parent);
-                        var proj = go.GetComponent<Game.Battle.Visual.BattleSpellProjectile>();
-                        if (proj == null)
-                            proj = go.AddComponent<Game.Battle.Visual.BattleSpellProjectile>();
-
-                        bool flipX = dir < 0;
-                        proj.Initialize(start, end, projectileConfig.travelTimeSeconds, projectileConfig.projectileAnimation, flipX);
-                    }
+                    // If this is not a projectile action, and impact never fired, trigger hit at the end.
+                    if (!hasProjectile && !targetHitTriggered)
+                        TriggerTargetHitNow();
                 }
 
                 timeout -= Time.deltaTime;

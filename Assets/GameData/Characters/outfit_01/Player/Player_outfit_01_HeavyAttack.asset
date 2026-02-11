@@ -28,3 +28,6 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 5a41919d1ffc1f74592ec7f6c68cd7e0, type: 3}
   - {fileID: 21300000, guid: 2b268f13eac7a604295d8b06a4dc3943, type: 3}
   frameRate: 12
+  hasImpact: 1
+  impactTimeNormalized: 0.5
+  impactFrameIndex: 11

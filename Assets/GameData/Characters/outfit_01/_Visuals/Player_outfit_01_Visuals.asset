@@ -78,30 +78,34 @@ MonoBehaviour:
     projectilePrefab: {fileID: 0}
     projectileAnimation: {fileID: 0}
     spawnAtFrame: 0
+    impactAtFrame: 0
     pixelsPerUnit: 0
     spawnOffsetPixels: {x: 0, y: 0}
     travelDistancePixels: 0
     travelTimeSeconds: 0
   fireSpellProjectile:
     projectilePrefab: {fileID: 9137764033155392843, guid: 9b0929501d22190488c2bc22c943f167, type: 3}
-    projectileAnimation: {fileID: 11400000, guid: 9501f20141a136e4d915ad9eaa59991a, type: 2}
-    spawnAtFrame: 3
+    projectileAnimation: {fileID: 11400000, guid: 5f6918b0a199a4246842713aebd59bba, type: 2}
+    spawnAtFrame: 8
+    impactAtFrame: -1
     pixelsPerUnit: 100
-    spawnOffsetPixels: {x: 0, y: 0}
-    travelDistancePixels: 600
+    spawnOffsetPixels: {x: 100, y: 100}
+    travelDistancePixels: 1000
     travelTimeSeconds: 1
   iceSpellProjectile:
-    projectilePrefab: {fileID: 0}
-    projectileAnimation: {fileID: 0}
-    spawnAtFrame: 0
-    pixelsPerUnit: 0
-    spawnOffsetPixels: {x: 0, y: 0}
-    travelDistancePixels: 0
-    travelTimeSeconds: 0
+    projectilePrefab: {fileID: 9137764033155392843, guid: 9b0929501d22190488c2bc22c943f167, type: 3}
+    projectileAnimation: {fileID: 11400000, guid: 3458b1095ce7179478cb7f7aa8ba7cc8, type: 2}
+    spawnAtFrame: 8
+    impactAtFrame: -1
+    pixelsPerUnit: 100
+    spawnOffsetPixels: {x: 100, y: 100}
+    travelDistancePixels: 1000
+    travelTimeSeconds: 1
   holySpellProjectile:
     projectilePrefab: {fileID: 0}
     projectileAnimation: {fileID: 0}
     spawnAtFrame: 0
+    impactAtFrame: 0
     pixelsPerUnit: 0
     spawnOffsetPixels: {x: 0, y: 0}
     travelDistancePixels: 0
@@ -110,6 +114,7 @@ MonoBehaviour:
     projectilePrefab: {fileID: 0}
     projectileAnimation: {fileID: 0}
     spawnAtFrame: 0
+    impactAtFrame: 0
     pixelsPerUnit: 0
     spawnOffsetPixels: {x: 0, y: 0}
     travelDistancePixels: 0
