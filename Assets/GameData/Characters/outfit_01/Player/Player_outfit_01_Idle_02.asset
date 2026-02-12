@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
   m_Name: Player_outfit_01_Idle_02
   m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
-  id: idle_01
+  id: idle_02
   frames:
   - {fileID: 21300000, guid: 5e02c71075560f14f84459edfbe03fc4, type: 3}
   - {fileID: 21300000, guid: 39e8ecf22497558499fc106bf3eb0799, type: 3}
@@ -30,3 +30,6 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 10320dfcc0765e74eaf8ed259200d99a, type: 3}
   - {fileID: 21300000, guid: 11d5dedb1eb84a64083187d8d1f1b5f9, type: 3}
   frameRate: 12
+  hasImpact: 0
+  impactTimeNormalized: 0.5
+  impactFrameIndex: -1

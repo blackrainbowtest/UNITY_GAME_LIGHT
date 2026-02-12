@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
   m_Name: Player_outfit_01_hit_02
   m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
-  id: heal_01
+  id: hit_02
   frames:
   - {fileID: 21300000, guid: 4bbe2f44a620afb45884377b93377ff0, type: 3}
   - {fileID: 21300000, guid: a9797ceef0edcd2499f560aa5a76c3cd, type: 3}
@@ -25,3 +25,6 @@ MonoBehaviour:
   - {fileID: 21300000, guid: a26de040b8e862147a92d796b9f6dfe7, type: 3}
   - {fileID: 21300000, guid: 34b0f04b77ee02d47a9a12ddd3bff154, type: 3}
   frameRate: 12
+  hasImpact: 0
+  impactTimeNormalized: 0.5
+  impactFrameIndex: -1

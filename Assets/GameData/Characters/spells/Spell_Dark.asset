@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
+  m_Name: Spell_Dark
+  m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
+  id: dark_01
+  frames:
+  - {fileID: 21300000, guid: 4e6a9db4661ec7146a7ddc943d911a39, type: 3}
+  - {fileID: 21300000, guid: 20140bd03a6bc224ea069cf47d1ac0de, type: 3}
+  - {fileID: 21300000, guid: c56016a150584f64ebbe5d8e04df7059, type: 3}
+  - {fileID: 21300000, guid: fd673b82ab88b6b45bd75f2a06a877ee, type: 3}
+  - {fileID: 21300000, guid: 01a80dd354d879443ad6eb5f64d922fb, type: 3}
+  - {fileID: 21300000, guid: f8c5d0f158c66984eb8a873615a40ee5, type: 3}
+  - {fileID: 21300000, guid: 22bf04565c435eb48ad486cd8c417094, type: 3}
+  - {fileID: 21300000, guid: 881dfc199f542fe4f8e12630d3e0d512, type: 3}
+  - {fileID: 21300000, guid: e65dd4ba893f04c468859a2c931e09ad, type: 3}
+  - {fileID: 21300000, guid: dc767c41f0540b54c883d7a5097d096c, type: 3}
+  - {fileID: 21300000, guid: a0a1d13eed79ceb4e92b53080f1bb722, type: 3}
+  - {fileID: 21300000, guid: 40ea750734a2fc94b89e33c29d342226, type: 3}
+  - {fileID: 21300000, guid: 6d0a7b2a5e1379646a20377a8b68b865, type: 3}
+  frameRate: 12
+  hasImpact: 0
+  impactTimeNormalized: 0.5
+  impactFrameIndex: -1

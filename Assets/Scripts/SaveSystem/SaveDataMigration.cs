@@ -33,6 +33,7 @@ public static class SaveDataMigration
         if (save.time == null) { save.time = new SaveData.TimeState(); Mark("time initialized"); }
         if (save.sceneState == null) { save.sceneState = new SaveData.SceneState(); Mark("sceneState initialized"); }
         if (save.sceneState.pendingBattle == null) { save.sceneState.pendingBattle = new SaveData.PendingBattle(); Mark("sceneState.pendingBattle initialized"); }
+        if (save.locationStructures == null) { save.locationStructures = new SaveData.LocationStructuresState(); Mark("locationStructures initialized"); }
 
         // Time sanity
         if (save.time.day <= 0)
@@ -133,6 +134,31 @@ public static class SaveDataMigration
 
         if (stats.hp != beforeHp || stats.mp != beforeMp || stats.sp != beforeSp || stats.lp != beforeLp)
             Mark("stats clamped");
+
+        var ls = save.locationStructures;
+        if (ls.bedLevel < 0)
+        {
+            ls.bedLevel = 0;
+            Mark("locationStructures.bedLevel defaulted");
+        }
+
+        if (ls.campfireLevel < 0)
+        {
+            ls.campfireLevel = 0;
+            Mark("locationStructures.campfireLevel defaulted");
+        }
+
+        if (ls.workbenchLevel < 0)
+        {
+            ls.workbenchLevel = 0;
+            Mark("locationStructures.workbenchLevel defaulted");
+        }
+
+        if (ls.storageLevel < 0)
+        {
+            ls.storageLevel = 0;
+            Mark("locationStructures.storageLevel defaulted");
+        }
 
         if (didMigrate)
             Debug.LogWarning($"[SaveDataMigration] Applied: {changes}");

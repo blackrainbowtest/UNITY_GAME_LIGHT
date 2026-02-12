@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
   m_Name: Player_outfit_01_IceSpell
   m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
-  id: heal_01
+  id: icespell_01
   frames:
   - {fileID: 21300000, guid: 4c39d0231092d004e839608dc4685719, type: 3}
   - {fileID: 21300000, guid: 5c659dc691e8ba64d81a885a9aec2328, type: 3}

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
   m_Name: Spell_Fire
   m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
-  id: heal_01
+  id: fire_01
   frames:
   - {fileID: 21300000, guid: e3182cd2cb8a3044da4e078b42002ae9, type: 3}
   - {fileID: 21300000, guid: 1bbfd3791fda1cc4999b7b69d5c133be, type: 3}

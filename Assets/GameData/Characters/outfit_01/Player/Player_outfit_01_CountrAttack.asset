@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
   m_Name: Player_outfit_01_CountrAttack
   m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
-  id: heal_01
+  id: counterattack_01
   frames:
   - {fileID: 21300000, guid: e1f9252ffdf06c84f85b0a5aaee2ee70, type: 3}
   - {fileID: 21300000, guid: b5fd1c48ae35dea4ea6bf8996a446597, type: 3}

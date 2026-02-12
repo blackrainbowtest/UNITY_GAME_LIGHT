@@ -28,3 +28,24 @@ Recommended approach: UI-based city map (Canvas) with a fixed reference resoluti
   - `buildingsRoot`
 
 This will show highlight frames for all hotspots when inspect mode is ON.
+
+## Reusable setup for Shelter/Market/Any location
+
+If you need interaction that opens UI prefabs (not scene loading), use:
+- `LocationPrefabHotspot` on each clickable object/button
+- `LocationInspectModeController` on the scene root that has the Eye button
+
+Recommended wiring:
+- Keep your `BuildingsRoot` (or any root) with clickable children.
+- On each child:
+  - `Button`
+  - `LocationPrefabHotspot`
+  - assign `contentPrefab` (window/panel prefab to open)
+  - assign optional highlight frame (`highlightObject` or `highlightGraphic`)
+- On controller:
+  - assign `toggleButton`, `toggleIcon`, `iconOff`, `iconOn`
+  - assign `hotspotsRoot` (e.g. `BuildingsRoot`)
+
+Notes:
+- You can make hotspots clickable only in Eye mode via `interactableOnlyInInspectMode`.
+- This setup is scene-agnostic: duplicate the scene, change background + assigned prefabs in Inspector.

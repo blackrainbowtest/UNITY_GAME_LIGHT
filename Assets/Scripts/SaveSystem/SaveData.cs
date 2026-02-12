@@ -11,6 +11,16 @@ public class SaveData
     public Progress progress = new Progress();
     public TimeState time = new TimeState();
     public SceneState sceneState = new SceneState();
+    public LocationStructuresState locationStructures = new LocationStructuresState();
+
+    [Serializable]
+    public class LocationStructuresState
+    {
+        public int bedLevel = 0;
+        public int campfireLevel = 0;
+        public int workbenchLevel = 0;
+        public int storageLevel = 0;
+    }
 
     [Serializable]
     public class TimeState

@@ -69,11 +69,11 @@ MonoBehaviour:
   fireSpellVariations:
   - {fileID: 11400000, guid: 9501f20141a136e4d915ad9eaa59991a, type: 2}
   iceSpellVariations:
-  - {fileID: 11400000, guid: 009bcaa8f83a17d438b3630ed6709b5d, type: 2}
+  - {fileID: 11400000, guid: 9501f20141a136e4d915ad9eaa59991a, type: 2}
   holySpellVariations:
   - {fileID: 11400000, guid: cf34e98a186f5f34381e65a0920055bf, type: 2}
   darkSpellVariations:
-  - {fileID: 11400000, guid: 555bacb1ee2da184ead9131223c8b170, type: 2}
+  - {fileID: 11400000, guid: 9501f20141a136e4d915ad9eaa59991a, type: 2}
   castProjectile:
     projectilePrefab: {fileID: 0}
     projectileAnimation: {fileID: 0}
@@ -89,18 +89,18 @@ MonoBehaviour:
     spawnAtFrame: 8
     impactAtFrame: -1
     pixelsPerUnit: 100
-    spawnOffsetPixels: {x: 100, y: 100}
+    spawnOffsetPixels: {x: 100, y: 125}
     travelDistancePixels: 1000
-    travelTimeSeconds: 1
+    travelTimeSeconds: 0.8
   iceSpellProjectile:
     projectilePrefab: {fileID: 9137764033155392843, guid: 9b0929501d22190488c2bc22c943f167, type: 3}
     projectileAnimation: {fileID: 11400000, guid: 3458b1095ce7179478cb7f7aa8ba7cc8, type: 2}
     spawnAtFrame: 8
     impactAtFrame: -1
     pixelsPerUnit: 100
-    spawnOffsetPixels: {x: 100, y: 100}
+    spawnOffsetPixels: {x: 100, y: 125}
     travelDistancePixels: 1000
-    travelTimeSeconds: 1
+    travelTimeSeconds: 0.8
   holySpellProjectile:
     projectilePrefab: {fileID: 0}
     projectileAnimation: {fileID: 0}
@@ -111,14 +111,14 @@ MonoBehaviour:
     travelDistancePixels: 0
     travelTimeSeconds: 0
   darkSpellProjectile:
-    projectilePrefab: {fileID: 0}
-    projectileAnimation: {fileID: 0}
-    spawnAtFrame: 0
-    impactAtFrame: 0
-    pixelsPerUnit: 0
-    spawnOffsetPixels: {x: 0, y: 0}
-    travelDistancePixels: 0
-    travelTimeSeconds: 0
+    projectilePrefab: {fileID: 9137764033155392843, guid: 9b0929501d22190488c2bc22c943f167, type: 3}
+    projectileAnimation: {fileID: 11400000, guid: 953697b5900289a4581a3623807675fd, type: 2}
+    spawnAtFrame: 8
+    impactAtFrame: -1
+    pixelsPerUnit: 100
+    spawnOffsetPixels: {x: 100, y: 125}
+    travelDistancePixels: 1000
+    travelTimeSeconds: 0.8
   seductionAct1Variations: []
   seductionAct2Variations: []
   seductionAct3Variations: []
