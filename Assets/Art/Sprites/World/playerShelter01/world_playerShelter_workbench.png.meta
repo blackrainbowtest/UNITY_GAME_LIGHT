@@ -1,0 +1,819 @@
+fileFormatVersion: 2
+guid: 0a3e4d7ee8b166c44ad27f5bfee8c6ae
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4439506088955593854
+    second: world_playerShelter_workbench_0
+  - first:
+      213: -2022740329718007482
+    second: world_playerShelter_workbench_1
+  - first:
+      213: -3834011056818086295
+    second: world_playerShelter_workbench_2
+  - first:
+      213: 8179553502877517226
+    second: world_playerShelter_workbench_3
+  - first:
+      213: -4714003825235069921
+    second: world_playerShelter_workbench_4
+  - first:
+      213: 2692247673734101229
+    second: world_playerShelter_workbench_5
+  - first:
+      213: 4810215626898863461
+    second: world_playerShelter_workbench_6
+  - first:
+      213: -8541936337858630377
+    second: world_playerShelter_workbench_7
+  - first:
+      213: 4495487518409811332
+    second: world_playerShelter_workbench_8
+  - first:
+      213: -1809836191914825601
+    second: world_playerShelter_workbench_9
+  - first:
+      213: 4279089449482602407
+    second: world_playerShelter_workbench_10
+  - first:
+      213: -4129026325663037322
+    second: world_playerShelter_workbench_11
+  - first:
+      213: 3165351704231092771
+    second: world_playerShelter_workbench_12
+  - first:
+      213: 530292001341439617
+    second: world_playerShelter_workbench_13
+  - first:
+      213: -5206241128708940727
+    second: world_playerShelter_workbench_14
+  - first:
+      213: -662240501803764866
+    second: world_playerShelter_workbench_15
+  - first:
+      213: 9089517270761132846
+    second: world_playerShelter_workbench_16
+  - first:
+      213: 2520790531039886531
+    second: world_playerShelter_workbench_17
+  - first:
+      213: 218063246644785481
+    second: world_playerShelter_workbench_18
+  - first:
+      213: -4049001055950259555
+    second: world_playerShelter_workbench_19
+  - first:
+      213: -6718979493714341781
+    second: world_playerShelter_workbench_20
+  - first:
+      213: -8671985038365306697
+    second: world_playerShelter_workbench_21
+  - first:
+      213: -6810232954167646002
+    second: world_playerShelter_workbench_22
+  - first:
+      213: -3822141241064771083
+    second: world_playerShelter_workbench_23
+  - first:
+      213: 1710578539630046573
+    second: world_playerShelter_workbench_24
+  - first:
+      213: 7187289868020749845
+    second: world_playerShelter_workbench_25
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: world_playerShelter_workbench_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 728
+        height: 377
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28b3e9dcbb4b362c0800000000000000
+      internalID: -4439506088955593854
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_workbench_1
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 374
+        width: 48
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6493d461368cde3e0800000000000000
+      internalID: -2022740329718007482
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_workbench_2
+      rect:
+        serializedVersion: 2
+        x: 178
+        y: 407
+        width: 14
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 96e107dd14bdacac0800000000000000
+      internalID: -3834011056818086295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_workbench_3
+      rect:
+        serializedVersion: 2
+        x: 178
+        y: 386
+        width: 14
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa50150e29c938170800000000000000
+      internalID: 8179553502877517226
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_workbench_4
+      rect:
+        serializedVersion: 2
+        x: 180
+        y: 376
+        width: 12
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f14f70f2f7e749eb0800000000000000
+      internalID: -4714003825235069921
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_workbench_5
+      rect:
+        serializedVersion: 2
+        x: 183
+        y: 366
+        width: 9
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de8fa40cef8cc5520800000000000000
+      internalID: 2692247673734101229
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_workbench_6
+      rect:
+        serializedVersion: 2
+        x: 204
+        y: 377
+        width: 45
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 565f65680a151c240800000000000000
+      internalID: 4810215626898863461
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_workbench_7
+      rect:
+        serializedVersion: 2
+        x: 238
+        y: 417
+        width: 25
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71d6fe76822f47980800000000000000
+      internalID: -8541936337858630377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_workbench_8
+      rect:
+        serializedVersion: 2
+        x: 239
+        y: 397
+        width: 13
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 485e403741e236e30800000000000000
+      internalID: 4495487518409811332
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_workbench_9
+      rect:
+        serializedVersion: 2
+        x: 239
+        y: 386
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f786547829b22e6e0800000000000000
+      internalID: -1809836191914825601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_workbench_10
+      rect:
+        serializedVersion: 2
+        x: 243
+        y: 377
+        width: 6
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a74886ce21626b30800000000000000
+      internalID: 4279089449482602407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_workbench_11
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 383
+        width: 18
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6784e9eee60c2b6c0800000000000000
+      internalID: -4129026325663037322
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_workbench_12
+      rect:
+        serializedVersion: 2
+        x: 299
+        y: 419
+        width: 11
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3222fdfaa969deb20800000000000000
+      internalID: 3165351704231092771
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_workbench_13
+      rect:
+        serializedVersion: 2
+        x: 299
+        y: 399
+        width: 13
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 18eff2ff3c9fb5700800000000000000
+      internalID: 530292001341439617
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_workbench_14
+      rect:
+        serializedVersion: 2
+        x: 300
+        y: 389
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94c564cf647bfb7b0800000000000000
+      internalID: -5206241128708940727
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_workbench_15
+      rect:
+        serializedVersion: 2
+        x: 300
+        y: 376
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e733c16b5cf3fc6f0800000000000000
+      internalID: -662240501803764866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_workbench_16
+      rect:
+        serializedVersion: 2
+        x: 300
+        y: 371
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e23de77acc3742e70800000000000000
+      internalID: 9089517270761132846
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_workbench_17
+      rect:
+        serializedVersion: 2
+        x: 329
+        y: 378
+        width: 43
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ccfccbd1a5abf220800000000000000
+      internalID: 2520790531039886531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_workbench_18
+      rect:
+        serializedVersion: 2
+        x: 397
+        y: 389
+        width: 35
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 941b4d21e57b60300800000000000000
+      internalID: 218063246644785481
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_workbench_19
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 375
+        width: 12
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9a37ecfdfe0fc7c0800000000000000
+      internalID: -4049001055950259555
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_workbench_20
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 377
+        width: 38
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b60d508cfb361c2a0800000000000000
+      internalID: -6718979493714341781
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_workbench_21
+      rect:
+        serializedVersion: 2
+        x: 243
+        y: 366
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b0dbb2cd8be6a780800000000000000
+      internalID: -8671985038365306697
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_workbench_22
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 355
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec8ad29d5313d71a0800000000000000
+      internalID: -6810232954167646002
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_workbench_23
+      rect:
+        serializedVersion: 2
+        x: 304
+        y: 3
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f1b6f4bac605fac0800000000000000
+      internalID: -3822141241064771083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_workbench_24
+      rect:
+        serializedVersion: 2
+        x: 345
+        y: 2
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d6d2e076e123db710800000000000000
+      internalID: 1710578539630046573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_workbench_25
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 3
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51614291e026eb360800000000000000
+      internalID: 7187289868020749845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      world_playerShelter_workbench_0: -4439506088955593854
+      world_playerShelter_workbench_1: -2022740329718007482
+      world_playerShelter_workbench_10: 4279089449482602407
+      world_playerShelter_workbench_11: -4129026325663037322
+      world_playerShelter_workbench_12: 3165351704231092771
+      world_playerShelter_workbench_13: 530292001341439617
+      world_playerShelter_workbench_14: -5206241128708940727
+      world_playerShelter_workbench_15: -662240501803764866
+      world_playerShelter_workbench_16: 9089517270761132846
+      world_playerShelter_workbench_17: 2520790531039886531
+      world_playerShelter_workbench_18: 218063246644785481
+      world_playerShelter_workbench_19: -4049001055950259555
+      world_playerShelter_workbench_2: -3834011056818086295
+      world_playerShelter_workbench_20: -6718979493714341781
+      world_playerShelter_workbench_21: -8671985038365306697
+      world_playerShelter_workbench_22: -6810232954167646002
+      world_playerShelter_workbench_23: -3822141241064771083
+      world_playerShelter_workbench_24: 1710578539630046573
+      world_playerShelter_workbench_25: 7187289868020749845
+      world_playerShelter_workbench_3: 8179553502877517226
+      world_playerShelter_workbench_4: -4714003825235069921
+      world_playerShelter_workbench_5: 2692247673734101229
+      world_playerShelter_workbench_6: 4810215626898863461
+      world_playerShelter_workbench_7: -8541936337858630377
+      world_playerShelter_workbench_8: 4495487518409811332
+      world_playerShelter_workbench_9: -1809836191914825601
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

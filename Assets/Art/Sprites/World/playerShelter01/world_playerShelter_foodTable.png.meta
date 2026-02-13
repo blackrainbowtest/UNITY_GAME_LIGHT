@@ -1,0 +1,767 @@
+fileFormatVersion: 2
+guid: 155707ca924b66b499612675c4be23c5
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -2201995817508044134
+    second: world_playerShelter_foodTable_0
+  - first:
+      213: -494882875663738860
+    second: world_playerShelter_foodTable_1
+  - first:
+      213: 8647889766262791561
+    second: world_playerShelter_foodTable_2
+  - first:
+      213: 1013843468778663912
+    second: world_playerShelter_foodTable_3
+  - first:
+      213: -7651975026730935650
+    second: world_playerShelter_foodTable_4
+  - first:
+      213: -27304377935111783
+    second: world_playerShelter_foodTable_5
+  - first:
+      213: 2229290266318716128
+    second: world_playerShelter_foodTable_6
+  - first:
+      213: -4850266145453022699
+    second: world_playerShelter_foodTable_7
+  - first:
+      213: 619001837361423426
+    second: world_playerShelter_foodTable_8
+  - first:
+      213: -4735449791995700574
+    second: world_playerShelter_foodTable_9
+  - first:
+      213: -866050318451405994
+    second: world_playerShelter_foodTable_10
+  - first:
+      213: -1091486445244198412
+    second: world_playerShelter_foodTable_11
+  - first:
+      213: 1696253194753984516
+    second: world_playerShelter_foodTable_12
+  - first:
+      213: 2507436851039196131
+    second: world_playerShelter_foodTable_13
+  - first:
+      213: 2143007447664443821
+    second: world_playerShelter_foodTable_14
+  - first:
+      213: -7928094736166783147
+    second: world_playerShelter_foodTable_15
+  - first:
+      213: -4572938885582619517
+    second: world_playerShelter_foodTable_16
+  - first:
+      213: -4789709984114387766
+    second: world_playerShelter_foodTable_17
+  - first:
+      213: -7951748805659597957
+    second: world_playerShelter_foodTable_18
+  - first:
+      213: 4381140776475483275
+    second: world_playerShelter_foodTable_19
+  - first:
+      213: -1450627150301425856
+    second: world_playerShelter_foodTable_20
+  - first:
+      213: 350893012712549077
+    second: world_playerShelter_foodTable_21
+  - first:
+      213: -1807412299629628230
+    second: world_playerShelter_foodTable_22
+  - first:
+      213: -3156165863935452609
+    second: world_playerShelter_foodTable_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: world_playerShelter_foodTable_0
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 1
+        width: 532
+        height: 437
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a92898c7870f071e0800000000000000
+      internalID: -2201995817508044134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_foodTable_1
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 394
+        width: 8
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 41893a685a2d129f0800000000000000
+      internalID: -494882875663738860
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_foodTable_2
+      rect:
+        serializedVersion: 2
+        x: 450
+        y: 392
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98d54d68ce9730870800000000000000
+      internalID: 8647889766262791561
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_foodTable_3
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 287
+        width: 38
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8efe6666345e11e00800000000000000
+      internalID: 1013843468778663912
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_foodTable_4
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 377
+        width: 10
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9ada8d4149bec590800000000000000
+      internalID: -7651975026730935650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_foodTable_5
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 344
+        width: 12
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9995d5c10defe9ff0800000000000000
+      internalID: -27304377935111783
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_foodTable_6
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 337
+        width: 12
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ecb9299fa700fe10800000000000000
+      internalID: 2229290266318716128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_foodTable_7
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 323
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5126b2673a460bcb0800000000000000
+      internalID: -4850266145453022699
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_foodTable_8
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 315
+        width: 13
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 244ed3734e2279800800000000000000
+      internalID: 619001837361423426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_foodTable_9
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 303
+        width: 12
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2aa1660f08d484eb0800000000000000
+      internalID: -4735449791995700574
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_foodTable_10
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 295
+        width: 12
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65b071be2db2bf3f0800000000000000
+      internalID: -866050318451405994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_foodTable_11
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 285
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f1d01a6cd24ad0f0800000000000000
+      internalID: -1091486445244198412
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_foodTable_12
+      rect:
+        serializedVersion: 2
+        x: 541
+        y: 333
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 408ce622b4d4a8710800000000000000
+      internalID: 1696253194753984516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_foodTable_13
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 228
+        width: 34
+        height: 58
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e35ae2f7843cc220800000000000000
+      internalID: 2507436851039196131
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_foodTable_14
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 265
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da14e056bed7dbd10800000000000000
+      internalID: 2143007447664443821
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_foodTable_15
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 257
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5577221a7dfb9f190800000000000000
+      internalID: -7928094736166783147
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_foodTable_16
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 247
+        width: 12
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38cf641ef48a980c0800000000000000
+      internalID: -4572938885582619517
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_foodTable_17
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 238
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac458bb7528878db0800000000000000
+      internalID: -4789709984114387766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_foodTable_18
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 227
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b73e5876796b5a190800000000000000
+      internalID: -7951748805659597957
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_foodTable_19
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 214
+        width: 14
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b8cdccce250fccc30800000000000000
+      internalID: 4381140776475483275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_foodTable_20
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 203
+        width: 12
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 04f0fb4ea465edbe0800000000000000
+      internalID: -1450627150301425856
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_foodTable_21
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 174
+        width: 12
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5dae5e0065f9ed400800000000000000
+      internalID: 350893012712549077
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_foodTable_22
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 145
+        width: 13
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab477ede618cae6e0800000000000000
+      internalID: -1807412299629628230
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: world_playerShelter_foodTable_23
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 110
+        width: 11
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3ad9eb6edb0334d0800000000000000
+      internalID: -3156165863935452609
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      world_playerShelter_foodTable_0: -2201995817508044134
+      world_playerShelter_foodTable_1: -494882875663738860
+      world_playerShelter_foodTable_10: -866050318451405994
+      world_playerShelter_foodTable_11: -1091486445244198412
+      world_playerShelter_foodTable_12: 1696253194753984516
+      world_playerShelter_foodTable_13: 2507436851039196131
+      world_playerShelter_foodTable_14: 2143007447664443821
+      world_playerShelter_foodTable_15: -7928094736166783147
+      world_playerShelter_foodTable_16: -4572938885582619517
+      world_playerShelter_foodTable_17: -4789709984114387766
+      world_playerShelter_foodTable_18: -7951748805659597957
+      world_playerShelter_foodTable_19: 4381140776475483275
+      world_playerShelter_foodTable_2: 8647889766262791561
+      world_playerShelter_foodTable_20: -1450627150301425856
+      world_playerShelter_foodTable_21: 350893012712549077
+      world_playerShelter_foodTable_22: -1807412299629628230
+      world_playerShelter_foodTable_23: -3156165863935452609
+      world_playerShelter_foodTable_3: 1013843468778663912
+      world_playerShelter_foodTable_4: -7651975026730935650
+      world_playerShelter_foodTable_5: -27304377935111783
+      world_playerShelter_foodTable_6: 2229290266318716128
+      world_playerShelter_foodTable_7: -4850266145453022699
+      world_playerShelter_foodTable_8: 619001837361423426
+      world_playerShelter_foodTable_9: -4735449791995700574
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

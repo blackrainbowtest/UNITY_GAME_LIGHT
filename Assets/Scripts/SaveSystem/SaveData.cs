@@ -152,6 +152,11 @@ public class SaveData
     public class SceneState
     {
         /// <summary>
+        /// The scene the player was in right before the current one.
+        /// </summary>
+        public string previousSceneName;
+
+        /// <summary>
         /// Anchor "main city" scene to return to from secondary locations.
         /// </summary>
         public string lastMainSceneName;

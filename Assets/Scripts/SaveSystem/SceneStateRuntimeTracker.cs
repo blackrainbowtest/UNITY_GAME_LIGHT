@@ -41,7 +41,23 @@ namespace UDA2.SaveSystem
 
         private void OnActiveSceneChanged(Scene from, Scene to)
         {
+            StorePreviousScene(from, to);
             ApplyScene(to.name);
+        }
+
+        private static void StorePreviousScene(Scene from, Scene to)
+        {
+            var save = global::GameState.Instance.CurrentSave;
+            if (save == null || save.sceneState == null)
+                return;
+
+            if (!from.IsValid() || string.IsNullOrEmpty(from.name))
+                return;
+
+            if (string.Equals(from.name, to.name, StringComparison.Ordinal))
+                return;
+
+            save.sceneState.previousSceneName = from.name;
         }
 
         private static void ApplyScene(string sceneName)
