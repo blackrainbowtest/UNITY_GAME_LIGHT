@@ -11,6 +11,10 @@
 	Применить;
 	Apply;
 	Appliquer;
+*cancel;
+	Отмена;
+	Cancel;
+	Annuler;
 *reset;
 	Сброс;
 	Reset;
@@ -47,3 +51,11 @@
 	Подтвердить;
 	Confirm;
 	Confirm;
+*used;
+	Уже использовано сегодня;
+	Already used today;
+	Déjà utilisé aujourd'hui;
+*currentStructureLevelKey;
+	Уровень: {0};
+	Level: {0};
+	Niveau: {0};

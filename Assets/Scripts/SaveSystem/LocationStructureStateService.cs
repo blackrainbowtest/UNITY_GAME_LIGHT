@@ -13,5 +13,6 @@ public static class LocationStructureStateService
         if (state.campfireLevel < 0) state.campfireLevel = 0;
         if (state.workbenchLevel < 0) state.workbenchLevel = 0;
         if (state.storageLevel < 0) state.storageLevel = 0;
+        if (state.bedActionUsedDay < 0) state.bedActionUsedDay = 0;
     }
 }

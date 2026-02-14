@@ -20,6 +20,7 @@ public class SaveData
         public int campfireLevel = 0;
         public int workbenchLevel = 0;
         public int storageLevel = 0;
+        public int bedActionUsedDay = 0;
     }
 
     [Serializable]

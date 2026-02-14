@@ -15,7 +15,7 @@ namespace UDA2.UI.Shelter
         private const string ActionRelax2 = "relax2";
         private const int DurationStepMinutes = 15;
         private const int MinDurationMinutes = 15;
-        private const int MaxDurationMinutes = 24 * 60;
+        private const int DefaultMaxDurationMinutes = 8 * 60;
 
         [Header("Roots")]
         [SerializeField] private GameObject windowRoot;
@@ -36,6 +36,10 @@ namespace UDA2.UI.Shelter
         [SerializeField] private Button durationConfirmButton;
         [SerializeField] private int defaultDurationHours = 1;
 
+        [Header("Daily Limit")]
+        [Tooltip("Optional hint root shown when bed actions are unavailable for today.")]
+        [SerializeField] private GameObject dailyLimitHintRoot;
+
         [Header("Result Modal")]
         [SerializeField] private Button resultCloseButton;
         [SerializeField] private Button resultPrevButton;
@@ -44,6 +48,19 @@ namespace UDA2.UI.Shelter
 
         [Header("Result Animation Catalog")]
         [SerializeField] private ShelterBedResultAnimationCatalogAsset resultAnimationCatalog;
+
+        [Header("Recovery Rules")]
+        [Tooltip("Optional external balance config for action duration and stat recovery.")]
+        [SerializeField] private ShelterBedRecoveryConfigAsset recoveryConfig;
+
+        [Header("Structure Level")]
+        [Tooltip("Which structure level should be shown in this window. Keep Bed for current shelter bed prefab.")]
+        [SerializeField] private LocationStructureType structureTypeForLevel = LocationStructureType.Bed;
+        [Tooltip("Optional text target to show current structure level.")]
+        [SerializeField] private TMP_Text currentStructureLevelText;
+        [Tooltip("Localization key template with one placeholder, e.g. 'lvl' where value is inserted as {0}. If empty, plain number is shown.")]
+        [SerializeField] private string currentStructureLevelKey = "";
+        [SerializeField] private string currentStructureLevelPrefix = "Lv ";
 
         [Header("Behavior")]
         [SerializeField] private bool destroyOnClose = true;
@@ -74,10 +91,21 @@ namespace UDA2.UI.Shelter
         private readonly List<UiRootState> _uiRootStates = new List<UiRootState>();
         private bool _sceneUiHidden;
 
+        public int CurrentStructureLevel { get; private set; }
+
         private struct UiRootState
         {
             public GameObject Root;
             public bool WasActive;
+        }
+
+        private struct RecoveryRule
+        {
+            public int maxDurationMinutes;
+            public int hpPerStep;
+            public int mpPerStep;
+            public int lpPerStep;
+            public int spPerStep;
         }
 
         private void Awake()
@@ -107,7 +135,7 @@ namespace UDA2.UI.Shelter
             {
                 durationSlider.wholeNumbers = true;
                 durationSlider.minValue = MinDurationMinutes / (float)DurationStepMinutes;
-                durationSlider.maxValue = MaxDurationMinutes / (float)DurationStepMinutes;
+                durationSlider.maxValue = DefaultMaxDurationMinutes / (float)DurationStepMinutes;
                 durationSlider.onValueChanged.AddListener(OnDurationSliderChanged);
             }
 
@@ -128,9 +156,13 @@ namespace UDA2.UI.Shelter
 
             HideSceneUiIfNeeded();
 
-            _selectedDurationMinutes = Mathf.Clamp(defaultDurationHours * 60, MinDurationMinutes, MaxDurationMinutes);
+            _selectedDurationMinutes = Mathf.Clamp(defaultDurationHours * 60, MinDurationMinutes, GetMaxDurationMinutesForAction(_selectedActionId));
+            ConfigureDurationSliderForSelectedAction();
             if (durationSlider != null)
                 durationSlider.SetValueWithoutNotify(_selectedDurationMinutes / (float)DurationStepMinutes);
+
+            RefreshCurrentStructureLevel();
+            UpdateActionButtonsInteractable();
 
             UpdateDurationText();
             ShowOnly(windowRoot);
@@ -192,7 +224,11 @@ namespace UDA2.UI.Shelter
 
         public void OpenDurationForAction(string actionId)
         {
+            if (!CanUseBedActionToday())
+                return;
+
             _selectedActionId = string.IsNullOrWhiteSpace(actionId) ? ActionRest : actionId.Trim().ToLowerInvariant();
+            ConfigureDurationSliderForSelectedAction();
             ShowOnly(modalDurationRoot);
             UpdateDurationText();
         }
@@ -204,9 +240,19 @@ namespace UDA2.UI.Shelter
 
         public void ConfirmDuration()
         {
+            if (!CanUseBedActionToday())
+                return;
+
+            int actionDay = GameTimeAPI.Day;
             var minutesToAdd = GetSelectedDurationMinutes();
+
+            ApplyRecoveryForAction(_selectedActionId, minutesToAdd);
+
             if (minutesToAdd > 0)
                 GameTimeAPI.AddMinutes(minutesToAdd);
+
+            MarkBedActionUsedOnDay(actionDay);
+            UpdateActionButtonsInteractable();
 
             BuildResultAnimationList();
             _currentAnimationIndex = 0;
@@ -252,7 +298,7 @@ namespace UDA2.UI.Shelter
 
         public int GetSelectedDurationMinutes()
         {
-            return Mathf.Clamp(_selectedDurationMinutes, MinDurationMinutes, MaxDurationMinutes);
+            return Mathf.Clamp(_selectedDurationMinutes, MinDurationMinutes, GetMaxDurationMinutesForAction(_selectedActionId));
         }
 
         public string GetSelectedActionId()
@@ -263,7 +309,7 @@ namespace UDA2.UI.Shelter
         private void OnDurationSliderChanged(float value)
         {
             int minSteps = MinDurationMinutes / DurationStepMinutes;
-            int maxSteps = MaxDurationMinutes / DurationStepMinutes;
+            int maxSteps = GetMaxDurationMinutesForAction(_selectedActionId) / DurationStepMinutes;
             int steps = Mathf.Clamp(Mathf.RoundToInt(value), minSteps, maxSteps);
             _selectedDurationMinutes = steps * DurationStepMinutes;
             UpdateDurationText();
@@ -274,10 +320,185 @@ namespace UDA2.UI.Shelter
             if (durationValueText == null)
                 return;
 
-            int minutes = Mathf.Clamp(_selectedDurationMinutes, 0, MaxDurationMinutes);
+            int minutes = Mathf.Clamp(_selectedDurationMinutes, 0, GetMaxDurationMinutesForAction(_selectedActionId));
             int hoursPart = minutes / 60;
             int minutesPart = minutes % 60;
             durationValueText.text = $"{hoursPart:00}:{minutesPart:00}";
+        }
+
+        private void ConfigureDurationSliderForSelectedAction()
+        {
+            int maxMinutes = GetMaxDurationMinutesForAction(_selectedActionId);
+            _selectedDurationMinutes = Mathf.Clamp(_selectedDurationMinutes, MinDurationMinutes, maxMinutes);
+
+            if (durationSlider == null)
+                return;
+
+            durationSlider.minValue = MinDurationMinutes / (float)DurationStepMinutes;
+            durationSlider.maxValue = maxMinutes / (float)DurationStepMinutes;
+            durationSlider.SetValueWithoutNotify(_selectedDurationMinutes / (float)DurationStepMinutes);
+        }
+
+        private int GetMaxDurationMinutesForAction(string actionId)
+        {
+            return GetRecoveryRule(actionId).maxDurationMinutes;
+        }
+
+        private RecoveryRule GetRecoveryRule(string actionId)
+        {
+            if (recoveryConfig != null && recoveryConfig.TryGetRule(actionId, out var fromAsset))
+            {
+                return new RecoveryRule
+                {
+                    maxDurationMinutes = Mathf.Max(MinDurationMinutes, fromAsset.maxDurationMinutes),
+                    hpPerStep = fromAsset.hpPerStep,
+                    mpPerStep = fromAsset.mpPerStep,
+                    lpPerStep = fromAsset.lpPerStep,
+                    spPerStep = fromAsset.spPerStep
+                };
+            }
+
+            switch (actionId)
+            {
+                case ActionSleep:
+                    return new RecoveryRule
+                    {
+                        maxDurationMinutes = 8 * 60,
+                        hpPerStep = 3,
+                        mpPerStep = 3,
+                        lpPerStep = -3,
+                        spPerStep = 3
+                    };
+                case ActionRelax:
+                    return new RecoveryRule
+                    {
+                        maxDurationMinutes = 4 * 60,
+                        hpPerStep = 2,
+                        mpPerStep = 2,
+                        lpPerStep = 2,
+                        spPerStep = 2
+                    };
+                case ActionRelax2:
+                    return new RecoveryRule
+                    {
+                        maxDurationMinutes = 8 * 60,
+                        hpPerStep = 2,
+                        mpPerStep = 2,
+                        lpPerStep = 5,
+                        spPerStep = 2
+                    };
+                case ActionRest:
+                default:
+                    return new RecoveryRule
+                    {
+                        maxDurationMinutes = 2 * 60,
+                        hpPerStep = 1,
+                        mpPerStep = 1,
+                        lpPerStep = -1,
+                        spPerStep = 1
+                    };
+            }
+        }
+
+        private void ApplyRecoveryForAction(string actionId, int durationMinutes)
+        {
+            var save = global::GameState.Instance != null ? global::GameState.Instance.CurrentSave : null;
+            var stats = save != null ? save.player?.stats : null;
+            if (stats == null)
+                return;
+
+            int appliedMinutes = Mathf.Max(0, durationMinutes);
+            int steps = appliedMinutes / DurationStepMinutes;
+            if (steps <= 0)
+                return;
+
+            var rule = GetRecoveryRule(actionId);
+
+            stats.hp = ApplyDelta(stats.hp, stats.hpMax, rule.hpPerStep * steps);
+            stats.mp = ApplyDelta(stats.mp, stats.mpMax, rule.mpPerStep * steps);
+            stats.sp = ApplyDelta(stats.sp, stats.spMax, rule.spPerStep * steps);
+            stats.lp = ApplyDelta(stats.lp, stats.lpMax, rule.lpPerStep * steps);
+        }
+
+        private static int ApplyDelta(int value, int max, int delta)
+        {
+            int maxClamped = Mathf.Max(0, max);
+            return Mathf.Clamp(value + delta, 0, maxClamped);
+        }
+
+        private void RefreshCurrentStructureLevel()
+        {
+            var save = global::GameState.Instance != null ? global::GameState.Instance.CurrentSave : null;
+            if (save == null)
+            {
+                CurrentStructureLevel = 0;
+                UpdateCurrentStructureLevelText();
+                return;
+            }
+
+            LocationStructureStateService.EnsureInitialized(save);
+            CurrentStructureLevel = LocationStructureLevels.GetLevel(save, structureTypeForLevel);
+            UpdateCurrentStructureLevelText();
+        }
+
+        private void UpdateCurrentStructureLevelText()
+        {
+            if (currentStructureLevelText == null)
+                return;
+
+            if (!string.IsNullOrWhiteSpace(currentStructureLevelKey))
+            {
+                var setter = currentStructureLevelText.GetComponent<LocalizedTextSetter>();
+                if (setter != null)
+                {
+                    setter.key = currentStructureLevelKey;
+                    setter.SetFormatArgs(CurrentStructureLevel);
+                    setter.UpdateText();
+                    return;
+                }
+            }
+
+            currentStructureLevelText.text = $"{currentStructureLevelPrefix}{CurrentStructureLevel}";
+        }
+
+        private bool CanUseBedActionToday()
+        {
+            var save = global::GameState.Instance != null ? global::GameState.Instance.CurrentSave : null;
+            if (save == null)
+                return true;
+
+            LocationStructureStateService.EnsureInitialized(save);
+            int today = Mathf.Max(1, GameTimeAPI.Day);
+            return save.locationStructures.bedActionUsedDay != today;
+        }
+
+        private void MarkBedActionUsedOnDay(int day)
+        {
+            var save = global::GameState.Instance != null ? global::GameState.Instance.CurrentSave : null;
+            if (save == null)
+                return;
+
+            LocationStructureStateService.EnsureInitialized(save);
+            save.locationStructures.bedActionUsedDay = Mathf.Max(1, day);
+        }
+
+        private void UpdateActionButtonsInteractable()
+        {
+            bool canUseToday = CanUseBedActionToday();
+
+            if (restButton != null)
+                restButton.interactable = canUseToday;
+            if (sleepButton != null)
+                sleepButton.interactable = canUseToday;
+            if (relaxButton != null)
+                relaxButton.interactable = canUseToday;
+            if (relax2Button != null)
+                relax2Button.interactable = canUseToday;
+            if (durationConfirmButton != null)
+                durationConfirmButton.interactable = canUseToday;
+
+            if (dailyLimitHintRoot != null)
+                dailyLimitHintRoot.SetActive(!canUseToday);
         }
 
         private void BuildResultAnimationList()
