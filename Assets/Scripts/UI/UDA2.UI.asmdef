@@ -2,6 +2,7 @@
   "name": "UDA2.UI",
   "rootNamespace": "UDA2.UI",
   "references": [
+    "UDA2.Animations",
     "UDA2.Core",
     "UDA2.Audio",
     "UDA2.SceneFlow",

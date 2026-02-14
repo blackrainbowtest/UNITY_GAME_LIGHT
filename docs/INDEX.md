@@ -14,6 +14,7 @@
 
 ## UI
 - [UI API Reference](ui/UI_API_REFERENCE.md)
+- [Shelter Bed Interaction MVP](ui/SHELTER_BED_INTERACTION_MVP.md)
 
 ## Audio
 - [Audio API Reference](audio/AUDIO_API_REFERENCE.md)

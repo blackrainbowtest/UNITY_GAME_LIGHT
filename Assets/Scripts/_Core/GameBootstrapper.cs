@@ -54,6 +54,9 @@ namespace UDA2.Core
                 global::GameState.Instance.CurrentSave = SaveData.CreateDefault(Application.version);
             }
 
+            // Ensure location structure progression state exists and is sane.
+            LocationStructureStateService.EnsureInitialized(global::GameState.Instance.CurrentSave);
+
             // Переход в первую игровую сцену
             if (SceneFlowManager.Instance != null)
                 SceneFlowManager.Instance.LoadScene(mainSceneName);
