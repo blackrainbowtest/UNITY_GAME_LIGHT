@@ -1,0 +1,251 @@
+using System;
+using Game.Battle;
+using Game.Progression;
+using UDA2.SceneFlow;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
+namespace Game.Dungeon
+{
+    public sealed class DungeonLocationSelectController : MonoBehaviour
+    {
+        [Serializable]
+        public sealed class ButtonBinding
+        {
+            public Button button;
+            public DungeonLocationDefinition location;
+        }
+
+        [Header("Buttons")]
+        [SerializeField] private ButtonBinding[] buttons;
+
+        [Header("Debug")]
+        [SerializeField] private bool debugIgnoreRankLock;
+
+        private void Awake()
+        {
+            WireButtons();
+        }
+
+        private void OnEnable()
+        {
+            RefreshInteractable();
+        }
+
+        private void WireButtons()
+        {
+            if (buttons == null)
+                return;
+
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                var binding = buttons[i];
+                if (binding == null || binding.button == null)
+                    continue;
+
+                binding.button.onClick.RemoveListener(OnAnyButtonClicked);
+                binding.button.onClick.AddListener(OnAnyButtonClicked);
+            }
+        }
+
+        private void OnAnyButtonClicked()
+        {
+            // Find which button fired.
+            var clicked = UnityEngine.EventSystems.EventSystem.current?.currentSelectedGameObject;
+            if (clicked == null)
+                return;
+
+            if (buttons == null)
+                return;
+
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                var binding = buttons[i];
+                if (binding == null || binding.button == null || binding.location == null)
+                    continue;
+
+                if (binding.button.gameObject == clicked)
+                {
+                    TryStartLocation(binding.location);
+                    return;
+                }
+            }
+        }
+
+        public void RefreshInteractable()
+        {
+            var playerRank = GetPlayerRank();
+
+            if (buttons == null)
+                return;
+
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                var binding = buttons[i];
+                if (binding == null || binding.button == null)
+                    continue;
+
+                if (binding.location == null)
+                {
+                    binding.button.interactable = false;
+                    continue;
+                }
+
+                binding.button.interactable = debugIgnoreRankLock || binding.location.IsAvailableFor(playerRank);
+            }
+        }
+
+        private AdventurerRank GetPlayerRank()
+        {
+            var save = GameState.Instance != null ? GameState.Instance.CurrentSave : null;
+            if (save?.progress == null)
+                return AdventurerRank.None;
+
+            return save.progress.adventurerRank;
+        }
+
+        private void TryStartLocation(DungeonLocationDefinition location)
+        {
+            if (location == null)
+                return;
+
+            var playerRank = GetPlayerRank();
+            if (!debugIgnoreRankLock && !location.IsAvailableFor(playerRank))
+            {
+#if UNITY_EDITOR
+                Debug.LogWarning($"[Dungeon] Location '{location.name}' locked. Required={location.requiredRank}, Player={playerRank}");
+#endif
+                return;
+            }
+
+            if (string.IsNullOrEmpty(location.fightSceneName))
+            {
+                Debug.LogError("[Dungeon] fightSceneName is empty. Cannot start fight.");
+                return;
+            }
+
+            if (!TryResolveEncounter(location, out var battleLocation, out var enemy))
+                return;
+
+            // Ensure we have a save container so pending battle can be restored after reloads.
+            if (GameState.Instance != null && GameState.Instance.CurrentSave == null)
+                GameState.Instance.CurrentSave = SaveData.CreateDefault(Application.version);
+
+            // Set battle contexts.
+            BattleEntryContext.Set(BattleMode.Normal);
+
+            if (battleLocation != null)
+                BattleLocationContext.Set(battleLocation);
+
+            if (enemy != null)
+                BattleEnemyContext.Set(enemy);
+
+            if (location.returnToActiveSceneAfterBattle)
+                BattleExitContext.SetReturnToActiveScene();
+
+            // Mark pending battle so saves/autosaves can restore battle contexts.
+            var save = GameState.Instance != null ? GameState.Instance.CurrentSave : null;
+            if (save != null && save.sceneState != null && save.sceneState.pendingBattle != null)
+            {
+                var pending = save.sceneState.pendingBattle;
+                pending.isPending = true;
+                pending.battleSceneName = location.fightSceneName;
+                pending.battleMode = "Normal";
+                pending.returnSceneName = location.returnToActiveSceneAfterBattle ? SceneManager.GetActiveScene().name : null;
+                pending.enemyDifficulty = "Normal";
+                pending.enemyId = enemy != null ? enemy.id : null;
+                pending.locationId = battleLocation != null ? battleLocation.id : null;
+            }
+
+            // Keep SaveData's current scene name aligned with the transition.
+            if (save?.player != null)
+                save.player.SetSceneName(location.fightSceneName);
+
+            // Load FightScene.
+            if (SceneFlowManager.Instance != null)
+                SceneFlowManager.Instance.LoadScene(location.fightSceneName);
+            else
+                SceneManager.LoadScene(location.fightSceneName);
+        }
+
+        private static bool TryResolveEncounter(
+            DungeonLocationDefinition location,
+            out BattleLocationData resolvedBattleLocation,
+            out EnemyData resolvedEnemy)
+        {
+            resolvedBattleLocation = null;
+            resolvedEnemy = null;
+
+            if (location.encounterPools == null || location.encounterPools.Length == 0)
+            {
+                Debug.LogError($"[Dungeon] Location '{location.name}' has no encounterPools.");
+                return false;
+            }
+
+            int totalWeight = 0;
+            for (int i = 0; i < location.encounterPools.Length; i++)
+            {
+                var pool = location.encounterPools[i];
+                if (pool == null)
+                    continue;
+
+                if (pool.weight <= 0)
+                    continue;
+
+                if (pool.battleLocation == null || pool.enemyTable == null)
+                    continue;
+
+                totalWeight += pool.weight;
+            }
+
+            if (totalWeight <= 0)
+            {
+                Debug.LogError($"[Dungeon] Location '{location.name}' encounterPools have no valid weighted entries (need battleLocation+enemyTable+weight>0).");
+                return false;
+            }
+
+            int roll = UnityEngine.Random.Range(0, totalWeight);
+            DungeonEncounterPool chosen = null;
+
+            for (int i = 0; i < location.encounterPools.Length; i++)
+            {
+                var pool = location.encounterPools[i];
+                if (pool == null)
+                    continue;
+
+                if (pool.weight <= 0)
+                    continue;
+
+                if (pool.battleLocation == null || pool.enemyTable == null)
+                    continue;
+
+                roll -= pool.weight;
+                if (roll < 0)
+                {
+                    chosen = pool;
+                    break;
+                }
+            }
+
+            if (chosen == null)
+            {
+                Debug.LogError($"[Dungeon] Location '{location.name}' failed to choose encounter pool.");
+                return false;
+            }
+
+            resolvedBattleLocation = chosen.battleLocation;
+
+            var resolver = new EnemySpawnResolver();
+            resolvedEnemy = resolver.Resolve(chosen.enemyTable);
+
+            if (resolvedEnemy == null)
+            {
+                Debug.LogError($"[Dungeon] Location '{location.name}' chosen pool has enemyTable '{chosen.enemyTable.name}', but it resolved to null enemy.");
+                return false;
+            }
+
+            return true;
+        }
+    }
+}

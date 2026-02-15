@@ -39,11 +39,11 @@
 	Открыть меню атак.
 	Open the attack menu.
 	Ouvrir le menu des attaques.;
-*battle_button_block_name;
+*battle_action_block_name;
 	Защита;
 	Defense;
 	Défense;
-*battle_button_block_desc;
+*battle_action_block_desc;
 	Подготовиться и снизить входящий урон.
 	Brace and reduce incoming damage.
 	Se préparer et réduire les dégâts entrants.;

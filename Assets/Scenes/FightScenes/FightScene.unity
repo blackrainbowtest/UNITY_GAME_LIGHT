@@ -1878,10 +1878,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 451365710}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 438.16754, y: -15}
+  m_SizeDelta: {x: 243.66501, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &165127613
 MonoBehaviour:
@@ -4066,10 +4066,10 @@ RectTransform:
   - {fileID: 165127612}
   m_Father: {fileID: 1414145405}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 300, y: -215}
+  m_SizeDelta: {x: 560, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &451365711
 MonoBehaviour:
@@ -4359,10 +4359,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1296144980}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 179.77, y: -15}
+  m_SizeDelta: {x: 103.26, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &509077317
 MonoBehaviour:
@@ -8457,10 +8457,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1414145405}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 300, y: -50}
+  m_SizeDelta: {x: 560, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1131709359
 MonoBehaviour:
@@ -8787,10 +8787,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1414145405}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 300, y: -140}
+  m_SizeDelta: {x: 560, y: 79.99999}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1249256546
 MonoBehaviour:
@@ -9234,10 +9234,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1296144980}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 54.07, y: -15}
+  m_SizeDelta: {x: 108.14, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1265984115
 MonoBehaviour:
@@ -9641,10 +9641,10 @@ RectTransform:
   - {fileID: 1862325316}
   m_Father: {fileID: 1414145405}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 300, y: -265}
+  m_SizeDelta: {x: 560, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1296144981
 MonoBehaviour:
@@ -11606,7 +11606,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1744893837
 RectTransform:
   m_ObjectHideFlags: 0
@@ -12648,10 +12648,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1296144980}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 301.46, y: -15}
+  m_SizeDelta: {x: 100.12, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1862325317
 MonoBehaviour:
@@ -12996,7 +12996,7 @@ MonoBehaviour:
   tooltipHoldDuration: 0.35
   longPressProgressViewPrefab: {fileID: 9034531345151872778, guid: 5a44ec5239b2e2c48b70a5a41029ee68, type: 3}
   tooltipProgressShowDelay: 0.15
-  debugLongPress: 1
+  debugLongPress: 0
   actionNameKeyFormat: battle_action_{0}_name
   actionDescriptionKeyFormat: battle_action_{0}_desc
   buttonNameKeyFormat: battle_button_{0}_name
@@ -14550,10 +14550,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 451365710}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 148.16751, y: -15}
+  m_SizeDelta: {x: 296.33502, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2052014695
 MonoBehaviour:

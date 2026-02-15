@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Game.Progression;
 
 [Serializable]
 public class SaveData
@@ -135,6 +136,8 @@ public class SaveData
         public Dictionary<string, bool> flags = new Dictionary<string, bool>();
         public string introResult;
 
+        public AdventurerRank adventurerRank = AdventurerRank.None;
+
         /// <summary>
         /// Sets the intro result. Only allows non-null, non-empty values.
         /// </summary>
@@ -146,6 +149,11 @@ public class SaveData
                 return;
             }
             introResult = value;
+        }
+
+        public void SetAdventurerRank(AdventurerRank value)
+        {
+            adventurerRank = value;
         }
     }
 
