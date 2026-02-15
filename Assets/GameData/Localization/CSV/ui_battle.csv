@@ -11,3 +11,215 @@
 	Exit;
 	Exit;
 	Exit;
+*battle_tooltip_damage_fmt;
+	Урон: {0};
+	Damage: {0};
+	Dégâts: {0};
+*battle_tooltip_heal_fmt;
+	Лечение: {0};
+	Heal: {0};
+	Soin: {0};
+*battle_tooltip_mp_cost_fmt;
+	MP: {0};
+	MP: {0};
+	MP: {0};
+*battle_tooltip_sp_cost_fmt;
+	SP: {0};
+	SP: {0};
+	SP: {0};
+*battle_tooltip_lp_cost_fmt;
+	LP: {0};
+	LP: {0};
+	LP: {0};
+*battle_button_attack_menu_name;
+	Атака;
+	Attack;
+	Attaque;
+*battle_button_attack_menu_desc;
+	Открыть меню атак.
+	Open the attack menu.
+	Ouvrir le menu des attaques.;
+*battle_button_block_name;
+	Защита;
+	Defense;
+	Défense;
+*battle_button_block_desc;
+	Подготовиться и снизить входящий урон.
+	Brace and reduce incoming damage.
+	Se préparer et réduire les dégâts entrants.;
+*battle_button_magic_menu_name;
+	Магия;
+	Magic;
+	Magie;
+*battle_button_magic_menu_desc;
+	Открыть меню заклинаний.
+	Open the spell menu.
+	Ouvrir le menu des sorts.;
+*battle_button_actions_menu_name;
+	Действия;
+	Actions;
+	Actions;
+*battle_button_actions_menu_desc;
+	Открыть меню дополнительных действий.
+	Open the utility actions menu.
+	Ouvrir le menu des actions utilitaires.;
+*battle_button_seduction_menu_name;
+	Соблазнение;
+	Seduction;
+	Séduction;
+*battle_button_seduction_menu_desc;
+	Открыть меню соблазнения.
+	Open the seduction menu.
+	Ouvrir le menu de séduction.;
+*battle_button_item_name;
+	Предмет;
+	Item;
+	Objet;
+*battle_button_item_desc;
+	Использовать предмет в бою.
+	Use an item in battle.
+	Utiliser un objet en combat.;
+*battle_button_exit_name;
+	Выход;
+	Exit;
+	Quitter;
+*battle_button_exit_desc;
+	Выйти из боя.
+	Leave the battle.
+	Quitter le combat.;
+*battle_button_run_name;
+	Побег;
+	Run;
+	Fuite;
+*battle_button_run_desc;
+	Попытаться сбежать из боя.
+	Attempt to flee from battle.
+	Tenter de fuir le combat.;
+*battle_button_surrender_name;
+	Сдаться;
+	Surrender;
+	Abandonner;
+*battle_button_surrender_desc;
+	Сдаться противнику.
+	Give up the fight.
+	Abandonner le combat.;
+*battle_button_skip_turn_name;
+	Пропуск хода;
+	Skip Turn;
+	Passer le tour;
+*battle_button_skip_turn_desc;
+	Пропустить текущий ход.
+	Skip the current turn.
+	Passer le tour en cours.;
+*battle_button_inventory_name;
+	Инвентарь;
+	Inventory;
+	Inventaire;
+*battle_button_inventory_desc;
+	Открыть инвентарь.
+	Open inventory.
+	Ouvrir l'inventaire.;
+*battle_button_back_name;
+	Назад;
+	Back;
+	Retour;
+*battle_button_back_desc;
+	Вернуться в предыдущее меню.
+	Return to the previous menu.
+	Revenir au menu précédent.;
+*battle_action_fast_attack_name;
+	Быстрая атака;
+	Fast Attack;
+	Attaque rapide;
+*battle_action_fast_attack_desc;
+	Быстрый удар с низким расходом ресурсов.
+	Quick strike with low resource cost.
+	Frappe rapide avec un faible coût en ressources.;
+*battle_action_normal_attack_name;
+	Обычная атака;
+	Normal Attack;
+	Attaque normale;
+*battle_action_normal_attack_desc;
+	Сбалансированная атака.
+	Balanced standard attack.
+	Attaque standard équilibrée.;
+*battle_action_heavy_attack_name;
+	Тяжёлая атака;
+	Heavy Attack;
+	Attaque lourde;
+*battle_action_heavy_attack_desc;
+	Мощный удар с повышенной стоимостью.
+	Powerful strike with higher cost.
+	Frappe puissante avec un coût plus élevé.;
+*battle_action_counter_attack_name;
+	Контратака;
+	Counter Attack;
+	Contre-attaque;
+*battle_action_counter_attack_desc;
+	Подготовить ответный удар.
+	Prepare a retaliatory strike.
+	Préparer une frappe de riposte.;
+*battle_action_fire_spell_name;
+	Огненное заклинание;
+	Fire Spell;
+	Sort de feu;
+*battle_action_fire_spell_desc;
+	Наносит огненный урон цели.
+	Deals fire damage to the target.
+	Inflige des dégâts de feu à la cible.;
+*battle_action_ice_spell_name;
+	Ледяное заклинание;
+	Ice Spell;
+	Sort de glace;
+*battle_action_ice_spell_desc;
+	Наносит ледяной урон цели.
+	Deals ice damage to the target.
+	Inflige des dégâts de glace à la cible.;
+*battle_action_holy_spell_name;
+	Святое заклинание;
+	Holy Spell;
+	Sort sacré;
+*battle_action_holy_spell_desc;
+	Священная магия, исцеляющая вас.
+	Holy magic that heals you.
+	Magie sacrée qui vous soigne.;
+*battle_action_dark_spell_name;
+	Тёмное заклинание;
+	Dark Spell;
+	Sort ténébreux;
+*battle_action_dark_spell_desc;
+	Наносит урон и исцеляет вас на величину нанесённого урона.
+	Deals damage and heals you for the damage dealt.
+	Inflige des dégâts et vous soigne à hauteur des dégâts infligés.;
+*battle_action_seduction_act1_name;
+	Соблазнение I;
+	Seduction I;
+	Séduction I;
+*battle_action_seduction_act1_desc;
+	Базовый приём соблазнения.
+	Basic seduction move.
+	Technique de séduction de base.;
+*battle_action_seduction_act2_name;
+	Соблазнение II;
+	Seduction II;
+	Séduction II;
+*battle_action_seduction_act2_desc;
+	Усиленный приём соблазнения.
+	Improved seduction move.
+	Technique de séduction améliorée.;
+*battle_action_seduction_act3_name;
+	Соблазнение III;
+	Seduction III;
+	Séduction III;
+*battle_action_seduction_act3_desc;
+	Сильный приём соблазнения.
+	Powerful seduction move.
+	Technique de séduction puissante.;
+*battle_action_seduction_act4_name;
+	Соблазнение IV;
+	Seduction IV;
+	Séduction IV;
+*battle_action_seduction_act4_desc;
+	Максимально сильный приём соблазнения.
+	Strongest seduction move.
+	Technique de séduction la plus puissante.;

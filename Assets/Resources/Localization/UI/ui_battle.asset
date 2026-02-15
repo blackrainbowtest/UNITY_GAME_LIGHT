@@ -37,4 +37,452 @@ MonoBehaviour:
       text: Exit
     - languageCode: fr
       text: Exit
+  - key: battle_tooltip_damage_fmt
+    entries:
+    - languageCode: ru
+      text: "\u0423\u0440\u043E\u043D: {0}"
+    - languageCode: en
+      text: 'Damage: {0}'
+    - languageCode: fr
+      text: "D\xE9g\xE2ts: {0}"
+  - key: battle_tooltip_heal_fmt
+    entries:
+    - languageCode: ru
+      text: "\u041B\u0435\u0447\u0435\u043D\u0438\u0435: {0}"
+    - languageCode: en
+      text: 'Heal: {0}'
+    - languageCode: fr
+      text: 'Soin: {0}'
+  - key: battle_tooltip_mp_cost_fmt
+    entries:
+    - languageCode: ru
+      text: 'MP: {0}'
+    - languageCode: en
+      text: 'MP: {0}'
+    - languageCode: fr
+      text: 'MP: {0}'
+  - key: battle_tooltip_sp_cost_fmt
+    entries:
+    - languageCode: ru
+      text: 'SP: {0}'
+    - languageCode: en
+      text: 'SP: {0}'
+    - languageCode: fr
+      text: 'SP: {0}'
+  - key: battle_tooltip_lp_cost_fmt
+    entries:
+    - languageCode: ru
+      text: 'LP: {0}'
+    - languageCode: en
+      text: 'LP: {0}'
+    - languageCode: fr
+      text: 'LP: {0}'
+  - key: battle_button_attack_menu_name
+    entries:
+    - languageCode: ru
+      text: "\u0410\u0442\u0430\u043A\u0430"
+    - languageCode: en
+      text: Attack
+    - languageCode: fr
+      text: Attaque
+  - key: battle_button_attack_menu_desc
+    entries:
+    - languageCode: ru
+      text: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u043C\u0435\u043D\u044E
+        \u0430\u0442\u0430\u043A."
+    - languageCode: en
+      text: Open the attack menu.
+    - languageCode: fr
+      text: Ouvrir le menu des attaques.
+  - key: battle_button_defense_name
+    entries:
+    - languageCode: ru
+      text: "\u0417\u0430\u0449\u0438\u0442\u0430"
+    - languageCode: en
+      text: Defense
+    - languageCode: fr
+      text: "D\xE9fense"
+  - key: battle_button_defense_desc
+    entries:
+    - languageCode: ru
+      text: "\u041F\u043E\u0434\u0433\u043E\u0442\u043E\u0432\u0438\u0442\u044C\u0441\u044F
+        \u0438 \u0441\u043D\u0438\u0437\u0438\u0442\u044C \u0432\u0445\u043E\u0434\u044F\u0449\u0438\u0439
+        \u0443\u0440\u043E\u043D."
+    - languageCode: en
+      text: Brace and reduce incoming damage.
+    - languageCode: fr
+      text: "Se pr\xE9parer et r\xE9duire les d\xE9g\xE2ts entrants."
+  - key: battle_button_magic_menu_name
+    entries:
+    - languageCode: ru
+      text: "\u041C\u0430\u0433\u0438\u044F"
+    - languageCode: en
+      text: Magic
+    - languageCode: fr
+      text: Magie
+  - key: battle_button_magic_menu_desc
+    entries:
+    - languageCode: ru
+      text: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u043C\u0435\u043D\u044E
+        \u0437\u0430\u043A\u043B\u0438\u043D\u0430\u043D\u0438\u0439."
+    - languageCode: en
+      text: Open the spell menu.
+    - languageCode: fr
+      text: Ouvrir le menu des sorts.
+  - key: battle_button_actions_menu_name
+    entries:
+    - languageCode: ru
+      text: "\u0414\u0435\u0439\u0441\u0442\u0432\u0438\u044F"
+    - languageCode: en
+      text: Actions
+    - languageCode: fr
+      text: Actions
+  - key: battle_button_actions_menu_desc
+    entries:
+    - languageCode: ru
+      text: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u043C\u0435\u043D\u044E
+        \u0434\u043E\u043F\u043E\u043B\u043D\u0438\u0442\u0435\u043B\u044C\u043D\u044B\u0445
+        \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0439."
+    - languageCode: en
+      text: Open the utility actions menu.
+    - languageCode: fr
+      text: Ouvrir le menu des actions utilitaires.
+  - key: battle_button_seduction_menu_name
+    entries:
+    - languageCode: ru
+      text: "\u0421\u043E\u0431\u043B\u0430\u0437\u043D\u0435\u043D\u0438\u0435"
+    - languageCode: en
+      text: Seduction
+    - languageCode: fr
+      text: "S\xE9duction"
+  - key: battle_button_seduction_menu_desc
+    entries:
+    - languageCode: ru
+      text: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u043C\u0435\u043D\u044E
+        \u0441\u043E\u0431\u043B\u0430\u0437\u043D\u0435\u043D\u0438\u044F."
+    - languageCode: en
+      text: Open the seduction menu.
+    - languageCode: fr
+      text: "Ouvrir le menu de s\xE9duction."
+  - key: battle_button_item_name
+    entries:
+    - languageCode: ru
+      text: "\u041F\u0440\u0435\u0434\u043C\u0435\u0442"
+    - languageCode: en
+      text: Item
+    - languageCode: fr
+      text: Objet
+  - key: battle_button_item_desc
+    entries:
+    - languageCode: ru
+      text: "\u0418\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C
+        \u043F\u0440\u0435\u0434\u043C\u0435\u0442 \u0432 \u0431\u043E\u044E."
+    - languageCode: en
+      text: Use an item in battle.
+    - languageCode: fr
+      text: Utiliser un objet en combat.
+  - key: battle_button_exit_name
+    entries:
+    - languageCode: ru
+      text: "\u0412\u044B\u0445\u043E\u0434"
+    - languageCode: en
+      text: Exit
+    - languageCode: fr
+      text: Quitter
+  - key: battle_button_exit_desc
+    entries:
+    - languageCode: ru
+      text: "\u0412\u044B\u0439\u0442\u0438 \u0438\u0437 \u0431\u043E\u044F."
+    - languageCode: en
+      text: Leave the battle.
+    - languageCode: fr
+      text: Quitter le combat.
+  - key: battle_button_run_name
+    entries:
+    - languageCode: ru
+      text: "\u041F\u043E\u0431\u0435\u0433"
+    - languageCode: en
+      text: Run
+    - languageCode: fr
+      text: Fuite
+  - key: battle_button_run_desc
+    entries:
+    - languageCode: ru
+      text: "\u041F\u043E\u043F\u044B\u0442\u0430\u0442\u044C\u0441\u044F \u0441\u0431\u0435\u0436\u0430\u0442\u044C
+        \u0438\u0437 \u0431\u043E\u044F."
+    - languageCode: en
+      text: Attempt to flee from battle.
+    - languageCode: fr
+      text: Tenter de fuir le combat.
+  - key: battle_button_surrender_name
+    entries:
+    - languageCode: ru
+      text: "\u0421\u0434\u0430\u0442\u044C\u0441\u044F"
+    - languageCode: en
+      text: Surrender
+    - languageCode: fr
+      text: Abandonner
+  - key: battle_button_surrender_desc
+    entries:
+    - languageCode: ru
+      text: "\u0421\u0434\u0430\u0442\u044C\u0441\u044F \u043F\u0440\u043E\u0442\u0438\u0432\u043D\u0438\u043A\u0443."
+    - languageCode: en
+      text: Give up the fight.
+    - languageCode: fr
+      text: Abandonner le combat.
+  - key: battle_button_skip_turn_name
+    entries:
+    - languageCode: ru
+      text: "\u041F\u0440\u043E\u043F\u0443\u0441\u043A \u0445\u043E\u0434\u0430"
+    - languageCode: en
+      text: Skip Turn
+    - languageCode: fr
+      text: Passer le tour
+  - key: battle_button_skip_turn_desc
+    entries:
+    - languageCode: ru
+      text: "\u041F\u0440\u043E\u043F\u0443\u0441\u0442\u0438\u0442\u044C \u0442\u0435\u043A\u0443\u0449\u0438\u0439
+        \u0445\u043E\u0434."
+    - languageCode: en
+      text: Skip the current turn.
+    - languageCode: fr
+      text: Passer le tour en cours.
+  - key: battle_button_inventory_name
+    entries:
+    - languageCode: ru
+      text: "\u0418\u043D\u0432\u0435\u043D\u0442\u0430\u0440\u044C"
+    - languageCode: en
+      text: Inventory
+    - languageCode: fr
+      text: Inventaire
+  - key: battle_button_inventory_desc
+    entries:
+    - languageCode: ru
+      text: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u0438\u043D\u0432\u0435\u043D\u0442\u0430\u0440\u044C."
+    - languageCode: en
+      text: Open inventory.
+    - languageCode: fr
+      text: Ouvrir l'inventaire.
+  - key: battle_button_back_name
+    entries:
+    - languageCode: ru
+      text: "\u041D\u0430\u0437\u0430\u0434"
+    - languageCode: en
+      text: Back
+    - languageCode: fr
+      text: Retour
+  - key: battle_button_back_desc
+    entries:
+    - languageCode: ru
+      text: "\u0412\u0435\u0440\u043D\u0443\u0442\u044C\u0441\u044F \u0432 \u043F\u0440\u0435\u0434\u044B\u0434\u0443\u0449\u0435\u0435
+        \u043C\u0435\u043D\u044E."
+    - languageCode: en
+      text: Return to the previous menu.
+    - languageCode: fr
+      text: "Revenir au menu pr\xE9c\xE9dent."
+  - key: battle_action_fast_attack_name
+    entries:
+    - languageCode: ru
+      text: "\u0411\u044B\u0441\u0442\u0440\u0430\u044F \u0430\u0442\u0430\u043A\u0430"
+    - languageCode: en
+      text: Fast Attack
+    - languageCode: fr
+      text: Attaque rapide
+  - key: battle_action_fast_attack_desc
+    entries:
+    - languageCode: ru
+      text: "\u0411\u044B\u0441\u0442\u0440\u044B\u0439 \u0443\u0434\u0430\u0440
+        \u0441 \u043D\u0438\u0437\u043A\u0438\u043C \u0440\u0430\u0441\u0445\u043E\u0434\u043E\u043C
+        \u0440\u0435\u0441\u0443\u0440\u0441\u043E\u0432."
+    - languageCode: en
+      text: Quick strike with low resource cost.
+    - languageCode: fr
+      text: "Frappe rapide avec un faible co\xFBt en ressources."
+  - key: battle_action_normal_attack_name
+    entries:
+    - languageCode: ru
+      text: "\u041E\u0431\u044B\u0447\u043D\u0430\u044F \u0430\u0442\u0430\u043A\u0430"
+    - languageCode: en
+      text: Normal Attack
+    - languageCode: fr
+      text: Attaque normale
+  - key: battle_action_normal_attack_desc
+    entries:
+    - languageCode: ru
+      text: "\u0421\u0431\u0430\u043B\u0430\u043D\u0441\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F
+        \u0430\u0442\u0430\u043A\u0430."
+    - languageCode: en
+      text: Balanced standard attack.
+    - languageCode: fr
+      text: "Attaque standard \xE9quilibr\xE9e."
+  - key: battle_action_heavy_attack_name
+    entries:
+    - languageCode: ru
+      text: "\u0422\u044F\u0436\u0451\u043B\u0430\u044F \u0430\u0442\u0430\u043A\u0430"
+    - languageCode: en
+      text: Heavy Attack
+    - languageCode: fr
+      text: Attaque lourde
+  - key: battle_action_heavy_attack_desc
+    entries:
+    - languageCode: ru
+      text: "\u041C\u043E\u0449\u043D\u044B\u0439 \u0443\u0434\u0430\u0440 \u0441
+        \u043F\u043E\u0432\u044B\u0448\u0435\u043D\u043D\u043E\u0439 \u0441\u0442\u043E\u0438\u043C\u043E\u0441\u0442\u044C\u044E."
+    - languageCode: en
+      text: Powerful strike with higher cost.
+    - languageCode: fr
+      text: "Frappe puissante avec un co\xFBt plus \xE9lev\xE9."
+  - key: battle_action_counter_attack_name
+    entries:
+    - languageCode: ru
+      text: "\u041A\u043E\u043D\u0442\u0440\u0430\u0442\u0430\u043A\u0430"
+    - languageCode: en
+      text: Counter Attack
+    - languageCode: fr
+      text: Contre-attaque
+  - key: battle_action_counter_attack_desc
+    entries:
+    - languageCode: ru
+      text: "\u041F\u043E\u0434\u0433\u043E\u0442\u043E\u0432\u0438\u0442\u044C \u043E\u0442\u0432\u0435\u0442\u043D\u044B\u0439
+        \u0443\u0434\u0430\u0440."
+    - languageCode: en
+      text: Prepare a retaliatory strike.
+    - languageCode: fr
+      text: "Pr\xE9parer une frappe de riposte."
+  - key: battle_action_fire_spell_name
+    entries:
+    - languageCode: ru
+      text: "\u041E\u0433\u043D\u0435\u043D\u043D\u043E\u0435 \u0437\u0430\u043A\u043B\u0438\u043D\u0430\u043D\u0438\u0435"
+    - languageCode: en
+      text: Fire Spell
+    - languageCode: fr
+      text: Sort de feu
+  - key: battle_action_fire_spell_desc
+    entries:
+    - languageCode: ru
+      text: "\u041D\u0430\u043D\u043E\u0441\u0438\u0442 \u043E\u0433\u043D\u0435\u043D\u043D\u044B\u0439
+        \u0443\u0440\u043E\u043D \u0446\u0435\u043B\u0438."
+    - languageCode: en
+      text: Deals fire damage to the target.
+    - languageCode: fr
+      text: "Inflige des d\xE9g\xE2ts de feu \xE0 la cible."
+  - key: battle_action_ice_spell_name
+    entries:
+    - languageCode: ru
+      text: "\u041B\u0435\u0434\u044F\u043D\u043E\u0435 \u0437\u0430\u043A\u043B\u0438\u043D\u0430\u043D\u0438\u0435"
+    - languageCode: en
+      text: Ice Spell
+    - languageCode: fr
+      text: Sort de glace
+  - key: battle_action_ice_spell_desc
+    entries:
+    - languageCode: ru
+      text: "\u041D\u0430\u043D\u043E\u0441\u0438\u0442 \u043B\u0435\u0434\u044F\u043D\u043E\u0439
+        \u0443\u0440\u043E\u043D \u0446\u0435\u043B\u0438."
+    - languageCode: en
+      text: Deals ice damage to the target.
+    - languageCode: fr
+      text: "Inflige des d\xE9g\xE2ts de glace \xE0 la cible."
+  - key: battle_action_holy_spell_name
+    entries:
+    - languageCode: ru
+      text: "\u0421\u0432\u044F\u0442\u043E\u0435 \u0437\u0430\u043A\u043B\u0438\u043D\u0430\u043D\u0438\u0435"
+    - languageCode: en
+      text: Holy Spell
+    - languageCode: fr
+      text: "Sort sacr\xE9"
+  - key: battle_action_holy_spell_desc
+    entries:
+    - languageCode: ru
+      text: "\u0421\u0432\u044F\u0449\u0435\u043D\u043D\u0430\u044F \u043C\u0430\u0433\u0438\u044F,
+        \u043D\u0430\u043D\u043E\u0441\u044F\u0449\u0430\u044F \u0443\u0440\u043E\u043D."
+    - languageCode: en
+      text: Holy magic that deals damage.
+    - languageCode: fr
+      text: "Magie sacr\xE9e infligeant des d\xE9g\xE2ts."
+  - key: battle_action_dark_spell_name
+    entries:
+    - languageCode: ru
+      text: "\u0422\u0451\u043C\u043D\u043E\u0435 \u0437\u0430\u043A\u043B\u0438\u043D\u0430\u043D\u0438\u0435"
+    - languageCode: en
+      text: Dark Spell
+    - languageCode: fr
+      text: "Sort t\xE9n\xE9breux"
+  - key: battle_action_dark_spell_desc
+    entries:
+    - languageCode: ru
+      text: "\u0422\u0451\u043C\u043D\u0430\u044F \u043C\u0430\u0433\u0438\u044F
+        \u0441 \u0432\u044B\u0441\u043E\u043A\u0438\u043C \u0443\u0440\u043E\u043D\u043E\u043C."
+    - languageCode: en
+      text: Dark magic with high damage.
+    - languageCode: fr
+      text: "Magie sombre avec de lourds d\xE9g\xE2ts."
+  - key: battle_action_seduction_act1_name
+    entries:
+    - languageCode: ru
+      text: "\u0421\u043E\u0431\u043B\u0430\u0437\u043D\u0435\u043D\u0438\u0435 I"
+    - languageCode: en
+      text: Seduction I
+    - languageCode: fr
+      text: "S\xE9duction I"
+  - key: battle_action_seduction_act1_desc
+    entries:
+    - languageCode: ru
+      text: "\u0411\u0430\u0437\u043E\u0432\u044B\u0439 \u043F\u0440\u0438\u0451\u043C
+        \u0441\u043E\u0431\u043B\u0430\u0437\u043D\u0435\u043D\u0438\u044F."
+    - languageCode: en
+      text: Basic seduction move.
+    - languageCode: fr
+      text: "Technique de s\xE9duction de base."
+  - key: battle_action_seduction_act2_name
+    entries:
+    - languageCode: ru
+      text: "\u0421\u043E\u0431\u043B\u0430\u0437\u043D\u0435\u043D\u0438\u0435 II"
+    - languageCode: en
+      text: Seduction II
+    - languageCode: fr
+      text: "S\xE9duction II"
+  - key: battle_action_seduction_act2_desc
+    entries:
+    - languageCode: ru
+      text: "\u0423\u0441\u0438\u043B\u0435\u043D\u043D\u044B\u0439 \u043F\u0440\u0438\u0451\u043C
+        \u0441\u043E\u0431\u043B\u0430\u0437\u043D\u0435\u043D\u0438\u044F."
+    - languageCode: en
+      text: Improved seduction move.
+    - languageCode: fr
+      text: "Technique de s\xE9duction am\xE9lior\xE9e."
+  - key: battle_action_seduction_act3_name
+    entries:
+    - languageCode: ru
+      text: "\u0421\u043E\u0431\u043B\u0430\u0437\u043D\u0435\u043D\u0438\u0435 III"
+    - languageCode: en
+      text: Seduction III
+    - languageCode: fr
+      text: "S\xE9duction III"
+  - key: battle_action_seduction_act3_desc
+    entries:
+    - languageCode: ru
+      text: "\u0421\u0438\u043B\u044C\u043D\u044B\u0439 \u043F\u0440\u0438\u0451\u043C
+        \u0441\u043E\u0431\u043B\u0430\u0437\u043D\u0435\u043D\u0438\u044F."
+    - languageCode: en
+      text: Powerful seduction move.
+    - languageCode: fr
+      text: "Technique de s\xE9duction puissante."
+  - key: battle_action_seduction_act4_name
+    entries:
+    - languageCode: ru
+      text: "\u0421\u043E\u0431\u043B\u0430\u0437\u043D\u0435\u043D\u0438\u0435 IV"
+    - languageCode: en
+      text: Seduction IV
+    - languageCode: fr
+      text: "S\xE9duction IV"
+  - key: battle_action_seduction_act4_desc
+    entries:
+    - languageCode: ru
+      text: "\u041C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u043E \u0441\u0438\u043B\u044C\u043D\u044B\u0439
+        \u043F\u0440\u0438\u0451\u043C \u0441\u043E\u0431\u043B\u0430\u0437\u043D\u0435\u043D\u0438\u044F."
+    - languageCode: en
+      text: Strongest seduction move.
+    - languageCode: fr
+      text: "Technique de s\xE9duction la plus puissante."
   sourceCsvName: ui_battle

@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e0c108814ca86a43aef9cd461f04ae5, type: 3}
+  m_Name: ShelterBedRecoveryConfig
+  m_EditorClassIdentifier: UDA2.UI::UDA2.UI.Shelter.ShelterBedRecoveryConfigAsset
+  actions:
+  - actionId: rest
+    maxDurationMinutes: 120
+    hpPerStep: 1
+    mpPerStep: 1
+    lpPerStep: -1
+    spPerStep: 1
+  - actionId: sleep
+    maxDurationMinutes: 480
+    hpPerStep: 3
+    mpPerStep: 3
+    lpPerStep: -3
+    spPerStep: 3
+  - actionId: relax
+    maxDurationMinutes: 240
+    hpPerStep: 2
+    mpPerStep: 2
+    lpPerStep: 2
+    spPerStep: 2
+  - actionId: relax2
+    maxDurationMinutes: 480
+    hpPerStep: 2
+    mpPerStep: 2
+    lpPerStep: 5
+    spPerStep: 2

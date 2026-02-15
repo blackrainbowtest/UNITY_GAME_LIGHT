@@ -1749,6 +1749,7 @@ MonoBehaviour:
   resultNextButton: {fileID: 1022559743781066524}
   resultIndexText: {fileID: 1798375060825773037}
   resultAnimationCatalog: {fileID: 11400000, guid: a919b138e0d01224cb349b90572df14b, type: 2}
+  recoveryConfig: {fileID: 11400000, guid: 2f16114db5f5442f8e2449398e257f95, type: 2}
   structureTypeForLevel: 0
   currentStructureLevelText: {fileID: 2224404807466173274}
   currentStructureLevelKey: currentStructureLevelKey
