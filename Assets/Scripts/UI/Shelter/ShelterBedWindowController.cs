@@ -224,9 +224,6 @@ namespace UDA2.UI.Shelter
 
         public void OpenDurationForAction(string actionId)
         {
-            if (!CanUseBedActionToday())
-                return;
-
             _selectedActionId = string.IsNullOrWhiteSpace(actionId) ? ActionRest : actionId.Trim().ToLowerInvariant();
             ConfigureDurationSliderForSelectedAction();
             ShowOnly(modalDurationRoot);
@@ -240,9 +237,6 @@ namespace UDA2.UI.Shelter
 
         public void ConfirmDuration()
         {
-            if (!CanUseBedActionToday())
-                return;
-
             int actionDay = GameTimeAPI.Day;
             var minutesToAdd = GetSelectedDurationMinutes();
 
@@ -407,6 +401,16 @@ namespace UDA2.UI.Shelter
             if (stats == null)
                 return;
 
+            float effectMult = 1f;
+            if (save != null)
+            {
+                LocationStructureStateService.EnsureInitialized(save);
+                int today = Mathf.Max(1, GameTimeAPI.Day);
+
+                // First bed action each day: 100% recovery. Subsequent bed actions that same day: 50% recovery.
+                effectMult = save.locationStructures.bedActionUsedDay != today ? 1f : 0.5f;
+            }
+
             int appliedMinutes = Mathf.Max(0, durationMinutes);
             int steps = appliedMinutes / DurationStepMinutes;
             if (steps <= 0)
@@ -414,10 +418,15 @@ namespace UDA2.UI.Shelter
 
             var rule = GetRecoveryRule(actionId);
 
-            stats.hp = ApplyDelta(stats.hp, stats.hpMax, rule.hpPerStep * steps);
-            stats.mp = ApplyDelta(stats.mp, stats.mpMax, rule.mpPerStep * steps);
-            stats.sp = ApplyDelta(stats.sp, stats.spMax, rule.spPerStep * steps);
-            stats.lp = ApplyDelta(stats.lp, stats.lpMax, rule.lpPerStep * steps);
+            int hpDelta = Mathf.RoundToInt(rule.hpPerStep * steps * effectMult);
+            int mpDelta = Mathf.RoundToInt(rule.mpPerStep * steps * effectMult);
+            int spDelta = Mathf.RoundToInt(rule.spPerStep * steps * effectMult);
+            int lpDelta = Mathf.RoundToInt(rule.lpPerStep * steps * effectMult);
+
+            stats.hp = ApplyDelta(stats.hp, stats.hpMax, hpDelta);
+            stats.mp = ApplyDelta(stats.mp, stats.mpMax, mpDelta);
+            stats.sp = ApplyDelta(stats.sp, stats.spMax, spDelta);
+            stats.lp = ApplyDelta(stats.lp, stats.lpMax, lpDelta);
         }
 
         private static int ApplyDelta(int value, int max, int delta)
@@ -463,13 +472,9 @@ namespace UDA2.UI.Shelter
 
         private bool CanUseBedActionToday()
         {
-            var save = global::GameState.Instance != null ? global::GameState.Instance.CurrentSave : null;
-            if (save == null)
-                return true;
-
-            LocationStructureStateService.EnsureInitialized(save);
-            int today = Mathf.Max(1, GameTimeAPI.Day);
-            return save.locationStructures.bedActionUsedDay != today;
+            // Bed actions are allowed multiple times per day.
+            // The first use gives 100% recovery, subsequent uses give 50% until the next day.
+            return true;
         }
 
         private void MarkBedActionUsedOnDay(int day)
@@ -484,21 +489,19 @@ namespace UDA2.UI.Shelter
 
         private void UpdateActionButtonsInteractable()
         {
-            bool canUseToday = CanUseBedActionToday();
-
             if (restButton != null)
-                restButton.interactable = canUseToday;
+                restButton.interactable = true;
             if (sleepButton != null)
-                sleepButton.interactable = canUseToday;
+                sleepButton.interactable = true;
             if (relaxButton != null)
-                relaxButton.interactable = canUseToday;
+                relaxButton.interactable = true;
             if (relax2Button != null)
-                relax2Button.interactable = canUseToday;
+                relax2Button.interactable = true;
             if (durationConfirmButton != null)
-                durationConfirmButton.interactable = canUseToday;
+                durationConfirmButton.interactable = true;
 
             if (dailyLimitHintRoot != null)
-                dailyLimitHintRoot.SetActive(!canUseToday);
+                dailyLimitHintRoot.SetActive(false);
         }
 
         private void BuildResultAnimationList()
