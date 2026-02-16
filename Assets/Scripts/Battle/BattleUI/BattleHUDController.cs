@@ -71,6 +71,8 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
     [SerializeField] private BattleActionTooltipModalController actionTooltipModal;
     [SerializeField, Min(0.1f)] private float tooltipHoldDuration = 0.35f;
     [SerializeField] private LongPressProgressView longPressProgressViewPrefab;
+    [Tooltip("Optional: where to parent the long-press progress circle (recommended: a top-level Canvas/Overlay root). If null, root Canvas is used.")]
+    [SerializeField] private Transform longPressProgressViewParent;
     [SerializeField, Min(0f)] private float tooltipProgressShowDelay = 0.15f;
     [SerializeField] private bool debugLongPress;
     [SerializeField] private string actionNameKeyFormat = "battle_action_{0}_name";
@@ -261,9 +263,15 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
         if (longPressProgressViewInstance != null)
             return;
 
+        var parent = ResolveLongPressProgressParent();
+
         longPressProgressViewInstance = GetComponentInChildren<LongPressProgressView>(includeInactive: true);
         if (longPressProgressViewInstance != null)
         {
+            // Ensure it isn't parented under a layout-driven HUD subtree (can pin it to center).
+            if (parent != null && longPressProgressViewInstance.transform.parent != parent)
+                longPressProgressViewInstance.transform.SetParent(parent, worldPositionStays: false);
+
             longPressProgressViewInstance.Hide();
             LogLongPress($"EnsureLongPressProgressView: found existing '{longPressProgressViewInstance.name}'");
             return;
@@ -275,10 +283,27 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
             return;
         }
 
-        var parent = transform;
+        if (parent == null)
+            parent = transform;
+
         longPressProgressViewInstance = Instantiate(longPressProgressViewPrefab, parent);
         longPressProgressViewInstance.gameObject.SetActive(false);
-        LogLongPress($"EnsureLongPressProgressView: instantiated '{longPressProgressViewInstance.name}' from prefab");
+        LogLongPress($"EnsureLongPressProgressView: instantiated '{longPressProgressViewInstance.name}' from prefab under '{parent.name}'");
+    }
+
+    private Transform ResolveLongPressProgressParent()
+    {
+        if (longPressProgressViewParent != null)
+            return longPressProgressViewParent;
+
+        var canvas = GetComponentInParent<Canvas>();
+        if (canvas != null)
+        {
+            var root = canvas.rootCanvas != null ? canvas.rootCanvas : canvas;
+            return root.transform;
+        }
+
+        return transform;
     }
 
     private void LogLongPress(string message)

@@ -10,6 +10,9 @@ public class LongPressProgressView : MonoBehaviour
     [SerializeField] private Image progressImage;
     [SerializeField] private RectTransform rootRectTransform;
 
+    [Header("Debug")]
+    [SerializeField] private bool debugPositioning;
+
     private void Awake()
     {
         if (progressImage == null)
@@ -25,8 +28,39 @@ public class LongPressProgressView : MonoBehaviour
     public void Show(Vector2 screenPosition)
     {
         gameObject.SetActive(true);
-        progressImage.fillAmount = 0f;
-        rootRectTransform.position = screenPosition;
+        if (progressImage != null)
+            progressImage.fillAmount = 0f;
+
+        // Prefer moving the actual circle image rect; in some prefabs the serialized root rect
+        // is a stretched container that stays centered.
+        var target = progressImage != null ? progressImage.rectTransform : rootRectTransform;
+        if (target == null)
+            return;
+
+        var canvas = GetComponentInParent<Canvas>();
+        var canvasRect = canvas != null ? (RectTransform)canvas.transform : null;
+        var cam = (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay) ? canvas.worldCamera : null;
+
+        if (canvasRect != null && RectTransformUtility.ScreenPointToWorldPointInRectangle(canvasRect, screenPosition, cam, out var worldPoint))
+        {
+            worldPoint.z = target.position.z;
+            target.position = worldPoint;
+        }
+        else
+        {
+            // Fallback for unusual setups.
+            target.position = screenPosition;
+        }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        if (debugPositioning)
+        {
+            Debug.Log(
+                $"[LongPressProgressView] Show screen={screenPosition} -> target='{target.name}' pos={target.position} " +
+                $"anchors=({target.anchorMin}->{target.anchorMax}) pivot={target.pivot} canvas={(canvas != null ? canvas.renderMode.ToString() : "null")}",
+                this);
+        }
+#endif
     }
 
     /// <summary>

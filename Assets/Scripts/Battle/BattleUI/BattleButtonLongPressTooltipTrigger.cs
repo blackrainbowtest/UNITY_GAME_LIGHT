@@ -14,6 +14,7 @@ public sealed class BattleButtonLongPressTooltipTrigger : MonoBehaviour, IPointe
 
     private bool isPointerDown;
     private bool longPressCompleted;
+    private bool suppressClickOnRelease;
     private float elapsed;
     private Vector2 downScreenPosition;
 
@@ -86,6 +87,7 @@ public sealed class BattleButtonLongPressTooltipTrigger : MonoBehaviour, IPointe
         if (elapsed >= holdDuration)
         {
             longPressCompleted = true;
+            suppressClickOnRelease = true;
 
             if (!didLogCompleted)
             {
@@ -97,7 +99,11 @@ public sealed class BattleButtonLongPressTooltipTrigger : MonoBehaviour, IPointe
                 progressView.Hide();
 
             if (modal != null)
+            {
+                Log($"Calling modal.Show (wasVisible={modal.IsVisible})");
                 modal.Show(tooltipData, downScreenPosition);
+                Log($"modal.Show returned (isVisible={modal.IsVisible})");
+            }
             else
                 Log("Modal is NULL (tooltip won't show)");
         }
@@ -107,6 +113,7 @@ public sealed class BattleButtonLongPressTooltipTrigger : MonoBehaviour, IPointe
     {
         isPointerDown = true;
         longPressCompleted = false;
+        suppressClickOnRelease = false;
         elapsed = 0f;
         progressTimer = 0f;
         waitingToShowProgress = true;
@@ -114,14 +121,22 @@ public sealed class BattleButtonLongPressTooltipTrigger : MonoBehaviour, IPointe
         didLogCompleted = false;
         downScreenPosition = eventData != null ? eventData.position : (Vector2)Input.mousePosition;
 
-        Log($"PointerDown pos={downScreenPosition}, pointerId={(eventData != null ? eventData.pointerId.ToString() : "null")}, pressRaycast={(eventData != null ? eventData.pointerPressRaycast.gameObject?.name : "null")}");
+        // DEBUG: capture as much EventSystem state as possible to diagnose first-attempt cancels.
+        Log(
+            $"PointerDown pos={downScreenPosition}, pointerId={(eventData != null ? eventData.pointerId.ToString() : "null")}, " +
+            $"pressRaycast={(eventData != null ? eventData.pointerPressRaycast.gameObject?.name : "null")}, " +
+            $"pointerEnter={(eventData != null ? eventData.pointerEnter?.name : "null")}, " +
+            $"currentRaycast={(eventData != null ? eventData.pointerCurrentRaycast.gameObject?.name : "null")}");
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        Log($"PointerUp after {elapsed:0.###}s, longPressCompleted={longPressCompleted}");
+        Log(
+            $"PointerUp after {elapsed:0.###}s, longPressCompleted={longPressCompleted}, " +
+            $"pointerEnter={(eventData != null ? eventData.pointerEnter?.name : "null")}, " +
+            $"currentRaycast={(eventData != null ? eventData.pointerCurrentRaycast.gameObject?.name : "null")}");
 
-        if (longPressCompleted && eventData != null)
+        if (suppressClickOnRelease && eventData != null)
         {
             eventData.eligibleForClick = false;
             eventData.pointerPress = null;
@@ -137,7 +152,20 @@ public sealed class BattleButtonLongPressTooltipTrigger : MonoBehaviour, IPointe
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        Log($"PointerExit after {elapsed:0.###}s -> cancel");
+        if (suppressClickOnRelease)
+        {
+            Log(
+                $"PointerExit after {elapsed:0.###}s (completed) -> ignore, " +
+                $"exitedTo={(eventData != null ? eventData.pointerEnter?.name : "null")}, " +
+                $"currentRaycast={(eventData != null ? eventData.pointerCurrentRaycast.gameObject?.name : "null")}");
+            return;
+        }
+
+        // DEBUG: if first attempt cancels, this should tell us what raycast target stole the pointer.
+        Log(
+            $"PointerExit after {elapsed:0.###}s -> cancel, " +
+            $"exitedTo={(eventData != null ? eventData.pointerEnter?.name : "null")}, " +
+            $"currentRaycast={(eventData != null ? eventData.pointerCurrentRaycast.gameObject?.name : "null")}");
         ResetPress();
     }
 
@@ -146,6 +174,7 @@ public sealed class BattleButtonLongPressTooltipTrigger : MonoBehaviour, IPointe
         isPointerDown = false;
         elapsed = 0f;
         longPressCompleted = false;
+        suppressClickOnRelease = false;
         waitingToShowProgress = false;
         progressTimer = 0f;
 

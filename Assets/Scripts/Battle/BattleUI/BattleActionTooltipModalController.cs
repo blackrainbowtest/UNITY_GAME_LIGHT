@@ -39,11 +39,19 @@ public sealed class BattleActionTooltipModalController : MonoBehaviour
     [SerializeField] private float verticalAnchorOffset = 130f;
     [SerializeField] private float horizontalAnchorOffset = 24f;
     [SerializeField] private bool debugLocalization;
+    [SerializeField] private bool debugPositioning;
 
     public bool IsVisible => gameObject.activeSelf;
 
     private bool warnedTitleMissing;
     private bool warnedDescriptionMissing;
+
+    // If the tooltip is shown while the pointer is already down (long-press),
+    // the newly-activated backdrop can receive a PointerDown and close immediately.
+    // We ignore close input for a short window after Show().
+    private float ignoreBackdropCloseUntilUnscaledTime;
+    private float lastShowUnscaledTime;
+    private bool showRequested;
 
     private void Awake()
     {
@@ -62,7 +70,10 @@ public sealed class BattleActionTooltipModalController : MonoBehaviour
             catcher.Bind(this);
         }
 
-        Hide();
+        // If this modal is initially inactive in the scene, Awake() will run on the first Show().
+        // In that case we must NOT immediately Hide(), otherwise the first long-press will appear to fail.
+        if (!showRequested)
+            Hide();
     }
 
     private void OnDestroy()
@@ -73,8 +84,28 @@ public sealed class BattleActionTooltipModalController : MonoBehaviour
 
     public void Show(in BattleButtonTooltipData data, Vector2 screenPoint)
     {
+        showRequested = true;
         gameObject.SetActive(true);
         transform.SetAsLastSibling();
+
+        ignoreBackdropCloseUntilUnscaledTime = Time.unscaledTime + 0.05f;
+        lastShowUnscaledTime = Time.unscaledTime;
+
+        if (debugPositioning)
+        {
+            Debug.Log($"[BattleTooltip] Activated: activeSelf={gameObject.activeSelf}, activeInHierarchy={gameObject.activeInHierarchy}", this);
+            if (!gameObject.activeInHierarchy)
+            {
+                var t = transform;
+                int depth = 0;
+                while (t != null && depth < 12)
+                {
+                    Debug.Log($"[BattleTooltip] Parent[{depth}]: '{t.name}' activeSelf={t.gameObject.activeSelf}", this);
+                    t = t.parent;
+                    depth++;
+                }
+            }
+        }
 
         if (string.IsNullOrWhiteSpace(data.TitleKey) && debugLocalization)
             Debug.LogWarning("BattleActionTooltipModalController: TitleKey is empty.", this);
@@ -95,11 +126,44 @@ public sealed class BattleActionTooltipModalController : MonoBehaviour
         if (spellCostRowRoot != null)
             spellCostRowRoot.SetActive(mpVisible || spVisible || lpVisible);
 
+        // Important: if this panel was inactive, layout may not be calculated yet.
+        // Without a rebuild, panel.rect.size can be zero on the first show, producing wrong positioning.
+        Canvas.ForceUpdateCanvases();
+        if (panel != null)
+            LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
+
+        if (debugPositioning && panel != null)
+            Debug.Log($"[BattleTooltip] Show: screen={screenPoint}, panelSize={panel.rect.size}, pivot={panel.pivot}", this);
+
         PositionAt(screenPoint);
+
+        showRequested = false;
+    }
+
+    public void OnBackdropPointerDown(UnityEngine.EventSystems.PointerEventData eventData)
+    {
+        if (Time.unscaledTime < ignoreBackdropCloseUntilUnscaledTime)
+        {
+            if (debugPositioning)
+                Debug.Log("[BattleTooltip] Backdrop close ignored (arming delay)", this);
+            return;
+        }
+
+        Hide();
+
+        // Consume so it doesn't click through.
+        if (eventData != null)
+            eventData.Use();
     }
 
     public void Hide()
     {
+        if (debugPositioning)
+        {
+            float dt = Time.unscaledTime - lastShowUnscaledTime;
+            if (dt >= 0f && dt < 0.25f)
+                Debug.Log($"[BattleTooltip] Hide called after {dt:0.###}s\n{System.Environment.StackTrace}", this);
+        }
         gameObject.SetActive(false);
     }
 

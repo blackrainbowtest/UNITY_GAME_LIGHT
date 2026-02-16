@@ -66,6 +66,6 @@ MonoBehaviour:
     minCount: 1
     maxCount: 3
     dropChance: 1
-  regenHpPerTurn: 2
-  regenMpPerTurn: 0
-  regenSpPerTurn: 2
+  regenHpPerTurn: 3
+  regenMpPerTurn: 4
+  regenSpPerTurn: 6

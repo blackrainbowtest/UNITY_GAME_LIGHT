@@ -263,7 +263,7 @@ MonoBehaviour:
       text: Open inventory.
     - languageCode: fr
       text: Ouvrir l'inventaire.
-  - key: battle_button_back_name
+  - key: battle_button_button_back_name
     entries:
     - languageCode: ru
       text: "\u041D\u0430\u0437\u0430\u0434"
@@ -271,7 +271,7 @@ MonoBehaviour:
       text: Back
     - languageCode: fr
       text: Retour
-  - key: battle_button_back_desc
+  - key: battle_button_button_back_desc
     entries:
     - languageCode: ru
       text: "\u0412\u0435\u0440\u043D\u0443\u0442\u044C\u0441\u044F \u0432 \u043F\u0440\u0435\u0434\u044B\u0434\u0443\u0449\u0435\u0435
@@ -488,4 +488,69 @@ MonoBehaviour:
       text: Strongest seduction move.
     - languageCode: fr
       text: "Technique de s\xE9duction la plus puissante."
+  - key: battle_action_action_act1_name
+    entries:
+    - languageCode: ru
+      text: "\u0414\u0435\u0439\u0441\u0442\u0432\u0438\u0435 I"
+    - languageCode: en
+      text: Action I
+    - languageCode: fr
+      text: Action I
+  - key: battle_action_action_act1_desc
+    entries:
+    - languageCode: ru
+      text: "\u0411\u0430\u0437\u043E\u0432\u043E\u0435 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0435."
+    - languageCode: en
+      text: Basic action.
+    - languageCode: fr
+      text: Action de base.
+  - key: battle_action_action_act2_name
+    entries:
+    - languageCode: ru
+      text: "\u0414\u0435\u0439\u0441\u0442\u0432\u0438\u0435 II"
+    - languageCode: en
+      text: Action II
+    - languageCode: fr
+      text: Action II
+  - key: battle_action_action_act2_desc
+    entries:
+    - languageCode: ru
+      text: "\u0423\u0441\u0438\u043B\u0435\u043D\u043D\u043E\u0435 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0435."
+    - languageCode: en
+      text: Improved action.
+    - languageCode: fr
+      text: "Action am\xE9lior\xE9e."
+  - key: battle_action_action_act3_name
+    entries:
+    - languageCode: ru
+      text: "\u0414\u0435\u0439\u0441\u0442\u0432\u0438\u0435 III"
+    - languageCode: en
+      text: Action III
+    - languageCode: fr
+      text: Action III
+  - key: battle_action_action_act3_desc
+    entries:
+    - languageCode: ru
+      text: "\u0421\u0438\u043B\u044C\u043D\u043E\u0435 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0435."
+    - languageCode: en
+      text: Powerful action.
+    - languageCode: fr
+      text: Action puissante.
+  - key: battle_action_action_act4_name
+    entries:
+    - languageCode: ru
+      text: "\u0414\u0435\u0439\u0441\u0442\u0432\u0438\u0435 IV"
+    - languageCode: en
+      text: Action IV
+    - languageCode: fr
+      text: Action IV
+  - key: battle_action_action_act4_desc
+    entries:
+    - languageCode: ru
+      text: "\u041C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u043E \u0441\u0438\u043B\u044C\u043D\u043E\u0435
+        \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0435."
+    - languageCode: en
+      text: Strongest action.
+    - languageCode: fr
+      text: Action la plus puissante.
   sourceCsvName: ui_battle

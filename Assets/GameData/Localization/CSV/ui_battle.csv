@@ -119,11 +119,11 @@
 	Открыть инвентарь.
 	Open inventory.
 	Ouvrir l'inventaire.;
-*battle_button_back_name;
+*battle_button_button_back_name;
 	Назад;
 	Back;
 	Retour;
-*battle_button_back_desc;
+*battle_button_button_back_desc;
 	Вернуться в предыдущее меню.
 	Return to the previous menu.
 	Revenir au menu précédent.;
@@ -223,3 +223,36 @@
 	Максимально сильный приём соблазнения.
 	Strongest seduction move.
 	Technique de séduction la plus puissante.;
+
+*battle_action_action_act1_name;
+	Действие I;
+	Action I;
+	Action I;
+*battle_action_action_act1_desc;
+	Базовое действие.
+	Basic action.
+	Action de base.;
+*battle_action_action_act2_name;
+	Действие II;
+	Action II;
+	Action II;
+*battle_action_action_act2_desc;
+	Усиленное действие.
+	Improved action.
+	Action améliorée.;
+*battle_action_action_act3_name;
+	Действие III;
+	Action III;
+	Action III;
+*battle_action_action_act3_desc;
+	Сильное действие.
+	Powerful action.
+	Action puissante.;
+*battle_action_action_act4_name;
+	Действие IV;
+	Action IV;
+	Action IV;
+*battle_action_action_act4_desc;
+	Максимально сильное действие.
+	Strongest action.
+	Action la plus puissante.;

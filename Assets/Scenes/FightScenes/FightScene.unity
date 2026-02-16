@@ -11642,25 +11642,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: UDA2.Battle::BattleActionTooltipModalController
   backdropButton: {fileID: 1145270071}
   panel: {fileID: 1414145405}
-  titleLocalized: {fileID: 0}
-  descriptionLocalized: {fileID: 0}
+  titleLocalized: {fileID: 1131709362}
+  descriptionLocalized: {fileID: 1249256549}
   damageHealRowRoot: {fileID: 451365709}
   spellCostRowRoot: {fileID: 1296144979}
   damageRow: {fileID: 0}
-  damageLocalized: {fileID: 0}
+  damageLocalized: {fileID: 2052014698}
   healRow: {fileID: 0}
-  healLocalized: {fileID: 0}
+  healLocalized: {fileID: 165127616}
   mpCostRow: {fileID: 0}
-  mpCostLocalized: {fileID: 0}
+  mpCostLocalized: {fileID: 1265984117}
   spCostRow: {fileID: 0}
-  spCostLocalized: {fileID: 0}
+  spCostLocalized: {fileID: 509077319}
   lpCostRow: {fileID: 0}
-  lpCostLocalized: {fileID: 0}
+  lpCostLocalized: {fileID: 1862325319}
   clampToSafeArea: 1
   safeMargin: 16
   verticalAnchorOffset: 130
   horizontalAnchorOffset: 24
-  debugLocalization: 0
+  debugLocalization: 1
+  debugPositioning: 1
 --- !u!1 &1752117176
 GameObject:
   m_ObjectHideFlags: 0

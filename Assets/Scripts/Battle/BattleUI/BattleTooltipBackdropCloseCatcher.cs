@@ -13,10 +13,6 @@ public sealed class BattleTooltipBackdropCloseCatcher : MonoBehaviour, IPointerD
     public void OnPointerDown(PointerEventData eventData)
     {
         if (modal != null)
-            modal.Hide();
-
-        // Consume so it doesn't click through.
-        if (eventData != null)
-            eventData.Use();
+            modal.OnBackdropPointerDown(eventData);
     }
 }
