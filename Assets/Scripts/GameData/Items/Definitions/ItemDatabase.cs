@@ -11,14 +11,30 @@ public class ItemDatabase : ScriptableObject
 
     public ItemDefinition GetById(string id)
     {
+        if (string.IsNullOrWhiteSpace(id))
+            return null;
+
         if (cache == null)
         {
-            cache = new Dictionary<string, ItemDefinition>();
-            foreach (var item in items)
-                cache[item.Id] = item;
+            cache = new Dictionary<string, ItemDefinition>(System.StringComparer.OrdinalIgnoreCase);
+
+            if (items != null)
+            {
+                for (int i = 0; i < items.Count; i++)
+                {
+                    var item = items[i];
+                    if (item == null)
+                        continue;
+
+                    if (string.IsNullOrWhiteSpace(item.Id))
+                        continue;
+
+                    cache[item.Id.Trim()] = item;
+                }
+            }
         }
 
-        return cache.TryGetValue(id, out var result) ? result : null;
+        return cache.TryGetValue(id.Trim(), out var result) ? result : null;
     }
 
 #if UNITY_EDITOR

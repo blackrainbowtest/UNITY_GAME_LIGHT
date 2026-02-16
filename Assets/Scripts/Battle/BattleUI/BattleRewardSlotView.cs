@@ -23,7 +23,10 @@ namespace Game.Battle.UI
             if (db == null)
                 return;
 
-            if (itemDatabase == null)
+            if (!IsCompatibleItemDatabase(db))
+                return;
+
+            if (itemDatabase == null || !IsCompatibleItemDatabase(itemDatabase))
                 itemDatabase = db;
         }
 
@@ -84,6 +87,23 @@ namespace Game.Battle.UI
             catch
             {
                 return null;
+            }
+        }
+
+        private static bool IsCompatibleItemDatabase(UnityEngine.Object db)
+        {
+            if (db == null)
+                return false;
+
+            try
+            {
+                var dbType = db.GetType();
+                var getById = dbType.GetMethod("GetById");
+                return getById != null;
+            }
+            catch
+            {
+                return false;
             }
         }
 

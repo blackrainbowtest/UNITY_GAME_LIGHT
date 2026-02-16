@@ -37,7 +37,10 @@ namespace UDA2.UI.Game
             if (db == null)
                 return;
 
-            if (itemDatabase == null)
+            if (!IsCompatibleItemDatabase(db))
+                return;
+
+            if (itemDatabase == null || !IsCompatibleItemDatabase(itemDatabase))
                 itemDatabase = db;
         }
 
@@ -385,6 +388,23 @@ namespace UDA2.UI.Game
                 "unique" => 6,
                 _ => 100,
             };
+        }
+
+        private static bool IsCompatibleItemDatabase(UnityEngine.Object db)
+        {
+            if (db == null)
+                return false;
+
+            try
+            {
+                var dbType = db.GetType();
+                var getById = dbType.GetMethod("GetById");
+                return getById != null;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private static bool TryResolveItemFromDatabase(UnityEngine.Object db, string itemId, out Sprite icon, out string typeId, out string rarityId)

@@ -27,6 +27,8 @@ namespace Game.Battle
 {
     public partial class BattleController
     {
+        private string resolvedReturnSceneName;
+
         [Header("Defeat Rewards")]
         [Tooltip("Gold granted to the player even on Defeat (inclusive).")]
         [SerializeField] private int defeatGoldMin = 1;
@@ -160,6 +162,7 @@ namespace Game.Battle
             {
                 if (resultModal != null && showResult)
                 {
+                    resultModal.SetItemDatabase(itemDatabase);
                     resultModal.Show(result, ExitBattle);
                 }
                 else
@@ -332,12 +335,21 @@ namespace Game.Battle
 
         private string ResolveReturnSceneName()
         {
+            if (!string.IsNullOrEmpty(resolvedReturnSceneName))
+                return resolvedReturnSceneName;
+
             if (context != null && context.Mode == BattleMode.Tutorial)
-                return tutorialReturnSceneName;
+            {
+                resolvedReturnSceneName = tutorialReturnSceneName;
+                return resolvedReturnSceneName;
+            }
 
             var exit = BattleExitContext.Consume();
             if (!string.IsNullOrEmpty(exit?.ReturnSceneName))
-                return exit.ReturnSceneName;
+            {
+                resolvedReturnSceneName = exit.ReturnSceneName;
+                return resolvedReturnSceneName;
+            }
 
             // Fallbacks for cases when battle scene is launched directly (e.g. from editor) or
             // when the caller forgot to set BattleExitContext before loading the battle scene.
@@ -347,13 +359,15 @@ namespace Game.Battle
             if (!string.IsNullOrEmpty(saveScene) && !string.Equals(saveScene, currentScene, StringComparison.Ordinal))
             {
                 Logger.LogWarning($"BattleController: BattleExitContext was not set. Falling back to save.player.sceneName='{saveScene}'.");
-                return saveScene;
+                resolvedReturnSceneName = saveScene;
+                return resolvedReturnSceneName;
             }
 
             if (!string.IsNullOrEmpty(defaultReturnSceneName) && !string.Equals(defaultReturnSceneName, currentScene, StringComparison.Ordinal))
             {
                 Logger.LogWarning($"BattleController: BattleExitContext was not set. Falling back to defaultReturnSceneName='{defaultReturnSceneName}'.");
-                return defaultReturnSceneName;
+                resolvedReturnSceneName = defaultReturnSceneName;
+                return resolvedReturnSceneName;
             }
 
             return null;

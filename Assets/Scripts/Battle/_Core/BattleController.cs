@@ -212,6 +212,8 @@ namespace Game.Battle
                 return;
             }
 
+            resolvedReturnSceneName = null;
+
             context = battleContext;
             battleStarted = true;
             turnPhase = TurnPhase.PlayerTurn;

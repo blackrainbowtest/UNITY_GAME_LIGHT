@@ -29,8 +29,18 @@ MonoBehaviour:
   attack: 5
   allowedActions: 000000000100000002000000
   goldReward: 10
-  expReward: 0
-  lootTable: []
+  expReward: 2
+  lootTable:
+  - item: {fileID: 11400000, guid: 54f64d3f523e1314989dedbd89a43827, type: 2}
+    itemId: item_potion_stamina_small
+    minCount: 2
+    maxCount: 3
+    dropChance: 0.207
+  - item: {fileID: 11400000, guid: 023ee0fa7483d4d47afdd985fc60c209, type: 2}
+    itemId: item_potion_stamina_small
+    minCount: 1
+    maxCount: 2
+    dropChance: 0.56
   regenHpPerTurn: 5
   regenMpPerTurn: 2
   regenSpPerTurn: 4

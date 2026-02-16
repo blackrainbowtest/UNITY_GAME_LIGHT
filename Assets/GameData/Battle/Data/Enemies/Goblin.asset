@@ -29,8 +29,13 @@ MonoBehaviour:
   attack: 8
   allowedActions: 00000000010000000200000014000000
   goldReward: 10
-  expReward: 0
-  lootTable: []
+  expReward: 5
+  lootTable:
+  - item: {fileID: 11400000, guid: 6deddcde480da4b4f96fc8db0587fcff, type: 2}
+    itemId: wooden_glue
+    minCount: 1
+    maxCount: 2
+    dropChance: 0.34
   regenHpPerTurn: 5
   regenMpPerTurn: 2
   regenSpPerTurn: 4

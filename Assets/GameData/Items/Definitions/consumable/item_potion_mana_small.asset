@@ -11,8 +11,8 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 895a625fa51d25548b88d2bb5ad050ea, type: 3}
   m_Name: item_potion_mana_small
-  m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
-  id: potion_mana_small
+  m_EditorClassIdentifier: UDA2.GameData::ItemDefinition
+  id: item_potion_mana_small
   type: 1
   displayName: 
   icon: {fileID: 21300000, guid: cd1f1d1505ec94948985a86a7fbe30a7, type: 3}
