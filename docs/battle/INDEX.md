@@ -1,4 +1,4 @@
-> **Game Version:** 0.0.194
+> **Game Version:** 0.0.198
 
 # Battle Docs Index
 

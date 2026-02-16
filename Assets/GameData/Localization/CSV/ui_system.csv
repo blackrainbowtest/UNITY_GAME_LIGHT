@@ -52,9 +52,9 @@
 	Confirm;
 	Confirm;
 *used;
-	Уже использовано сегодня;
-	Already used today;
-	Déjà utilisé aujourd'hui;
+	Уже использовано сегодня -50%;
+	Already used today -50%;
+	Déjà utilisé aujourd'hui -50%;
 *currentStructureLevelKey;
 	Уровень: {0};
 	Level: {0};

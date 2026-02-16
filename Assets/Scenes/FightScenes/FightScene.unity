@@ -11660,8 +11660,8 @@ MonoBehaviour:
   safeMargin: 16
   verticalAnchorOffset: 130
   horizontalAnchorOffset: 24
-  debugLocalization: 1
-  debugPositioning: 1
+  debugLocalization: 0
+  debugPositioning: 0
 --- !u!1 &1752117176
 GameObject:
   m_ObjectHideFlags: 0
@@ -12996,6 +12996,7 @@ MonoBehaviour:
   actionTooltipModal: {fileID: 1744893838}
   tooltipHoldDuration: 0.35
   longPressProgressViewPrefab: {fileID: 9034531345151872778, guid: 5a44ec5239b2e2c48b70a5a41029ee68, type: 3}
+  longPressProgressViewParent: {fileID: 0}
   tooltipProgressShowDelay: 0.15
   debugLongPress: 0
   actionNameKeyFormat: battle_action_{0}_name

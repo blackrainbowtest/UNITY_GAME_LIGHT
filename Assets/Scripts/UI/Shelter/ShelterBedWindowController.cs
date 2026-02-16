@@ -500,8 +500,18 @@ namespace UDA2.UI.Shelter
             if (durationConfirmButton != null)
                 durationConfirmButton.interactable = true;
 
+            bool alreadyUsedToday = false;
+            var save = global::GameState.Instance != null ? global::GameState.Instance.CurrentSave : null;
+            if (save != null)
+            {
+                LocationStructureStateService.EnsureInitialized(save);
+                int today = Mathf.Max(1, GameTimeAPI.Day);
+                alreadyUsedToday = save.locationStructures.bedActionUsedDay == today;
+            }
+
+            // Show hint only after the first rest of the day, when recovery becomes 50%.
             if (dailyLimitHintRoot != null)
-                dailyLimitHintRoot.SetActive(false);
+                dailyLimitHintRoot.SetActive(alreadyUsedToday);
         }
 
         private void BuildResultAnimationList()
