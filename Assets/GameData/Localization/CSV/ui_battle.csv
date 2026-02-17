@@ -196,50 +196,50 @@
 	Seduction I;
 	Séduction I;
 *battle_action_seduction_act1_desc;
-	Базовый приём соблазнения.
-	Basic seduction move.
-	Technique de séduction de base.;
+	Добавляет LP противнику и 25% от этого значения вам.
+	Adds LP to the enemy and 25% of that amount to you.
+	Ajoute des LP à l’ennemi et 25 % de cette valeur à vous.;
 *battle_action_seduction_act2_name;
 	Соблазнение II;
 	Seduction II;
 	Séduction II;
 *battle_action_seduction_act2_desc;
-	Усиленный приём соблазнения.
-	Improved seduction move.
-	Technique de séduction améliorée.;
+	Сильнее повышает LP противнику и 25% от этого значения вам.
+	Raises enemy LP more and gives you 25% of that amount.
+	Augmente davantage les LP de l’ennemi et vous donne 25 % de cette valeur.;
 *battle_action_seduction_act3_name;
 	Соблазнение III;
 	Seduction III;
 	Séduction III;
 *battle_action_seduction_act3_desc;
-	Сильный приём соблазнения.
-	Powerful seduction move.
-	Technique de séduction puissante.;
+	Значительно повышает LP противнику и 25% от этого значения вам.
+	Greatly raises enemy LP and gives you 25% of that amount.
+	Augmente fortement les LP de l’ennemi et vous donne 25 % de cette valeur.;
 *battle_action_seduction_act4_name;
 	Соблазнение IV;
 	Seduction IV;
 	Séduction IV;
 *battle_action_seduction_act4_desc;
-	Максимально сильный приём соблазнения.
-	Strongest seduction move.
-	Technique de séduction la plus puissante.;
+	Максимально повышает LP противнику и 25% от этого значения вам.
+	Maximally raises enemy LP and gives you 25% of that amount.
+	Augmente au maximum les LP de l’ennemi et vous donne 25 % de cette valeur.;
 
 *battle_action_action_act1_name;
-	Действие I;
-	Action I;
-	Action I;
+	Релакс I;
+	Relax I;
+	Relax I;
 *battle_action_action_act1_desc;
-	Базовое действие.
-	Basic action.
-	Action de base.;
+	Снижает ваш LP.
+	Reduces your LP.
+	Réduit vos LP.;
 *battle_action_action_act2_name;
-	Действие II;
-	Action II;
-	Action II;
+	Релакс II;
+	Relax II;
+	Relax II;
 *battle_action_action_act2_desc;
-	Усиленное действие.
-	Improved action.
-	Action améliorée.;
+	Сильнее снижает ваш LP.
+	Reduces your LP more.
+	Réduit davantage vos LP.;
 *battle_action_action_act3_name;
 	Действие III;
 	Action III;
