@@ -375,12 +375,12 @@ namespace Game.Battle
             if (roll <= chance)
             {
                 // Escape success: no rewards, but still show results (same old scheme).
-                FinishBattle(playerWon: false, reason: BattleFinishReason.EscapeSuccess);
+                FinishBattle(playerWon: false, reason: BattleFinishReason.EscapeSuccess, winningActionId: null);
             }
             else
             {
                 // Escape failed: show outcome animation modal first, then results.
-                FinishBattle(playerWon: false, reason: BattleFinishReason.EscapeFailed);
+                FinishBattle(playerWon: false, reason: BattleFinishReason.EscapeFailed, winningActionId: null);
             }
         }
 
@@ -390,7 +390,37 @@ namespace Game.Battle
                 return;
 
             Logger.LogInfo("BattleController: Surrender pressed");
-            FinishBattle(playerWon: false, reason: BattleFinishReason.Surrender);
+            FinishBattle(playerWon: false, reason: BattleFinishReason.Surrender, winningActionId: null);
+        }
+
+        private bool TryFinishByLpThreshold(bool actionByPlayer, CombatActionId? sourceActionId)
+        {
+            if (!battleStarted || context == null)
+                return false;
+
+            int playerMaxLp = context.Player != null ? Mathf.Max(0, context.Player.MaxLP) : 0;
+            int enemyMaxLp = context.Enemy != null ? Mathf.Max(0, context.Enemy.maxLp) : 0;
+
+            bool playerReachedMaxLp = playerMaxLp > 0 && combatState.PlayerLp >= playerMaxLp;
+            bool enemyReachedMaxLp = enemyMaxLp > 0 && combatState.EnemyLp >= enemyMaxLp;
+
+            if (!playerReachedMaxLp && !enemyReachedMaxLp)
+                return false;
+
+            bool playerWon;
+            if (playerReachedMaxLp && enemyReachedMaxLp)
+            {
+                // Rule requested: if the player filled enemy LP to max, enemy loses; otherwise player loses.
+                playerWon = actionByPlayer;
+            }
+            else
+            {
+                playerWon = enemyReachedMaxLp;
+            }
+
+            var reason = playerWon ? BattleFinishReason.VictoryByLp : BattleFinishReason.DefeatByLp;
+            FinishBattle(playerWon, reason, sourceActionId);
+            return true;
         }
 
         private float CalculateEscapeChance01()
@@ -763,9 +793,12 @@ namespace Game.Battle
 
             playerActionRoutine = null;
 
+            if (TryFinishByLpThreshold(actionByPlayer: true, sourceActionId: actionId))
+                yield break;
+
             if (combatState.IsEnemyDead)
             {
-                FinishBattle(playerWon: true, reason: BattleFinishReason.Victory);
+                FinishBattle(playerWon: true, reason: BattleFinishReason.Victory, winningActionId: actionId);
                 yield break;
             }
 
@@ -810,9 +843,15 @@ namespace Game.Battle
 
                 PushHudState();
 
+                if (TryFinishByLpThreshold(actionByPlayer: false, sourceActionId: enemyActionId))
+                {
+                    enemyTurnRoutine = null;
+                    yield break;
+                }
+
                 if (combatState.IsPlayerDead)
                 {
-                    FinishBattle(playerWon: false, reason: BattleFinishReason.Defeat);
+                    FinishBattle(playerWon: false, reason: BattleFinishReason.Defeat, winningActionId: enemyActionId);
                     enemyTurnRoutine = null;
                     yield break;
                 }
@@ -825,7 +864,7 @@ namespace Game.Battle
 
             if (combatState.IsPlayerDead)
             {
-                FinishBattle(playerWon: false, reason: BattleFinishReason.Defeat);
+                FinishBattle(playerWon: false, reason: BattleFinishReason.Defeat, winningActionId: null);
                 yield break;
             }
 
@@ -835,6 +874,9 @@ namespace Game.Battle
 
             ApplyEndOfRoundEffects();
             PushHudState();
+
+            if (TryFinishByLpThreshold(actionByPlayer: false, sourceActionId: null))
+                yield break;
 
             BeginPlayerTurn();
         }

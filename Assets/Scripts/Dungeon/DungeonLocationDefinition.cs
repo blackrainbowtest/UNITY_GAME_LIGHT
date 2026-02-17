@@ -13,6 +13,7 @@ namespace Game.Dungeon
 
         [Header("Gating")]
         public AdventurerRank requiredRank = AdventurerRank.None;
+        [Min(1)] public int requiredPlayerLevel = 1;
 
         [Header("Battle")]
         [Tooltip("Battle scene name to load (default is FightScene).")]
@@ -27,7 +28,12 @@ namespace Game.Dungeon
 
         public bool IsAvailableFor(AdventurerRank playerRank)
         {
-            return playerRank >= requiredRank;
+            return IsAvailableFor(playerRank, 1);
+        }
+
+        public bool IsAvailableFor(AdventurerRank playerRank, int playerLevel)
+        {
+            return playerRank >= requiredRank && playerLevel >= requiredPlayerLevel;
         }
     }
 

@@ -15,17 +15,44 @@ namespace Game.Dungeon
         {
             public Button button;
             public DungeonLocationDefinition location;
+            [Header("Requirements")]
+            public AdventurerRank requiredRank = AdventurerRank.None;
+            [Min(1)] public int requiredPlayerLevel = 1;
         }
 
         [Header("Buttons")]
         [SerializeField] private ButtonBinding[] buttons;
 
+        [Header("UI Style")]
+        [Range(0.1f,1f)]
+        [SerializeField] private float locationButtonAlpha = 1f;
+
         [Header("Debug")]
         [SerializeField] private bool debugIgnoreRankLock;
+        [SerializeField] private bool debugIgnoreLevelLock;
 
         private void Awake()
         {
             WireButtons();
+
+            ApplyLocationButtonAlpha();
+        }
+
+        private void ApplyLocationButtonAlpha()
+        {
+            if (buttons == null) return;
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                var binding = buttons[i];
+                if (binding?.button == null) continue;
+                var img = binding.button.GetComponent<UnityEngine.UI.Image>();
+                if (img != null)
+                {
+                    var c = img.color;
+                    c.a = locationButtonAlpha;
+                    img.color = c;
+                }
+            }
         }
 
         private void OnEnable()
@@ -67,7 +94,7 @@ namespace Game.Dungeon
 
                 if (binding.button.gameObject == clicked)
                 {
-                    TryStartLocation(binding.location);
+                    TryStartLocation(binding);
                     return;
                 }
             }
@@ -76,6 +103,7 @@ namespace Game.Dungeon
         public void RefreshInteractable()
         {
             var playerRank = GetPlayerRank();
+            var playerLevel = GetPlayerLevel();
 
             if (buttons == null)
                 return;
@@ -92,8 +120,26 @@ namespace Game.Dungeon
                     continue;
                 }
 
-                binding.button.interactable = debugIgnoreRankLock || binding.location.IsAvailableFor(playerRank);
+                binding.button.interactable = IsBindingAvailableFor(binding, playerRank, playerLevel);
             }
+        }
+
+        private bool IsBindingAvailableFor(ButtonBinding binding, AdventurerRank playerRank, int playerLevel)
+        {
+            if (binding == null || binding.location == null)
+                return false;
+
+            var requiredRank = binding.requiredRank;
+            var requiredLevel = Mathf.Max(1, binding.requiredPlayerLevel);
+
+            if (binding.location.requiredRank > requiredRank)
+                requiredRank = binding.location.requiredRank;
+
+            requiredLevel = Mathf.Max(requiredLevel, binding.location.requiredPlayerLevel);
+
+            var rankOk = debugIgnoreRankLock || playerRank >= requiredRank;
+            var levelOk = debugIgnoreLevelLock || playerLevel >= requiredLevel;
+            return rankOk && levelOk;
         }
 
         private AdventurerRank GetPlayerRank()
@@ -105,16 +151,29 @@ namespace Game.Dungeon
             return save.progress.adventurerRank;
         }
 
-        private void TryStartLocation(DungeonLocationDefinition location)
+        private int GetPlayerLevel()
         {
+            var save = GameState.Instance != null ? GameState.Instance.CurrentSave : null;
+            return Mathf.Max(1, save?.player?.level ?? 1);
+        }
+
+        private void TryStartLocation(ButtonBinding binding)
+        {
+            if (binding == null)
+                return;
+
+            var location = binding.location;
             if (location == null)
                 return;
 
             var playerRank = GetPlayerRank();
-            if (!debugIgnoreRankLock && !location.IsAvailableFor(playerRank))
+            var playerLevel = GetPlayerLevel();
+            if (!IsBindingAvailableFor(binding, playerRank, playerLevel))
             {
 #if UNITY_EDITOR
-                Debug.LogWarning($"[Dungeon] Location '{location.name}' locked. Required={location.requiredRank}, Player={playerRank}");
+                var requiredRank = binding.requiredRank > location.requiredRank ? binding.requiredRank : location.requiredRank;
+                var requiredLevel = Mathf.Max(Mathf.Max(1, binding.requiredPlayerLevel), location.requiredPlayerLevel);
+                Debug.LogWarning($"[Dungeon] Location '{location.name}' locked. RequiredRank={requiredRank}, PlayerRank={playerRank}, RequiredLevel={requiredLevel}, PlayerLevel={playerLevel}");
 #endif
                 return;
             }

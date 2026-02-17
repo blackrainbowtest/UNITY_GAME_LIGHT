@@ -7,5 +7,7 @@ namespace Game.Battle
         Surrender = 2,
         EscapeFailed = 3,
         EscapeSuccess = 4,
+        VictoryByLp = 5,
+        DefeatByLp = 6,
     }
 }

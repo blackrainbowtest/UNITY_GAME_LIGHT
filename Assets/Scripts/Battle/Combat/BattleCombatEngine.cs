@@ -54,6 +54,29 @@ namespace Game.Battle.Combat
     {
         private const int BlockArmorAmount = 12;
 
+        private static bool IsRelaxAction(Actions.CombatActionId id)
+        {
+            return id == Actions.CombatActionId.ActionAct1 || id == Actions.CombatActionId.ActionAct2;
+        }
+
+        private static int GetRelaxLpReduction(Actions.CombatActionId id)
+        {
+            switch (id)
+            {
+                case Actions.CombatActionId.ActionAct1: return 10;
+                case Actions.CombatActionId.ActionAct2: return 20;
+                default: return 0;
+            }
+        }
+
+        private static int ComputeSeductionSelfLpGain(int lpAppliedToTarget)
+        {
+            if (lpAppliedToTarget <= 0)
+                return 0;
+
+            return (int)System.Math.Round(lpAppliedToTarget * 0.25d, System.MidpointRounding.AwayFromZero);
+        }
+
         private static CombatState ApplyHpDamageToPlayerWithBlockArmor(
             CombatState state,
             int incomingDamage,
@@ -213,6 +236,21 @@ namespace Game.Battle.Combat
                 {
                     // Emotional damage: increases target LP.
                     newState = newState.WithEnemyLp(newState.EnemyLp + action.LpDamage);
+
+                    // Seduction backlash: user also gains 25% of applied LP (rounded).
+                    if (action.Category == Actions.CombatActionCategory.Seduction)
+                    {
+                        var selfLpGain = ComputeSeductionSelfLpGain(action.LpDamage);
+                        if (selfLpGain > 0)
+                            newState = newState.WithPlayerLp(newState.PlayerLp + selfLpGain);
+                    }
+                }
+
+                if (IsRelaxAction(action.Id))
+                {
+                    var relaxReduction = GetRelaxLpReduction(action.Id);
+                    if (relaxReduction > 0)
+                        newState = newState.WithPlayerLp(newState.PlayerLp - relaxReduction);
                 }
 
                 if (action.HpDamage <= 0 && action.LpDamage <= 0)
@@ -319,6 +357,21 @@ namespace Game.Battle.Combat
                 {
                     // Emotional damage: increases target LP.
                     newState = newState.WithPlayerLp(newState.PlayerLp + action.LpDamage);
+
+                    // Seduction backlash: user also gains 25% of applied LP (rounded).
+                    if (action.Category == Actions.CombatActionCategory.Seduction)
+                    {
+                        var selfLpGain = ComputeSeductionSelfLpGain(action.LpDamage);
+                        if (selfLpGain > 0)
+                            newState = newState.WithEnemyLp(newState.EnemyLp + selfLpGain);
+                    }
+                }
+
+                if (IsRelaxAction(action.Id))
+                {
+                    var relaxReduction = GetRelaxLpReduction(action.Id);
+                    if (relaxReduction > 0)
+                        newState = newState.WithEnemyLp(newState.EnemyLp - relaxReduction);
                 }
 
                 if (action.HpDamage <= 0 && action.LpDamage <= 0)

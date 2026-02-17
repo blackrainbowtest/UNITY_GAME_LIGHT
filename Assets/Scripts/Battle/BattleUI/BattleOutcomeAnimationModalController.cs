@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using Game.Battle.Combat.Actions;
 
 namespace Game.Battle.UI
 {
@@ -17,6 +18,10 @@ namespace Game.Battle.UI
         private Action _onClosed;
         private bool _suppressHideOnAwake;
         private bool _isOpen;
+
+        public Game.Battle.BattleFinishReason LastReason { get; private set; } = Game.Battle.BattleFinishReason.Defeat;
+        public bool LastPlayerWon { get; private set; }
+        public CombatActionId? LastWinningActionId { get; private set; }
 
         private void Awake()
         {
@@ -39,10 +44,13 @@ namespace Game.Battle.UI
             }
         }
 
-        public void Show(Game.Battle.BattleFinishReason reason, Action onClosed)
+        public void Show(Game.Battle.BattleFinishReason reason, bool playerWon, CombatActionId? winningActionId, Action onClosed)
         {
             _onClosed = onClosed;
             _isOpen = true;
+            LastReason = reason;
+            LastPlayerWon = playerWon;
+            LastWinningActionId = winningActionId;
 
             // Ensure the hierarchy is active even if this object was disabled.
             _suppressHideOnAwake = true;
@@ -57,7 +65,7 @@ namespace Game.Battle.UI
             else
                 gameObject.SetActive(true);
 
-            Debug.Log($"[BattleOutcomeAnimationModal] Show: reason={reason}, root={(root != null ? root.name : "<self>")}", this);
+            Debug.Log($"[BattleOutcomeAnimationModal] Show: reason={reason}, playerWon={playerWon}, winningAction={winningActionId}, root={(root != null ? root.name : "<self>")}", this);
         }
 
         public void Hide()

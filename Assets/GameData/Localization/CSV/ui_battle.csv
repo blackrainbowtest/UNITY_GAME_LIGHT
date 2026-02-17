@@ -256,3 +256,31 @@
 	Максимально сильное действие.
 	Strongest action.
 	Action la plus puissante.;
+*battle_choice_easy;
+	Ученик;
+	Apprentice;
+	Apprenti;
+*battle_choice_middle;
+	Искатель приключений;
+	Adventurer;
+	Aventurier;
+*battle_choice_hard;
+	Кошмар;
+	Nightmare;
+	Cauchemar;
+*battle_scene_wheat_field;
+	Пшеничное поле;
+	Wheat Field;
+	Champ de blé;
+*battle_scene_river;
+	Река;
+	River;
+	Rivière;
+*battle_scene_valley;
+	Долина;
+	Valley;
+	Vallée;
+*battle_scene_farm;
+	Ферма;
+	Farm;
+	Ferme;

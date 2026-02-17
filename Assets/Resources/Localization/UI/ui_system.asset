@@ -125,11 +125,11 @@ MonoBehaviour:
     entries:
     - languageCode: ru
       text: "\u0423\u0436\u0435 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u043D\u043E
-        \u0441\u0435\u0433\u043E\u0434\u043D\u044F"
+        \u0441\u0435\u0433\u043E\u0434\u043D\u044F -50%"
     - languageCode: en
-      text: Already used today
+      text: Already used today -50%
     - languageCode: fr
-      text: "D\xE9j\xE0 utilis\xE9 aujourd'hui"
+      text: "D\xE9j\xE0 utilis\xE9 aujourd'hui -50%"
   - key: currentStructureLevelKey
     entries:
     - languageCode: ru

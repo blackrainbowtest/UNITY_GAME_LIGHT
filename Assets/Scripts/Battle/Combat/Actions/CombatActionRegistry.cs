@@ -144,7 +144,7 @@ namespace Game.Battle.Combat.Actions
                         hpDamage: 0,
                         mpCost: 0,
                         spCost: 0,
-                        lpCost: 10,
+                        lpCost: 0,
                         requiresPlayerBlockedLastTurn: false,
                         lpDamage: 10)
                 },
@@ -156,7 +156,7 @@ namespace Game.Battle.Combat.Actions
                         hpDamage: 0,
                         mpCost: 0,
                         spCost: 0,
-                        lpCost: 20,
+                        lpCost: 0,
                         requiresPlayerBlockedLastTurn: false,
                         lpDamage: 20)
                 },
@@ -168,7 +168,7 @@ namespace Game.Battle.Combat.Actions
                         hpDamage: 0,
                         mpCost: 0,
                         spCost: 0,
-                        lpCost: 30,
+                        lpCost: 0,
                         requiresPlayerBlockedLastTurn: false,
                         lpDamage: 30)
                 },
@@ -180,7 +180,7 @@ namespace Game.Battle.Combat.Actions
                         hpDamage: 0,
                         mpCost: 0,
                         spCost: 0,
-                        lpCost: 40,
+                        lpCost: 0,
                         requiresPlayerBlockedLastTurn: false,
                         lpDamage: 40)
                 },

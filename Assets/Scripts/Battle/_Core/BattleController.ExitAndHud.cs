@@ -20,6 +20,7 @@ using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Game.Battle.UI;
+using Game.Battle.Combat.Actions;
 using UDA2.Audio;
 using Logger = UDA2.Logging.Logger;
 
@@ -41,7 +42,7 @@ namespace Game.Battle
         [Tooltip("Fallback (legacy): if no cue is assigned, plays this clip when the battle ends and the results modal is shown.")]
         [SerializeField] private AudioClip resultsMusic;
 
-        private void FinishBattle(bool playerWon, BattleFinishReason reason = BattleFinishReason.Defeat)
+        private void FinishBattle(bool playerWon, BattleFinishReason reason = BattleFinishReason.Defeat, CombatActionId? winningActionId = null)
         {
             battleStarted = false;
             turnPhase = TurnPhase.BattleOver;
@@ -66,9 +67,9 @@ namespace Game.Battle
                 }
             }
 
-            if (playerWon)
+            if (playerWon && reason == BattleFinishReason.Defeat)
                 reason = BattleFinishReason.Victory;
-            else if (reason == BattleFinishReason.Victory)
+            else if (!playerWon && reason == BattleFinishReason.Victory)
                 reason = BattleFinishReason.Defeat;
 
             // Persist player resources from battle back to SaveData (so leaving battle doesn't "heal to full").
@@ -173,7 +174,9 @@ namespace Game.Battle
 
             bool shouldShowOutcomeModal = reason == BattleFinishReason.Defeat
                 || reason == BattleFinishReason.Surrender
-                || reason == BattleFinishReason.EscapeFailed;
+                || reason == BattleFinishReason.EscapeFailed
+                || reason == BattleFinishReason.DefeatByLp
+                || reason == BattleFinishReason.VictoryByLp;
 
             if (shouldShowOutcomeModal && outcomeAnimationModal == null)
             {
@@ -182,7 +185,7 @@ namespace Game.Battle
 
             if (outcomeAnimationModal != null && shouldShowOutcomeModal)
             {
-                outcomeAnimationModal.Show(reason, ShowResultsOrExit);
+                outcomeAnimationModal.Show(reason, playerWon, winningActionId, ShowResultsOrExit);
             }
             else
             {
