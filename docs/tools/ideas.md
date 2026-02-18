@@ -224,3 +224,8 @@ All values randomized **100% inside defined ranges**
   - Tutorials
   - UI highlights
   - World events
+
+### Middle location names
+- low forest
+- middle forest
+- deep forest
