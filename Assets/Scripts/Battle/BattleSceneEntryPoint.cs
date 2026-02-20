@@ -98,6 +98,8 @@ public class BattleSceneEntryPoint : MonoBehaviour
         Game.Battle.EnemyData enemy = (useDebugSetup && debugEnemy != null)
             ? debugEnemy
             : BattleEnemyContext.Consume();
+        int enemyLevel = BattleEnemyContext.PeekLevelOrDefault(enemy);
+        int enemyRankTier = BattleEnemyContext.PeekRankTierOrDefault(enemy);
         if (enemy == null)
         {
             // Если враг не был выбран заранее — выбираем из таблицы и сохраняем в контекст
@@ -107,13 +109,17 @@ public class BattleSceneEntryPoint : MonoBehaviour
                 return;
             }
             var resolver = new Game.Battle.EnemySpawnResolver();
-            enemy = resolver.Resolve(enemyTable);
-            if (enemy == null)
+            if (!resolver.Resolve(enemyTable, EnemySpawnConstraints.Default, out enemy, out enemyLevel, out enemyRankTier))
             {
                 Debug.LogError("[BattleSceneEntryPoint] Не удалось выбрать врага из таблицы!");
                 return;
             }
-            BattleEnemyContext.Set(enemy);
+            BattleEnemyContext.Set(enemy, enemyLevel, enemyRankTier);
+        }
+        else
+        {
+            enemyLevel = BattleEnemyContext.PeekLevelOrDefault(enemy);
+            enemyRankTier = BattleEnemyContext.PeekRankTierOrDefault(enemy);
         }
 
         var resolvedLocation = location;
@@ -126,7 +132,9 @@ public class BattleSceneEntryPoint : MonoBehaviour
             enemy,
             resolvedLocation,
             mode,
-            enemyDifficulty
+            enemyDifficulty,
+            enemyLevel,
+            enemyRankTier
         );
 
         battleController.StartBattle(context);

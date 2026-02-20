@@ -151,6 +151,14 @@ namespace Game.Battle.Visual
         [Tooltip("Optional variations for Action Act 4.")]
         public IdleAnimation[] actionAct4Variations;
 
+        [Header("Inventory")]
+        [Tooltip("Inventory open animation. If empty, fallback is Action Act 1 variation [0].")]
+        public IdleAnimation[] inventoryOpenVariations;
+        [Tooltip("Inventory search/loop animation. If empty, fallback is Action Act 1 variation [1].")]
+        public IdleAnimation[] inventorySearchVariations;
+        [Tooltip("Inventory close animation. If empty, fallback is Action Act 1 variation [2].")]
+        public IdleAnimation[] inventoryCloseVariations;
+
         [Header("Optional")]
         [Tooltip("Optional variations for Block.")]
         public IdleAnimation[] blockVariations;
@@ -192,6 +200,25 @@ namespace Game.Battle.Visual
                 case BattleVisualAnimId.ActionAct2: list = actionAct2Variations != null && actionAct2Variations.Length > 0 ? actionAct2Variations : castVariations; break;
                 case BattleVisualAnimId.ActionAct3: list = actionAct3Variations != null && actionAct3Variations.Length > 0 ? actionAct3Variations : castVariations; break;
                 case BattleVisualAnimId.ActionAct4: list = actionAct4Variations != null && actionAct4Variations.Length > 0 ? actionAct4Variations : castVariations; break;
+
+                // Inventory flow uses explicit inventory fields first.
+                // Fallback: ActionAct1 variations by fixed index:
+                // [0] = Act1 (open), [1] = Act1_1 (search), [2] = Act1_2 (close).
+                case BattleVisualAnimId.InventoryOpen:
+                    list = inventoryOpenVariations != null && inventoryOpenVariations.Length > 0
+                        ? inventoryOpenVariations
+                        : WrapSingle(PickIndexedOrFirstValid(actionAct1Variations, 0) ?? FirstValidOrFirst(castVariations));
+                    break;
+                case BattleVisualAnimId.InventorySearch:
+                    list = inventorySearchVariations != null && inventorySearchVariations.Length > 0
+                        ? inventorySearchVariations
+                        : WrapSingle(PickIndexedOrFirstValid(actionAct1Variations, 1) ?? FirstValidOrFirst(castVariations));
+                    break;
+                case BattleVisualAnimId.InventoryClose:
+                    list = inventoryCloseVariations != null && inventoryCloseVariations.Length > 0
+                        ? inventoryCloseVariations
+                        : WrapSingle(PickIndexedOrFirstValid(actionAct1Variations, 2) ?? FirstValidOrFirst(castVariations));
+                    break;
 
                 case BattleVisualAnimId.Block: list = blockVariations; break;
                 case BattleVisualAnimId.Death: list = deathVariations; break;
@@ -274,6 +301,29 @@ namespace Game.Battle.Visual
             }
 
             return null;
+        }
+
+        private static IdleAnimation PickIndexedOrFirstValid(IdleAnimation[] list, int index)
+        {
+            if (list == null || list.Length == 0)
+                return null;
+
+            if (index >= 0 && index < list.Length)
+            {
+                var atIndex = list[index];
+                if (atIndex != null && atIndex.IsValid())
+                    return atIndex;
+            }
+
+            return FirstValidOrFirst(list);
+        }
+
+        private static IdleAnimation[] WrapSingle(IdleAnimation anim)
+        {
+            if (anim == null)
+                return null;
+
+            return new[] { anim };
         }
 
     }

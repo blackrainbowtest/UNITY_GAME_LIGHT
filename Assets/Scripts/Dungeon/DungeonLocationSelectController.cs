@@ -184,7 +184,7 @@ namespace Game.Dungeon
                 return;
             }
 
-            if (!TryResolveEncounter(location, out var battleLocation, out var enemy))
+            if (!TryResolveEncounter(location, out var battleLocation, out var enemy, out var enemyLevel, out var enemyRankTier))
                 return;
 
             // Ensure we have a save container so pending battle can be restored after reloads.
@@ -198,7 +198,7 @@ namespace Game.Dungeon
                 BattleLocationContext.Set(battleLocation);
 
             if (enemy != null)
-                BattleEnemyContext.Set(enemy);
+                BattleEnemyContext.Set(enemy, enemyLevel, enemyRankTier);
 
             if (location.returnToActiveSceneAfterBattle)
                 BattleExitContext.SetReturnToActiveScene();
@@ -231,10 +231,14 @@ namespace Game.Dungeon
         private static bool TryResolveEncounter(
             DungeonLocationDefinition location,
             out BattleLocationData resolvedBattleLocation,
-            out EnemyData resolvedEnemy)
+            out EnemyData resolvedEnemy,
+            out int resolvedEnemyLevel,
+            out int resolvedEnemyRankTier)
         {
             resolvedBattleLocation = null;
             resolvedEnemy = null;
+            resolvedEnemyLevel = 1;
+            resolvedEnemyRankTier = 0;
 
             if (location.encounterPools == null || location.encounterPools.Length == 0)
             {
@@ -296,7 +300,17 @@ namespace Game.Dungeon
             resolvedBattleLocation = chosen.battleLocation;
 
             var resolver = new EnemySpawnResolver();
-            resolvedEnemy = resolver.Resolve(chosen.enemyTable);
+            var constraints = new EnemySpawnConstraints(
+                location.minEnemyLevel,
+                location.maxEnemyLevel,
+                (int)location.minEnemyRank,
+                (int)location.maxEnemyRank);
+
+            if (!resolver.Resolve(chosen.enemyTable, constraints, out resolvedEnemy, out resolvedEnemyLevel, out resolvedEnemyRankTier))
+            {
+                Debug.LogError($"[Dungeon] Location '{location.name}' chosen pool has enemyTable '{chosen.enemyTable.name}', but resolver failed with constraints.");
+                return false;
+            }
 
             if (resolvedEnemy == null)
             {

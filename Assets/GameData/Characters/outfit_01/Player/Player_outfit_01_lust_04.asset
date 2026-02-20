@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
+  m_Name: Player_outfit_01_lust_04
+  m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
+  id: lust_03
+  frames:
+  - {fileID: 21300000, guid: f4f139182f4c8b14f94410d81721feed, type: 3}
+  - {fileID: 21300000, guid: d2139ca334c23d843807304cb7e5dc43, type: 3}
+  - {fileID: 21300000, guid: a728f9c2ae9368a409564b4d792e594c, type: 3}
+  - {fileID: 21300000, guid: f24f9c480020512428b9ce9d7f47a88e, type: 3}
+  - {fileID: 21300000, guid: c9878c0d1b191054eaba9163855fcaf5, type: 3}
+  - {fileID: 21300000, guid: 2ab28fb40eca9c546957050b2be33b51, type: 3}
+  - {fileID: 21300000, guid: 8ea18ace05944414eb6d0c76a127fc53, type: 3}
+  - {fileID: 21300000, guid: 614e9a8ae7817f4488afab3c76042981, type: 3}
+  - {fileID: 21300000, guid: 457584f459469ca40ac45bf173cc015a, type: 3}
+  - {fileID: 21300000, guid: c33b8f7be78a0794aa63f8cb7ec5a931, type: 3}
+  - {fileID: 21300000, guid: b205e37e33094c44a8d9592dc39c0355, type: 3}
+  - {fileID: 21300000, guid: bc5c861f651e4ea4ba3b6f3c51ff17e6, type: 3}
+  - {fileID: 21300000, guid: 99da44b2380f91a4899acc566d5c3a28, type: 3}
+  frameRate: 12
+  hasImpact: 0
+  impactTimeNormalized: 0.5
+  impactFrameIndex: -1

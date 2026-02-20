@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
+  m_Name: Player_outfit_01_loes_01
+  m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
+  id: lust_03
+  frames:
+  - {fileID: 21300000, guid: 77efdd178a605334f94f8129f9ff93e7, type: 3}
+  - {fileID: 21300000, guid: f72b834de8cbc374588900226f74d4ed, type: 3}
+  - {fileID: 21300000, guid: 4373c0fb5cbb1d04f84072448bdcff4a, type: 3}
+  - {fileID: 21300000, guid: 6d42c94479cbdb44bbdb9cd96c4829f1, type: 3}
+  - {fileID: 21300000, guid: 0e7988ddaa0ea714aabf7c0f51a671c3, type: 3}
+  - {fileID: 21300000, guid: fc586d2b5ad10934b948f96ab8447513, type: 3}
+  - {fileID: 21300000, guid: e0b5722565b2b094fb776cc959600d0e, type: 3}
+  - {fileID: 21300000, guid: faab8e4f08621e443a941ffcee6ee8b6, type: 3}
+  - {fileID: 21300000, guid: 8bb612489e88d2a4cb61cd274f0da23b, type: 3}
+  - {fileID: 21300000, guid: 9164aa53197654841a72d0a9afd3546b, type: 3}
+  - {fileID: 21300000, guid: 9d70c5739f4c83d4caabe6d694376c3b, type: 3}
+  - {fileID: 21300000, guid: 81dc4856ae9577e438dffd290ff29e7a, type: 3}
+  - {fileID: 21300000, guid: 2b41a7623c028184aa8dd7945842ab04, type: 3}
+  - {fileID: 21300000, guid: c5662c1a1e68cf94a8726d735140e107, type: 3}
+  - {fileID: 21300000, guid: d8a8b0e0e4ee9c34fafb2b1ba5a77507, type: 3}
+  - {fileID: 21300000, guid: 01b812ee5287a9242a11efa158cd0bfb, type: 3}
+  - {fileID: 21300000, guid: 580fe0056df4bd64ea9cebb336f7f6f9, type: 3}
+  - {fileID: 21300000, guid: a7c6f955fcf0dfe4397dc257bd9e28b9, type: 3}
+  - {fileID: 21300000, guid: d3ea56269578f64409162fa21710f4c5, type: 3}
+  - {fileID: 21300000, guid: 3c0de03327f4c5e488390cac568a7260, type: 3}
+  - {fileID: 21300000, guid: 2460044d271dfe9438a31938538e48a5, type: 3}
+  frameRate: 12
+  hasImpact: 0
+  impactTimeNormalized: 0.5
+  impactFrameIndex: -1

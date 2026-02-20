@@ -13433,6 +13433,9 @@ MonoBehaviour:
   maxEscapeChance: 0.95
   escapeStaminaWeight: 0.6
   escapeLustWeight: 0.4
+  escapeFailFallAnim: 30
+  escapeFailRecoverAnim: 31
+  escapeFailLpPenalty: 20
   defeatGoldMin: 1
   defeatGoldMax: 3
   resultsMusicCue: {fileID: 11400000, guid: b694056ca0dab7244b35a6fde989f4d9, type: 2}
@@ -13441,6 +13444,9 @@ MonoBehaviour:
   inventoryParentOverride: {fileID: 1962314100}
   itemDatabase: {fileID: 11400000, guid: ea48e7814522e8849a7792d9d32df653, type: 2}
   blockOpeningInventoryAfterUse: 1
+  inventoryOpenAnim: 50
+  inventorySearchAnim: 51
+  inventoryCloseAnim: 52
 --- !u!1 &1906920320
 GameObject:
   m_ObjectHideFlags: 0

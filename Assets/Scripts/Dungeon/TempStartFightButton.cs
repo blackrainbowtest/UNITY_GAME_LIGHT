@@ -61,10 +61,13 @@ namespace Game.Dungeon
             }
 
             var resolvedEnemy = enemy;
+            int resolvedEnemyLevel = Mathf.Max(1, resolvedEnemy != null ? resolvedEnemy.minSpawnLevel : 1);
+            int resolvedEnemyRankTier = Mathf.Max(0, resolvedEnemy != null ? resolvedEnemy.minSpawnRankTier : 0);
             if (resolvedEnemy == null && enemyTable != null)
             {
                 var resolver = new EnemySpawnResolver();
-                resolvedEnemy = resolver.Resolve(enemyTable);
+                if (!resolver.Resolve(enemyTable, EnemySpawnConstraints.Default, out resolvedEnemy, out resolvedEnemyLevel, out resolvedEnemyRankTier))
+                    resolvedEnemy = null;
             }
 
             if (resolvedEnemy == null)
@@ -82,7 +85,7 @@ namespace Game.Dungeon
             if (location != null)
                 BattleLocationContext.Set(location);
 
-            BattleEnemyContext.Set(resolvedEnemy);
+            BattleEnemyContext.Set(resolvedEnemy, resolvedEnemyLevel, resolvedEnemyRankTier);
 
             if (returnToActiveSceneAfterBattle)
                 BattleExitContext.SetReturnToActiveScene();

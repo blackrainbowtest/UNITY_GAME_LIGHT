@@ -25,16 +25,29 @@ using UnityEngine;
 public static class BattleEnemyContext
 {
     private static Game.Battle.EnemyData selectedEnemy;
+    private static int selectedEnemyLevel;
+    private static int selectedEnemyRankTier;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetStatics()
     {
         selectedEnemy = null;
+        selectedEnemyLevel = 1;
+        selectedEnemyRankTier = 0;
     }
 
     public static void Set(Game.Battle.EnemyData enemy)
     {
         selectedEnemy = enemy;
+        selectedEnemyLevel = Mathf.Max(1, enemy != null ? enemy.minSpawnLevel : 1);
+        selectedEnemyRankTier = Mathf.Max(0, enemy != null ? enemy.minSpawnRankTier : 0);
+    }
+
+    public static void Set(Game.Battle.EnemyData enemy, int enemyLevel, int enemyRankTier)
+    {
+        selectedEnemy = enemy;
+        selectedEnemyLevel = Mathf.Max(1, enemyLevel);
+        selectedEnemyRankTier = Mathf.Max(0, enemyRankTier);
     }
 
     public static Game.Battle.EnemyData Consume()
@@ -45,4 +58,20 @@ public static class BattleEnemyContext
     }
 
     public static Game.Battle.EnemyData Peek() => selectedEnemy;
+
+    public static int PeekLevelOrDefault(Game.Battle.EnemyData enemy)
+    {
+        if (selectedEnemy != null && enemy == selectedEnemy)
+            return Mathf.Max(1, selectedEnemyLevel);
+
+        return Mathf.Max(1, enemy != null ? enemy.minSpawnLevel : 1);
+    }
+
+    public static int PeekRankTierOrDefault(Game.Battle.EnemyData enemy)
+    {
+        if (selectedEnemy != null && enemy == selectedEnemy)
+            return Mathf.Max(0, selectedEnemyRankTier);
+
+        return Mathf.Max(0, enemy != null ? enemy.minSpawnRankTier : 0);
+    }
 }

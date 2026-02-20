@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
+  m_Name: Player_outfit_01_Idle_04
+  m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
+  id: idle_04
+  frames:
+  - {fileID: 21300000, guid: 6548aafebfb88354c954b12e2898f224, type: 3}
+  - {fileID: 21300000, guid: 9b2881dc6f9076c4f95a3827417ed23b, type: 3}
+  - {fileID: 21300000, guid: c7720f8e65be3fc47a4ea7ac0ba75c58, type: 3}
+  - {fileID: 21300000, guid: 01ff769d63b83b949a01cafa1a8d1782, type: 3}
+  - {fileID: 21300000, guid: 679d9b6804f595f4ca27a9a9b10ebf3a, type: 3}
+  - {fileID: 21300000, guid: 3165170d5cc083d4c9cf1222497391d6, type: 3}
+  - {fileID: 21300000, guid: 786221c54b3faad42bbfb50716656cf1, type: 3}
+  - {fileID: 21300000, guid: 313697bf686392e45ab65c89c5cffb3f, type: 3}
+  - {fileID: 21300000, guid: ce888f0600642a74483fb8df86502a94, type: 3}
+  - {fileID: 21300000, guid: 006a540167e10414c83c0ace9c55c7db, type: 3}
+  - {fileID: 21300000, guid: ca675edccaf54904f992260ba2a9e1bf, type: 3}
+  - {fileID: 21300000, guid: c09f06d0427330d40bd1da80df4e261a, type: 3}
+  - {fileID: 21300000, guid: 017504b77da269947906f72caa59966d, type: 3}
+  frameRate: 12
+  hasImpact: 0
+  impactTimeNormalized: 0.5
+  impactFrameIndex: -1

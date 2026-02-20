@@ -122,10 +122,14 @@ public class EnemyDataImporter : EditorWindow
                 newRegenMpPerTurn: enemy.regenMpPerTurn,
                 newRegenSpPerTurn: enemy.regenSpPerTurn,
                 newAllowedActions: actions,
+                newMinSpawnLevel: enemy.minSpawnLevel,
+                newMaxSpawnLevel: enemy.maxSpawnLevel,
+                newMinSpawnRankTier: enemy.minSpawnRankTier,
+                newMaxSpawnRankTier: enemy.maxSpawnRankTier,
                 newGoldReward: enemy.goldReward,
                 newExpReward: enemy.expReward,
                 newLootTable: lootTable,
-                out string error))
+                error: out string error))
         {
             Debug.LogError($"EnemyDataImporter: Failed to apply '{enemy.enemyName}': {error}");
         }
@@ -256,6 +260,12 @@ public class EnemyDataImporter : EditorWindow
         public int goldReward;
         public int expReward;
         public LootDropJson[] lootTable;
+
+        // Optional spawn range (if omitted in JSON, defaults are used).
+        public int minSpawnLevel = 1;
+        public int maxSpawnLevel = 1;
+        public int minSpawnRankTier = 0;
+        public int maxSpawnRankTier = 0;
 
         // Passive regeneration per enemy turn (LP does not regenerate).
         public int regenHpPerTurn;

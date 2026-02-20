@@ -51,6 +51,23 @@ namespace Game.Battle
         [Header("AI")]
         public CombatActionId[] allowedActions;
 
+        [Header("Spawn Range")]
+        [Min(1)]
+        [Tooltip("Minimum random enemy level for spawn.")]
+        public int minSpawnLevel = 1;
+
+        [Min(1)]
+        [Tooltip("Maximum random enemy level for spawn.")]
+        public int maxSpawnLevel = 1;
+
+        [Min(0)]
+        [Tooltip("Minimum spawn rank tier (AdventurerRank numeric: None=0, G=1 ... S=8).")]
+        public int minSpawnRankTier = 0;
+
+        [Min(0)]
+        [Tooltip("Maximum spawn rank tier (AdventurerRank numeric: None=0, G=1 ... S=8).")]
+        public int maxSpawnRankTier = 0;
+
         [Header("Rewards")]
         [Min(0)]
         [Tooltip("Guaranteed gold gained on victory (before multipliers). If 0, runtime may use fallback rules.")]
@@ -100,6 +117,12 @@ namespace Game.Battle
                         e.itemId = e.itemId.Trim();
                 }
             }
+
+            minSpawnLevel = Mathf.Max(1, minSpawnLevel);
+            maxSpawnLevel = Mathf.Max(minSpawnLevel, maxSpawnLevel);
+
+            minSpawnRankTier = Mathf.Max(0, minSpawnRankTier);
+            maxSpawnRankTier = Mathf.Max(minSpawnRankTier, maxSpawnRankTier);
 
             EnsureId();
         }
@@ -161,6 +184,10 @@ namespace Game.Battle
             int newRegenMpPerTurn,
             int newRegenSpPerTurn,
             CombatActionId[] newAllowedActions,
+            int newMinSpawnLevel,
+            int newMaxSpawnLevel,
+            int newMinSpawnRankTier,
+            int newMaxSpawnRankTier,
             int newGoldReward,
             int newExpReward,
             LootDrop[] newLootTable,
@@ -196,6 +223,11 @@ namespace Game.Battle
             regenSpPerTurn = newRegenSpPerTurn;
 
             allowedActions = newAllowedActions;
+
+            minSpawnLevel = Mathf.Max(1, newMinSpawnLevel);
+            maxSpawnLevel = Mathf.Max(minSpawnLevel, newMaxSpawnLevel);
+            minSpawnRankTier = Mathf.Max(0, newMinSpawnRankTier);
+            maxSpawnRankTier = Mathf.Max(minSpawnRankTier, newMaxSpawnRankTier);
 
             goldReward = Mathf.Max(0, newGoldReward);
             expReward = Mathf.Max(0, newExpReward);

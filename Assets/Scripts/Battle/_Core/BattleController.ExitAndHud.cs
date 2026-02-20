@@ -99,7 +99,7 @@ namespace Game.Battle
                 var save = global::GameState.Instance?.CurrentSave;
                 var enemy = context != null ? context.Enemy : null;
 
-                var loot = BattleLootResolver.Resolve(enemy, save);
+                var loot = BattleLootResolver.Resolve(enemy, save, context != null ? context.EnemyLevel : -1);
                 goldGained = loot.GoldGained;
                 manaCrystalsGained = loot.ManaCrystalsGained;
                 demonCrystalsGained = loot.DemonCrystalsGained;
@@ -173,8 +173,10 @@ namespace Game.Battle
             }
 
             bool shouldShowOutcomeModal = reason == BattleFinishReason.Defeat
+                || reason == BattleFinishReason.Victory
                 || reason == BattleFinishReason.Surrender
                 || reason == BattleFinishReason.EscapeFailed
+                || reason == BattleFinishReason.EscapeSuccess
                 || reason == BattleFinishReason.DefeatByLp
                 || reason == BattleFinishReason.VictoryByLp;
 

@@ -17,6 +17,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 248f85fff92dcc24d9a743e9bcbe5977, type: 2}
   - {fileID: 11400000, guid: f323b3b9f79d4214ca173f3308fe30d4, type: 2}
   - {fileID: 11400000, guid: 02da1bbf2161672469b87d6d0e6b61ec, type: 2}
+  - {fileID: 11400000, guid: cbc0f5e3da235924691658e2f1b7523d, type: 2}
   hitVariations:
   - {fileID: 11400000, guid: c7d8c3efc759108428ac17c90bd3dd2c, type: 2}
   - {fileID: 11400000, guid: f843d9c639111c74e86dcecf64e756a2, type: 2}
@@ -119,14 +120,25 @@ MonoBehaviour:
     spawnOffsetPixels: {x: 100, y: 125}
     travelDistancePixels: 1000
     travelTimeSeconds: 0.8
-  seductionAct1Variations: []
-  seductionAct2Variations: []
-  seductionAct3Variations: []
-  seductionAct4Variations: []
+  seductionAct1Variations:
+  - {fileID: 11400000, guid: 942f03465034cf64c9894c69f381d039, type: 2}
+  seductionAct2Variations:
+  - {fileID: 11400000, guid: e8cf954ba4f97a94f82c1f2decc474f4, type: 2}
+  seductionAct3Variations:
+  - {fileID: 11400000, guid: 7c1fd753a9d2af940a205537762f7793, type: 2}
+  seductionAct4Variations:
+  - {fileID: 11400000, guid: ecf035c8a2bb7884f93568a6f178ed09, type: 2}
   actionAct1Variations: []
   actionAct2Variations: []
   actionAct3Variations: []
   actionAct4Variations: []
+  inventoryOpenVariations:
+  - {fileID: 11400000, guid: 9501f20141a136e4d915ad9eaa59991a, type: 2}
+  inventorySearchVariations:
+  - {fileID: 11400000, guid: 74deed90e6bed1547ae16a2a6fe73e31, type: 2}
+  inventoryCloseVariations:
+  - {fileID: 11400000, guid: ecf035c8a2bb7884f93568a6f178ed09, type: 2}
   blockVariations:
-  - {fileID: 11400000, guid: 900622788c292fd46966577e60a419c2, type: 2}
-  deathVariations: []
+  - {fileID: 11400000, guid: 480dd42dd87ed2d4ba287b94f1fb06f6, type: 2}
+  deathVariations:
+  - {fileID: 11400000, guid: 480dd42dd87ed2d4ba287b94f1fb06f6, type: 2}

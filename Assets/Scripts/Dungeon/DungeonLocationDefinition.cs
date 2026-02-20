@@ -22,6 +22,12 @@ namespace Game.Dungeon
         [Tooltip("If enabled, sets BattleExitContext to return to the scene that started this fight.")]
         public bool returnToActiveSceneAfterBattle = true;
 
+        [Header("Enemy Spawn Bounds")]
+        [Min(1)] public int minEnemyLevel = 1;
+        [Min(1)] public int maxEnemyLevel = 99;
+        public AdventurerRank minEnemyRank = AdventurerRank.None;
+        public AdventurerRank maxEnemyRank = AdventurerRank.S;
+
         [Header("Encounters")]
         [Tooltip("Pick one pool by weight. Each pool defines a battle background (location) and the enemy table available for that background.")]
         public DungeonEncounterPool[] encounterPools;
@@ -34,6 +40,15 @@ namespace Game.Dungeon
         public bool IsAvailableFor(AdventurerRank playerRank, int playerLevel)
         {
             return playerRank >= requiredRank && playerLevel >= requiredPlayerLevel;
+        }
+
+        private void OnValidate()
+        {
+            minEnemyLevel = Mathf.Max(1, minEnemyLevel);
+            maxEnemyLevel = Mathf.Max(minEnemyLevel, maxEnemyLevel);
+
+            if (maxEnemyRank < minEnemyRank)
+                maxEnemyRank = minEnemyRank;
         }
     }
 

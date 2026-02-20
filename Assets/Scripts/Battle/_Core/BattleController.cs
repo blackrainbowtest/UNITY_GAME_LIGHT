@@ -88,6 +88,12 @@ namespace Game.Battle
         [SerializeField] private float escapeStaminaWeight = 0.6f;
         [Range(0f, 1f)]
         [SerializeField] private float escapeLustWeight = 0.4f;
+        [Header("Escape Failed Sequence")]
+        [SerializeField] private BattleVisualAnimId escapeFailFallAnim = BattleVisualAnimId.ActionAct1;
+        [SerializeField] private BattleVisualAnimId escapeFailRecoverAnim = BattleVisualAnimId.ActionAct2;
+        [SerializeField] private int escapeFailLpPenalty = 20;
+
+        private Coroutine escapeFailedRoutine;
 
         private void Awake()
         {
@@ -367,6 +373,9 @@ namespace Game.Battle
             if (turnPhase != TurnPhase.PlayerTurn)
                 return;
 
+            if (escapeFailedRoutine != null)
+                return;
+
             float chance = CalculateEscapeChance01();
             float roll = (float)rng.NextDouble();
 
@@ -379,8 +388,75 @@ namespace Game.Battle
             }
             else
             {
-                // Escape failed: show outcome animation modal first, then results.
-                FinishBattle(playerWon: false, reason: BattleFinishReason.EscapeFailed, winningActionId: null);
+                // Escape failed: play fail sequence and continue battle.
+                turnPhase = TurnPhase.EnemyTurn;
+                hudController?.SetInputEnabled(false);
+                escapeFailedRoutine = StartCoroutine(EscapeFailedSequenceRoutine());
+            }
+        }
+
+        private IEnumerator EscapeFailedSequenceRoutine()
+        {
+            yield return PlayCharacterAnimAndWait(playerView, escapeFailFallAnim);
+
+            bool modalClosed = false;
+            if (outcomeAnimationModal != null)
+            {
+                outcomeAnimationModal.Show(BattleFinishReason.EscapeFailed, playerWon: false, winningActionId: null, onClosed: () => modalClosed = true);
+                while (!modalClosed)
+                    yield return null;
+            }
+
+            yield return PlayCharacterAnimAndWait(playerView, escapeFailRecoverAnim);
+
+            int maxLp = context?.Player != null ? Mathf.Max(0, context.Player.MaxLP) : 0;
+            int nextLp = combatState.PlayerLp + Mathf.Max(0, escapeFailLpPenalty);
+            if (maxLp > 0)
+                nextLp = Mathf.Min(nextLp, maxLp);
+
+            combatState = combatState.WithPlayerLp(nextLp);
+            PushHudState();
+
+            escapeFailedRoutine = null;
+
+            if (maxLp > 0 && combatState.PlayerLp >= maxLp)
+            {
+                FinishBattle(playerWon: false, reason: BattleFinishReason.DefeatByLp, winningActionId: null);
+                yield break;
+            }
+
+            BeginEnemyTurn();
+        }
+
+        private IEnumerator PlayCharacterAnimAndWait(BattleCharacterView view, BattleVisualAnimId animId)
+        {
+            if (view == null)
+                yield break;
+
+            bool finished = false;
+            view.RequestPlayAfterCurrent(animId, onFinished: () => finished = true);
+
+            float timeout = 5f;
+            while (!finished && timeout > 0f)
+            {
+                timeout -= Time.deltaTime;
+                yield return null;
+            }
+        }
+
+        private IEnumerator PlayCharacterAnimImmediateAndWait(BattleCharacterView view, BattleVisualAnimId animId)
+        {
+            if (view == null)
+                yield break;
+
+            bool finished = false;
+            view.PlayImmediate(animId, onFinished: () => finished = true);
+
+            float timeout = 5f;
+            while (!finished && timeout > 0f)
+            {
+                timeout -= Time.deltaTime;
+                yield return null;
             }
         }
 

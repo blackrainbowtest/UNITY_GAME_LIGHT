@@ -4,6 +4,7 @@ using System.Reflection;
 using UnityEngine;
 using Game.Battle.UI;
 using Game.Battle.Statuses;
+using Game.Battle.Visual;
 using UDA2.UI.Game;
 using Logger = UDA2.Logging.Logger;
 
@@ -25,10 +26,20 @@ namespace Game.Battle
         [Tooltip("If true: pressing Item after using an item this turn does nothing.")]
         [SerializeField] private bool blockOpeningInventoryAfterUse = true;
 
+        [Header("Inventory Animations")]
+        [SerializeField] private BattleVisualAnimId inventoryOpenAnim = BattleVisualAnimId.InventoryOpen;
+        [SerializeField] private BattleVisualAnimId inventorySearchAnim = BattleVisualAnimId.InventorySearch;
+        [SerializeField] private BattleVisualAnimId inventoryCloseAnim = BattleVisualAnimId.InventoryClose;
+
         private bool itemUsedThisPlayerTurn;
         private GameObject inventoryWindowInstance;
         private PlayerCharacterWindowController inventoryWindowController;
         private BattleInventoryItemClickHook inventoryClickHook;
+        private Coroutine inventoryOpenRoutine;
+        private Coroutine inventorySearchLoopRoutine;
+        private Coroutine inventoryCloseRoutine;
+        private bool isInventoryWindowOpen;
+        private bool inventorySearchLoopActive;
 
         private void ResetPerTurnNonCombatActions()
         {
@@ -43,14 +54,41 @@ namespace Game.Battle
                 return;
             }
 
+            if (isInventoryWindowOpen || inventoryOpenRoutine != null)
+                return;
+
+            if (inventoryCloseRoutine != null)
+                return;
+
+            hudController?.SetInputEnabled(false);
+            inventoryOpenRoutine = StartCoroutine(InventoryOpenSequenceRoutine());
+        }
+
+        private IEnumerator InventoryOpenSequenceRoutine()
+        {
+            yield return PlayCharacterAnimAndWait(playerView, inventoryOpenAnim);
+
+            if (!ShowInventoryWindowInternal())
+            {
+                inventoryOpenRoutine = null;
+                if (battleStarted && turnPhase == TurnPhase.PlayerTurn)
+                    hudController?.SetInputEnabled(true);
+                yield break;
+            }
+
+            isInventoryWindowOpen = true;
+            StartInventorySearchLoop();
+            inventoryOpenRoutine = null;
+        }
+
+        private bool ShowInventoryWindowInternal()
+        {
+
             if (inventoryWindowInstance != null)
             {
                 inventoryWindowInstance.SetActive(true);
                 inventoryWindowInstance.transform.SetAsLastSibling();
-
-                // While inventory is open, lock battle HUD input to prevent double actions.
-                hudController?.SetInputEnabled(false);
-                return;
+                return true;
             }
 
             var prefab = playerCharacterWindowPrefab;
@@ -60,13 +98,13 @@ namespace Game.Battle
             if (prefab == null)
             {
                 Logger.LogError("[BattleController] PlayerCharacterWindow prefab is not assigned and could not be loaded from Resources/Prefabs/UI/Profile/PlayerCharacterWindow.");
-                return;
+                return false;
             }
 
             Transform parent = inventoryParentOverride != null ? inventoryParentOverride : FindBestCanvasTransform();
             inventoryWindowInstance = Instantiate(prefab, parent, worldPositionStays: false);
             if (inventoryWindowInstance == null)
-                return;
+                return false;
 
             inventoryWindowInstance.SetActive(true);
             inventoryWindowInstance.transform.SetAsLastSibling();
@@ -98,9 +136,6 @@ namespace Game.Battle
                 }
             }
 
-            // While inventory is open, lock battle HUD input to prevent double actions.
-            hudController?.SetInputEnabled(false);
-
             // IMPORTANT: close handler is implemented by PlayerCharacterWindowController (child),
             // not necessarily on the prefab root.
             var closeHandler = inventoryWindowController as global::IMenuCloseHandler
@@ -109,10 +144,58 @@ namespace Game.Battle
                 closeHandler.OnMenuClosed += HandleInventoryClosed;
             else
                 Logger.LogWarning("[BattleController] Inventory window has no IMenuCloseHandler; HUD input may remain locked after closing.");
+
+            return true;
+        }
+
+        private void StartInventorySearchLoop()
+        {
+            inventorySearchLoopActive = true;
+
+            if (inventorySearchLoopRoutine != null)
+            {
+                StopCoroutine(inventorySearchLoopRoutine);
+                inventorySearchLoopRoutine = null;
+            }
+
+            inventorySearchLoopRoutine = StartCoroutine(InventorySearchLoopRoutine());
+        }
+
+        private IEnumerator InventorySearchLoopRoutine()
+        {
+            while (inventorySearchLoopActive && isInventoryWindowOpen && battleStarted && turnPhase == TurnPhase.PlayerTurn)
+            {
+                if (playerView == null)
+                    yield break;
+
+                bool finished = false;
+                playerView.PlayImmediate(inventorySearchAnim, onFinished: () => finished = true);
+
+                while (!finished)
+                {
+                    if (!inventorySearchLoopActive || !isInventoryWindowOpen || !battleStarted || turnPhase != TurnPhase.PlayerTurn)
+                        yield break;
+
+                    yield return null;
+                }
+
+                yield return null;
+            }
+
+            inventorySearchLoopRoutine = null;
         }
 
         private void HandleInventoryClosed()
         {
+            isInventoryWindowOpen = false;
+            inventorySearchLoopActive = false;
+
+            if (inventorySearchLoopRoutine != null)
+            {
+                StopCoroutine(inventorySearchLoopRoutine);
+                inventorySearchLoopRoutine = null;
+            }
+
             if (inventoryWindowController != null)
             {
                 var closeHandler = inventoryWindowController as global::IMenuCloseHandler;
@@ -131,8 +214,21 @@ namespace Game.Battle
             inventoryWindowController = null;
             inventoryWindowInstance = null;
 
-            if (battleStarted && turnPhase == TurnPhase.PlayerTurn)
+            if (inventoryCloseRoutine != null)
+                StopCoroutine(inventoryCloseRoutine);
+
+            inventoryCloseRoutine = StartCoroutine(InventoryCloseSequenceRoutine());
+        }
+
+        private IEnumerator InventoryCloseSequenceRoutine()
+        {
+            // Interrupt any currently running search animation immediately.
+            yield return PlayCharacterAnimImmediateAndWait(playerView, inventoryCloseAnim);
+
+            if (battleStarted && turnPhase == TurnPhase.PlayerTurn && !isInventoryWindowOpen)
                 hudController?.SetInputEnabled(true);
+
+            inventoryCloseRoutine = null;
         }
 
         private void HandleBattleInventoryItemClicked(string itemId)

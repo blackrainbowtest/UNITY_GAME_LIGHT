@@ -27,6 +27,10 @@ namespace Game.Battle.Visual
         ActionAct4 = 33,
 
         Block = 40,
-        Death = 41
+        Death = 41,
+
+        InventoryOpen = 50,
+        InventorySearch = 51,
+        InventoryClose = 52
     }
 }

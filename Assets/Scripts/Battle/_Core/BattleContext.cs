@@ -29,19 +29,25 @@ namespace Game.Battle
         public BattleLocationData Location { get; }
         public BattleMode Mode { get; }
         public EnemyDifficulty EnemyDifficulty { get; }
+        public int EnemyLevel { get; }
+        public int EnemyRankTier { get; }
 
         public BattleContext(
             PlayerCombatSnapshot player,
             EnemyData enemy,
             BattleLocationData location,
             BattleMode mode,
-            EnemyDifficulty enemyDifficulty = EnemyDifficulty.Normal)
+            EnemyDifficulty enemyDifficulty = EnemyDifficulty.Normal,
+            int enemyLevel = 1,
+            int enemyRankTier = 0)
         {
             Player = player;
             Enemy = enemy;
             Location = location;
             Mode = mode;
             EnemyDifficulty = enemyDifficulty;
+            EnemyLevel = enemyLevel < 1 ? 1 : enemyLevel;
+            EnemyRankTier = enemyRankTier < 0 ? 0 : enemyRankTier;
         }
     }
 }

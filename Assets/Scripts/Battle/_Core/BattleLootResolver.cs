@@ -25,13 +25,15 @@ namespace Game.Battle
             }
         }
 
-        public static LootResult Resolve(EnemyData enemy, SaveData save, System.Random rng = null)
+        public static LootResult Resolve(EnemyData enemy, SaveData save, int enemyLevel = -1, System.Random rng = null)
         {
             if (rng == null)
                 rng = new System.Random();
 
-            int level = Mathf.Max(1, save?.player?.level ?? 1);
-            float multiplier = ComputeLootMultiplier(save, level);
+            int playerLevel = Mathf.Max(1, save?.player?.level ?? 1);
+            int resolvedEnemyLevel = enemyLevel > 0 ? enemyLevel : Mathf.Max(1, enemy != null ? enemy.minSpawnLevel : 1);
+            float multiplier = ComputeLootMultiplier(save, playerLevel);
+            float enemyLevelGoldMultiplier = ComputeEnemyLevelGoldMultiplier(playerLevel, resolvedEnemyLevel);
 
             int gold = 0;
             int manaCrystals = 0;
@@ -66,6 +68,8 @@ namespace Game.Battle
 
                     // Apply multiplier after base roll.
                     int finalCount = Mathf.FloorToInt(baseCount * multiplier);
+                    if (IsGoldId(itemId))
+                        finalCount = Mathf.FloorToInt(finalCount * enemyLevelGoldMultiplier);
 
                     // If the drop was rolled (baseCount>0), never reduce it to 0 (even for currencies).
                     if (baseCount > 0)
@@ -87,7 +91,7 @@ namespace Game.Battle
             int baseGoldReward = Mathf.Max(0, enemy != null ? enemy.goldReward : 0);
             if (baseGoldReward > 0 && enemy != null)
             {
-                int finalGoldReward = Mathf.FloorToInt(baseGoldReward * multiplier);
+                int finalGoldReward = Mathf.FloorToInt(baseGoldReward * multiplier * enemyLevelGoldMultiplier);
                 finalGoldReward = Mathf.Max(1, finalGoldReward);
                 gold += finalGoldReward;
             }
@@ -96,7 +100,7 @@ namespace Game.Battle
             if (baseGoldReward <= 0 && (enemy == null || enemy.lootTable == null || enemy.lootTable.Length == 0) && enemy != null)
             {
                 int baseGold = Mathf.Max(1, Mathf.RoundToInt(enemy.maxHp * 0.1f));
-                int finalGold = Mathf.FloorToInt(baseGold * multiplier);
+                int finalGold = Mathf.FloorToInt(baseGold * multiplier * enemyLevelGoldMultiplier);
                 finalGold = Mathf.Max(1, finalGold);
                 gold += finalGold;
             }
@@ -108,7 +112,7 @@ namespace Game.Battle
                 exp = Mathf.Max(1, Mathf.RoundToInt((enemy.maxHp + enemy.attack * 10f) * 0.25f));
             }
             if (exp > 0)
-                exp = Mathf.FloorToInt(exp * ComputeExpMultiplier(level));
+                exp = Mathf.FloorToInt(exp * ComputeExpMultiplier(playerLevel));
 
             return new LootResult(gold, manaCrystals, demonCrystals, exp, items);
         }
@@ -230,6 +234,19 @@ namespace Game.Battle
             level = Mathf.Clamp(level, 1, 20);
             float t = (level - 1) / 19f;
             return Mathf.Lerp(0.5f, 1.0f, t);
+        }
+
+        private static float ComputeEnemyLevelGoldMultiplier(int playerLevel, int enemyLevel)
+        {
+            playerLevel = Mathf.Max(1, playerLevel);
+            enemyLevel = Mathf.Max(1, enemyLevel);
+
+            // Equal level => small bonus.
+            // Enemy higher => bonus grows.
+            // Enemy lower => reduced gold (RPG-style).
+            int delta = enemyLevel - playerLevel;
+            float multiplier = 1.05f + delta * 0.07f;
+            return Mathf.Clamp(multiplier, 0.4f, 2.0f);
         }
 
         private static float ComputeExpMultiplier(int level)

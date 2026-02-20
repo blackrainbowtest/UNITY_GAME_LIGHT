@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: bld_valley
   m_EditorClassIdentifier: UDA2.Battle::Game.Battle.BattleLocationData
   id: location
-  background: {fileID: 21300000, guid: 8778e1ca706b6294a87d48c83266d64d, type: 3}
+  background: {fileID: 21300000, guid: 0df61aeea20354c47ba9b9dc64ba803b, type: 3}
   musicCue: {fileID: 11400000, guid: 96c14bc546ceeb244baaf59722019611, type: 2}
   music: {fileID: 8300000, guid: 30a8d071d1fb304479317e28fd4a27ab, type: 3}
