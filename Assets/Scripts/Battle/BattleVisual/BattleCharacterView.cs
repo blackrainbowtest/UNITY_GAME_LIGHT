@@ -45,6 +45,7 @@ namespace Game.Battle.Visual
         private int idleToken;
         private int lastIdleVariationIndex = -1;
         private IdleAnimation[] resolvedIdleVariations;
+        private bool autoIdleFallbackEnabled = true;
 
         private Coroutine ambientIdleRoutine;
         private int ambientIdleToken;
@@ -459,6 +460,11 @@ namespace Game.Battle.Visual
             animator?.Stop();
         }
 
+        public void SetAutoIdleFallbackEnabled(bool enabled)
+        {
+            autoIdleFallbackEnabled = enabled;
+        }
+
         private void HandleAnimatorLooped()
         {
             // Only trigger pending anim at a clean boundary of a looping clip (idle).
@@ -484,7 +490,8 @@ namespace Game.Battle.Visual
             if (TryPlayPendingNow())
                 return;
 
-            PlayIdle();
+            if (autoIdleFallbackEnabled)
+                PlayIdle();
         }
 
         private bool TryPlayPendingNow()

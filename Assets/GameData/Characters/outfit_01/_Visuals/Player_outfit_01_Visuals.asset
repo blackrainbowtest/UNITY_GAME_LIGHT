@@ -133,12 +133,13 @@ MonoBehaviour:
   actionAct3Variations: []
   actionAct4Variations: []
   inventoryOpenVariations:
-  - {fileID: 11400000, guid: 9501f20141a136e4d915ad9eaa59991a, type: 2}
+  - {fileID: 11400000, guid: 48fb386f56be4c740aad81b320cb6002, type: 2}
   inventorySearchVariations:
-  - {fileID: 11400000, guid: 74deed90e6bed1547ae16a2a6fe73e31, type: 2}
+  - {fileID: 11400000, guid: d7fd8df95f828964fae98400e86b1720, type: 2}
   inventoryCloseVariations:
-  - {fileID: 11400000, guid: ecf035c8a2bb7884f93568a6f178ed09, type: 2}
+  - {fileID: 11400000, guid: d83821be9bf239e40ae061c640523a26, type: 2}
   blockVariations:
   - {fileID: 11400000, guid: 480dd42dd87ed2d4ba287b94f1fb06f6, type: 2}
-  deathVariations:
+  loseVariations:
   - {fileID: 11400000, guid: 480dd42dd87ed2d4ba287b94f1fb06f6, type: 2}
+  lustLoseVariations: []

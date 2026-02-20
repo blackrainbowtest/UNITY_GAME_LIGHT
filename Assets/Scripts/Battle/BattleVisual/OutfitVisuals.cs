@@ -17,6 +17,7 @@
 /* ******************************************************************************************************** */
 
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game.Battle.Visual
 {
@@ -142,28 +143,31 @@ namespace Game.Battle.Visual
         public IdleAnimation[] seductionAct4Variations;
 
         [Header("Actions")]
-        [Tooltip("Optional variations for Action Act 1.")]
+        [Tooltip("Optional variations for Inventory.")]
         public IdleAnimation[] actionAct1Variations;
-        [Tooltip("Optional variations for Action Act 2.")]
+        [Tooltip("Optional variations for Run.")]
         public IdleAnimation[] actionAct2Variations;
-        [Tooltip("Optional variations for Action Act 3.")]
+        [Tooltip("Optional variations for Give up.")]
         public IdleAnimation[] actionAct3Variations;
-        [Tooltip("Optional variations for Action Act 4.")]
+        [Tooltip("Optional variations for Skip.")]
         public IdleAnimation[] actionAct4Variations;
 
         [Header("Inventory")]
-        [Tooltip("Inventory open animation. If empty, fallback is Action Act 1 variation [0].")]
+        [Tooltip("Inventory open animation. If empty, fallback is Inventory variation [0].")]
         public IdleAnimation[] inventoryOpenVariations;
-        [Tooltip("Inventory search/loop animation. If empty, fallback is Action Act 1 variation [1].")]
+        [Tooltip("Inventory search/loop animation. If empty, fallback is Inventory variation [1].")]
         public IdleAnimation[] inventorySearchVariations;
-        [Tooltip("Inventory close animation. If empty, fallback is Action Act 1 variation [2].")]
+        [Tooltip("Inventory close animation. If empty, fallback is Inventory variation [2].")]
         public IdleAnimation[] inventoryCloseVariations;
 
         [Header("Optional")]
         [Tooltip("Optional variations for Block.")]
         public IdleAnimation[] blockVariations;
-        [Tooltip("Optional variations for Death.")]
-        public IdleAnimation[] deathVariations;
+        [FormerlySerializedAs("deathVariations")]
+        [Tooltip("Optional variations for Lose (normal defeat/surrender/failed escape).")]
+        public IdleAnimation[] loseVariations;
+        [Tooltip("Optional variations for LustLose (defeat by LP).")]
+        public IdleAnimation[] lustLoseVariations;
 
         private void OnValidate()
         {
@@ -221,7 +225,9 @@ namespace Game.Battle.Visual
                     break;
 
                 case BattleVisualAnimId.Block: list = blockVariations; break;
-                case BattleVisualAnimId.Death: list = deathVariations; break;
+                case BattleVisualAnimId.Lose: list = loseVariations; break;
+                case BattleVisualAnimId.LustLose: list = lustLoseVariations != null && lustLoseVariations.Length > 0 ? lustLoseVariations : loseVariations; break;
+                case BattleVisualAnimId.Death: list = loseVariations; break;
             }
 
             return list != null && list.Length > 0 ? list : null;

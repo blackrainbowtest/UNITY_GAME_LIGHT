@@ -28,6 +28,8 @@ namespace Game.Battle.Visual
 
         Block = 40,
         Death = 41,
+        Lose = 42,
+        LustLose = 43,
 
         InventoryOpen = 50,
         InventorySearch = 51,

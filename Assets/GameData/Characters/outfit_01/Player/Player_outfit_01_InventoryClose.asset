@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
+  m_Name: Player_outfit_01_InventoryClose
+  m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
+  id: icespell_01
+  frames:
+  - {fileID: 21300000, guid: a794ce6f44b680f4fa8fa618805965c1, type: 3}
+  - {fileID: 21300000, guid: 959efdf953dd5294e84ad68f785476e3, type: 3}
+  - {fileID: 21300000, guid: e1f14c9c8a846be40a1d4895578914d9, type: 3}
+  - {fileID: 21300000, guid: 5249a4027ef61074bbc229b86a01d55f, type: 3}
+  - {fileID: 21300000, guid: 930376bd03bb866499aca870404576f1, type: 3}
+  - {fileID: 21300000, guid: 269174304459d2b4ea7a637fffffec0c, type: 3}
+  - {fileID: 21300000, guid: 5ca4aec0db8c98746b6844d6ae91a928, type: 3}
+  - {fileID: 21300000, guid: 1f85cdd503f0d29429f64c31d5f30031, type: 3}
+  - {fileID: 21300000, guid: 69ca8af649486d248afb5b109abb9a13, type: 3}
+  frameRate: 8
+  hasImpact: 0
+  impactTimeNormalized: 0.5
+  impactFrameIndex: -1

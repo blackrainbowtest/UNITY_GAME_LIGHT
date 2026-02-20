@@ -60,6 +60,7 @@ namespace Game.Battle
             if (inventoryCloseRoutine != null)
                 return;
 
+            playerView?.SetAutoIdleFallbackEnabled(false);
             hudController?.SetInputEnabled(false);
             inventoryOpenRoutine = StartCoroutine(InventoryOpenSequenceRoutine());
         }
@@ -70,6 +71,7 @@ namespace Game.Battle
 
             if (!ShowInventoryWindowInternal())
             {
+                playerView?.SetAutoIdleFallbackEnabled(true);
                 inventoryOpenRoutine = null;
                 if (battleStarted && turnPhase == TurnPhase.PlayerTurn)
                     hudController?.SetInputEnabled(true);
@@ -224,6 +226,9 @@ namespace Game.Battle
         {
             // Interrupt any currently running search animation immediately.
             yield return PlayCharacterAnimImmediateAndWait(playerView, inventoryCloseAnim);
+
+            playerView?.SetAutoIdleFallbackEnabled(true);
+            playerView?.Play(BattleVisualAnimId.Idle);
 
             if (battleStarted && turnPhase == TurnPhase.PlayerTurn && !isInventoryWindowOpen)
                 hudController?.SetInputEnabled(true);

@@ -17,6 +17,7 @@
 /* ******************************************************************************************************** */
 
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Game.Battle.UI;
@@ -161,6 +162,12 @@ namespace Game.Battle
 
             void ShowResultsOrExit()
             {
+                if (reason == BattleFinishReason.EscapeSuccess)
+                {
+                    ExitBattle();
+                    return;
+                }
+
                 if (resultModal != null && showResult)
                 {
                     resultModal.SetItemDatabase(itemDatabase);
@@ -187,11 +194,46 @@ namespace Game.Battle
 
             if (outcomeAnimationModal != null && shouldShowOutcomeModal)
             {
-                outcomeAnimationModal.Show(reason, playerWon, winningActionId, ShowResultsOrExit);
+                ShowOutcomeModalOrResultsWithOptionalLoseAnimation();
             }
             else
             {
-                ShowResultsOrExit();
+                ShowOutcomeModalOrResultsWithOptionalLoseAnimation();
+            }
+
+            void ShowOutcomeModalOrResultsWithOptionalLoseAnimation()
+            {
+                bool shouldPlayLoseAnim = !playerWon &&
+                    (reason == BattleFinishReason.Defeat
+                    || reason == BattleFinishReason.Surrender
+                    || reason == BattleFinishReason.EscapeFailed
+                    || reason == BattleFinishReason.DefeatByLp);
+
+                if (!shouldPlayLoseAnim || playerView == null)
+                {
+                    ShowOutcomeModalOrResults();
+                    return;
+                }
+
+                var loseAnimId = reason == BattleFinishReason.DefeatByLp
+                    ? Game.Battle.Visual.BattleVisualAnimId.LustLose
+                    : Game.Battle.Visual.BattleVisualAnimId.Lose;
+
+                StartCoroutine(PlayLoseAnimThenContinue(loseAnimId));
+            }
+
+            IEnumerator PlayLoseAnimThenContinue(Game.Battle.Visual.BattleVisualAnimId animId)
+            {
+                yield return PlayCharacterAnimImmediateAndWait(playerView, animId);
+                ShowOutcomeModalOrResults();
+            }
+
+            void ShowOutcomeModalOrResults()
+            {
+                if (outcomeAnimationModal != null && shouldShowOutcomeModal)
+                    outcomeAnimationModal.Show(reason, playerWon, winningActionId, ShowResultsOrExit);
+                else
+                    ShowResultsOrExit();
             }
         }
 

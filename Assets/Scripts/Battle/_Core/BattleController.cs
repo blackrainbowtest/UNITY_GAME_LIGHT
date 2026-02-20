@@ -397,6 +397,8 @@ namespace Game.Battle
 
         private IEnumerator EscapeFailedSequenceRoutine()
         {
+            playerView?.SetAutoIdleFallbackEnabled(false);
+
             yield return PlayCharacterAnimAndWait(playerView, escapeFailFallAnim);
 
             bool modalClosed = false;
@@ -419,6 +421,8 @@ namespace Game.Battle
 
             escapeFailedRoutine = null;
 
+            playerView?.SetAutoIdleFallbackEnabled(true);
+
             if (maxLp > 0 && combatState.PlayerLp >= maxLp)
             {
                 FinishBattle(playerWon: false, reason: BattleFinishReason.DefeatByLp, winningActionId: null);
@@ -434,7 +438,9 @@ namespace Game.Battle
                 yield break;
 
             bool finished = false;
-            view.RequestPlayAfterCurrent(animId, onFinished: () => finished = true);
+            // Non-combat utility actions (inventory/open/escape-fail flow) should react instantly
+            // and must not wait for idle loop boundary.
+            view.PlayImmediate(animId, onFinished: () => finished = true);
 
             float timeout = 5f;
             while (!finished && timeout > 0f)
