@@ -16,6 +16,7 @@ namespace UDA2.UI.Game
 
         [Header("Target")]
         [SerializeField] private Image overlayImage;
+        [SerializeField] private string preferredOverlayObjectName = "ScreenOverlays";
 
         [Header("Transition")]
         [Tooltip("Seconds to smoothly transition between tints. Set to 0 for instant.")]
@@ -55,11 +56,15 @@ namespace UDA2.UI.Game
 
         private void Awake()
         {
-            if (overlayImage == null)
-                overlayImage = GetComponent<Image>();
+            ResolveOverlayImage();
 
             if (overlayImage != null)
                 overlayImage.raycastTarget = false;
+            else
+            {
+                enabled = false;
+                return;
+            }
 
             RefreshTargets();
             ApplyImmediate();
@@ -211,5 +216,46 @@ namespace UDA2.UI.Game
                 default: return night;
             }
         }
+
+        private void ResolveOverlayImage()
+        {
+            if (overlayImage != null)
+                return;
+
+            overlayImage = GetComponent<Image>();
+            if (overlayImage != null)
+                return;
+
+            overlayImage = GetComponentInChildren<Image>(includeInactive: true);
+            if (overlayImage != null)
+                return;
+
+            var root = transform.root != null ? transform.root : transform;
+            overlayImage = root.GetComponentInChildren<Image>(includeInactive: true);
+            if (overlayImage != null)
+                return;
+
+            if (!string.IsNullOrWhiteSpace(preferredOverlayObjectName))
+            {
+                var all = root.GetComponentsInChildren<Transform>(includeInactive: true);
+                for (int i = 0; i < all.Length; i++)
+                {
+                    var t = all[i];
+                    if (t == null)
+                        continue;
+
+                    if (!string.Equals(t.name, preferredOverlayObjectName, StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    overlayImage = t.GetComponent<Image>();
+                    if (overlayImage == null)
+                        overlayImage = t.GetComponentInChildren<Image>(includeInactive: true);
+
+                    if (overlayImage != null)
+                        return;
+                }
+            }
+        }
+
     }
 }
