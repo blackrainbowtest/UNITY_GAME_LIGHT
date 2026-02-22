@@ -25,6 +25,21 @@ namespace Game.Battle.Visual
     public sealed class OutfitVisuals : ScriptableObject
     {
         [System.Serializable]
+        public struct EscapeRunMotionConfig
+        {
+            [Tooltip("If false, no movement is applied during successful escape animation.")]
+            public bool enabled;
+
+            [Tooltip("Frame index (1-based) when movement to the left should start during successful escape animation.")]
+            [Min(1)] public int startAtFrame;
+
+            [Tooltip("Movement speed to the left in world units per second.")]
+            [Min(0f)] public float speedLeftUnitsPerSecond;
+
+            public bool IsEnabled => enabled && startAtFrame > 0 && speedLeftUnitsPerSecond > 0f;
+        }
+
+        [System.Serializable]
         public struct HitTimingConfig
         {
             [Tooltip("Attacker animation id (e.g. FastAttack, FireSpell, SeductionAct1, etc).")]
@@ -151,6 +166,10 @@ namespace Game.Battle.Visual
         public IdleAnimation[] actionAct3Variations;
         [Tooltip("Optional variations for Skip.")]
         public IdleAnimation[] actionAct4Variations;
+        [Tooltip("Optional variations for Action fail (e.g. failed escape).")]
+        public IdleAnimation[] actionActFailVariations;
+        [Tooltip("Optional movement config for successful Run (Escape).")]
+        public EscapeRunMotionConfig escapeRunMotion;
 
         [Header("Inventory")]
         [Tooltip("Inventory open animation. If empty, fallback is Inventory variation [0].")]
@@ -204,6 +223,7 @@ namespace Game.Battle.Visual
                 case BattleVisualAnimId.ActionAct2: list = actionAct2Variations != null && actionAct2Variations.Length > 0 ? actionAct2Variations : castVariations; break;
                 case BattleVisualAnimId.ActionAct3: list = actionAct3Variations != null && actionAct3Variations.Length > 0 ? actionAct3Variations : castVariations; break;
                 case BattleVisualAnimId.ActionAct4: list = actionAct4Variations != null && actionAct4Variations.Length > 0 ? actionAct4Variations : castVariations; break;
+                case BattleVisualAnimId.ActionActFail: list = actionActFailVariations; break;
 
                 // Inventory flow uses explicit inventory fields first.
                 // Fallback: ActionAct1 variations by fixed index:
@@ -280,6 +300,12 @@ namespace Game.Battle.Visual
             }
 
             return false;
+        }
+
+        public bool TryGetEscapeRunMotion(out EscapeRunMotionConfig config)
+        {
+            config = escapeRunMotion;
+            return config.IsEnabled;
         }
 
         public IdleAnimation[] GetIdleVariationsOrNull()

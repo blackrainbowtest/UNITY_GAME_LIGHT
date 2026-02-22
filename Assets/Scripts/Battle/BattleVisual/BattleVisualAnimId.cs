@@ -25,6 +25,7 @@ namespace Game.Battle.Visual
         ActionAct2 = 31,
         ActionAct3 = 32,
         ActionAct4 = 33,
+        ActionActFail = 34,
 
         Block = 40,
         Death = 41,

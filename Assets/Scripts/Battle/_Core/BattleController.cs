@@ -84,13 +84,14 @@ namespace Game.Battle
         [SerializeField] private float minEscapeChance = 0.05f;
         [Range(0f, 1f)]
         [SerializeField] private float maxEscapeChance = 0.95f;
+        [SerializeField] private BattleVisualAnimId escapeSuccessAnim = BattleVisualAnimId.ActionAct2;
         [Range(0f, 1f)]
         [SerializeField] private float escapeStaminaWeight = 0.6f;
         [Range(0f, 1f)]
         [SerializeField] private float escapeLustWeight = 0.4f;
         [Header("Escape Failed Sequence")]
-        [SerializeField] private BattleVisualAnimId escapeFailFallAnim = BattleVisualAnimId.ActionAct1;
-        [SerializeField] private BattleVisualAnimId escapeFailRecoverAnim = BattleVisualAnimId.ActionAct2;
+        private Coroutine escapeSuccessRoutine;
+        [SerializeField] private BattleVisualAnimId escapeFailFallAnim = BattleVisualAnimId.ActionActFail;
         [SerializeField] private int escapeFailLpPenalty = 20;
 
         private Coroutine escapeFailedRoutine;
@@ -373,7 +374,7 @@ namespace Game.Battle
             if (turnPhase != TurnPhase.PlayerTurn)
                 return;
 
-            if (escapeFailedRoutine != null)
+            if (escapeFailedRoutine != null || escapeSuccessRoutine != null)
                 return;
 
             float chance = CalculateEscapeChance01();
@@ -383,8 +384,9 @@ namespace Game.Battle
 
             if (roll <= chance)
             {
-                // Escape success: no rewards, but still show results (same old scheme).
-                FinishBattle(playerWon: false, reason: BattleFinishReason.EscapeSuccess, winningActionId: null);
+                turnPhase = TurnPhase.EnemyTurn;
+                hudController?.SetInputEnabled(false);
+                escapeSuccessRoutine = StartCoroutine(EscapeSuccessSequenceRoutine());
             }
             else
             {
@@ -395,11 +397,52 @@ namespace Game.Battle
             }
         }
 
+        private IEnumerator EscapeSuccessSequenceRoutine()
+        {
+            Logger.LogInfo($"[BattleController] Escape success sequence: anim={escapeSuccessAnim}");
+
+            int moveStartFrame = -1;
+            float moveSpeed = 0f;
+            TryGetEscapeRunMotion(out moveStartFrame, out moveSpeed);
+
+            Coroutine moveRoutine = null;
+            System.Action onImpact = null;
+            if (moveStartFrame > 0 && moveSpeed > 0f && playerView != null)
+            {
+                onImpact = () =>
+                {
+                    if (moveRoutine != null)
+                        StopCoroutine(moveRoutine);
+
+                    moveRoutine = StartCoroutine(MoveTransformLeftUntilStopped(playerView.transform, moveSpeed));
+                };
+            }
+
+            yield return PlayCharacterAnimImmediateAndWait(playerView, escapeSuccessAnim, onImpact: onImpact, impactFrameIndexOverride: moveStartFrame);
+
+            if (moveRoutine != null)
+                StopCoroutine(moveRoutine);
+
+            escapeSuccessRoutine = null;
+
+            // Escape success: no rewards, outcome handled by escape flow.
+            FinishBattle(playerWon: false, reason: BattleFinishReason.EscapeSuccess, winningActionId: null);
+        }
+
         private IEnumerator EscapeFailedSequenceRoutine()
         {
             playerView?.SetAutoIdleFallbackEnabled(false);
 
-            yield return PlayCharacterAnimAndWait(playerView, escapeFailFallAnim);
+            var failAnimToPlay = escapeFailFallAnim == BattleVisualAnimId.ActionAct1
+                ? BattleVisualAnimId.ActionActFail
+                : escapeFailFallAnim;
+
+            if (escapeFailFallAnim == BattleVisualAnimId.ActionAct1)
+                Logger.LogWarning("[BattleController] Escape fail anim is legacy ActionAct1 in serialized data. Overriding to ActionActFail at runtime.");
+
+            Logger.LogInfo($"[BattleController] Escape failed sequence: configured={escapeFailFallAnim}, playing={failAnimToPlay}");
+
+            yield return PlayCharacterAnimAndWait(playerView, failAnimToPlay);
 
             bool modalClosed = false;
             if (outcomeAnimationModal != null)
@@ -408,8 +451,6 @@ namespace Game.Battle
                 while (!modalClosed)
                     yield return null;
             }
-
-            yield return PlayCharacterAnimAndWait(playerView, escapeFailRecoverAnim);
 
             int maxLp = context?.Player != null ? Mathf.Max(0, context.Player.MaxLP) : 0;
             int nextLp = combatState.PlayerLp + Mathf.Max(0, escapeFailLpPenalty);
@@ -450,18 +491,51 @@ namespace Game.Battle
             }
         }
 
-        private IEnumerator PlayCharacterAnimImmediateAndWait(BattleCharacterView view, BattleVisualAnimId animId)
+        private IEnumerator PlayCharacterAnimImmediateAndWait(
+            BattleCharacterView view,
+            BattleVisualAnimId animId,
+            System.Action onImpact = null,
+            int impactFrameIndexOverride = -1)
         {
             if (view == null)
                 yield break;
 
             bool finished = false;
-            view.PlayImmediate(animId, onFinished: () => finished = true);
+            view.PlayImmediate(animId, onFinished: () => finished = true, onImpact: onImpact, impactFrameIndexOverride: impactFrameIndexOverride);
 
             float timeout = 5f;
             while (!finished && timeout > 0f)
             {
                 timeout -= Time.deltaTime;
+                yield return null;
+            }
+        }
+
+        private bool TryGetEscapeRunMotion(out int startAtFrame, out float speedLeftUnitsPerSecond)
+        {
+            startAtFrame = -1;
+            speedLeftUnitsPerSecond = 0f;
+
+            var outfit = playerView != null ? playerView.ResolveOutfitVisuals() : null;
+            if (outfit == null)
+                return false;
+
+            if (!outfit.TryGetEscapeRunMotion(out var cfg))
+                return false;
+
+            startAtFrame = cfg.startAtFrame;
+            speedLeftUnitsPerSecond = cfg.speedLeftUnitsPerSecond;
+            return true;
+        }
+
+        private static IEnumerator MoveTransformLeftUntilStopped(Transform target, float speedLeftUnitsPerSecond)
+        {
+            if (target == null || speedLeftUnitsPerSecond <= 0f)
+                yield break;
+
+            while (target != null)
+            {
+                target.position += Vector3.left * speedLeftUnitsPerSecond * Time.deltaTime;
                 yield return null;
             }
         }

@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
+  m_Name: Player_outfit_01_run_fail_01
+  m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
+  id: run_fail
+  frames:
+  - {fileID: 21300000, guid: 35db1e947f31d334297348832d34fdda, type: 3}
+  - {fileID: 21300000, guid: bfbf093a88f12f343bacaab9d6688aa6, type: 3}
+  - {fileID: 21300000, guid: 1675fa7a36936664692ad08853536aef, type: 3}
+  - {fileID: 21300000, guid: 7843023154028b140973d264630515a7, type: 3}
+  - {fileID: 21300000, guid: 890b67be18b8bf4468296ea9ea422981, type: 3}
+  - {fileID: 21300000, guid: 0ebcc7216b0824c488292f6c17aa728e, type: 3}
+  - {fileID: 21300000, guid: db962a9b7c09a6f46a55930eef0c921f, type: 3}
+  - {fileID: 21300000, guid: 19629316e0dab7e4c9c94cf8b0b38f4f, type: 3}
+  - {fileID: 21300000, guid: 2bdb1325006dcdd4dbc91e9e3c5e7298, type: 3}
+  - {fileID: 21300000, guid: be49d0c931183fa4490ee0ea43527e5b, type: 3}
+  - {fileID: 21300000, guid: 46c24e82abf7b4740b85a9802cb5f5d6, type: 3}
+  - {fileID: 21300000, guid: 23ff1ca3de292c7469a029ab2cf96d74, type: 3}
+  - {fileID: 21300000, guid: b06357c1fd513a34a8eea25d8111eb3d, type: 3}
+  - {fileID: 21300000, guid: f2d85b889b7ee9d4590d8980264242e9, type: 3}
+  - {fileID: 21300000, guid: 451d19610c781524394e2a1dc31e4152, type: 3}
+  - {fileID: 21300000, guid: 05910ad43c845c046bf5ca074905c604, type: 3}
+  - {fileID: 21300000, guid: 719f419870c34fe4f8cf42613f8a73e8, type: 3}
+  frameRate: 12
+  hasImpact: 0
+  impactTimeNormalized: 0.5
+  impactFrameIndex: -1

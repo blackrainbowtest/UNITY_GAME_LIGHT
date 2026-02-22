@@ -142,8 +142,11 @@ namespace Game.Battle
                     }
                 }
 
-                // Even on defeat we may want to persist consumed resources.
-                if (resourcesChanged || goldGained > 0)
+                // Even on non-victory outcomes we may need to persist state.
+                // EscapeSuccess can have zero rewards and no detected resource delta,
+                // but still should checkpoint battle completion.
+                bool forceAutosave = reason == BattleFinishReason.EscapeSuccess || reason == BattleFinishReason.Surrender;
+                if (resourcesChanged || goldGained > 0 || forceAutosave)
                 {
                     var save = global::GameState.Instance?.CurrentSave;
                     if (save?.sceneState != null)

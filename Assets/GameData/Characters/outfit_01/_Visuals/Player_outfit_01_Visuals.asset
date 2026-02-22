@@ -128,10 +128,18 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7c1fd753a9d2af940a205537762f7793, type: 2}
   seductionAct4Variations:
   - {fileID: 11400000, guid: ecf035c8a2bb7884f93568a6f178ed09, type: 2}
-  actionAct1Variations: []
-  actionAct2Variations: []
+  actionAct1Variations:
+  - {fileID: 11400000, guid: 48fb386f56be4c740aad81b320cb6002, type: 2}
+  actionAct2Variations:
+  - {fileID: 11400000, guid: d50cc7444f4876a42b8b4bb1edb5a604, type: 2}
   actionAct3Variations: []
   actionAct4Variations: []
+  actionActFailVariations:
+  - {fileID: 11400000, guid: c30b4f1a6d99ac94bac16fea8b408574, type: 2}
+  escapeRunMotion:
+    enabled: 1
+    startAtFrame: 15
+    speedLeftUnitsPerSecond: 10
   inventoryOpenVariations:
   - {fileID: 11400000, guid: 48fb386f56be4c740aad81b320cb6002, type: 2}
   inventorySearchVariations:
@@ -139,7 +147,7 @@ MonoBehaviour:
   inventoryCloseVariations:
   - {fileID: 11400000, guid: d83821be9bf239e40ae061c640523a26, type: 2}
   blockVariations:
-  - {fileID: 11400000, guid: 480dd42dd87ed2d4ba287b94f1fb06f6, type: 2}
+  - {fileID: 11400000, guid: 900622788c292fd46966577e60a419c2, type: 2}
   loseVariations:
   - {fileID: 11400000, guid: 480dd42dd87ed2d4ba287b94f1fb06f6, type: 2}
   lustLoseVariations: []
