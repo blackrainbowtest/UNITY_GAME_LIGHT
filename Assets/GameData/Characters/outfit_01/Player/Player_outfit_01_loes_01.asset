@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
   m_Name: Player_outfit_01_loes_01
   m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
-  id: lust_03
+  id: loes
   frames:
   - {fileID: 21300000, guid: 77efdd178a605334f94f8129f9ff93e7, type: 3}
   - {fileID: 21300000, guid: f72b834de8cbc374588900226f74d4ed, type: 3}

@@ -95,6 +95,7 @@ namespace Game.Battle
         [SerializeField] private int escapeFailLpPenalty = 20;
 
         private Coroutine escapeFailedRoutine;
+        private Coroutine surrenderRoutine;
 
         private void Awake()
         {
@@ -545,7 +546,24 @@ namespace Game.Battle
             if (!battleStarted)
                 return;
 
+            if (turnPhase != TurnPhase.PlayerTurn)
+                return;
+
+            if (surrenderRoutine != null || escapeSuccessRoutine != null || escapeFailedRoutine != null)
+                return;
+
             Logger.LogInfo("BattleController: Surrender pressed");
+
+            turnPhase = TurnPhase.EnemyTurn;
+            hudController?.SetInputEnabled(false);
+            surrenderRoutine = StartCoroutine(SurrenderSequenceRoutine());
+        }
+
+        private IEnumerator SurrenderSequenceRoutine()
+        {
+            yield return PlayCharacterAnimImmediateAndWait(playerView, BattleVisualAnimId.ActionAct3);
+
+            surrenderRoutine = null;
             FinishBattle(playerWon: false, reason: BattleFinishReason.Surrender, winningActionId: null);
         }
 
@@ -619,11 +637,28 @@ namespace Game.Battle
             if (turnPhase != TurnPhase.PlayerTurn)
                 return;
 
+            if (playerActionRoutine != null)
+                return;
+
+            turnPhase = TurnPhase.EnemyTurn;
+            hudController?.SetInputEnabled(false);
+            playerActionRoutine = StartCoroutine(SkipTurnSequenceRoutine());
+        }
+
+        private IEnumerator SkipTurnSequenceRoutine()
+        {
+            if (TryGetVisualAnimId(CombatActionId.ActionAct4, out var animId))
+                yield return PlayCharacterAnimImmediateAndWait(playerView, animId);
+
             // CounterAttack window should last only until the end of the next player turn.
             // If the player skips the turn, they lose the opportunity.
             combatState = combatState
                 .WithPlayerBlockedLastTurn(false)
                 .WithPlayerBlockArmorAbsorbedLastEnemyAction(0);
+
+            PushHudState();
+
+            playerActionRoutine = null;
 
             BeginEnemyTurn();
         }

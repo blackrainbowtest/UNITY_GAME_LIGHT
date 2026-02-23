@@ -314,7 +314,6 @@ namespace Game.Battle.UI
         {
             var cb = onOk;
             onOk = null;
-            Hide();
             cb?.Invoke();
         }
     }

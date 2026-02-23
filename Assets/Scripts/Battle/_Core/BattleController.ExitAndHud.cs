@@ -208,7 +208,6 @@ namespace Game.Battle
             {
                 bool shouldPlayLoseAnim = !playerWon &&
                     (reason == BattleFinishReason.Defeat
-                    || reason == BattleFinishReason.Surrender
                     || reason == BattleFinishReason.EscapeFailed
                     || reason == BattleFinishReason.DefeatByLp);
 

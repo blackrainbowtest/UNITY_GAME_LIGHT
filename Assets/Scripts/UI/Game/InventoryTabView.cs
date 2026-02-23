@@ -172,11 +172,23 @@ namespace UDA2.UI.Game
             if (_buttonVisualCache.ContainsKey(button))
                 return;
 
+            var graphics = button.GetComponentsInChildren<Graphic>(includeInactive: true);
+            var graphicColors = new Color[graphics != null ? graphics.Length : 0];
+            if (graphics != null)
+            {
+                for (int i = 0; i < graphics.Length; i++)
+                {
+                    graphicColors[i] = graphics[i] != null ? graphics[i].color : Color.white;
+                }
+            }
+
             var cache = new ButtonVisualCache
             {
                 colors = button.colors,
                 hasGraphic = button.targetGraphic != null,
                 graphicColor = button.targetGraphic != null ? button.targetGraphic.color : Color.white,
+                graphics = graphics,
+                graphicColors = graphicColors,
             };
 
             _buttonVisualCache.Add(button, cache);
@@ -208,17 +220,44 @@ namespace UDA2.UI.Game
                 colors.disabledColor = selectedColor;
                 button.colors = colors;
                 button.interactable = false;
-
-                if (button.targetGraphic != null)
-                    button.targetGraphic.color = selectedColor;
+                ApplyTintToCachedGraphics(cache, selectedColor);
             }
             else
             {
                 button.interactable = true;
                 button.colors = cache.colors;
+                RestoreCachedGraphics(cache);
+            }
+        }
 
-                if (button.targetGraphic != null && cache.hasGraphic)
-                    button.targetGraphic.color = cache.graphicColor;
+        private static void ApplyTintToCachedGraphics(ButtonVisualCache cache, Color color)
+        {
+            if (cache.graphics == null)
+                return;
+
+            for (int i = 0; i < cache.graphics.Length; i++)
+            {
+                var g = cache.graphics[i];
+                if (g == null)
+                    continue;
+
+                g.color = color;
+            }
+        }
+
+        private static void RestoreCachedGraphics(ButtonVisualCache cache)
+        {
+            if (cache.graphics == null || cache.graphicColors == null)
+                return;
+
+            int count = Math.Min(cache.graphics.Length, cache.graphicColors.Length);
+            for (int i = 0; i < count; i++)
+            {
+                var g = cache.graphics[i];
+                if (g == null)
+                    continue;
+
+                g.color = cache.graphicColors[i];
             }
         }
 
@@ -470,6 +509,8 @@ namespace UDA2.UI.Game
             public ColorBlock colors;
             public bool hasGraphic;
             public Color graphicColor;
+            public Graphic[] graphics;
+            public Color[] graphicColors;
         }
     }
 }

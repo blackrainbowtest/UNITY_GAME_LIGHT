@@ -79,7 +79,6 @@ namespace Game.Battle.UI
 
         private void Close()
         {
-            Hide();
             FinalizeClose(from: "Close");
         }
 

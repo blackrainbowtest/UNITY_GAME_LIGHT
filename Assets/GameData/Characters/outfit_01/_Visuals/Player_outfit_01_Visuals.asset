@@ -132,8 +132,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 48fb386f56be4c740aad81b320cb6002, type: 2}
   actionAct2Variations:
   - {fileID: 11400000, guid: d50cc7444f4876a42b8b4bb1edb5a604, type: 2}
-  actionAct3Variations: []
-  actionAct4Variations: []
+  actionAct3Variations:
+  - {fileID: 11400000, guid: 2847b2b4f6f14d4468347ec7bc1e2ece, type: 2}
+  actionAct4Variations:
+  - {fileID: 11400000, guid: f5e1a61d0023ccb45a3411e866d4103e, type: 2}
   actionActFailVariations:
   - {fileID: 11400000, guid: c30b4f1a6d99ac94bac16fea8b408574, type: 2}
   escapeRunMotion:
@@ -150,4 +152,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 900622788c292fd46966577e60a419c2, type: 2}
   loseVariations:
   - {fileID: 11400000, guid: 480dd42dd87ed2d4ba287b94f1fb06f6, type: 2}
-  lustLoseVariations: []
+  lustLoseVariations:
+  - {fileID: 11400000, guid: 480dd42dd87ed2d4ba287b94f1fb06f6, type: 2}

@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
+  m_Name: Player_outfit_01_giveup_01
+  m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
+  id: loes
+  frames:
+  - {fileID: 21300000, guid: c027f3dde0ec6374f9c4f498ca0ca44e, type: 3}
+  - {fileID: 21300000, guid: f66de89c13a2f05418020a010da9dd69, type: 3}
+  - {fileID: 21300000, guid: 59f24ad3635b9714e8f12e4b054463fb, type: 3}
+  - {fileID: 21300000, guid: b08d0ae753100ce41b94d07549ccd07a, type: 3}
+  - {fileID: 21300000, guid: 82f2f1e66b8f68c48852f32511763559, type: 3}
+  - {fileID: 21300000, guid: a39c9d7f3f4ba81418fb83b440afb3d3, type: 3}
+  - {fileID: 21300000, guid: cbeff969444815545917db9e69abe276, type: 3}
+  - {fileID: 21300000, guid: c88ecfb9a99ad6243bcb90b0b92fb7be, type: 3}
+  - {fileID: 21300000, guid: 32e9bdca7c195e448ba3ff64f57be970, type: 3}
+  - {fileID: 21300000, guid: 9bbdd5a60ee79d5489728d038f3ea69c, type: 3}
+  - {fileID: 21300000, guid: 9d6ca77bd4287574ca2f90909279cc9b, type: 3}
+  - {fileID: 21300000, guid: ec25a706bc7a71146b0570b11e88b83b, type: 3}
+  - {fileID: 21300000, guid: aef55a335d0061e40800f9d0bddf42c4, type: 3}
+  - {fileID: 21300000, guid: e4296ed089044b34393038d3b1b48fed, type: 3}
+  - {fileID: 21300000, guid: 985cb228ea8f4c043a7242fcd8fa1dc5, type: 3}
+  - {fileID: 21300000, guid: 1354e02d1f0756745afa0faf2d939dae, type: 3}
+  - {fileID: 21300000, guid: 9c7c2177e4f27ed4182510d3e4afcdb7, type: 3}
+  - {fileID: 21300000, guid: 2c297ea0e3f279f48a2cd48d124c9a11, type: 3}
+  - {fileID: 21300000, guid: c64d32a666fd0fd40a2d2569853b2282, type: 3}
+  - {fileID: 21300000, guid: cfafff88e27399b4bb62e94a1c9ba858, type: 3}
+  - {fileID: 21300000, guid: d4f5edf49055e274da2563da27549649, type: 3}
+  - {fileID: 21300000, guid: 8ef3984c9a248854c932c04f3a7a0ae7, type: 3}
+  - {fileID: 21300000, guid: affdf8001f88a8349b9b4b087b273e0f, type: 3}
+  frameRate: 12
+  hasImpact: 0
+  impactTimeNormalized: 0.5
+  impactFrameIndex: -1
