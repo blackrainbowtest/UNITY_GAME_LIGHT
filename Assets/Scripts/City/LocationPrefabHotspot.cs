@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Serialization;
+using System.Collections.Generic;
 
 namespace UDA2.City
 {
@@ -27,6 +28,10 @@ namespace UDA2.City
 
         private Button _button;
         private GameObject _openedInstance;
+        private bool _ownsGlobalUiHideRequest;
+
+        private static int s_globalUiHideRequestCount;
+        private static readonly Dictionary<GameObject, bool> s_globalUiOriginalStates = new Dictionary<GameObject, bool>(8);
 
         private void Awake()
         {
@@ -45,6 +50,13 @@ namespace UDA2.City
         {
             if (_button != null)
                 _button.onClick.RemoveListener(HandleClick);
+
+            ReleaseGlobalUiHideIfOwned();
+        }
+
+        private void OnDisable()
+        {
+            ReleaseGlobalUiHideIfOwned();
         }
 
         public void SetInspectMode(bool enabled)
@@ -88,6 +100,8 @@ namespace UDA2.City
 
             if (reuseOpenedInstance && _openedInstance != null)
             {
+                RequestHideGlobalUiIfNeeded();
+                EnsureOpenedLifecycleWatcher(_openedInstance);
                 _openedInstance.SetActive(true);
                 _openedInstance.transform.SetAsLastSibling();
                 return;
@@ -96,7 +110,167 @@ namespace UDA2.City
             Transform parent = ResolveContentParent();
             _openedInstance = Instantiate(contentPrefab, parent, worldPositionStays: false);
             if (_openedInstance != null)
+            {
+                RequestHideGlobalUiIfNeeded();
+                EnsureOpenedLifecycleWatcher(_openedInstance);
                 _openedInstance.transform.SetAsLastSibling();
+            }
+        }
+
+        private void EnsureOpenedLifecycleWatcher(GameObject opened)
+        {
+            if (opened == null)
+                return;
+
+            var watcher = opened.GetComponent<OpenedContentLifecycleWatcher>();
+            if (watcher == null)
+                watcher = opened.AddComponent<OpenedContentLifecycleWatcher>();
+
+            watcher.Bind(this, opened);
+        }
+
+        private void OnOpenedContentClosed(GameObject opened)
+        {
+            if (_openedInstance == opened)
+                _openedInstance = null;
+
+            ReleaseGlobalUiHideIfOwned();
+        }
+
+        private void RequestHideGlobalUiIfNeeded()
+        {
+            if (_ownsGlobalUiHideRequest)
+                return;
+
+            if (s_globalUiHideRequestCount == 0)
+            {
+                s_globalUiOriginalStates.Clear();
+                var roots = FindGlobalUiRoots();
+                for (int i = 0; i < roots.Count; i++)
+                {
+                    var root = roots[i];
+                    if (root == null)
+                        continue;
+
+                    if (!s_globalUiOriginalStates.ContainsKey(root))
+                        s_globalUiOriginalStates[root] = root.activeSelf;
+
+                    root.SetActive(false);
+                }
+            }
+
+            s_globalUiHideRequestCount++;
+            _ownsGlobalUiHideRequest = true;
+        }
+
+        private void ReleaseGlobalUiHideIfOwned()
+        {
+            if (!_ownsGlobalUiHideRequest)
+                return;
+
+            _ownsGlobalUiHideRequest = false;
+            s_globalUiHideRequestCount = Mathf.Max(0, s_globalUiHideRequestCount - 1);
+
+            if (s_globalUiHideRequestCount > 0)
+                return;
+
+            foreach (var pair in s_globalUiOriginalStates)
+            {
+                var root = pair.Key;
+                if (root == null)
+                    continue;
+
+                root.SetActive(pair.Value);
+            }
+
+            s_globalUiOriginalStates.Clear();
+        }
+
+        private static List<GameObject> FindGlobalUiRoots()
+        {
+            var roots = new List<GameObject>(4);
+            MonoBehaviour[] all;
+#if UNITY_2023_1_OR_NEWER || UNITY_2022_2_OR_NEWER
+            all = Object.FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+#else
+#pragma warning disable CS0618
+            all = Object.FindObjectsOfType<MonoBehaviour>(true);
+#pragma warning restore CS0618
+#endif
+
+            if (all == null || all.Length == 0)
+                return roots;
+
+            for (int i = 0; i < all.Length; i++)
+            {
+                var component = all[i];
+                if (component == null)
+                    continue;
+
+                var type = component.GetType();
+                if (type == null)
+                    continue;
+
+                if (!string.Equals(type.FullName, "UDA2.UI.Game.GlobalUISceneBinder", System.StringComparison.Ordinal))
+                    continue;
+
+                var go = component.gameObject;
+                var root = go != null && go.transform != null && go.transform.root != null
+                    ? go.transform.root.gameObject
+                    : go;
+
+                if (root == null)
+                    continue;
+
+                bool exists = false;
+                for (int j = 0; j < roots.Count; j++)
+                {
+                    if (roots[j] == root)
+                    {
+                        exists = true;
+                        break;
+                    }
+                }
+
+                if (!exists)
+                    roots.Add(root);
+            }
+
+            return roots;
+        }
+
+        private sealed class OpenedContentLifecycleWatcher : MonoBehaviour
+        {
+            private LocationPrefabHotspot _owner;
+            private GameObject _tracked;
+            private bool _notified;
+
+            public void Bind(LocationPrefabHotspot owner, GameObject tracked)
+            {
+                _owner = owner;
+                _tracked = tracked;
+                _notified = false;
+            }
+
+            private void OnDisable()
+            {
+                NotifyOwner();
+            }
+
+            private void OnDestroy()
+            {
+                NotifyOwner();
+            }
+
+            private void NotifyOwner()
+            {
+                if (_notified)
+                    return;
+
+                _notified = true;
+                if (_owner != null)
+                    _owner.OnOpenedContentClosed(_tracked != null ? _tracked : gameObject);
+            }
         }
 
         private Transform ResolveContentParent()

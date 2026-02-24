@@ -23,6 +23,7 @@ using UnityEngine.SceneManagement;
 using Game.Battle.UI;
 using Game.Battle.Combat.Actions;
 using UDA2.Audio;
+using UDA2.GameTime;
 using Logger = UDA2.Logging.Logger;
 
 namespace Game.Battle
@@ -72,6 +73,10 @@ namespace Game.Battle
                 reason = BattleFinishReason.Victory;
             else if (!playerWon && reason == BattleFinishReason.Victory)
                 reason = BattleFinishReason.Defeat;
+
+            int battleMinutes = ResolveBattleDurationMinutes(reason, playerWon);
+            if (battleMinutes > 0)
+                GameTimeAPI.AddMinutes(battleMinutes);
 
             // Persist player resources from battle back to SaveData (so leaving battle doesn't "heal to full").
             // This must happen before we leave the battle scene.
@@ -236,6 +241,31 @@ namespace Game.Battle
                     outcomeAnimationModal.Show(reason, playerWon, winningActionId, ShowResultsOrExit);
                 else
                     ShowResultsOrExit();
+            }
+        }
+
+        private static int ResolveBattleDurationMinutes(BattleFinishReason reason, bool playerWon)
+        {
+            switch (reason)
+            {
+                case BattleFinishReason.EscapeSuccess:
+                    return 30;
+
+                case BattleFinishReason.Defeat:
+                case BattleFinishReason.DefeatByLp:
+                case BattleFinishReason.Surrender:
+                    return 45;
+
+                case BattleFinishReason.Victory:
+                case BattleFinishReason.VictoryByLp:
+                    return 60;
+
+                case BattleFinishReason.EscapeFailed:
+                    // Usually does not finish battle (battle continues).
+                    return 0;
+
+                default:
+                    return playerWon ? 60 : 45;
             }
         }
 

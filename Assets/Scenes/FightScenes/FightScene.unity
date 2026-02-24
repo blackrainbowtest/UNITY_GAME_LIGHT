@@ -13429,12 +13429,12 @@ MonoBehaviour:
   defaultReturnSceneName: StartCityScene
   enemyTurnDelaySeconds: 0.35
   endOfRoundDelaySeconds: 0.8
-  minEscapeChance: 0.05
+  minEscapeChance: 0.3
   maxEscapeChance: 0.95
   escapeSuccessAnim: 31
   escapeStaminaWeight: 0.6
   escapeLustWeight: 0.4
-  escapeFailFallAnim: 30
+  escapeFailFallAnim: 34
   escapeFailLpPenalty: 20
   defeatGoldMin: 1
   defeatGoldMax: 3

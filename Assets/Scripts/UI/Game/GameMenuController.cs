@@ -65,6 +65,21 @@ public class GameMenuController : MonoBehaviour
         gameObject.SetActive(true);
     }
 
+    private void CloseMenuImmediate()
+    {
+        if (settingsMenuInstance != null)
+        {
+            var closeHandler = settingsMenuInstance.GetComponent<IMenuCloseHandler>();
+            if (closeHandler != null)
+                closeHandler.OnMenuClosed -= OnSubMenuClosed;
+
+            Destroy(settingsMenuInstance);
+            settingsMenuInstance = null;
+        }
+
+        gameObject.SetActive(false);
+    }
+
     public void GoToMainMenu()
     {
         if (GameState.Instance.CurrentSave == null)
@@ -81,6 +96,9 @@ public class GameMenuController : MonoBehaviour
         {
             Debug.Log($"[GameMenu] Autosave skipped in scene '{sceneName}'");
         }
+
+        // Сначала гарантированно закрываем меню, чтобы оно не переехало в следующую сцену.
+        CloseMenuImmediate();
 
         // Загрузка главного меню через SceneFlowManager
         if (SceneFlowManager.Instance != null)
