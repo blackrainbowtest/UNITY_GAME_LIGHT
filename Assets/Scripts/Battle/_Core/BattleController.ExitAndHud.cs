@@ -238,7 +238,7 @@ namespace Game.Battle
             void ShowOutcomeModalOrResults()
             {
                 if (outcomeAnimationModal != null && shouldShowOutcomeModal)
-                    outcomeAnimationModal.Show(reason, playerWon, winningActionId, ShowResultsOrExit);
+                    outcomeAnimationModal.Show(reason, playerWon, winningActionId, ShowResultsOrExit, hideOnClose: false);
                 else
                     ShowResultsOrExit();
             }

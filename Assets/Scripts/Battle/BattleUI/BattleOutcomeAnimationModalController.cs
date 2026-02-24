@@ -18,6 +18,7 @@ namespace Game.Battle.UI
         private Action _onClosed;
         private bool _suppressHideOnAwake;
         private bool _isOpen;
+        private bool _hideOnClose = true;
 
         public Game.Battle.BattleFinishReason LastReason { get; private set; } = Game.Battle.BattleFinishReason.Defeat;
         public bool LastPlayerWon { get; private set; }
@@ -44,10 +45,11 @@ namespace Game.Battle.UI
             }
         }
 
-        public void Show(Game.Battle.BattleFinishReason reason, bool playerWon, CombatActionId? winningActionId, Action onClosed)
+        public void Show(Game.Battle.BattleFinishReason reason, bool playerWon, CombatActionId? winningActionId, Action onClosed, bool hideOnClose = true)
         {
             _onClosed = onClosed;
             _isOpen = true;
+            _hideOnClose = hideOnClose;
             LastReason = reason;
             LastPlayerWon = playerWon;
             LastWinningActionId = winningActionId;
@@ -80,6 +82,9 @@ namespace Game.Battle.UI
         private void Close()
         {
             FinalizeClose(from: "Close");
+
+            if (_hideOnClose)
+                Hide();
         }
 
         private void FinalizeClose(string from)

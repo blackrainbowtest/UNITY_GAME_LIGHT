@@ -14,33 +14,42 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Battle.EnemyData
   id: slime
   enemyName: Slime
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 63e9e5c245a4c8247bf17d822428db30, type: 3}
   outfitId: outfit_01
-  visualProfile: {fileID: 11400000, guid: 94fe25a12d0c66b4ab0fc7072a1406b2, type: 2}
-  idleAnimation: {fileID: 11400000, guid: 3d337397ce62bbc43aec799c7c4f89a2, type: 2}
-  hp: 30
-  mp: 10
-  sp: 5
-  lp: 5
-  maxHp: 30
-  maxMp: 10
-  maxSp: 5
+  visualProfile: {fileID: 11400000, guid: a28fc4b26c28f48419a41599ce7703c1, type: 2}
+  idleAnimation: {fileID: 11400000, guid: d02574c760f5adb4a84460c70145226b, type: 2}
+  hp: 45
+  mp: 15
+  sp: 45
+  lp: 0
+  maxHp: 45
+  maxMp: 15
+  maxSp: 45
   maxLp: 100
-  attack: 5
-  allowedActions: 000000000100000002000000
+  attack: 8
+  allowedActions: 00000000
+  minSpawnLevel: 1
+  maxSpawnLevel: 2
+  minSpawnRankTier: 0
+  maxSpawnRankTier: 2
   goldReward: 10
-  expReward: 2
+  expReward: 8
   lootTable:
   - item: {fileID: 11400000, guid: 54f64d3f523e1314989dedbd89a43827, type: 2}
     itemId: item_potion_stamina_small
-    minCount: 2
+    minCount: 1
     maxCount: 3
-    dropChance: 0.207
+    dropChance: 0.2
   - item: {fileID: 11400000, guid: 023ee0fa7483d4d47afdd985fc60c209, type: 2}
     itemId: item_potion_stamina_small
     minCount: 1
     maxCount: 2
-    dropChance: 0.56
+    dropChance: 0.6
+  - item: {fileID: 11400000, guid: 6deddcde480da4b4f96fc8db0587fcff, type: 2}
+    itemId: wooden_glue
+    minCount: 1
+    maxCount: 3
+    dropChance: 0.1
   regenHpPerTurn: 5
-  regenMpPerTurn: 2
+  regenMpPerTurn: 4
   regenSpPerTurn: 4

@@ -1,0 +1,93 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce5885deaae081245b76a3c7c94ef83f, type: 3}
+  m_Name: Slime_outfit_01_Visuals
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Battle.Visual.OutfitVisuals
+  outfitId: outfit_01
+  idleVariations:
+  - {fileID: 11400000, guid: d02574c760f5adb4a84460c70145226b, type: 2}
+  hitVariations: []
+  lustHitVariations: []
+  hitTimings: []
+  fastAttackVariations: []
+  normalAttackVariations: []
+  heavyAttackVariations: []
+  counterAttackVariations: []
+  castVariations: []
+  fireSpellVariations: []
+  iceSpellVariations: []
+  holySpellVariations: []
+  darkSpellVariations: []
+  castProjectile:
+    projectilePrefab: {fileID: 0}
+    projectileAnimation: {fileID: 0}
+    spawnAtFrame: 0
+    impactAtFrame: 0
+    pixelsPerUnit: 0
+    spawnOffsetPixels: {x: 0, y: 0}
+    travelDistancePixels: 0
+    travelTimeSeconds: 0
+  fireSpellProjectile:
+    projectilePrefab: {fileID: 0}
+    projectileAnimation: {fileID: 0}
+    spawnAtFrame: 0
+    impactAtFrame: 0
+    pixelsPerUnit: 0
+    spawnOffsetPixels: {x: 0, y: 0}
+    travelDistancePixels: 0
+    travelTimeSeconds: 0
+  iceSpellProjectile:
+    projectilePrefab: {fileID: 0}
+    projectileAnimation: {fileID: 0}
+    spawnAtFrame: 0
+    impactAtFrame: 0
+    pixelsPerUnit: 0
+    spawnOffsetPixels: {x: 0, y: 0}
+    travelDistancePixels: 0
+    travelTimeSeconds: 0
+  holySpellProjectile:
+    projectilePrefab: {fileID: 0}
+    projectileAnimation: {fileID: 0}
+    spawnAtFrame: 0
+    impactAtFrame: 0
+    pixelsPerUnit: 0
+    spawnOffsetPixels: {x: 0, y: 0}
+    travelDistancePixels: 0
+    travelTimeSeconds: 0
+  darkSpellProjectile:
+    projectilePrefab: {fileID: 0}
+    projectileAnimation: {fileID: 0}
+    spawnAtFrame: 0
+    impactAtFrame: 0
+    pixelsPerUnit: 0
+    spawnOffsetPixels: {x: 0, y: 0}
+    travelDistancePixels: 0
+    travelTimeSeconds: 0
+  seductionAct1Variations: []
+  seductionAct2Variations: []
+  seductionAct3Variations: []
+  seductionAct4Variations: []
+  actionAct1Variations: []
+  actionAct2Variations: []
+  actionAct3Variations: []
+  actionAct4Variations: []
+  actionActFailVariations: []
+  escapeRunMotion:
+    enabled: 0
+    startAtFrame: 0
+    speedLeftUnitsPerSecond: 0
+  inventoryOpenVariations: []
+  inventorySearchVariations: []
+  inventoryCloseVariations: []
+  blockVariations: []
+  loseVariations: []
+  lustLoseVariations: []

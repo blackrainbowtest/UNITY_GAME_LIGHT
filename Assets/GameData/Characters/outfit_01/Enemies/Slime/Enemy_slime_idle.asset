@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
+  m_Name: Enemy_slime_idle
+  m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
+  id: idle_01
+  frames:
+  - {fileID: 21300000, guid: 63e9e5c245a4c8247bf17d822428db30, type: 3}
+  - {fileID: 21300000, guid: 6b3a70cbf9e735847a971134ad11352b, type: 3}
+  - {fileID: 21300000, guid: d67fd6c0a47da08489e3a1a35bea6e33, type: 3}
+  - {fileID: 21300000, guid: 5e3716fbe3994514a8ebc139f5926056, type: 3}
+  - {fileID: 21300000, guid: db1f5c9e55d04d344a7359aa4ca44fdb, type: 3}
+  - {fileID: 21300000, guid: 244d53b83a1d93b47b9d05ebb13fa21a, type: 3}
+  - {fileID: 21300000, guid: 51f2b0812d8235c4ab5f9559fc2eeb85, type: 3}
+  - {fileID: 21300000, guid: ce20f6b77d389cd4486cb8702e44d5bf, type: 3}
+  - {fileID: 21300000, guid: 095a09f432cbbcf44b08def896ad5050, type: 3}
+  - {fileID: 21300000, guid: c2e46279262fdf4429ead6e6f5f596e2, type: 3}
+  - {fileID: 21300000, guid: 3cbfc4e7d4092794caf898094695612f, type: 3}
+  - {fileID: 21300000, guid: b5c92672e05ce444db3465f455482857, type: 3}
+  - {fileID: 21300000, guid: 9c4d5c34c68e81043b2f0dd81e613ee6, type: 3}
+  - {fileID: 21300000, guid: afffd848154cbd943a9cf9f0233e2688, type: 3}
+  - {fileID: 21300000, guid: fae4c490508813b48b9bb069030a1384, type: 3}
+  - {fileID: 21300000, guid: 16847b486a8022b49afc29b9eeb5bebd, type: 3}
+  - {fileID: 21300000, guid: d857a9ceea25f524b9621806a73a1818, type: 3}
+  - {fileID: 21300000, guid: 0fa647b43a444c04599e2048b5d285df, type: 3}
+  - {fileID: 21300000, guid: aeb7ea9977c6f744bab60ecb523aeb97, type: 3}
+  - {fileID: 21300000, guid: bd0775210522b1047b498ed8e12b16c7, type: 3}
+  - {fileID: 21300000, guid: 976dab6fce714ef46ae7df9ef330189c, type: 3}
+  - {fileID: 21300000, guid: 790e77acc0faa8a4383ca190d7cff905, type: 3}
+  frameRate: 12
+  hasImpact: 0
+  impactTimeNormalized: 0.5
+  impactFrameIndex: -1
