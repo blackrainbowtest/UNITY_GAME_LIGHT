@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
+  m_Name: Enemy_slime_hit
+  m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
+  id: hit_01
+  frames:
+  - {fileID: 21300000, guid: 1a2b51a310d5786478d55aecd61b7043, type: 3}
+  - {fileID: 21300000, guid: b556cf32518826b47a4dde8d83a85db3, type: 3}
+  - {fileID: 21300000, guid: fccc3ef49717b1b4989f6395d09d2939, type: 3}
+  - {fileID: 21300000, guid: 83f7573b1c02f77428ae1a0fa499a7a2, type: 3}
+  - {fileID: 21300000, guid: 1d2e466e4d510a54b9ddab2542bf3016, type: 3}
+  - {fileID: 21300000, guid: 8c69beaf77be53044880f3ef8cf634f3, type: 3}
+  - {fileID: 21300000, guid: 39d0ac831cf19e64e83d8fdaaae0ba05, type: 3}
+  - {fileID: 21300000, guid: 3c92d7efcdf99084aacc9c417db3984e, type: 3}
+  - {fileID: 21300000, guid: 82127f2d4d1baab44ad581219567bb56, type: 3}
+  - {fileID: 21300000, guid: f1aac82f5db0ee04580d9a47891776f3, type: 3}
+  - {fileID: 21300000, guid: 4ec982deccdbd1545a0cb981a2aec281, type: 3}
+  - {fileID: 21300000, guid: 4e3d0c9f5075a5e468cc92d80294063d, type: 3}
+  - {fileID: 21300000, guid: a350900c8936d4e4abca69f42ef63e9f, type: 3}
+  - {fileID: 21300000, guid: f6dfeed3510321d429c3e253002a9111, type: 3}
+  frameRate: 12
+  hasImpact: 0
+  impactTimeNormalized: 0.5
+  impactFrameIndex: -1

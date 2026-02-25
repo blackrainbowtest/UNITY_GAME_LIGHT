@@ -89,5 +89,7 @@ MonoBehaviour:
   inventorySearchVariations: []
   inventoryCloseVariations: []
   blockVariations: []
-  loseVariations: []
-  lustLoseVariations: []
+  loseVariations:
+  - {fileID: 11400000, guid: caf379a5aa02a3b4689e72eb08801b32, type: 2}
+  lustLoseVariations:
+  - {fileID: 11400000, guid: caf379a5aa02a3b4689e72eb08801b32, type: 2}
