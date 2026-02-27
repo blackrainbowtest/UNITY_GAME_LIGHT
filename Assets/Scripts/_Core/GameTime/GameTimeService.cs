@@ -134,6 +134,25 @@ namespace UDA2.GameTime
             animatedMinutesPerStep = Mathf.Max(1, minutesPerStep);
         }
 
+        public void SyncFromCurrentSave()
+        {
+            if (animateRoutine != null)
+            {
+                StopCoroutine(animateRoutine);
+                animateRoutine = null;
+            }
+
+            initializedFromSave = false;
+
+            var save = global::GameState.Instance?.CurrentSave;
+            if (save == null)
+                return;
+
+            EnsureSaveHasTime(save);
+            initializedFromSave = true;
+            RaiseChanged(save);
+        }
+
         private IEnumerator AddMinutesAnimatedRoutine(int totalMinutes)
         {
             var save = global::GameState.Instance?.CurrentSave;

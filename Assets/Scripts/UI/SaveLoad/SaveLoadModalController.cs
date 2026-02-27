@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using TMPro;
 using UDA2.UI.Common;
 using UDA2.SaveSystem;
+using UDA2.GameTime;
 
 namespace UDA2.UI.SaveLoad
 {
@@ -131,6 +132,7 @@ namespace UDA2.UI.SaveLoad
                 if (save != null)
                 {
                     GameState.Instance.CurrentSave = save;
+                    GameTimeService.Instance?.SyncFromCurrentSave();
 
                     var targetScene = save.player.sceneName;
                     if (save.sceneState != null && save.sceneState.pendingBattle != null && save.sceneState.pendingBattle.isPending)

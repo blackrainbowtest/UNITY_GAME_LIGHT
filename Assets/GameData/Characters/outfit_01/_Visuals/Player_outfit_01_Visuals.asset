@@ -96,10 +96,10 @@ MonoBehaviour:
   iceSpellProjectile:
     projectilePrefab: {fileID: 9137764033155392843, guid: 9b0929501d22190488c2bc22c943f167, type: 3}
     projectileAnimation: {fileID: 11400000, guid: 3458b1095ce7179478cb7f7aa8ba7cc8, type: 2}
-    spawnAtFrame: 8
+    spawnAtFrame: 15
     impactAtFrame: -1
     pixelsPerUnit: 100
-    spawnOffsetPixels: {x: 100, y: 125}
+    spawnOffsetPixels: {x: 125, y: 100}
     travelDistancePixels: 1000
     travelTimeSeconds: 0.8
   holySpellProjectile:

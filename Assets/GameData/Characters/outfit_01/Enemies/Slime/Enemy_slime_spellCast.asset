@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
+  m_Name: Enemy_slime_spellCast
+  m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
+  id: spellCast_01
+  frames:
+  - {fileID: 21300000, guid: d62b30bcd50bb8f4c98fb77e4dd6aa1d, type: 3}
+  - {fileID: 21300000, guid: a1719d26d9e221545a5ccdeab4d14048, type: 3}
+  - {fileID: 21300000, guid: 068ac18fbb62a414eb786abd8538d866, type: 3}
+  - {fileID: 21300000, guid: 6b4a43b441995004f8cc0e14d48834bf, type: 3}
+  - {fileID: 21300000, guid: 566d652bd7bfdb64391d61fb1aeb0922, type: 3}
+  - {fileID: 21300000, guid: 1c9adf37393a2ca4b9f4a64e6e73c004, type: 3}
+  - {fileID: 21300000, guid: 16ddae95423f4c64fae89faa72f1e19b, type: 3}
+  - {fileID: 21300000, guid: 09ef340885819b140938a320b6e2b90e, type: 3}
+  - {fileID: 21300000, guid: 9fca15d082b55ee47af3bf8227d32bb7, type: 3}
+  - {fileID: 21300000, guid: 4a5f1203f59d1c44c827266e399e1bc3, type: 3}
+  - {fileID: 21300000, guid: 47e3dbe6e399de24896e455b5eb88dfd, type: 3}
+  - {fileID: 21300000, guid: 048e2c364c37edb4f80c5fd310dae542, type: 3}
+  - {fileID: 21300000, guid: b2db645e54467c64f800f826e2c49998, type: 3}
+  - {fileID: 21300000, guid: dcba81a8cd05abb4896a06f96c938813, type: 3}
+  - {fileID: 21300000, guid: 0fa00ff9d348a2f488fbda214e25c215, type: 3}
+  - {fileID: 21300000, guid: 99f3cf36c9f244a4fa67893b4dab289c, type: 3}
+  - {fileID: 21300000, guid: 44ebb710edb3b1e4e8300d66bd2e5ab0, type: 3}
+  - {fileID: 21300000, guid: f7320d3c808cf244eb380e9be3804755, type: 3}
+  - {fileID: 21300000, guid: fb3145465c3d1e2438028b4fc0c19d70, type: 3}
+  - {fileID: 21300000, guid: 055821eb051576f4daa4b5bacbc9bd45, type: 3}
+  - {fileID: 21300000, guid: 6c9665f17694d2a4caffbbc3e3db4531, type: 3}
+  - {fileID: 21300000, guid: c043e1ce62a273641b0b793a176e18a8, type: 3}
+  - {fileID: 21300000, guid: c982a72ec665f4c489eb7e428b04e6f9, type: 3}
+  - {fileID: 21300000, guid: d5b8e0645f511c54d8d4f31313e24d66, type: 3}
+  frameRate: 12
+  hasImpact: 1
+  impactTimeNormalized: 0.5
+  impactFrameIndex: 15

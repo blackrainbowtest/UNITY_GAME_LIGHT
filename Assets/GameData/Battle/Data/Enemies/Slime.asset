@@ -19,15 +19,15 @@ MonoBehaviour:
   visualProfile: {fileID: 11400000, guid: a28fc4b26c28f48419a41599ce7703c1, type: 2}
   idleAnimation: {fileID: 11400000, guid: d02574c760f5adb4a84460c70145226b, type: 2}
   hp: 45
-  mp: 15
+  mp: 35
   sp: 45
   lp: 0
   maxHp: 45
-  maxMp: 15
+  maxMp: 35
   maxSp: 45
   maxLp: 100
   attack: 8
-  allowedActions: 00000000
+  allowedActions: 15000000
   minSpawnLevel: 1
   maxSpawnLevel: 2
   minSpawnRankTier: 0
