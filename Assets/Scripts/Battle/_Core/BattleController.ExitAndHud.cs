@@ -47,7 +47,7 @@ namespace Game.Battle
         private void FinishBattle(bool playerWon, BattleFinishReason reason = BattleFinishReason.Defeat, CombatActionId? winningActionId = null)
         {
             battleStarted = false;
-            turnPhase = TurnPhase.BattleOver;
+            turnSystem?.EndBattle();
             hudController?.SetInputEnabled(false);
 
             var showResult = UDA2.Core.SettingsContext.Current == null
