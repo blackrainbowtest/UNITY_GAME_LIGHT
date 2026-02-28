@@ -11,13 +11,13 @@ namespace Game.Battle
     {
         private readonly BattleCharacterView playerView;
         private readonly BattleCharacterView enemyView;
-        private readonly Transform projectilesRoot;
+        private readonly BattleProjectileSpawner projectileSpawner;
 
         public BattleVisualExecutor(BattleCharacterView playerView, BattleCharacterView enemyView, Transform projectilesRoot)
         {
             this.playerView = playerView;
             this.enemyView = enemyView;
-            this.projectilesRoot = projectilesRoot;
+            projectileSpawner = new BattleProjectileSpawner(projectilesRoot);
         }
 
         public IEnumerator PlayEscapeSuccessAndWait(BattleVisualAnimId escapeSuccessAnim)
@@ -159,32 +159,10 @@ namespace Game.Battle
                 if (attackerView == null)
                     return;
 
-                projectileSpawned = true;
-
-                int dir = actorIsPlayer ? 1 : -1;
-                var spawnOffsetUnits = new Vector3(
-                    projectileConfig.ToUnits(projectileConfig.spawnOffsetPixels.x) * dir,
-                    projectileConfig.ToUnits(projectileConfig.spawnOffsetPixels.y),
-                    0f);
-
-                var start = attackerView.transform.position + spawnOffsetUnits;
-                var end = start + Vector3.right * (projectileConfig.ToUnits(projectileConfig.travelDistancePixels) * dir);
-
-                var parent = projectilesRoot != null ? projectilesRoot : null;
-                var go = Object.Instantiate(projectileConfig.projectilePrefab, start, Quaternion.identity, parent);
-                var proj = go.GetComponent<Game.Battle.Visual.BattleSpellProjectile>();
-                if (proj == null)
-                    proj = go.AddComponent<Game.Battle.Visual.BattleSpellProjectile>();
-
-                bool flipX = dir < 0;
-
-                proj.Initialize(
-                    start,
-                    end,
-                    projectileConfig.travelTimeSeconds,
-                    projectileConfig.projectileAnimation,
-                    flipX,
-                    impactAtFrame: projectileConfig.impactAtFrame,
+                projectileSpawned = projectileSpawner.TrySpawnProjectile(
+                    projectileConfig,
+                    attackerView.transform,
+                    actorIsPlayer,
                     onImpact: () => TriggerTargetHitNow());
             }
 

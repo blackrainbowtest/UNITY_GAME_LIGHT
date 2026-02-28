@@ -30,10 +30,74 @@ public static class SaveDataMigration
         if (save.inventory == null) { save.inventory = new SaveData.Inventory(); Mark("inventory initialized"); }
         if (save.storage == null) { save.storage = new SaveData.Storage(); Mark("storage initialized"); }
         if (save.progress == null) { save.progress = new SaveData.Progress(); Mark("progress initialized"); }
+        if (save.progress.guild == null) { save.progress.guild = new SaveData.GuildState(); Mark("progress.guild initialized"); }
         if (save.time == null) { save.time = new SaveData.TimeState(); Mark("time initialized"); }
         if (save.sceneState == null) { save.sceneState = new SaveData.SceneState(); Mark("sceneState initialized"); }
         if (save.sceneState.pendingBattle == null) { save.sceneState.pendingBattle = new SaveData.PendingBattle(); Mark("sceneState.pendingBattle initialized"); }
         if (save.locationStructures == null) { save.locationStructures = new SaveData.LocationStructuresState(); Mark("locationStructures initialized"); }
+
+        if (save.progress.guild.activeQuestIds == null)
+        {
+            save.progress.guild.activeQuestIds = new System.Collections.Generic.List<string>();
+            Mark("progress.guild.activeQuestIds initialized");
+        }
+
+        if (save.progress.guild.selectedQuestIds == null)
+        {
+            save.progress.guild.selectedQuestIds = new System.Collections.Generic.List<string>();
+            Mark("progress.guild.selectedQuestIds initialized");
+        }
+
+        if (save.progress.guild.completedQuestIds == null)
+        {
+            save.progress.guild.completedQuestIds = new System.Collections.Generic.List<string>();
+            Mark("progress.guild.completedQuestIds initialized");
+        }
+
+        if (save.progress.guild.failedQuestIds == null)
+        {
+            save.progress.guild.failedQuestIds = new System.Collections.Generic.List<string>();
+            Mark("progress.guild.failedQuestIds initialized");
+        }
+
+        if (save.progress.guild.remainingQuestPoolIds == null)
+        {
+            save.progress.guild.remainingQuestPoolIds = new System.Collections.Generic.List<string>();
+            Mark("progress.guild.remainingQuestPoolIds initialized");
+        }
+
+        if (save.progress.guild.lastQuestRefreshDay < 0)
+        {
+            save.progress.guild.lastQuestRefreshDay = 0;
+            Mark("progress.guild.lastQuestRefreshDay clamped");
+        }
+
+        if (save.progress.guild.completedQuestsSinceLastRank < 0)
+        {
+            save.progress.guild.completedQuestsSinceLastRank = 0;
+            Mark("progress.guild.completedQuestsSinceLastRank clamped");
+        }
+
+        if (save.progress.guild.completedQuestsTotal < 0)
+        {
+            save.progress.guild.completedQuestsTotal = 0;
+            Mark("progress.guild.completedQuestsTotal clamped");
+        }
+
+        if (SanitizeQuestIdList(save.progress.guild.activeQuestIds))
+            Mark("progress.guild.activeQuestIds sanitized");
+
+        if (SanitizeQuestIdList(save.progress.guild.selectedQuestIds))
+            Mark("progress.guild.selectedQuestIds sanitized");
+
+        if (SanitizeQuestIdList(save.progress.guild.completedQuestIds))
+            Mark("progress.guild.completedQuestIds sanitized");
+
+        if (SanitizeQuestIdList(save.progress.guild.failedQuestIds))
+            Mark("progress.guild.failedQuestIds sanitized");
+
+        if (SanitizeQuestIdList(save.progress.guild.remainingQuestPoolIds))
+            Mark("progress.guild.remainingQuestPoolIds sanitized");
 
         // Time sanity
         if (save.time.day <= 0)
@@ -164,5 +228,34 @@ public static class SaveDataMigration
             Debug.LogWarning($"[SaveDataMigration] Applied: {changes}");
 
         return save;
+    }
+
+    private static bool SanitizeQuestIdList(System.Collections.Generic.List<string> ids)
+    {
+        if (ids == null)
+            return false;
+
+        var changed = false;
+        var seen = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
+        var sanitized = new System.Collections.Generic.List<string>(ids.Count);
+
+        for (var i = 0; i < ids.Count; i++)
+        {
+            var id = ids[i];
+            if (string.IsNullOrWhiteSpace(id) || !seen.Add(id))
+            {
+                changed = true;
+                continue;
+            }
+
+            sanitized.Add(id);
+        }
+
+        if (!changed)
+            return false;
+
+        ids.Clear();
+        ids.AddRange(sanitized);
+        return true;
     }
 }

@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Serialization;
-using System.Collections.Generic;
 
 namespace UDA2.City
 {
@@ -11,6 +10,8 @@ namespace UDA2.City
     {
         [Header("Open Prefab")]
         [SerializeField] private GameObject contentPrefab;
+        [Tooltip("Optional frame prefab. If empty, only content prefab is spawned (legacy mode). If assigned, frame is spawned and content is inserted into frame content root.")]
+        [SerializeField] private GameObject framePrefab;
         [Tooltip("Optional parent override for spawned content. If empty, parent Canvas is auto-detected.")]
         [SerializeField] private Transform contentParent;
         [SerializeField] private bool reuseOpenedInstance = true;
@@ -29,9 +30,6 @@ namespace UDA2.City
         private Button _button;
         private GameObject _openedInstance;
         private bool _ownsGlobalUiHideRequest;
-
-        private static int s_globalUiHideRequestCount;
-        private static readonly Dictionary<GameObject, bool> s_globalUiOriginalStates = new Dictionary<GameObject, bool>(8);
 
         private void Awake()
         {
@@ -108,13 +106,96 @@ namespace UDA2.City
             }
 
             Transform parent = ResolveContentParent();
-            _openedInstance = Instantiate(contentPrefab, parent, worldPositionStays: false);
+            _openedInstance = SpawnOpenedInstance(parent);
             if (_openedInstance != null)
             {
                 RequestHideGlobalUiIfNeeded();
                 EnsureOpenedLifecycleWatcher(_openedInstance);
                 _openedInstance.transform.SetAsLastSibling();
             }
+        }
+
+        private GameObject SpawnOpenedInstance(Transform parent)
+        {
+            if (framePrefab == null)
+                return Instantiate(contentPrefab, parent, worldPositionStays: false);
+
+            var frameInstance = Instantiate(framePrefab, parent, worldPositionStays: false);
+            if (frameInstance == null)
+                return null;
+
+            var frameComponent = ResolveFrameComponent(frameInstance);
+            var contentRoot = ResolveFrameContentRoot(frameInstance, frameComponent);
+            if (contentRoot == null)
+                contentRoot = frameInstance.transform;
+
+            var contentInstance = Instantiate(contentPrefab, contentRoot, worldPositionStays: false);
+            if (contentInstance != null)
+            {
+                contentInstance.transform.SetAsLastSibling();
+                BindFrameHeaderFromContent(frameComponent, contentInstance);
+            }
+
+            SetupFrameClose(frameInstance, frameComponent);
+            return frameInstance;
+        }
+
+        private static LocationWindowFrame ResolveFrameComponent(GameObject frameInstance)
+        {
+            if (frameInstance == null)
+                return null;
+
+            var frame = frameInstance.GetComponent<LocationWindowFrame>();
+            if (frame == null)
+                frame = frameInstance.GetComponentInChildren<LocationWindowFrame>(includeInactive: true);
+
+            return frame;
+        }
+
+        private static Transform ResolveFrameContentRoot(GameObject frameInstance, LocationWindowFrame frame)
+        {
+            if (frame != null)
+                return frame.ContentRoot;
+
+            if (frameInstance != null)
+            {
+                Debug.LogWarning($"[LocationPrefabHotspot] Frame prefab '{frameInstance.name}' has no LocationWindowFrame component. Content will be spawned on frame root.");
+            }
+
+            return frameInstance.transform;
+        }
+
+        private static void BindFrameHeaderFromContent(LocationWindowFrame frame, GameObject contentInstance)
+        {
+            if (frame == null || contentInstance == null)
+                return;
+
+            var contentMeta = contentInstance.GetComponent<LocationWindowContentMeta>();
+            if (contentMeta == null)
+                return;
+
+            frame.SetHeaderTitle(contentMeta.TitleLocalizationKey, contentMeta.TitleFallbackText);
+            contentMeta.ApplyTitleToContentIfAssigned();
+        }
+
+        private void SetupFrameClose(GameObject frameInstance, LocationWindowFrame frame)
+        {
+            if (frameInstance == null)
+                return;
+
+            if (frame == null)
+            {
+                Debug.LogWarning($"[LocationPrefabHotspot] Close is not wired because '{frameInstance.name}' has no LocationWindowFrame component.");
+                return;
+            }
+
+            if (frame.CloseButton == null)
+            {
+                Debug.LogWarning($"[LocationPrefabHotspot] Close is not wired because LocationWindowFrame on '{frameInstance.name}' has no closeButton assigned.");
+                return;
+            }
+
+            frame.CloseButton.onClick.AddListener(CloseOpened);
         }
 
         private void EnsureOpenedLifecycleWatcher(GameObject opened)
@@ -142,24 +223,7 @@ namespace UDA2.City
             if (_ownsGlobalUiHideRequest)
                 return;
 
-            if (s_globalUiHideRequestCount == 0)
-            {
-                s_globalUiOriginalStates.Clear();
-                var roots = FindGlobalUiRoots();
-                for (int i = 0; i < roots.Count; i++)
-                {
-                    var root = roots[i];
-                    if (root == null)
-                        continue;
-
-                    if (!s_globalUiOriginalStates.ContainsKey(root))
-                        s_globalUiOriginalStates[root] = root.activeSelf;
-
-                    root.SetActive(false);
-                }
-            }
-
-            s_globalUiHideRequestCount++;
+            LocationGlobalUiVisibility.RequestHide(this);
             _ownsGlobalUiHideRequest = true;
         }
 
@@ -169,74 +233,7 @@ namespace UDA2.City
                 return;
 
             _ownsGlobalUiHideRequest = false;
-            s_globalUiHideRequestCount = Mathf.Max(0, s_globalUiHideRequestCount - 1);
-
-            if (s_globalUiHideRequestCount > 0)
-                return;
-
-            foreach (var pair in s_globalUiOriginalStates)
-            {
-                var root = pair.Key;
-                if (root == null)
-                    continue;
-
-                root.SetActive(pair.Value);
-            }
-
-            s_globalUiOriginalStates.Clear();
-        }
-
-        private static List<GameObject> FindGlobalUiRoots()
-        {
-            var roots = new List<GameObject>(4);
-            MonoBehaviour[] all;
-#if UNITY_2023_1_OR_NEWER || UNITY_2022_2_OR_NEWER
-            all = Object.FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-#else
-#pragma warning disable CS0618
-            all = Object.FindObjectsOfType<MonoBehaviour>(true);
-#pragma warning restore CS0618
-#endif
-
-            if (all == null || all.Length == 0)
-                return roots;
-
-            for (int i = 0; i < all.Length; i++)
-            {
-                var component = all[i];
-                if (component == null)
-                    continue;
-
-                var type = component.GetType();
-                if (type == null)
-                    continue;
-
-                if (!string.Equals(type.FullName, "UDA2.UI.Game.GlobalUISceneBinder", System.StringComparison.Ordinal))
-                    continue;
-
-                var go = component.gameObject;
-                var root = go != null && go.transform != null && go.transform.root != null
-                    ? go.transform.root.gameObject
-                    : go;
-
-                if (root == null)
-                    continue;
-
-                bool exists = false;
-                for (int j = 0; j < roots.Count; j++)
-                {
-                    if (roots[j] == root)
-                    {
-                        exists = true;
-                        break;
-                    }
-                }
-
-                if (!exists)
-                    roots.Add(root);
-            }
-
-            return roots;
+            LocationGlobalUiVisibility.ReleaseHide(this);
         }
 
         private sealed class OpenedContentLifecycleWatcher : MonoBehaviour

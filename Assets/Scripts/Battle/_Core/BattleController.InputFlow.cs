@@ -7,25 +7,46 @@ namespace Game.Battle
 {
     public partial class BattleController
     {
+        #region UI entrypoints
+
         public void OnAttackPressed()
         {
-            inputCommandHandler?.OnAttackPressed();
+            EnsureInputCommandHandler().OnAttackPressed();
         }
 
         public void OnCombatActionSelected(CombatActionId actionId)
         {
-            inputCommandHandler?.OnCombatActionSelected(actionId);
+            EnsureInputCommandHandler().OnCombatActionSelected(actionId);
         }
 
         public void OnItemPressed()
         {
-            inputCommandHandler?.OnItemPressed();
+            EnsureInputCommandHandler().OnItemPressed();
         }
 
         public void OnRunPressed()
         {
-            inputCommandHandler?.OnRunPressed();
+            EnsureInputCommandHandler().OnRunPressed();
         }
+
+        public void OnSurrenderPressed()
+        {
+            EnsureInputCommandHandler().OnSurrenderPressed();
+        }
+
+        public void OnSkipTurnPressed()
+        {
+            EnsureInputCommandHandler().OnSkipTurnPressed();
+        }
+
+        public void OnExitPressed()
+        {
+            EnsureInputCommandHandler().OnExitPressed();
+        }
+
+        #endregion
+
+        #region Input handlers
 
         private void HandleAttackPressed()
         {
@@ -47,39 +68,81 @@ namespace Game.Battle
             if (!battleStarted)
                 return;
 
-            if (turnSystem == null || !turnSystem.IsPlayerTurn)
+            if (!EnsureTurnSystem().IsPlayerTurn)
                 return;
 
             if (escapeFailedRoutine != null || escapeSuccessRoutine != null)
                 return;
 
-            if (escapeSystem == null)
-                escapeSystem = new BattleEscapeSystem(minEscapeChance, maxEscapeChance, escapeStaminaWeight, escapeLustWeight);
-
-            bool success = escapeSystem.TryRollEscape(rng, context, combatState, out float chance, out float roll);
+            bool success = EnsureEscapeSystem().TryRollEscape(rng, context, combatState, out float chance, out float roll);
 
             Logger.LogInfo($"[BattleController] Run pressed. EscapeChance={chance:0.000}, Roll={roll:0.000}");
 
             if (success)
             {
-                turnSystem?.BeginEnemyTurn();
+                EnsureTurnSystem().BeginEnemyTurn();
                 hudController?.SetInputEnabled(false);
                 escapeSuccessRoutine = StartCoroutine(EscapeSuccessSequenceRoutine());
             }
             else
             {
-                turnSystem?.BeginEnemyTurn();
+                EnsureTurnSystem().BeginEnemyTurn();
                 hudController?.SetInputEnabled(false);
                 escapeFailedRoutine = StartCoroutine(EscapeFailedSequenceRoutine());
             }
         }
 
+        private void HandleSurrenderPressed()
+        {
+            if (!battleStarted)
+                return;
+
+            if (!EnsureTurnSystem().IsPlayerTurn)
+                return;
+
+            if (surrenderRoutine != null || escapeSuccessRoutine != null || escapeFailedRoutine != null)
+                return;
+
+            Logger.LogInfo("BattleController: Surrender pressed");
+
+            EnsureTurnSystem().BeginEnemyTurn();
+            hudController?.SetInputEnabled(false);
+            surrenderRoutine = StartCoroutine(SurrenderSequenceRoutine());
+        }
+
+        private void HandleSkipTurnPressed()
+        {
+            if (!battleStarted)
+                return;
+
+            if (!EnsureTurnSystem().IsPlayerTurn)
+                return;
+
+            if (playerActionRoutine != null)
+                return;
+
+            EnsureTurnSystem().BeginEnemyTurn();
+            hudController?.SetInputEnabled(false);
+            playerActionRoutine = StartCoroutine(SkipTurnSequenceRoutine());
+        }
+
+        private void HandleExitPressed()
+        {
+            if (!battleStarted)
+                return;
+
+            Logger.LogInfo("BattleController: Exit pressed");
+            battleStarted = false;
+            ExitBattle();
+        }
+
+        #endregion
+
+        #region Input sequences
+
         private IEnumerator EscapeSuccessSequenceRoutine()
         {
-            if (visualExecutor == null)
-                visualExecutor = new BattleVisualExecutor(playerView, enemyView, projectilesRoot);
-
-            yield return visualExecutor.PlayEscapeSuccessAndWait(escapeSuccessAnim);
+            yield return EnsureVisualExecutor().PlayEscapeSuccessAndWait(escapeSuccessAnim);
 
             escapeSuccessRoutine = null;
             FinishBattle(playerWon: false, reason: BattleFinishReason.EscapeSuccess, winningActionId: null);
@@ -98,10 +161,7 @@ namespace Game.Battle
 
             Logger.LogInfo($"[BattleController] Escape failed sequence: configured={escapeFailFallAnim}, playing={failAnimToPlay}");
 
-            if (visualExecutor == null)
-                visualExecutor = new BattleVisualExecutor(playerView, enemyView, projectilesRoot);
-
-            yield return visualExecutor.PlayCharacterAnimAndWait(playerView, failAnimToPlay);
+            yield return EnsureVisualExecutor().PlayCharacterAnimAndWait(playerView, failAnimToPlay);
 
             bool modalClosed = false;
             if (outcomeAnimationModal != null)
@@ -118,7 +178,7 @@ namespace Game.Battle
 
             playerView?.SetAutoIdleFallbackEnabled(true);
 
-            if (escapeSystem.IsPlayerLpDefeat(context, combatState))
+            if (EnsureEscapeSystem().IsPlayerLpDefeat(context, combatState))
             {
                 FinishBattle(playerWon: false, reason: BattleFinishReason.DefeatByLp, winningActionId: null);
                 yield break;
@@ -127,84 +187,19 @@ namespace Game.Battle
             BeginEnemyTurn();
         }
 
-        public void OnSurrenderPressed()
-        {
-            inputCommandHandler?.OnSurrenderPressed();
-        }
-
-        private void HandleSurrenderPressed()
-        {
-            if (!battleStarted)
-                return;
-
-            if (turnSystem == null || !turnSystem.IsPlayerTurn)
-                return;
-
-            if (surrenderRoutine != null || escapeSuccessRoutine != null || escapeFailedRoutine != null)
-                return;
-
-            Logger.LogInfo("BattleController: Surrender pressed");
-
-            turnSystem?.BeginEnemyTurn();
-            hudController?.SetInputEnabled(false);
-            surrenderRoutine = StartCoroutine(SurrenderSequenceRoutine());
-        }
-
         private IEnumerator SurrenderSequenceRoutine()
         {
-            if (visualExecutor == null)
-                visualExecutor = new BattleVisualExecutor(playerView, enemyView, projectilesRoot);
-
-            yield return visualExecutor.PlayCharacterAnimImmediateAndWait(playerView, BattleVisualAnimId.ActionAct3);
+            yield return EnsureVisualExecutor().PlayCharacterAnimImmediateAndWait(playerView, BattleVisualAnimId.ActionAct3);
 
             surrenderRoutine = null;
             FinishBattle(playerWon: false, reason: BattleFinishReason.Surrender, winningActionId: null);
-        }
-
-        private bool TryFinishByLpThreshold(bool actionByPlayer, CombatActionId? sourceActionId)
-        {
-            if (!battleStarted)
-                return false;
-
-            if (endConditionSystem == null)
-                endConditionSystem = new BattleEndConditionSystem();
-
-            if (!endConditionSystem.TryResolveByLpThreshold(context, combatState, actionByPlayer, sourceActionId, out var resolution))
-                return false;
-
-            FinishBattle(resolution.PlayerWon, resolution.Reason, resolution.WinningActionId);
-            return resolution.ShouldFinish;
-        }
-
-        public void OnSkipTurnPressed()
-        {
-            inputCommandHandler?.OnSkipTurnPressed();
-        }
-
-        private void HandleSkipTurnPressed()
-        {
-            if (!battleStarted)
-                return;
-
-            if (turnSystem == null || !turnSystem.IsPlayerTurn)
-                return;
-
-            if (playerActionRoutine != null)
-                return;
-
-            turnSystem?.BeginEnemyTurn();
-            hudController?.SetInputEnabled(false);
-            playerActionRoutine = StartCoroutine(SkipTurnSequenceRoutine());
         }
 
         private IEnumerator SkipTurnSequenceRoutine()
         {
             if (TryGetVisualAnimId(CombatActionId.ActionAct4, out var animId))
             {
-                if (visualExecutor == null)
-                    visualExecutor = new BattleVisualExecutor(playerView, enemyView, projectilesRoot);
-
-                yield return visualExecutor.PlayCharacterAnimImmediateAndWait(playerView, animId);
+                yield return EnsureVisualExecutor().PlayCharacterAnimImmediateAndWait(playerView, animId);
             }
 
             combatState = combatState
@@ -217,6 +212,10 @@ namespace Game.Battle
 
             BeginEnemyTurn();
         }
+
+        #endregion
+
+        #region Shared animation helpers
 
         private static bool TryGetVisualAnimId(CombatActionId actionId, out BattleVisualAnimId animId)
         {
@@ -250,10 +249,7 @@ namespace Game.Battle
 
         private IEnumerator PlayCharacterAnimAndWait(BattleCharacterView view, BattleVisualAnimId animId)
         {
-            if (visualExecutor == null)
-                visualExecutor = new BattleVisualExecutor(playerView, enemyView, projectilesRoot);
-
-            yield return visualExecutor.PlayCharacterAnimAndWait(view, animId);
+            yield return EnsureVisualExecutor().PlayCharacterAnimAndWait(view, animId);
         }
 
         private IEnumerator PlayCharacterAnimImmediateAndWait(
@@ -262,25 +258,9 @@ namespace Game.Battle
             System.Action onImpact = null,
             int impactFrameIndexOverride = -1)
         {
-            if (visualExecutor == null)
-                visualExecutor = new BattleVisualExecutor(playerView, enemyView, projectilesRoot);
-
-            yield return visualExecutor.PlayCharacterAnimImmediateAndWait(view, animId, onImpact, impactFrameIndexOverride);
+            yield return EnsureVisualExecutor().PlayCharacterAnimImmediateAndWait(view, animId, onImpact, impactFrameIndexOverride);
         }
 
-        public void OnExitPressed()
-        {
-            inputCommandHandler?.OnExitPressed();
-        }
-
-        private void HandleExitPressed()
-        {
-            if (!battleStarted)
-                return;
-
-            Logger.LogInfo("BattleController: Exit pressed");
-            battleStarted = false;
-            ExitBattle();
-        }
+                #endregion
     }
 }

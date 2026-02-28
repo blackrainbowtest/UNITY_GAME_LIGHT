@@ -21,6 +21,7 @@
 
 ## Common / Core
 - [Common API Reference](common/COMMON_API_REFERENCE.md)
+- [Guild Runtime API](common/GUILD_RUNTIME_API.md)
 
 ## Проект
 - [Roadmap](project/ROADMAP.md)

@@ -40,6 +40,7 @@ namespace Game.Battle
         private BattleTurnSystem turnSystem;
         private BattleActionResolutionSystem actionResolutionSystem;
         private BattleInputCommandHandler inputCommandHandler;
+        private BattleTurnFlowRunner turnFlowRunner;
 
         private Coroutine enemyTurnRoutine;
         private readonly System.Random rng = new System.Random();
@@ -95,21 +96,12 @@ namespace Game.Battle
 
         private void Awake()
         {
-            escapeSystem = new BattleEscapeSystem(minEscapeChance, maxEscapeChance, escapeStaminaWeight, escapeLustWeight);
-            visualExecutor = new BattleVisualExecutor(playerView, enemyView, projectilesRoot);
-            endConditionSystem = new BattleEndConditionSystem();
-            turnSystem = new BattleTurnSystem();
-            actionResolutionSystem = new BattleActionResolutionSystem();
-            inputCommandHandler = new BattleInputCommandHandler(
-                isBattleStarted: () => battleStarted,
-                isPlayerTurn: () => turnSystem != null && turnSystem.IsPlayerTurn,
-                onAttack: HandleAttackPressed,
-                onCombatActionSelected: HandleCombatActionSelected,
-                onItem: HandleItemPressed,
-                onRun: HandleRunPressed,
-                onSurrender: HandleSurrenderPressed,
-                onSkipTurn: HandleSkipTurnPressed,
-                onExit: HandleExitPressed);
+            EnsureEscapeSystem();
+            EnsureVisualExecutor();
+            EnsureEndConditionSystem();
+            EnsureTurnSystem();
+            EnsureActionResolutionSystem();
+            EnsureInputCommandHandler();
 
             if (resultModal == null)
             {
@@ -236,7 +228,7 @@ namespace Game.Battle
 
             context = battleContext;
             battleStarted = true;
-            turnSystem?.Reset();
+            EnsureTurnSystem().Reset();
 
             combatEngine = new BattleCombatEngine();
             actionRegistry = new CombatActionRegistry();
@@ -284,15 +276,78 @@ namespace Game.Battle
             if (!battleStarted)
                 return;
 
-            turnSystem?.BeginPlayerTurn();
+            EnsureTurnSystem().BeginPlayerTurn();
             ResetPerTurnNonCombatActions();
             hudController?.SetInputEnabled(true);
         }
 
         private void RestorePlayerInputWithoutNewTurnReset()
         {
-            turnSystem?.BeginPlayerTurn();
+            EnsureTurnSystem().BeginPlayerTurn();
             hudController?.SetInputEnabled(true);
+        }
+
+        private BattleEscapeSystem EnsureEscapeSystem()
+        {
+            if (escapeSystem == null)
+                escapeSystem = new BattleEscapeSystem(minEscapeChance, maxEscapeChance, escapeStaminaWeight, escapeLustWeight);
+            return escapeSystem;
+        }
+
+        private BattleVisualExecutor EnsureVisualExecutor()
+        {
+            if (visualExecutor == null)
+                visualExecutor = new BattleVisualExecutor(playerView, enemyView, projectilesRoot);
+            return visualExecutor;
+        }
+
+        private BattleEndConditionSystem EnsureEndConditionSystem()
+        {
+            if (endConditionSystem == null)
+                endConditionSystem = new BattleEndConditionSystem();
+            return endConditionSystem;
+        }
+
+        private BattleTurnFlowRunner EnsureTurnFlowRunner()
+        {
+            var endSystem = EnsureEndConditionSystem();
+            if (turnFlowRunner == null)
+                turnFlowRunner = new BattleTurnFlowRunner(endSystem);
+
+            return turnFlowRunner;
+        }
+
+        private BattleTurnSystem EnsureTurnSystem()
+        {
+            if (turnSystem == null)
+                turnSystem = new BattleTurnSystem();
+            return turnSystem;
+        }
+
+        private BattleActionResolutionSystem EnsureActionResolutionSystem()
+        {
+            if (actionResolutionSystem == null)
+                actionResolutionSystem = new BattleActionResolutionSystem();
+            return actionResolutionSystem;
+        }
+
+        private BattleInputCommandHandler EnsureInputCommandHandler()
+        {
+            if (inputCommandHandler == null)
+            {
+                inputCommandHandler = new BattleInputCommandHandler(
+                    isBattleStarted: () => battleStarted,
+                    isPlayerTurn: () => turnSystem != null && turnSystem.IsPlayerTurn,
+                    onAttack: HandleAttackPressed,
+                    onCombatActionSelected: HandleCombatActionSelected,
+                    onItem: HandleItemPressed,
+                    onRun: HandleRunPressed,
+                    onSurrender: HandleSurrenderPressed,
+                    onSkipTurn: HandleSkipTurnPressed,
+                    onExit: HandleExitPressed);
+            }
+
+            return inputCommandHandler;
         }
 
         private void InitializeParticipants()
@@ -352,14 +407,14 @@ namespace Game.Battle
         }
         private void ExecutePlayerAction(CombatActionId actionId)
         {
-            if (turnSystem == null || !turnSystem.IsPlayerTurn)
+            if (!EnsureTurnSystem().IsPlayerTurn)
                 return;
 
             if (playerActionRoutine != null)
                 return;
 
             // Lock input immediately to prevent spamming while enemy is about to act.
-            turnSystem?.BeginEnemyTurn();
+            EnsureTurnSystem().BeginEnemyTurn();
             hudController?.SetInputEnabled(false);
 
             playerActionRoutine = StartCoroutine(ExecutePlayerActionRoutine(actionId));
@@ -367,10 +422,7 @@ namespace Game.Battle
 
         private IEnumerator ExecutePlayerActionRoutine(CombatActionId actionId)
         {
-            if (actionResolutionSystem == null)
-                actionResolutionSystem = new BattleActionResolutionSystem();
-
-            if (!actionResolutionSystem.TryResolvePlayerAction(
+            if (!EnsureActionResolutionSystem().TryResolvePlayerAction(
                 combatEngine,
                 actionRegistry,
                 combatState,
@@ -399,10 +451,7 @@ namespace Game.Battle
             }
 
             // 1) Play attacker animation and (if HP damage happened) target Hit starting together.
-            if (visualExecutor == null)
-                visualExecutor = new BattleVisualExecutor(playerView, enemyView, projectilesRoot);
-
-            yield return visualExecutor.PlayActionWithTargetHitAndWait(actionId, actorIsPlayer: true, combatState, resolution.State);
+            yield return EnsureVisualExecutor().PlayActionWithTargetHitAndWait(actionId, actorIsPlayer: true, combatState, resolution.State);
 
             // 2) Apply results after animation.
             combatState = ClampPlayerResourcesToMax(resolution.State);
@@ -415,15 +464,9 @@ namespace Game.Battle
 
             playerActionRoutine = null;
 
-            if (TryFinishByLpThreshold(actionByPlayer: true, sourceActionId: actionId))
-                yield break;
-
-            if (endConditionSystem == null)
-                endConditionSystem = new BattleEndConditionSystem();
-
-            if (endConditionSystem.TryResolveByHp(combatState, checkEnemyDeathAsPlayerVictory: true, sourceActionId: actionId, out var playerActionHpResolution))
+            if (EnsureTurnFlowRunner().TryResolveAfterPlayerAction(context, combatState, actionId, out var playerActionResolution))
             {
-                FinishBattle(playerActionHpResolution.PlayerWon, playerActionHpResolution.Reason, playerActionHpResolution.WinningActionId);
+                FinishBattle(playerActionResolution.PlayerWon, playerActionResolution.Reason, playerActionResolution.WinningActionId);
                 yield break;
             }
 
@@ -439,7 +482,7 @@ namespace Game.Battle
             if (enemyTurnRoutine != null)
                 return;
 
-            turnSystem?.BeginEnemyTurn();
+            EnsureTurnSystem().BeginEnemyTurn();
             hudController?.SetInputEnabled(false);
             enemyTurnRoutine = StartCoroutine(EnemyTurnRoutine());
         }
@@ -454,10 +497,7 @@ namespace Game.Battle
             if (TryResolveEnemyAction(out var enemyActionId, out var enemyAction, out var enemyResolution))
             {
                 // Play enemy animation and (if HP damage happened) player Hit starting together.
-                if (visualExecutor == null)
-                    visualExecutor = new BattleVisualExecutor(playerView, enemyView, projectilesRoot);
-
-                yield return visualExecutor.PlayActionWithTargetHitAndWait(enemyActionId, actorIsPlayer: false, combatState, enemyResolution.State);
+                yield return EnsureVisualExecutor().PlayActionWithTargetHitAndWait(enemyActionId, actorIsPlayer: false, combatState, enemyResolution.State);
 
                 combatState = ClampEnemyResourcesToMax(enemyResolution.State);
                 ApplyPostActionEffects(enemyActionId, actorIsPlayer: false);
@@ -471,18 +511,9 @@ namespace Game.Battle
 
                 PushHudState();
 
-                if (TryFinishByLpThreshold(actionByPlayer: false, sourceActionId: enemyActionId))
+                if (EnsureTurnFlowRunner().TryResolveAfterEnemyAction(context, combatState, enemyActionId, out var enemyActionResolution))
                 {
-                    enemyTurnRoutine = null;
-                    yield break;
-                }
-
-                if (endConditionSystem == null)
-                    endConditionSystem = new BattleEndConditionSystem();
-
-                if (endConditionSystem.TryResolveByHp(combatState, checkEnemyDeathAsPlayerVictory: false, sourceActionId: enemyActionId, out var enemyActionHpResolution))
-                {
-                    FinishBattle(enemyActionHpResolution.PlayerWon, enemyActionHpResolution.Reason, enemyActionHpResolution.WinningActionId);
+                    FinishBattle(enemyActionResolution.PlayerWon, enemyActionResolution.Reason, enemyActionResolution.WinningActionId);
                     enemyTurnRoutine = null;
                     yield break;
                 }
@@ -493,12 +524,9 @@ namespace Game.Battle
             if (!battleStarted)
                 yield break;
 
-            if (endConditionSystem == null)
-                endConditionSystem = new BattleEndConditionSystem();
-
-            if (endConditionSystem.TryResolveByHp(combatState, checkEnemyDeathAsPlayerVictory: false, sourceActionId: null, out var postEnemyTurnHpResolution))
+            if (EnsureTurnFlowRunner().TryResolveAfterEnemyRound(context, combatState, out var postEnemyTurnResolution))
             {
-                FinishBattle(postEnemyTurnHpResolution.PlayerWon, postEnemyTurnHpResolution.Reason, postEnemyTurnHpResolution.WinningActionId);
+                FinishBattle(postEnemyTurnResolution.PlayerWon, postEnemyTurnResolution.Reason, postEnemyTurnResolution.WinningActionId);
                 yield break;
             }
 
@@ -509,8 +537,11 @@ namespace Game.Battle
             ApplyEndOfRoundEffects();
             PushHudState();
 
-            if (TryFinishByLpThreshold(actionByPlayer: false, sourceActionId: null))
+            if (EnsureTurnFlowRunner().TryResolveAfterEnemyRound(context, combatState, out var postRoundResolution))
+            {
+                FinishBattle(postRoundResolution.PlayerWon, postRoundResolution.Reason, postRoundResolution.WinningActionId);
                 yield break;
+            }
 
             BeginPlayerTurn();
         }
@@ -528,10 +559,7 @@ namespace Game.Battle
                 return false;
             }
 
-            if (actionResolutionSystem == null)
-                actionResolutionSystem = new BattleActionResolutionSystem();
-
-            if (!actionResolutionSystem.TryResolveEnemyAction(
+            if (!EnsureActionResolutionSystem().TryResolveEnemyAction(
                 context,
                 combatEngine,
                 actionRegistry,

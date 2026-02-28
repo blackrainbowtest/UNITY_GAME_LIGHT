@@ -137,6 +137,7 @@ public class SaveData
         public string introResult;
 
         public AdventurerRank adventurerRank = AdventurerRank.None;
+        public GuildState guild = new GuildState();
 
         /// <summary>
         /// Sets the intro result. Only allows non-null, non-empty values.
@@ -155,6 +156,51 @@ public class SaveData
         {
             adventurerRank = value;
         }
+    }
+
+    [Serializable]
+    public class GuildState
+    {
+        /// <summary>
+        /// Day number of the last daily board refresh processed at/after 12:00.
+        /// </summary>
+        public int lastQuestRefreshDay = 0;
+
+        /// <summary>
+        /// Current active quest ids shown on the guild board.
+        /// </summary>
+        public List<string> activeQuestIds = new List<string>();
+
+        /// <summary>
+        /// Accepted/selected quests currently tracked by the player.
+        /// </summary>
+        public List<string> selectedQuestIds = new List<string>();
+
+        /// <summary>
+        /// Quest ids completed by the player.
+        /// </summary>
+        public List<string> completedQuestIds = new List<string>();
+
+        /// <summary>
+        /// Quest ids failed/cancelled by the player.
+        /// </summary>
+        public List<string> failedQuestIds = new List<string>();
+
+        /// <summary>
+        /// Remaining quest ids in the current no-repeat random cycle.
+        /// </summary>
+        public List<string> remainingQuestPoolIds = new List<string>();
+
+        /// <summary>
+        /// Completed quests counted toward the next rank upgrade requirement.
+        /// Reset when rank is upgraded.
+        /// </summary>
+        public int completedQuestsSinceLastRank = 0;
+
+        /// <summary>
+        /// Lifetime completed quest count (analytics/progression).
+        /// </summary>
+        public int completedQuestsTotal = 0;
     }
 
     [Serializable]
