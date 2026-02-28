@@ -61,6 +61,11 @@ namespace UDA2.City
             if (!string.IsNullOrWhiteSpace(localizationKey))
             {
                 var localized = headerTitleText.GetComponent<LocalizedGlobalComponent>();
+                if (localized == null)
+                    localized = headerTitleText.GetComponentInParent<LocalizedGlobalComponent>();
+                if (localized == null)
+                    localized = headerTitleText.GetComponentInChildren<LocalizedGlobalComponent>(includeInactive: true);
+
                 if (localized != null)
                 {
                     localized.Key = localizationKey;
@@ -74,6 +79,8 @@ namespace UDA2.City
                     headerTitleText.text = resolved;
                     return;
                 }
+
+                Debug.LogWarning($"[LocationWindowFrame] Header title localization key '{localizationKey}' was provided, but no LocalizedGlobalComponent was found near '{headerTitleText.name}'. Applied fallback text.", this);
             }
 
             SetHeaderTitle(fallbackTitle);

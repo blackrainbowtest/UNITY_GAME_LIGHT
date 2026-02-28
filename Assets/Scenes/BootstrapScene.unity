@@ -479,6 +479,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a35b77c8a5c831f41953a5ca2302675f, type: 2}
   - {fileID: 11400000, guid: 6789f4d7ea21eda4b974d3d7149785b8, type: 2}
   - {fileID: 11400000, guid: b0d7e91bc8c91004e9bb10c8a92f42ec, type: 2}
+  - {fileID: 11400000, guid: 1d9aaf21b5a4719488169463da5a3fc6, type: 2}
   defaultLanguage: en
 --- !u!4 &679055685
 Transform:

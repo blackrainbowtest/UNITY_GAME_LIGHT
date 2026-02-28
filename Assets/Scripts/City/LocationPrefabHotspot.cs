@@ -172,7 +172,13 @@ namespace UDA2.City
 
             var contentMeta = contentInstance.GetComponent<LocationWindowContentMeta>();
             if (contentMeta == null)
+                contentMeta = contentInstance.GetComponentInChildren<LocationWindowContentMeta>(includeInactive: true);
+
+            if (contentMeta == null)
+            {
+                Debug.LogWarning($"[LocationPrefabHotspot] LocationWindowContentMeta not found on '{contentInstance.name}' (or its children). Header title was not set.");
                 return;
+            }
 
             frame.SetHeaderTitle(contentMeta.TitleLocalizationKey, contentMeta.TitleFallbackText);
             contentMeta.ApplyTitleToContentIfAssigned();
