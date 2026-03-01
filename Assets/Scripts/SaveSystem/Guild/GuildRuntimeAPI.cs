@@ -119,9 +119,28 @@ namespace UDA2.SaveSystem.Guild
 
             var success = service.TryRankUp(out newRank);
             if (success)
+            {
+                var save = global::GameState.Instance?.CurrentSave;
+                if (save != null)
+                    global::SaveSlotsManager.SaveToSlot(0, save);
+
                 GuildNotificationAPI.NotifyRankUp();
+            }
 
             return success;
+        }
+
+        public static AdventurerRank GetCurrentRank()
+        {
+            var service = GetService();
+            return service != null ? service.CurrentRank : AdventurerRank.None;
+        }
+
+        public static bool TryGetRankUpViewData(out GuildRankUpViewData data)
+        {
+            data = null;
+            var service = GetService();
+            return service != null && service.TryBuildRankUpViewData(out data);
         }
     }
 }

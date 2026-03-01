@@ -12,6 +12,7 @@
   - `completedQuestIds` — завершённые,
   - `failedQuestIds` — проваленные/отменённые.
 - API уведомлений на ключах локализации (без UI-системы уведомлений).
+- Регистрация в гильдии: фиксированный первый ап `None -> G` за `10` золота.
 
 ## Основные классы
 
@@ -64,11 +65,26 @@ GuildRuntimeAPI.TrySubmitQuest(questId, out var questDef);
 ```csharp
 GuildRuntimeAPI.CanRankUp(out var requirement);
 GuildRuntimeAPI.TryRankUp(out var newRank);
+GuildRuntimeAPI.GetCurrentRank();
+GuildRuntimeAPI.TryGetRankUpViewData(out var rankViewData);
 ```
 
 Событие уведомления при успешном апе:
 
 - `ui_guild_rank_up`
+
+`TryGetRankUpViewData` возвращает данные для UI регистрации:
+
+- текущий и целевой ранг,
+- требования по золоту/уровню/квестам,
+- список ресурсов с прогрессом:
+  - `required`,
+  - `inventoryOwned`,
+  - `storageOwned`,
+  - `totalOwned`,
+  - `isMet`.
+
+Важно: для апа ранга проверка и списание предметов выполняются по сумме инвентаря и хранилища.
 
 ## Подписка на уведомления (future-ready)
 
@@ -101,6 +117,51 @@ private void HandleGuildNotification(string localizationKey)
   - `ui_guild_rank_up`
 - Убедиться, что rank/board config ассеты существуют и корректно заполнены.
 - В UI использовать только `GuildRuntimeAPI`, а не прямой доступ к `GuildService`.
+
+## Registrar MVP (без финальных артов)
+
+Для UI регистрации уже есть готовые скрипты:
+
+- `Assets/Scripts/UI/Guild/GuildRegistrarWindowController.cs`
+- `Assets/Scripts/UI/Guild/GuildRegistrarResourceRowView.cs`
+- `Assets/Scripts/SaveSystem/Guild/GuildRankVisualConfigAsset.cs`
+
+### Что создать в Unity
+
+1. `GuildRankProgressionConfigAsset` (если ещё не создан):
+  - заполни требования для рангов начиная с `F` и выше,
+  - `G` не нужно задавать как первый шаг (он фиксирован через регистрацию).
+
+2. `GuildRankVisualConfigAsset`:
+  - добавь записи по рангам,
+  - каждому рангу задай `textColor`,
+  - `icon` можно оставить пустым до появления артов.
+
+3. Префаб строки ресурса:
+  - root с `GuildRegistrarResourceRowView`,
+  - назначь поля: `iconImage`, `itemIdText`, `requiredText`, `currentText`.
+
+4. Контент окна регистратора:
+  - повесь `GuildRegistrarWindowController`,
+  - назначь тексты/иконки ранга,
+  - назначь `resourcesRoot` и `resourceRowPrefab`,
+  - назначь кнопку `rankUpButton`,
+  - назначь `rankVisualConfig`,
+  - опционально `itemDatabase` для автопоказа иконок ресурсов.
+
+### Какие данные получает UI
+
+`GuildRuntimeAPI.TryGetRankUpViewData(out data)` возвращает:
+
+- `currentRank`, `targetRank`,
+- золото/уровень/квесты (текущее и требуемое),
+- список ресурсов (`requiredItems`) для скролла,
+- по каждому ресурсу:
+  - `required`,
+  - `inventoryOwned`,
+  - `storageOwned`,
+  - `totalOwned`,
+  - `isMet`.
 
 ## Режим `frame + content` для hotspot (новый)
 

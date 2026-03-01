@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Game.Progression;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace UDA2.SaveSystem.Guild
 {
@@ -9,8 +10,10 @@ namespace UDA2.SaveSystem.Guild
     {
         [Header("Identity")]
         public string questId;
-        public string title;
-        [TextArea] public string description;
+        [FormerlySerializedAs("title")]
+        public string titleLocalizationKey;
+        [FormerlySerializedAs("description")]
+        public string descriptionLocalizationKey;
 
         [Header("Availability")]
         public AdventurerRank requiredRank = AdventurerRank.None;

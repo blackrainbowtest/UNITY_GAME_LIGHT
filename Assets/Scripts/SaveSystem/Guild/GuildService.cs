@@ -7,6 +7,8 @@ namespace UDA2.SaveSystem.Guild
 {
     public sealed class GuildService
     {
+        private const int FirstRegistrationGoldCost = 10;
+
         private readonly SaveData save;
         private readonly GuildRankProgressionConfigAsset rankConfig;
         private readonly GuildQuestBoardConfigAsset boardConfig;
@@ -23,6 +25,57 @@ namespace UDA2.SaveSystem.Guild
         }
 
         public AdventurerRank CurrentRank => save.progress?.adventurerRank ?? AdventurerRank.None;
+
+        public bool TryBuildRankUpViewData(out GuildRankUpViewData data)
+        {
+            data = null;
+            if (!TryGetNextRankRequirement(out var requirement) || requirement == null)
+                return false;
+
+            var currentGold = Math.Max(0, save.inventory?.gold ?? 0);
+            var currentHeroLevel = Math.Max(1, save.player?.level ?? 1);
+            var currentCompleted = Math.Max(0, save.progress?.guild?.completedQuestsSinceLastRank ?? 0);
+
+            data = new GuildRankUpViewData
+            {
+                currentRank = CurrentRank,
+                targetRank = requirement.targetRank,
+                requiredGold = Math.Max(0, requirement.requiredGold),
+                currentGold = currentGold,
+                requiredHeroLevel = Math.Max(1, requirement.requiredHeroLevel),
+                currentHeroLevel = currentHeroLevel,
+                requiredCompletedQuests = Math.Max(0, requirement.requiredCompletedQuests),
+                currentCompletedQuests = currentCompleted,
+                canRankUpNow = CanRankUp(out _)
+            };
+
+            if (requirement.requiredItems == null)
+                return true;
+
+            for (var i = 0; i < requirement.requiredItems.Count; i++)
+            {
+                var req = requirement.requiredItems[i];
+                if (req == null || string.IsNullOrWhiteSpace(req.itemId))
+                    continue;
+
+                var needed = Math.Max(0, req.amount);
+                var inv = GetInventoryItemCount(req.itemId);
+                var storage = GetStorageItemCount(req.itemId);
+                var total = inv + storage;
+
+                data.requiredItems.Add(new GuildItemRequirementProgress
+                {
+                    itemId = req.itemId,
+                    required = needed,
+                    inventoryOwned = inv,
+                    storageOwned = storage,
+                    totalOwned = total,
+                    isMet = total >= needed
+                });
+            }
+
+            return true;
+        }
 
         public IReadOnlyList<string> GetActiveQuestIds()
         {
@@ -51,6 +104,21 @@ namespace UDA2.SaveSystem.Guild
         public bool TryGetNextRankRequirement(out GuildRankRequirement requirement)
         {
             requirement = null;
+
+            if (CurrentRank == AdventurerRank.None)
+            {
+                requirement = new GuildRankRequirement
+                {
+                    targetRank = AdventurerRank.G,
+                    requiredGold = FirstRegistrationGoldCost,
+                    requiredHeroLevel = 1,
+                    requiredCompletedQuests = 0,
+                    requiredItems = new List<GuildItemAmount>()
+                };
+
+                return true;
+            }
+
             if (rankConfig == null)
                 return false;
 
@@ -250,7 +318,7 @@ namespace UDA2.SaveSystem.Guild
             if (save.progress.guild.completedQuestsSinceLastRank < Math.Max(0, requirement.requiredCompletedQuests))
                 return false;
 
-            return HasItems(requirement.requiredItems);
+            return HasItems(requirement.requiredItems, includeStorage: true);
         }
 
         private bool HasQuestTurnInRequirements(GuildQuestDefinitionAsset quest)
@@ -258,10 +326,10 @@ namespace UDA2.SaveSystem.Guild
             if (save.inventory.gold < Math.Max(0, quest.requiredGold))
                 return false;
 
-            return HasItems(quest.requiredItems);
+            return HasItems(quest.requiredItems, includeStorage: false);
         }
 
-        private bool HasItems(List<GuildItemAmount> requirements)
+        private bool HasItems(List<GuildItemAmount> requirements, bool includeStorage)
         {
             if (requirements == null || requirements.Count == 0)
                 return true;
@@ -275,7 +343,10 @@ namespace UDA2.SaveSystem.Guild
                 if (needed == 0)
                     continue;
 
-                var current = save.inventory?.items?.FirstOrDefault(i => i.itemId == requirement.itemId)?.count ?? 0;
+                var current = GetInventoryItemCount(requirement.itemId);
+                if (includeStorage)
+                    current += GetStorageItemCount(requirement.itemId);
+
                 if (current < needed)
                     return false;
             }
@@ -286,13 +357,13 @@ namespace UDA2.SaveSystem.Guild
         private void ConsumeRankRequirements(GuildRankRequirement requirement)
         {
             save.inventory.gold -= Math.Max(0, requirement.requiredGold);
-            ConsumeItems(requirement.requiredItems);
+            ConsumeItems(requirement.requiredItems, includeStorage: true);
         }
 
         private void ConsumeQuestTurnInRequirements(GuildQuestDefinitionAsset quest)
         {
             save.inventory.gold -= Math.Max(0, quest.requiredGold);
-            ConsumeItems(quest.requiredItems);
+            ConsumeItems(quest.requiredItems, includeStorage: false);
         }
 
         private void GrantQuestRewards(GuildQuestDefinitionAsset quest)
@@ -302,7 +373,7 @@ namespace UDA2.SaveSystem.Guild
             AddItems(quest.rewardItems);
         }
 
-        private void ConsumeItems(List<GuildItemAmount> requiredItems)
+        private void ConsumeItems(List<GuildItemAmount> requiredItems, bool includeStorage)
         {
             if (requiredItems == null || requiredItems.Count == 0)
                 return;
@@ -316,14 +387,30 @@ namespace UDA2.SaveSystem.Guild
                 if (needed == 0)
                     continue;
 
-                var item = save.inventory.items.FirstOrDefault(i => i.itemId == requirement.itemId);
-                if (item == null)
-                    continue;
+                var leftToConsume = needed;
 
-                item.count = Math.Max(0, item.count - needed);
+                var item = save.inventory.items.FirstOrDefault(i => i.itemId == requirement.itemId);
+                if (item != null && leftToConsume > 0)
+                {
+                    var fromInventory = Math.Min(item.count, leftToConsume);
+                    item.count = Math.Max(0, item.count - fromInventory);
+                    leftToConsume -= fromInventory;
+                }
+
+                if (includeStorage && leftToConsume > 0)
+                {
+                    var storageItem = save.storage.items.FirstOrDefault(i => i.itemId == requirement.itemId);
+                    if (storageItem != null)
+                    {
+                        var fromStorage = Math.Min(storageItem.count, leftToConsume);
+                        storageItem.count = Math.Max(0, storageItem.count - fromStorage);
+                    }
+                }
             }
 
             save.inventory.items.RemoveAll(i => i == null || i.count <= 0 || string.IsNullOrWhiteSpace(i.itemId));
+            if (save.storage?.items != null)
+                save.storage.items.RemoveAll(i => i == null || i.count <= 0 || string.IsNullOrWhiteSpace(i.itemId));
         }
 
         private void AddItems(List<GuildItemAmount> rewardItems)
@@ -362,10 +449,28 @@ namespace UDA2.SaveSystem.Guild
             save.progress.guild.remainingQuestPoolIds ??= new List<string>();
             save.inventory ??= new SaveData.Inventory();
             save.inventory.items ??= new List<SaveData.Item>();
+            save.storage ??= new SaveData.Storage();
+            save.storage.items ??= new List<SaveData.Item>();
             save.player ??= new SaveData.Player();
             save.time ??= new SaveData.TimeState();
 
             save.time.minuteOfDay = ClampMinuteOfDay(save.time.minuteOfDay);
+        }
+
+        private int GetInventoryItemCount(string itemId)
+        {
+            if (string.IsNullOrWhiteSpace(itemId) || save.inventory?.items == null)
+                return 0;
+
+            return Math.Max(0, save.inventory.items.FirstOrDefault(i => i.itemId == itemId)?.count ?? 0);
+        }
+
+        private int GetStorageItemCount(string itemId)
+        {
+            if (string.IsNullOrWhiteSpace(itemId) || save.storage?.items == null)
+                return 0;
+
+            return Math.Max(0, save.storage.items.FirstOrDefault(i => i.itemId == itemId)?.count ?? 0);
         }
 
         private static void AddUnique(List<string> list, string questId)

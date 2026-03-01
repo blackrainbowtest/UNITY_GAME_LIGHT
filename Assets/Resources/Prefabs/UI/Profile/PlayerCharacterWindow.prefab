@@ -200,7 +200,7 @@ MonoBehaviour:
     tabViewPrefab: {fileID: 6063369162586707143, guid: 8b502f2a6df768e448ac376aaef0bd7f, type: 3}
   - tabId: 1
     tabButton: {fileID: 2089552517721801415}
-    tabViewPrefab: {fileID: 5044492533165708819, guid: b7d217827feca764a835948a8f0380ce, type: 3}
+    tabViewPrefab: {fileID: 6063369162586707143, guid: 73a61c8b3bdf14b4a8b651f161f8d552, type: 3}
   - tabId: 2
     tabButton: {fileID: 8890025381126034219}
     tabViewPrefab: {fileID: 5044492533165708819, guid: e3375f5eac980af4ca56ec151308f452, type: 3}

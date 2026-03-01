@@ -202,36 +202,58 @@ namespace Game.Battle
 
             if (outcomeAnimationModal != null && shouldShowOutcomeModal)
             {
-                ShowOutcomeModalOrResultsWithOptionalLoseAnimation();
+                ShowOutcomeModalOrResultsWithOptionalEndAnimation();
             }
             else
             {
-                ShowOutcomeModalOrResultsWithOptionalLoseAnimation();
+                ShowOutcomeModalOrResultsWithOptionalEndAnimation();
             }
 
-            void ShowOutcomeModalOrResultsWithOptionalLoseAnimation()
+            void ShowOutcomeModalOrResultsWithOptionalEndAnimation()
             {
-                bool shouldPlayLoseAnim = !playerWon &&
+                bool shouldPlayPlayerLoseAnim = !playerWon &&
                     (reason == BattleFinishReason.Defeat
                     || reason == BattleFinishReason.EscapeFailed
                     || reason == BattleFinishReason.DefeatByLp);
 
-                if (!shouldPlayLoseAnim || playerView == null)
+                bool shouldPlayEnemyDefeatAnim = playerWon &&
+                    (reason == BattleFinishReason.Victory
+                    || reason == BattleFinishReason.VictoryByLp);
+
+                if (!shouldPlayPlayerLoseAnim && !shouldPlayEnemyDefeatAnim)
                 {
                     ShowOutcomeModalOrResults();
                     return;
                 }
 
-                var loseAnimId = reason == BattleFinishReason.DefeatByLp
-                    ? Game.Battle.Visual.BattleVisualAnimId.LustLose
-                    : Game.Battle.Visual.BattleVisualAnimId.Lose;
+                if (shouldPlayPlayerLoseAnim)
+                {
+                    if (playerView == null)
+                    {
+                        ShowOutcomeModalOrResults();
+                        return;
+                    }
 
-                StartCoroutine(PlayLoseAnimThenContinue(loseAnimId));
+                    var loseAnimId = reason == BattleFinishReason.DefeatByLp
+                        ? Game.Battle.Visual.BattleVisualAnimId.LustLose
+                        : Game.Battle.Visual.BattleVisualAnimId.Lose;
+
+                    StartCoroutine(PlayEndAnimThenContinue(playerView, loseAnimId));
+                    return;
+                }
+
+                if (enemyView == null)
+                {
+                    ShowOutcomeModalOrResults();
+                    return;
+                }
+
+                StartCoroutine(PlayEndAnimThenContinue(enemyView, Game.Battle.Visual.BattleVisualAnimId.Death));
             }
 
-            IEnumerator PlayLoseAnimThenContinue(Game.Battle.Visual.BattleVisualAnimId animId)
+            IEnumerator PlayEndAnimThenContinue(Game.Battle.Visual.BattleCharacterView view, Game.Battle.Visual.BattleVisualAnimId animId)
             {
-                yield return PlayCharacterAnimImmediateAndWait(playerView, animId);
+                yield return PlayCharacterAnimImmediateAndWait(view, animId);
                 ShowOutcomeModalOrResults();
             }
 

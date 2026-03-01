@@ -674,6 +674,7 @@ GameObject:
   - component: {fileID: 957226304}
   - component: {fileID: 957226306}
   - component: {fileID: 957226305}
+  - component: {fileID: 957226307}
   m_Layer: 5
   m_Name: Frame
   m_TagString: Untagged
@@ -738,6 +739,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 957226303}
   m_CullTransparentMesh: 1
+--- !u!114 &957226307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 957226303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a366efd922b1e6744be5efc61867eff0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UDA2.UI::UDA2.UI.UIButtonSound
 --- !u!1 &1034057956
 GameObject:
   m_ObjectHideFlags: 0
@@ -895,6 +908,7 @@ GameObject:
   - component: {fileID: 1414712927}
   - component: {fileID: 1414712926}
   - component: {fileID: 1414712925}
+  - component: {fileID: 1414712929}
   m_Layer: 5
   m_Name: Interactive_taskbar
   m_TagString: Untagged
@@ -935,8 +949,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18db083e4d5c87442b9ba5e96ab1fdfb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UDA2.City.LocationPrefabHotspot
-  contentPrefab: {fileID: 8955515864637266488, guid: 087d460f21971a64d828e4af35dabf95, type: 3}
-  framePrefab: {fileID: 0}
+  contentPrefab: {fileID: 8955515864637266488, guid: 4159a9ad8b91e3e4c88dc36d56193cf4, type: 3}
+  framePrefab: {fileID: 8955515864637266488, guid: 1027d38b4a4d1c441b1a28cd2dadf757, type: 3}
   contentParent: {fileID: 0}
   reuseOpenedInstance: 1
   interactableOnlyInInspectMode: 0
@@ -1024,6 +1038,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1414712923}
   m_CullTransparentMesh: 1
+--- !u!114 &1414712929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1414712923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a366efd922b1e6744be5efc61867eff0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UDA2.UI::UDA2.UI.UIButtonSound
 --- !u!1 &1416416728
 GameObject:
   m_ObjectHideFlags: 0
@@ -1037,6 +1063,7 @@ GameObject:
   - component: {fileID: 1416416732}
   - component: {fileID: 1416416731}
   - component: {fileID: 1416416730}
+  - component: {fileID: 1416416734}
   m_Layer: 5
   m_Name: Interactive_guild_registrar
   m_TagString: Untagged
@@ -1166,6 +1193,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1416416728}
   m_CullTransparentMesh: 1
+--- !u!114 &1416416734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1416416728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a366efd922b1e6744be5efc61867eff0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UDA2.UI::UDA2.UI.UIButtonSound
 --- !u!1 &1666938877
 GameObject:
   m_ObjectHideFlags: 0

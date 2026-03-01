@@ -176,7 +176,7 @@ namespace UDA2.City
 
             if (contentMeta == null)
             {
-                Debug.LogWarning($"[LocationPrefabHotspot] LocationWindowContentMeta not found on '{contentInstance.name}' (or its children). Header title was not set.");
+                // Optional by design: keep frame header as-is when content meta is absent.
                 return;
             }
 

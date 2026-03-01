@@ -628,7 +628,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18db083e4d5c87442b9ba5e96ab1fdfb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UDA2.City.LocationPrefabHotspot
-  contentPrefab: {fileID: 5044492533165708819, guid: e3375f5eac980af4ca56ec151308f452, type: 3}
+  contentPrefab: {fileID: 8955515864637266488, guid: 4159a9ad8b91e3e4c88dc36d56193cf4, type: 3}
+  framePrefab: {fileID: 8955515864637266488, guid: 1027d38b4a4d1c441b1a28cd2dadf757, type: 3}
   contentParent: {fileID: 430088321}
   reuseOpenedInstance: 1
   interactableOnlyInInspectMode: 0
@@ -809,7 +810,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18db083e4d5c87442b9ba5e96ab1fdfb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UDA2.City.LocationPrefabHotspot
-  contentPrefab: {fileID: 5044492533165708819, guid: e3375f5eac980af4ca56ec151308f452, type: 3}
+  contentPrefab: {fileID: 8955515864637266488, guid: 4159a9ad8b91e3e4c88dc36d56193cf4, type: 3}
+  framePrefab: {fileID: 8955515864637266488, guid: 1027d38b4a4d1c441b1a28cd2dadf757, type: 3}
   contentParent: {fileID: 430088321}
   reuseOpenedInstance: 1
   interactableOnlyInInspectMode: 0
@@ -1287,7 +1289,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18db083e4d5c87442b9ba5e96ab1fdfb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UDA2.City.LocationPrefabHotspot
-  contentPrefab: {fileID: 5044492533165708819, guid: e3375f5eac980af4ca56ec151308f452, type: 3}
+  contentPrefab: {fileID: 8955515864637266488, guid: 4159a9ad8b91e3e4c88dc36d56193cf4, type: 3}
+  framePrefab: {fileID: 8955515864637266488, guid: 1027d38b4a4d1c441b1a28cd2dadf757, type: 3}
   contentParent: {fileID: 430088321}
   reuseOpenedInstance: 1
   interactableOnlyInInspectMode: 0
@@ -1665,7 +1668,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18db083e4d5c87442b9ba5e96ab1fdfb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UDA2.City.LocationPrefabHotspot
-  contentPrefab: {fileID: 5044492533165708819, guid: e3375f5eac980af4ca56ec151308f452, type: 3}
+  contentPrefab: {fileID: 8955515864637266488, guid: 4159a9ad8b91e3e4c88dc36d56193cf4, type: 3}
+  framePrefab: {fileID: 8955515864637266488, guid: 1027d38b4a4d1c441b1a28cd2dadf757, type: 3}
   contentParent: {fileID: 430088321}
   reuseOpenedInstance: 1
   interactableOnlyInInspectMode: 0
@@ -1882,6 +1886,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UDA2.City.LocationPrefabHotspot
   contentPrefab: {fileID: 8955515864637266488, guid: 087d460f21971a64d828e4af35dabf95, type: 3}
+  framePrefab: {fileID: 0}
   contentParent: {fileID: 430088321}
   reuseOpenedInstance: 1
   interactableOnlyInInspectMode: 0
@@ -2322,7 +2327,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18db083e4d5c87442b9ba5e96ab1fdfb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UDA2.City.LocationPrefabHotspot
-  contentPrefab: {fileID: 5044492533165708819, guid: e3375f5eac980af4ca56ec151308f452, type: 3}
+  contentPrefab: {fileID: 8955515864637266488, guid: 4159a9ad8b91e3e4c88dc36d56193cf4, type: 3}
+  framePrefab: {fileID: 8955515864637266488, guid: 1027d38b4a4d1c441b1a28cd2dadf757, type: 3}
   contentParent: {fileID: 430088321}
   reuseOpenedInstance: 1
   interactableOnlyInInspectMode: 0
