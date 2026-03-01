@@ -14,6 +14,7 @@ namespace UDA2.UI.Game
         [Header("Wiring")]
         [SerializeField] private ProfileTabView profileTabView;
         [SerializeField] private ProfileExperienceView profileExperienceView;
+        [SerializeField] private ProfileStatusView profileStatusView;
 
         [Header("Behavior")]
         [SerializeField] private bool refreshOnEnable = true;
@@ -27,6 +28,9 @@ namespace UDA2.UI.Game
 
             if (profileExperienceView == null)
                 profileExperienceView = GetComponentInChildren<ProfileExperienceView>(includeInactive: true);
+
+            if (profileStatusView == null)
+                profileStatusView = GetComponentInChildren<ProfileStatusView>(includeInactive: true);
         }
 
         private void OnEnable()
@@ -51,6 +55,9 @@ namespace UDA2.UI.Game
 
             // Level + exp numbers + exp bar fill
             profileExperienceView?.RefreshFromCurrentSave();
+
+            // HP/MP/SP/LP bars
+            profileStatusView?.RefreshFromCurrentSave();
         }
 
         private void OnSlotClicked(EquipmentSlotId slotId)
