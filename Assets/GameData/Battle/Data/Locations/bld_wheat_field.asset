@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: UDA2.Battle::Game.Battle.BattleLocationData
   id: location
   background: {fileID: 21300000, guid: 573d5f30a18b68f4b9ed49dece63eb13, type: 3}
-  musicCue: {fileID: 11400000, guid: 12f96905eda05a0449706a38c005b9cd, type: 2}
-  music: {fileID: 8300000, guid: 8246d317a8463f543846cb328bbf69c3, type: 3}
+  musicCue: {fileID: 11400000, guid: 358a24f3722d2eb419cf471bc7369a90, type: 2}
+  music: {fileID: 8300000, guid: 350bd2fd7853b3549b10bdebeb042988, type: 3}

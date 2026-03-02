@@ -211,10 +211,7 @@ namespace Game.Battle
 
             void ShowOutcomeModalOrResultsWithOptionalEndAnimation()
             {
-                bool shouldPlayPlayerLoseAnim = !playerWon &&
-                    (reason == BattleFinishReason.Defeat
-                    || reason == BattleFinishReason.EscapeFailed
-                    || reason == BattleFinishReason.DefeatByLp);
+                bool shouldPlayPlayerLoseAnim = false;
 
                 bool shouldPlayEnemyDefeatAnim = playerWon &&
                     (reason == BattleFinishReason.Victory

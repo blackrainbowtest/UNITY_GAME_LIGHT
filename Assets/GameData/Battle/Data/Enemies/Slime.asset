@@ -32,8 +32,8 @@ MonoBehaviour:
   maxSpawnLevel: 2
   minSpawnRankTier: 0
   maxSpawnRankTier: 2
-  goldReward: 10
-  expReward: 8
+  goldReward: 15
+  expReward: 10
   lootTable:
   - item: {fileID: 11400000, guid: 54f64d3f523e1314989dedbd89a43827, type: 2}
     itemId: item_potion_stamina_small
@@ -50,6 +50,26 @@ MonoBehaviour:
     minCount: 1
     maxCount: 3
     dropChance: 0.1
+  - item: {fileID: 11400000, guid: ab88bfb33b365fb4989aef5fe540a4c2, type: 2}
+    itemId: item_potion_hp_small
+    minCount: 1
+    maxCount: 3
+    dropChance: 0.394
+  - item: {fileID: 11400000, guid: 8cace68a1ae9610418fc1c8300a9ed99, type: 2}
+    itemId: item_potion_mana_small
+    minCount: 1
+    maxCount: 3
+    dropChance: 0.394
+  - item: {fileID: 11400000, guid: 0cbf760a61cf2a74fa01e1bdf19baf84, type: 2}
+    itemId: stick
+    minCount: 1
+    maxCount: 3
+    dropChance: 0.606
+  - item: {fileID: 11400000, guid: 4c68a969a596e4c4e8a2980941fbb64d, type: 2}
+    itemId: fiber
+    minCount: 1
+    maxCount: 3
+    dropChance: 0.632
   regenHpPerTurn: 5
   regenMpPerTurn: 4
   regenSpPerTurn: 4

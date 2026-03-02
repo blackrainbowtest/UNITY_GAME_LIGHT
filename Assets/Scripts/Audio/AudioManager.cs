@@ -26,6 +26,8 @@ namespace UDA2.Audio
     {
         public static AudioManager Instance;
 
+        public bool IsMusicPlaying => musicSource != null && musicSource.isPlaying;
+
         private const string MusicVolumeParam = "MusicVolume";
         private const string SfxVolumeParam = "SFXVolume";
         private const string UiVolumeParam = "UIVolume";
@@ -225,6 +227,7 @@ namespace UDA2.Audio
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
+            StopSceneSounds();
             ApplySceneMusic(scene);
         }
 
@@ -538,6 +541,31 @@ namespace UDA2.Audio
         {
             if (audioMixer != null)
                 audioMixer.SetFloat(UiVolumeParam, ToDb(volume));
+        }
+
+        public void StopSceneSounds()
+        {
+            if (sfxPool != null)
+            {
+                for (int i = 0; i < sfxPool.Length; i++)
+                {
+                    var src = sfxPool[i];
+                    if (src == null)
+                        continue;
+
+                    src.Stop();
+                    src.clip = null;
+                }
+            }
+
+            if (characterSource != null)
+                characterSource.Stop();
+
+            if (environmentSource != null)
+                environmentSource.Stop();
+
+            if (combatSource != null)
+                combatSource.Stop();
         }
 
         /* ===================== UTILS ===================== */
