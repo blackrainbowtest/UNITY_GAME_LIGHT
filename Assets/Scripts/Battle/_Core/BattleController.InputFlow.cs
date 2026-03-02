@@ -166,6 +166,7 @@ namespace Game.Battle
             bool modalClosed = false;
             if (outcomeAnimationModal != null)
             {
+                PlayOutcomeMusic(BattleFinishReason.EscapeFailed, allowLegacyFallback: false);
                 outcomeAnimationModal.Show(BattleFinishReason.EscapeFailed, playerWon: false, winningActionId: null, onClosed: () => modalClosed = true);
                 while (!modalClosed)
                     yield return null;

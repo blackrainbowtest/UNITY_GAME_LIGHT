@@ -38,11 +38,23 @@ namespace Game.Battle
         [Tooltip("Gold granted to the player even on Defeat (inclusive).")]
         [SerializeField] private int defeatGoldMax = 3;
 
-        [Header("Result Music (Optional)")]
-        [Tooltip("If assigned, plays this music when the battle ends and the results modal is shown.")]
+        [Header("Result Music (Legacy Optional)")]
+        [Tooltip("Legacy fallback: used when no per-outcome cue is assigned.")]
         [SerializeField] private AudioCue resultsMusicCue;
-        [Tooltip("Fallback (legacy): if no cue is assigned, plays this clip when the battle ends and the results modal is shown.")]
+        [Tooltip("Legacy fallback clip: used when no per-outcome cue and no legacy cue are assigned.")]
         [SerializeField] private AudioClip resultsMusic;
+
+        [Header("Outcome Music (Optional)")]
+        [Tooltip("Played for Victory result flow.")]
+        [SerializeField] private AudioCue victoryResultMusicCue;
+        [Tooltip("Played for Defeat/Surrender result flow.")]
+        [SerializeField] private AudioCue defeatResultMusicCue;
+        [Tooltip("Played for VictoryByLp (seduction victory) result flow. Falls back to Victory cue.")]
+        [SerializeField] private AudioCue victoryByLpResultMusicCue;
+        [Tooltip("Played for DefeatByLp (seduction defeat) result flow. Falls back to Defeat cue.")]
+        [SerializeField] private AudioCue defeatByLpResultMusicCue;
+        [Tooltip("Played when EscapeFailed outcome modal is opened (battle continues).")]
+        [SerializeField] private AudioCue escapeFailedModalMusicCue;
 
         private void FinishBattle(bool playerWon, BattleFinishReason reason = BattleFinishReason.Defeat, CombatActionId? winningActionId = null)
         {
@@ -58,15 +70,6 @@ namespace Game.Battle
             if (UDA2.Audio.AudioManager.Instance != null)
             {
                 UDA2.Audio.AudioManager.Instance.StopMusic();
-
-                // Optional: play separate results music while the results modal is on screen.
-                if (showResult)
-                {
-                    if (resultsMusicCue != null)
-                        UDA2.Audio.AudioManager.Instance.Play(resultsMusicCue);
-                    else if (resultsMusic != null)
-                        UDA2.Audio.AudioManager.Instance.PlayMusic(resultsMusic);
-                }
             }
 
             if (playerWon && reason == BattleFinishReason.Defeat)
@@ -178,6 +181,10 @@ namespace Game.Battle
 
                 if (resultModal != null && showResult)
                 {
+                    // Play outcome-specific music when entering results stage (after outcome visuals),
+                    // to avoid audio-switch hitch before defeat/victory presentation.
+                    PlayOutcomeMusic(reason, allowLegacyFallback: true);
+
                     resultModal.SetItemDatabase(itemDatabase);
                     resultModal.Show(result, ExitBattle);
                 }
@@ -260,6 +267,57 @@ namespace Game.Battle
                     outcomeAnimationModal.Show(reason, playerWon, winningActionId, ShowResultsOrExit, hideOnClose: false);
                 else
                     ShowResultsOrExit();
+            }
+        }
+
+        private void PlayOutcomeMusic(BattleFinishReason reason, bool allowLegacyFallback)
+        {
+            var audio = UDA2.Audio.AudioManager.Instance;
+            if (audio == null)
+                return;
+
+            var cue = ResolveOutcomeMusicCue(reason);
+            if (cue != null)
+            {
+                audio.Play(cue);
+                return;
+            }
+
+            if (!allowLegacyFallback)
+                return;
+
+            if (resultsMusicCue != null)
+            {
+                audio.Play(resultsMusicCue);
+                return;
+            }
+
+            if (resultsMusic != null)
+                audio.PlayMusic(resultsMusic);
+        }
+
+        private AudioCue ResolveOutcomeMusicCue(BattleFinishReason reason)
+        {
+            switch (reason)
+            {
+                case BattleFinishReason.Victory:
+                    return victoryResultMusicCue;
+
+                case BattleFinishReason.Defeat:
+                case BattleFinishReason.Surrender:
+                    return defeatResultMusicCue;
+
+                case BattleFinishReason.VictoryByLp:
+                    return victoryByLpResultMusicCue != null ? victoryByLpResultMusicCue : victoryResultMusicCue;
+
+                case BattleFinishReason.DefeatByLp:
+                    return defeatByLpResultMusicCue != null ? defeatByLpResultMusicCue : defeatResultMusicCue;
+
+                case BattleFinishReason.EscapeFailed:
+                    return escapeFailedModalMusicCue;
+
+                default:
+                    return null;
             }
         }
 
