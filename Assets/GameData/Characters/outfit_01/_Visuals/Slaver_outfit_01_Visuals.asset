@@ -14,9 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Battle.Visual.OutfitVisuals
   outfitId: outfit_01
   idleVariations:
-  - {fileID: 11400000, guid: f323b3b9f79d4214ca173f3308fe30d4, type: 2}
+  - {fileID: 11400000, guid: c6e593608cb066743a6687dfa7db0fa3, type: 2}
+  - {fileID: 11400000, guid: 19e2526453d12ea4abdfbead4ff55e0c, type: 2}
   hitVariations:
-  - {fileID: 11400000, guid: f843d9c639111c74e86dcecf64e756a2, type: 2}
+  - {fileID: 11400000, guid: 4e1c4ef0885a5504fa18765030c702b6, type: 2}
+  - {fileID: 11400000, guid: 16601706a3f575a409eb6873b4c31b4d, type: 2}
   lustHitVariations: []
   hitTimings: []
   fastAttackVariations:
@@ -37,6 +39,7 @@ MonoBehaviour:
     projectilePrefab: {fileID: 0}
     projectileAnimation: {fileID: 0}
     spawnAtFrame: 0
+    impactAtFrame: 0
     pixelsPerUnit: 0
     spawnOffsetPixels: {x: 0, y: 0}
     travelDistancePixels: 0
@@ -45,6 +48,7 @@ MonoBehaviour:
     projectilePrefab: {fileID: 0}
     projectileAnimation: {fileID: 0}
     spawnAtFrame: 0
+    impactAtFrame: 0
     pixelsPerUnit: 0
     spawnOffsetPixels: {x: 0, y: 0}
     travelDistancePixels: 0
@@ -53,6 +57,7 @@ MonoBehaviour:
     projectilePrefab: {fileID: 0}
     projectileAnimation: {fileID: 0}
     spawnAtFrame: 0
+    impactAtFrame: 0
     pixelsPerUnit: 0
     spawnOffsetPixels: {x: 0, y: 0}
     travelDistancePixels: 0
@@ -61,6 +66,7 @@ MonoBehaviour:
     projectilePrefab: {fileID: 0}
     projectileAnimation: {fileID: 0}
     spawnAtFrame: 0
+    impactAtFrame: 0
     pixelsPerUnit: 0
     spawnOffsetPixels: {x: 0, y: 0}
     travelDistancePixels: 0
@@ -69,6 +75,7 @@ MonoBehaviour:
     projectilePrefab: {fileID: 0}
     projectileAnimation: {fileID: 0}
     spawnAtFrame: 0
+    impactAtFrame: 0
     pixelsPerUnit: 0
     spawnOffsetPixels: {x: 0, y: 0}
     travelDistancePixels: 0
@@ -81,5 +88,14 @@ MonoBehaviour:
   actionAct2Variations: []
   actionAct3Variations: []
   actionAct4Variations: []
+  actionActFailVariations: []
+  escapeRunMotion:
+    enabled: 0
+    startAtFrame: 0
+    speedLeftUnitsPerSecond: 0
+  inventoryOpenVariations: []
+  inventorySearchVariations: []
+  inventoryCloseVariations: []
   blockVariations: []
-  deathVariations: []
+  loseVariations: []
+  lustLoseVariations: []
