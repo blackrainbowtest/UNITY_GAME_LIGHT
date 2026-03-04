@@ -145,8 +145,10 @@ namespace Game.Battle
 
             while (enabled && gameObject.activeInHierarchy)
             {
-                if (!TryPlayMusicAt(location, index, out _))
+                if (!TryPlayNextValidMusic(location, index, out var playedIndex))
                     yield break;
+
+                index = playedIndex;
 
                 while (enabled && gameObject.activeInHierarchy)
                 {
@@ -187,9 +189,31 @@ namespace Game.Battle
             return cueCount + clipCount;
         }
 
-        private static bool TryPlayMusicAt(BattleLocationData location, int logicalIndex, out float duration)
+        private static bool TryPlayNextValidMusic(BattleLocationData location, int startIndex, out int playedIndex)
         {
-            duration = 0f;
+            playedIndex = -1;
+
+            int count = GetMusicPlaylistCount(location);
+            if (count <= 0)
+                return false;
+
+            int index = ((startIndex % count) + count) % count;
+            for (int i = 0; i < count; i++)
+            {
+                if (TryPlayMusicAt(location, index))
+                {
+                    playedIndex = index;
+                    return true;
+                }
+
+                index = (index + 1) % count;
+            }
+
+            return false;
+        }
+
+        private static bool TryPlayMusicAt(BattleLocationData location, int logicalIndex)
+        {
             var am = AudioManager.Instance;
             if (am == null)
                 return false;
@@ -203,7 +227,6 @@ namespace Game.Battle
                     return false;
 
                 am.PlayMusic(cue.Clip, loop: false);
-                duration = Mathf.Max(0f, cue.Clip.length);
                 return true;
             }
 
@@ -216,7 +239,6 @@ namespace Game.Battle
                 return false;
 
             am.PlayMusic(clip, loop: false);
-            duration = Mathf.Max(0f, clip.length);
             return true;
         }
 
@@ -244,7 +266,26 @@ namespace Game.Battle
             var cue = PickRandomCue(group.cues);
             if (cue != null)
             {
-                am.Play(cue);
+                if (cue.Category == AudioCategory.Music)
+                {
+                    float minPitch = cue.PitchRange.x;
+                    float maxPitch = cue.PitchRange.y;
+                    if (maxPitch < minPitch)
+                        (minPitch, maxPitch) = (maxPitch, minPitch);
+
+                    float pitch = Mathf.Approximately(minPitch, maxPitch)
+                        ? minPitch
+                        : Random.Range(minPitch, maxPitch);
+
+                    // Safety: ambient group should never hijack music channel.
+                    am.PlaySfx(cue.Clip, cue.DefaultVolume, pitch);
+                }
+                else
+                {
+                    // Respect cue category/routing for Sound/Sfx/Ui.
+                    am.Play(cue);
+                }
+
                 return cue.Clip != null ? Mathf.Max(0f, cue.Clip.length) : 0f;
             }
 
@@ -252,16 +293,16 @@ namespace Game.Battle
             if (clip == null)
                 return 0f;
 
-            float minPitch = group.clipPitchRange.x;
-            float maxPitch = group.clipPitchRange.y;
-            if (maxPitch < minPitch)
-                (minPitch, maxPitch) = (maxPitch, minPitch);
+            float clipMinPitch = group.clipPitchRange.x;
+            float clipMaxPitch = group.clipPitchRange.y;
+            if (clipMaxPitch < clipMinPitch)
+                (clipMinPitch, clipMaxPitch) = (clipMaxPitch, clipMinPitch);
 
-            float pitch = Mathf.Approximately(minPitch, maxPitch)
-                ? minPitch
-                : Random.Range(minPitch, maxPitch);
+            float clipPitch = Mathf.Approximately(clipMinPitch, clipMaxPitch)
+                ? clipMinPitch
+                : Random.Range(clipMinPitch, clipMaxPitch);
 
-            am.PlaySfx(clip, group.clipVolume, pitch);
+            am.PlaySfx(clip, group.clipVolume, clipPitch);
             return Mathf.Max(0f, clip.length);
         }
 

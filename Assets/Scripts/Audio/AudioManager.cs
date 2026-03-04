@@ -325,9 +325,18 @@ namespace UDA2.Audio
 
                 PlayMusic(cue.Clip, loop: false);
 
+                // Give AudioSource at least one frame to transition into playing state.
+                // Without this, focus/background edge-cases can cause a tight loop with high CPU.
+                yield return null;
+
                 // Wait for clip to end (or until cancelled).
                 while (sessionId == sceneMusicSessionId && musicSource != null && musicSource.isPlaying)
                     yield return null;
+
+                // If clip did not start playing at all (e.g., app unfocused / audio suspended),
+                // throttle retries to avoid spinning the playlist loop.
+                if (sessionId == sceneMusicSessionId && musicSource != null && !musicSource.isPlaying)
+                    yield return new WaitForSecondsRealtime(0.2f);
 
                 if (sessionId != sceneMusicSessionId)
                     yield break;
