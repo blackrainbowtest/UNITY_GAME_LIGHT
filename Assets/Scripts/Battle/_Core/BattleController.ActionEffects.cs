@@ -18,6 +18,8 @@
 
 using Game.Battle.Combat.Actions;
 using Game.Battle.Statuses;
+using Game.Battle.Visual;
+using UnityEngine;
 
 namespace Game.Battle
 {
@@ -93,6 +95,9 @@ namespace Game.Battle
         // REMEMBERME: apply new statuses here
         private void ApplyPostActionEffects(CombatActionId actionId, bool actorIsPlayer)
         {
+            if (TryApplyConfiguredActionStatuses(actionId, actorIsPlayer))
+                return;
+
             // Minimal hardcoded table (will become ScriptableObject/data later).
             switch (actionId)
             {
@@ -117,6 +122,58 @@ namespace Game.Battle
                     break;
                 }
             }
+        }
+
+        private bool TryApplyConfiguredActionStatuses(CombatActionId actionId, bool actorIsPlayer)
+        {
+            var actorView = actorIsPlayer ? playerView : enemyView;
+            if (actorView == null)
+                return false;
+
+            var outfit = actorView.ResolveOutfitVisuals();
+            if (outfit == null)
+                return false;
+
+            if (!outfit.TryGetActionStatusEffects(actionId, out var configs) || configs == null || configs.Length == 0)
+                return false;
+
+            bool appliedAny = false;
+            for (int i = 0; i < configs.Length; i++)
+            {
+                var cfg = configs[i];
+                int turns = ResolveConfiguredTurns(cfg);
+                if (turns <= 0)
+                    continue;
+
+                switch (cfg.target)
+                {
+                    case OutfitVisuals.StatusEffectTarget.Player:
+                        AddOrRefreshPlayerStatusInternal(cfg.statusId, turns);
+                        appliedAny = true;
+                        break;
+
+                    case OutfitVisuals.StatusEffectTarget.Enemy:
+                        AddOrRefreshEnemyStatusInternal(cfg.statusId, turns);
+                        appliedAny = true;
+                        break;
+                }
+            }
+
+            return appliedAny;
+        }
+
+        private int ResolveConfiguredTurns(OutfitVisuals.ActionStatusEffectConfig cfg)
+        {
+            if (!cfg.randomTurns)
+                return cfg.turns;
+
+            int min = Mathf.Max(0, Mathf.Min(cfg.randomTurnsMin, cfg.randomTurnsMax));
+            int max = Mathf.Max(min, Mathf.Max(cfg.randomTurnsMin, cfg.randomTurnsMax));
+            if (min == max)
+                return min;
+
+            // Inclusive range [min..max].
+            return rng.Next(min, max + 1);
         }
     }
 }

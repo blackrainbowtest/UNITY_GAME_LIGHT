@@ -40,6 +40,16 @@ MonoBehaviour:
     minCount: 1
     maxCount: 3
     dropChance: 0.2
+  - item: {fileID: 11400000, guid: 834168cabf2018c4fb08c76d66fe9812, type: 2}
+    itemId: plank
+    minCount: 1
+    maxCount: 3
+    dropChance: 0.209
+  - item: {fileID: 11400000, guid: 4c68a969a596e4c4e8a2980941fbb64d, type: 2}
+    itemId: fiber
+    minCount: 1
+    maxCount: 3
+    dropChance: 0.791
   regenHpPerTurn: 10
   regenMpPerTurn: 2
   regenSpPerTurn: 6
