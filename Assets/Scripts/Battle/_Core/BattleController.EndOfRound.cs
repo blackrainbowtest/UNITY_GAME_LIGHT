@@ -24,8 +24,6 @@ namespace Game.Battle
 {
     public partial class BattleController
     {
-    private const int BurningDamagePerTurn = 2;
-
         private readonly struct EndOfRoundEffect
         {
             public string SourceId { get; }
@@ -91,6 +89,12 @@ namespace Game.Battle
         {
             // End-of-round effects are applied as a single batch so HUD shows one net delta.
 
+            if (statusCatalog == null && !warnedMissingStatusCatalog && ((playerStatuses != null && playerStatuses.Count > 0) || (enemyStatuses != null && enemyStatuses.Count > 0)))
+            {
+                warnedMissingStatusCatalog = true;
+                Debug.LogWarning("[BattleController] statusCatalog is not assigned. Active statuses will tick down, but catalog-based effects (HP/MP/SP/LP) are not applied.", this);
+            }
+
             var totalPlayerHpDelta = 0;
             var totalPlayerMpDelta = 0;
             var totalPlayerSpDelta = 0;
@@ -102,11 +106,29 @@ namespace Game.Battle
             var totalEnemyLpDelta = 0;
 
             // 0) Status effects (burning/poison/etc) contribute into the same end-of-round batch.
-            if (HasStatus(playerStatuses, StatusEffectId.Burning))
-                totalPlayerHpDelta -= BurningDamagePerTurn;
+            AccumulateStatusEffects(
+                playerStatuses,
+                isPlayerSide: true,
+                ref totalPlayerHpDelta,
+                ref totalPlayerMpDelta,
+                ref totalPlayerSpDelta,
+                ref totalPlayerLpDelta,
+                ref totalEnemyHpDelta,
+                ref totalEnemyMpDelta,
+                ref totalEnemySpDelta,
+                ref totalEnemyLpDelta);
 
-            if (HasStatus(enemyStatuses, StatusEffectId.Burning))
-                totalEnemyHpDelta -= BurningDamagePerTurn;
+            AccumulateStatusEffects(
+                enemyStatuses,
+                isPlayerSide: false,
+                ref totalPlayerHpDelta,
+                ref totalPlayerMpDelta,
+                ref totalPlayerSpDelta,
+                ref totalPlayerLpDelta,
+                ref totalEnemyHpDelta,
+                ref totalEnemyMpDelta,
+                ref totalEnemySpDelta,
+                ref totalEnemyLpDelta);
 
             // 1) External queued effects (poison/burn/auras/etc).
             for (var i = 0; i < pendingEndOfRoundEffects.Count; i++)
@@ -185,6 +207,58 @@ namespace Game.Battle
             {
                 combatState = combatState
                     .WithEnemyBlockArmor(0);
+            }
+        }
+
+        private void AccumulateStatusEffects(
+            List<StatusInstance> list,
+            bool isPlayerSide,
+            ref int totalPlayerHpDelta,
+            ref int totalPlayerMpDelta,
+            ref int totalPlayerSpDelta,
+            ref int totalPlayerLpDelta,
+            ref int totalEnemyHpDelta,
+            ref int totalEnemyMpDelta,
+            ref int totalEnemySpDelta,
+            ref int totalEnemyLpDelta)
+        {
+            if (list == null || list.Count == 0 || statusCatalog == null)
+                return;
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                var status = list[i];
+                if (!statusCatalog.TryGet(status.Id, out var def) || def.effects == null || def.effects.Length == 0)
+                    continue;
+
+                for (int e = 0; e < def.effects.Length; e++)
+                {
+                    var effect = def.effects[e];
+                    int delta = effect.GetSignedDelta();
+                    if (delta == 0)
+                        continue;
+
+                    if (isPlayerSide)
+                    {
+                        switch (effect.stat)
+                        {
+                            case BattleStatusCatalog.ResourceStat.Hp: totalPlayerHpDelta += delta; break;
+                            case BattleStatusCatalog.ResourceStat.Mp: totalPlayerMpDelta += delta; break;
+                            case BattleStatusCatalog.ResourceStat.Sp: totalPlayerSpDelta += delta; break;
+                            case BattleStatusCatalog.ResourceStat.Lp: totalPlayerLpDelta += delta; break;
+                        }
+                    }
+                    else
+                    {
+                        switch (effect.stat)
+                        {
+                            case BattleStatusCatalog.ResourceStat.Hp: totalEnemyHpDelta += delta; break;
+                            case BattleStatusCatalog.ResourceStat.Mp: totalEnemyMpDelta += delta; break;
+                            case BattleStatusCatalog.ResourceStat.Sp: totalEnemySpDelta += delta; break;
+                            case BattleStatusCatalog.ResourceStat.Lp: totalEnemyLpDelta += delta; break;
+                        }
+                    }
+                }
             }
         }
 

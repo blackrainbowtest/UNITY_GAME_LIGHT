@@ -58,6 +58,9 @@ namespace Game.Battle
         [SerializeField] private BattleResultModalController resultModal;
         [Tooltip("Outcome animation modal reference. Can be either a scene instance (Hierarchy) OR a prefab asset (Project). If a prefab is assigned, BattleController will instantiate it into the scene at runtime.")]
         [SerializeField] private BattleOutcomeAnimationModalController outcomeAnimationModal;
+        [Tooltip("Centralized status definitions (icons, localization keys, resource effects).")]
+        [SerializeField] private BattleStatusCatalog statusCatalog;
+        private bool warnedMissingStatusCatalog;
 
         [Header("Visuals (Optional)")]
         [SerializeField] private BattleCharacterView playerView;
@@ -130,6 +133,9 @@ namespace Game.Battle
             // Auto-instantiate such references into the battle scene Canvas.
             resultModal = EnsureSceneInstance(resultModal, "resultModal");
             outcomeAnimationModal = EnsureSceneInstance(outcomeAnimationModal, "outcomeAnimationModal");
+
+            if (statusCatalog == null && hudController != null)
+                statusCatalog = hudController.GetStatusCatalog();
         }
 
         private Transform ResolveModalParent()

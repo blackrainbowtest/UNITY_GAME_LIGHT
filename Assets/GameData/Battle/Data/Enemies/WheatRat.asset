@@ -27,7 +27,7 @@ MonoBehaviour:
   maxSp: 20
   maxLp: 100
   attack: 6
-  allowedActions: 00000000
+  allowedActions: 0000000015000000
   minSpawnLevel: 1
   maxSpawnLevel: 2
   minSpawnRankTier: 0

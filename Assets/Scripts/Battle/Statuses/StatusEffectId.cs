@@ -1,5 +1,6 @@
 namespace Game.Battle.Statuses
 {
+    // STATUSES
     /// <summary>
     /// Stable IDs for status effects.
     /// Used by combat and UI.

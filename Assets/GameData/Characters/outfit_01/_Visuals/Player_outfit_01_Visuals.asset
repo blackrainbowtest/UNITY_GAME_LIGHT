@@ -96,10 +96,10 @@ MonoBehaviour:
   iceSpellProjectile:
     projectilePrefab: {fileID: 9137764033155392843, guid: 9b0929501d22190488c2bc22c943f167, type: 3}
     projectileAnimation: {fileID: 11400000, guid: 3458b1095ce7179478cb7f7aa8ba7cc8, type: 2}
-    spawnAtFrame: 15
+    spawnAtFrame: 8
     impactAtFrame: -1
     pixelsPerUnit: 100
-    spawnOffsetPixels: {x: 125, y: 100}
+    spawnOffsetPixels: {x: 100, y: 125}
     travelDistancePixels: 1000
     travelTimeSeconds: 0.8
   holySpellProjectile:
@@ -120,6 +120,35 @@ MonoBehaviour:
     spawnOffsetPixels: {x: 100, y: 125}
     travelDistancePixels: 1000
     travelTimeSeconds: 0.8
+  actionStatusEffects:
+  - actionId: 0
+    statusId: 1
+    target: 1
+    randomTurns: 0
+    turns: 4
+    randomTurnsMin: 0
+    randomTurnsMax: 0
+  - actionId: 21
+    statusId: 3
+    target: 1
+    randomTurns: 0
+    turns: 4
+    randomTurnsMin: 0
+    randomTurnsMax: 0
+  - actionId: 20
+    statusId: 2
+    target: 1
+    randomTurns: 0
+    turns: 3
+    randomTurnsMin: 0
+    randomTurnsMax: 0
+  - actionId: 23
+    statusId: 0
+    target: 1
+    randomTurns: 0
+    turns: 3
+    randomTurnsMin: 0
+    randomTurnsMax: 0
   seductionAct1Variations:
   - {fileID: 11400000, guid: 942f03465034cf64c9894c69f381d039, type: 2}
   seductionAct2Variations:

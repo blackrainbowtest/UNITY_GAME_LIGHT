@@ -13421,6 +13421,7 @@ MonoBehaviour:
   modalsRoot: {fileID: 1962314100}
   resultModal: {fileID: 1403937741582167887, guid: 033955e8b7a96964f9a163578c80cb49, type: 3}
   outcomeAnimationModal: {fileID: 7779633668407957838, guid: 83c613707bf1e8b4295ed7a824751d8e, type: 3}
+  statusCatalog: {fileID: 11400000, guid: fdbe505f022f72049bb0ac404c7daffa, type: 2}
   playerView: {fileID: 1816342352}
   enemyView: {fileID: 625450547}
   projectilesRoot: {fileID: 174536072}
@@ -13867,6 +13868,7 @@ MonoBehaviour:
   enemyGridRoot: {fileID: 883696421}
   iconPrefab: {fileID: 482198629714615607, guid: d4b20cfc40191d548b9a0bd25f832989, type: 3}
   maxIconsPerSide: 20
+  statusCatalog: {fileID: 0}
   icons:
   - id: 0
     icon: {fileID: 21300000, guid: 9b5d6f9d61f449b40a2fa843aaf2e3a3, type: 3}

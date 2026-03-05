@@ -16,19 +16,26 @@ MonoBehaviour:
   idleVariations:
   - {fileID: 11400000, guid: 3605d89060400fb4c8251984a6effc7c, type: 2}
   - {fileID: 11400000, guid: 6e9785d1d80566849b3130c7033d5b76, type: 2}
-  hitVariations: []
+  hitVariations:
+  - {fileID: 11400000, guid: d26e7b3bae0d1524eaa14779e6ff97ff, type: 2}
   lustHitVariations: []
-  hitTimings: []
+  hitTimings:
+  - attackAnimId: 2
+    hitAtFrame: 8
+    useLustHit: 0
   fastAttackVariations: []
   normalAttackVariations: []
   heavyAttackVariations: []
   counterAttackVariations: []
   castVariations: []
-  fireSpellVariations: []
+  fireSpellVariations:
+  - {fileID: 11400000, guid: 77f03ac01b582084ca1aba8d658bc4e0, type: 2}
   iceSpellVariations:
-  - {fileID: 11400000, guid: da85616643626da49b43543683caff47, type: 2}
-  holySpellVariations: []
-  darkSpellVariations: []
+  - {fileID: 11400000, guid: 77f03ac01b582084ca1aba8d658bc4e0, type: 2}
+  holySpellVariations:
+  - {fileID: 11400000, guid: 77f03ac01b582084ca1aba8d658bc4e0, type: 2}
+  darkSpellVariations:
+  - {fileID: 11400000, guid: 77f03ac01b582084ca1aba8d658bc4e0, type: 2}
   castProjectile:
     projectilePrefab: {fileID: 0}
     projectileAnimation: {fileID: 0}
@@ -74,6 +81,14 @@ MonoBehaviour:
     spawnOffsetPixels: {x: 0, y: 0}
     travelDistancePixels: 0
     travelTimeSeconds: 0
+  actionStatusEffects:
+  - actionId: 0
+    statusId: 0
+    target: 0
+    randomTurns: 0
+    turns: 2
+    randomTurnsMin: 0
+    randomTurnsMax: 0
   seductionAct1Variations: []
   seductionAct2Variations: []
   seductionAct3Variations: []

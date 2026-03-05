@@ -825,7 +825,7 @@ MonoBehaviour:
   groups:
   - name: nature_rain_fall
     randomLoop: 1
-    intervalSeconds: {x: 1, y: 2}
+    intervalSeconds: {x: 0, y: 0}
     cues:
     - {fileID: 11400000, guid: 713e9512ae4c2b84aa38015f5de2fac6, type: 2}
     clips: []

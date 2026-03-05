@@ -23,10 +23,14 @@ namespace Game.Battle.UI
 
         [Header("Config")]
         [SerializeField] private int maxIconsPerSide = 20;
+        [SerializeField] private BattleStatusCatalog statusCatalog;
+        [Tooltip("Legacy fallback icon mapping. Prefer statusCatalog for centralized setup.")]
         [SerializeField] private StatusIconMapping[] icons;
 
         private readonly List<StatusIconView> playerPool = new List<StatusIconView>(20);
         private readonly List<StatusIconView> enemyPool = new List<StatusIconView>(20);
+
+        public BattleStatusCatalog StatusCatalog => statusCatalog;
 
         public void Render(IReadOnlyList<StatusInstance> player, IReadOnlyList<StatusInstance> enemy)
         {
@@ -75,6 +79,9 @@ namespace Game.Battle.UI
 
         private Sprite GetIcon(StatusEffectId id)
         {
+            if (statusCatalog != null && statusCatalog.TryGet(id, out var def) && def.icon != null)
+                return def.icon;
+
             if (icons == null)
                 return null;
 

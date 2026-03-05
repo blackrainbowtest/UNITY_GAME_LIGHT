@@ -859,6 +859,11 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
         statusPanel.Render(player, enemy);
     }
 
+    public BattleStatusCatalog GetStatusCatalog()
+    {
+        return statusPanel != null ? statusPanel.StatusCatalog : null;
+    }
+
     public void UpdateState(BattleHUDState state, bool showDeltas)
     {
         if (state == null) return;
