@@ -25,7 +25,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f843d9c639111c74e86dcecf64e756a2, type: 2}
   hitTimings:
   - attackAnimId: 2
-    hitAtFrame: 1
+    hitAtFrame: 9
     useLustHit: 0
   - attackAnimId: 3
     hitAtFrame: 3

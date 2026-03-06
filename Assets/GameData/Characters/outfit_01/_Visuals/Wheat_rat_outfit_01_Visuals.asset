@@ -23,7 +23,8 @@ MonoBehaviour:
   - attackAnimId: 2
     hitAtFrame: 8
     useLustHit: 0
-  fastAttackVariations: []
+  fastAttackVariations:
+  - {fileID: 11400000, guid: 31d88954ea990ea4da5c9d7cdc67bc1f, type: 2}
   normalAttackVariations: []
   heavyAttackVariations: []
   counterAttackVariations: []
@@ -57,12 +58,12 @@ MonoBehaviour:
   iceSpellProjectile:
     projectilePrefab: {fileID: 9137764033155392843, guid: 9b0929501d22190488c2bc22c943f167, type: 3}
     projectileAnimation: {fileID: 11400000, guid: 3458b1095ce7179478cb7f7aa8ba7cc8, type: 2}
-    spawnAtFrame: 10
-    impactAtFrame: 19
+    spawnAtFrame: 15
+    impactAtFrame: -1
     pixelsPerUnit: 100
-    spawnOffsetPixels: {x: 85, y: 15}
+    spawnOffsetPixels: {x: 145, y: -75}
     travelDistancePixels: 1000
-    travelTimeSeconds: 1
+    travelTimeSeconds: 0.85
   holySpellProjectile:
     projectilePrefab: {fileID: 0}
     projectileAnimation: {fileID: 0}
