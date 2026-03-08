@@ -185,6 +185,10 @@ namespace Game.Battle
                 yield break;
             }
 
+            // Escape failed modal path disables auto idle fallback while fail animation plays.
+            // Restore visible idle immediately when battle continues.
+            playerView?.PlayIdle();
+
             BeginEnemyTurn();
         }
 

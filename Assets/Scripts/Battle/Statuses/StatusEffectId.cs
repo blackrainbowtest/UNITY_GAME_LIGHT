@@ -7,11 +7,15 @@ namespace Game.Battle.Statuses
     /// </summary>
     public enum StatusEffectId
     {
-        Poison = 0,
-        Bleeding = 1,
-        Burning = 2,
-        Freeze = 3,
-        Silence = 4,
-        Block = 5
+        Poison = 0,         // яд
+        Bleeding = 1,       // кровотечение
+        Burning = 2,        // ожог
+        Freeze = 3,         // заморозка
+        Silence = 4,        // молчание
+        Block = 5,          // блок
+        PassiveHeal = 6,    // пассивное лечение
+        Taunt = 7,          // провокация
+        Charm = 8,          // очарование
+        Weaken = 9,         // ослабление
     }
 }

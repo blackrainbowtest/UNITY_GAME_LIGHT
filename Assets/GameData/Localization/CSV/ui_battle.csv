@@ -1,261 +1,320 @@
 *key;ru;en;fr
 *btn_attack;
+	Атака;
 	Attack;
-	Attack;
-	Attack;
+	Attaque;
+
 *btn_item;
+	Предмет;
 	Item;
-	Item;
-	Item;
+	Objet;
+
 *btn_exit;
+	Выход;
 	Exit;
-	Exit;
-	Exit;
+	Quitter;
+
 *battle_tooltip_damage_fmt;
 	Урон: {0};
 	Damage: {0};
-	Dégâts: {0};
+	Dégâts : {0};
+
 *battle_tooltip_heal_fmt;
 	Лечение: {0};
-	Heal: {0};
-	Soin: {0};
+	Healing: {0};
+	Soins : {0};
+
 *battle_tooltip_mp_cost_fmt;
 	MP: {0};
 	MP: {0};
-	MP: {0};
+	PM : {0};
+
 *battle_tooltip_sp_cost_fmt;
 	SP: {0};
 	SP: {0};
-	SP: {0};
+	SP : {0};
+
 *battle_tooltip_lp_cost_fmt;
 	LP: {0};
 	LP: {0};
-	LP: {0};
+	LP : {0};
+
 *battle_button_attack_menu_name;
 	Атака;
 	Attack;
 	Attaque;
+
 *battle_button_attack_menu_desc;
-	Открыть меню атак.
-	Open the attack menu.
-	Ouvrir le menu des attaques.;
+	Способности, наносящие физический урон противнику.
+	Abilities that deal physical damage to the enemy.
+	Compétences infligeant des dégâts physiques à l’ennemi.
+
 *battle_action_block_name;
 	Защита;
-	Defense;
+	Defend;
 	Défense;
 *battle_action_block_desc;
-	Подготовиться и снизить входящий урон.
-	Brace and reduce incoming damage.
-	Se préparer et réduire les dégâts entrants.;
+	Действия, уменьшающие входящий урон.
+	Actions that reduce incoming damage.
+	Actions réduisant les dégâts reçus.
+
 *battle_button_magic_menu_name;
 	Магия;
 	Magic;
 	Magie;
 *battle_button_magic_menu_desc;
-	Открыть меню заклинаний.
-	Open the spell menu.
-	Ouvrir le menu des sorts.;
+	Магические способности, расходующие ману.
+	Abilities that use mana.
+	Compétences magiques consommant du mana.
+
 *battle_button_actions_menu_name;
 	Действия;
 	Actions;
 	Actions;
 *battle_button_actions_menu_desc;
 	Открыть меню дополнительных действий.
-	Open the utility actions menu.
-	Ouvrir le menu des actions utilitaires.;
+	Open the additional actions menu.
+	Ouvrir le menu d’actions supplémentaires.
+
 *battle_button_seduction_menu_name;
 	Соблазнение;
 	Seduction;
 	Séduction;
 *battle_button_seduction_menu_desc;
-	Открыть меню соблазнения.
-	Open the seduction menu.
-	Ouvrir le menu de séduction.;
+	Соблазняющие способности, повышающие похоть противника.
+	Seductive abilities that increase enemy lust.
+	Compétences de séduction augmentant la luxure de l’ennemi.
+
 *battle_button_item_name;
 	Предмет;
 	Item;
 	Objet;
+
 *battle_button_item_desc;
 	Использовать предмет в бою.
 	Use an item in battle.
-	Utiliser un objet en combat.;
+	Utiliser un objet pendant le combat.
+
 *battle_button_exit_name;
 	Выход;
 	Exit;
 	Quitter;
+
 *battle_button_exit_desc;
-	Выйти из боя.
+	Покинуть бой.
 	Leave the battle.
-	Quitter le combat.;
+	Quitter le combat.
+
 *battle_button_run_name;
 	Побег;
 	Run;
 	Fuite;
+
 *battle_button_run_desc;
 	Попытаться сбежать из боя.
 	Attempt to flee from battle.
-	Tenter de fuir le combat.;
+	Tenter de fuir le combat.
+
 *battle_button_surrender_name;
 	Сдаться;
 	Surrender;
 	Abandonner;
+
 *battle_button_surrender_desc;
 	Сдаться противнику.
 	Give up the fight.
-	Abandonner le combat.;
+	Abandonner le combat.
+
 *battle_button_skip_turn_name;
 	Пропуск хода;
 	Skip Turn;
 	Passer le tour;
+
 *battle_button_skip_turn_desc;
 	Пропустить текущий ход.
 	Skip the current turn.
-	Passer le tour en cours.;
+	Pass the current turn.
+
 *battle_button_inventory_name;
 	Инвентарь;
 	Inventory;
 	Inventaire;
+
 *battle_button_inventory_desc;
 	Открыть инвентарь.
-	Open inventory.
-	Ouvrir l'inventaire.;
+	Open the inventory.
+	Ouvrir l’inventaire.
+
 *battle_button_button_back_name;
 	Назад;
 	Back;
 	Retour;
+
 *battle_button_button_back_desc;
 	Вернуться в предыдущее меню.
 	Return to the previous menu.
 	Revenir au menu précédent.;
+
 *battle_action_fast_attack_name;
 	Быстрая атака;
 	Fast Attack;
 	Attaque rapide;
+
 *battle_action_fast_attack_desc;
-	Быстрый удар с низким расходом ресурсов.
-	Quick strike with low resource cost.
-	Frappe rapide avec un faible coût en ressources.;
+	Стремительный удар с низкой затратой ресурсов (может вызвать кровотечение).
+	A swift strike with low resource cost (may cause bleeding).
+	Frappe rapide avec un faible coût en ressources (peut provoquer un saignement).
+
 *battle_action_normal_attack_name;
 	Обычная атака;
 	Normal Attack;
 	Attaque normale;
+
 *battle_action_normal_attack_desc;
-	Сбалансированная атака.
-	Balanced standard attack.
-	Attaque standard équilibrée.;
+	Сбалансированный удар, сочетающий силу и точность (может ослабить противника).
+	A balanced strike combining power and precision (may weaken the enemy).
+	Frappe équilibrée alliant puissance et précision (peut affaiblir l’ennemi).
+
 *battle_action_heavy_attack_name;
 	Тяжёлая атака;
 	Heavy Attack;
 	Attaque lourde;
+
 *battle_action_heavy_attack_desc;
-	Мощный удар с повышенной стоимостью.
-	Powerful strike with higher cost.
-	Frappe puissante avec un coût plus élevé.;
+	Сокрушительный удар с высокой стоимостью (может оглушить противника).
+	A crushing blow with high cost (may stun the enemy).
+	Frappe dévastatrice avec un coût élevé (peut étourdir l’ennemi).
+
 *battle_action_counter_attack_name;
 	Контратака;
 	Counter Attack;
 	Contre-attaque;
+
 *battle_action_counter_attack_desc;
-	Подготовить ответный удар.
-	Prepare a retaliatory strike.
-	Préparer une frappe de riposte.;
+	Подготовить ответный удар, возвращающий часть полученного урона противнику.
+	Prepare a retaliatory strike that reflects part of the damage received.
+	Préparer une riposte qui renvoie une partie des dégâts subis.
+
 *battle_action_fire_spell_name;
 	Огненное заклинание;
 	Fire Spell;
 	Sort de feu;
+
 *battle_action_fire_spell_desc;
-	Наносит огненный урон цели.
-	Deals fire damage to the target.
-	Inflige des dégâts de feu à la cible.;
+	Выпускает пламя, наносящее цели огненный урон.
+	Unleash flames that burn the target.
+	Déchaîne des flammes qui brûlent la cible.
+
 *battle_action_ice_spell_name;
 	Ледяное заклинание;
 	Ice Spell;
 	Sort de glace;
+
 *battle_action_ice_spell_desc;
-	Наносит ледяной урон цели.
-	Deals ice damage to the target.
-	Inflige des dégâts de glace à la cible.;
+	Ледяная магия, наносящая цели холодный урон.
+	Ice magic that strikes the target with freezing power.
+	Magie de glace frappant la cible d’un froid mordant.
+
 *battle_action_holy_spell_name;
 	Святое заклинание;
 	Holy Spell;
 	Sort sacré;
+
 *battle_action_holy_spell_desc;
-	Священная магия, исцеляющая вас.
-	Holy magic that heals you.
-	Magie sacrée qui vous soigne.;
+	Священная энергия исцеляет ваши раны.
+	Sacred energy restores your wounds.
+	L’énergie sacrée restaure vos blessures.
+
 *battle_action_dark_spell_name;
 	Тёмное заклинание;
 	Dark Spell;
 	Sort ténébreux;
+
 *battle_action_dark_spell_desc;
-	Наносит урон и исцеляет вас на величину нанесённого урона.
-	Deals damage and heals you for the damage dealt.
-	Inflige des dégâts et vous soigne à hauteur des dégâts infligés.;
+	Тёмная магия, высасывающая жизнь из врага и исцеляющая вас.
+	Dark magic that drains life from the enemy and restores yours.
+	Magie ténébreuse drainant la vie de l’ennemi pour vous soigner.
+
 *battle_action_seduction_act1_name;
-	Соблазнение I;
-	Seduction I;
-	Séduction I;
+	Слабый намек на близость;
+	Subtle Hint of Intimacy;
+	Subtile allusion à l’intimité;
+
 *battle_action_seduction_act1_desc;
-	Добавляет LP противнику и 25% от этого значения вам.
-	Adds LP to the enemy and 25% of that amount to you.
-	Ajoute des LP à l’ennemi et 25 % de cette valeur à vous.;
+	На крайний случай и это сойдет.
+	If nothing else works, even this might do.
+	En dernier recours, cela peut suffire.
+
 *battle_action_seduction_act2_name;
-	Соблазнение II;
-	Seduction II;
-	Séduction II;
+	Очевидный намек на близость;
+	Obvious Hint of Intimacy;
+	Allusion évidente à l’intimité;
+
 *battle_action_seduction_act2_desc;
-	Сильнее повышает LP противнику и 25% от этого значения вам.
-	Raises enemy LP more and gives you 25% of that amount.
-	Augmente davantage les LP de l’ennemi et vous donne 25 % de cette valeur.;
+	Возможно он вам нравится.
+	Perhaps you actually like them.
+	Peut-être qu’il vous plaît.
+
 *battle_action_seduction_act3_name;
-	Соблазнение III;
-	Seduction III;
-	Séduction III;
+	Сильный намек на близость;
+	Strong Hint of Intimacy;
+	Forte allusion à l’intimité;
+
 *battle_action_seduction_act3_desc;
-	Значительно повышает LP противнику и 25% от этого значения вам.
-	Greatly raises enemy LP and gives you 25% of that amount.
-	Augmente fortement les LP de l’ennemi et vous donne 25 % de cette valeur.;
+	Все по обоюдному согласию.
+	All of it by mutual consent.
+	Tout cela d’un commun accord.
+
 *battle_action_seduction_act4_name;
-	Соблазнение IV;
-	Seduction IV;
-	Séduction IV;
+	Брачный сезон;
+	Mating Season;
+	Saison des amours;
+
 *battle_action_seduction_act4_desc;
-	Максимально повышает LP противнику и 25% от этого значения вам.
-	Maximally raises enemy LP and gives you 25% of that amount.
-	Augmente au maximum les LP de l’ennemi et vous donne 25 % de cette valeur.;
+	Когда противник совсем не понимает намеков.
+	When the enemy completely fails to understand hints.
+	Quand l’ennemi ne comprend vraiment pas les sous-entendus.
 
 *battle_action_action_act1_name;
-	Релакс I;
-	Relax I;
-	Relax I;
+	Инвентарь;
+	Inventory;
+	Inventaire;
+
 *battle_action_action_act1_desc;
-	Снижает ваш LP.
-	Reduces your LP.
-	Réduit vos LP.;
+	А что у меня в сумке.
+	Let’s see what’s in my bag.
+	Voyons ce qu’il y a dans mon sac.
+
 *battle_action_action_act2_name;
-	Релакс II;
-	Relax II;
-	Relax II;
+	Побег;
+	Run Away;
+	Fuite;
+
 *battle_action_action_act2_desc;
-	Сильнее снижает ваш LP.
-	Reduces your LP more.
-	Réduit davantage vos LP.;
+	Даже смелые иногда могут показать спину противнику.
+	Even the brave sometimes turn their back to survive.
+	Même les braves doivent parfois tourner le dos pour survivre.
+
 *battle_action_action_act3_name;
-	Действие III;
-	Action III;
-	Action III;
+	Сдаваться;
+	Surrender;
+	Abandonner;
+
 *battle_action_action_act3_desc;
-	Сильное действие.
-	Powerful action.
-	Action puissante.;
+	Иногда даже сильный воин не в состоянии выиграть битву.
+	Sometimes even the strongest warrior cannot win the battle.
+	Parfois, même le plus fort des guerriers ne peut pas gagner la bataille.
+
 *battle_action_action_act4_name;
-	Действие IV;
-	Action IV;
-	Action IV;
+	Пропустить ход;
+	Skip Turn;
+	Passer le tour;
+
 *battle_action_action_act4_desc;
-	Максимально сильное действие.
-	Strongest action.
-	Action la plus puissante.;
+	Иногда интересно посмотреть, что ещё выкинет противник.
+	Sometimes it's worth seeing what the enemy will do next.
+	Parfois, il vaut mieux voir ce que l’ennemi fera ensuite.
+
 *battle_choice_easy;
 	Ученик;
 	Apprentice;

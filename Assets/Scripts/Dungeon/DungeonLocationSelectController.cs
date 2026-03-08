@@ -104,6 +104,7 @@ namespace Game.Dungeon
         {
             var playerRank = GetPlayerRank();
             var playerLevel = GetPlayerLevel();
+            bool canEnterBattle = HasAlivePlayer();
 
             if (buttons == null)
                 return;
@@ -120,7 +121,7 @@ namespace Game.Dungeon
                     continue;
                 }
 
-                binding.button.interactable = IsBindingAvailableFor(binding, playerRank, playerLevel);
+                binding.button.interactable = canEnterBattle && IsBindingAvailableFor(binding, playerRank, playerLevel);
             }
         }
 
@@ -161,6 +162,13 @@ namespace Game.Dungeon
         {
             if (binding == null)
                 return;
+
+            if (!HasAlivePlayer())
+            {
+                Debug.LogWarning("[Dungeon] Cannot start battle: player HP is 0. Restore HP before entering battle.");
+                RefreshInteractable();
+                return;
+            }
 
             var location = binding.location;
             if (location == null)
@@ -319,6 +327,12 @@ namespace Game.Dungeon
             }
 
             return true;
+        }
+
+        private static bool HasAlivePlayer()
+        {
+            var stats = GameState.Instance?.CurrentSave?.player?.stats;
+            return stats != null && stats.hp > 0;
         }
     }
 }

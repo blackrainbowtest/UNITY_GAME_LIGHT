@@ -137,8 +137,16 @@ namespace UDA2.UI.SaveLoad
                     var targetScene = save.player.sceneName;
                     if (save.sceneState != null && save.sceneState.pendingBattle != null && save.sceneState.pendingBattle.isPending)
                     {
-                        if (!string.IsNullOrEmpty(save.sceneState.pendingBattle.battleSceneName))
+                        bool canResumeBattle = save.player != null && save.player.stats != null && save.player.stats.hp > 0;
+                        if (canResumeBattle && !string.IsNullOrEmpty(save.sceneState.pendingBattle.battleSceneName))
+                        {
                             targetScene = save.sceneState.pendingBattle.battleSceneName;
+                        }
+                        else if (!canResumeBattle)
+                        {
+                            save.sceneState.pendingBattle.Clear();
+                            Debug.LogWarning("[SaveLoadModal] Pending battle was cleared because player HP is 0.");
+                        }
                     }
 
                     // Ensures correct scene transition after load
