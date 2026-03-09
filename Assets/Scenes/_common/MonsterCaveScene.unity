@@ -821,6 +821,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UDA2.Audio::UDA2.Audio.SceneAmbientSoundController
   playOnEnable: 1
+  allowMusicCues: 0
+  musicEndPollInterval: 0.1
   delayFirstPlay: 0
   groups:
   - name: nature_rain_fall

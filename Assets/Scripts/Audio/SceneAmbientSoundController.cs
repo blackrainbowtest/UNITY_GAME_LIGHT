@@ -59,6 +59,13 @@ namespace UDA2.Audio
         [Header("Behavior")]
         [SerializeField] private bool playOnEnable = true;
 
+        [Tooltip("If false, cues with Category=Music are ignored to avoid interfering with scene music.")]
+        [SerializeField] private bool allowMusicCues;
+
+        [Tooltip("Polling interval while waiting for current music to end (seconds). Higher = lower CPU usage.")]
+        [Min(0.02f)]
+        [SerializeField] private float musicEndPollInterval = 0.1f;
+
         [Tooltip("If true, first sound in each group is delayed by its interval range. If false, plays immediately once.")]
         [SerializeField] private bool delayFirstPlay = false;
 
@@ -111,7 +118,7 @@ namespace UDA2.Audio
 
                 if (!group.randomLoop)
                 {
-                    PlayOneAndGetDuration(group, out _);
+                    PlayOneAndGetDuration(group, allowMusicCues, out _);
                     continue;
                 }
 
@@ -140,16 +147,21 @@ namespace UDA2.Audio
 
             while (enabled && gameObject.activeInHierarchy)
             {
-                bool waitForMusicEnd = PlayOneAndGetDuration(group, out float playedDuration);
+                bool waitForMusicEnd = PlayOneAndGetDuration(group, allowMusicCues, out float playedDuration);
 
                 if (waitForMusicEnd)
                 {
+                    float poll = Mathf.Max(0.02f, musicEndPollInterval);
+                    var wait = new WaitForSecondsRealtime(poll);
+
                     while (enabled && gameObject.activeInHierarchy)
                     {
                         var am = AudioManager.Instance;
                         if (am == null || !am.IsMusicPlaying)
                             break;
-                        yield return null;
+
+                        // Throttle waiting loop to avoid per-frame polling in large scenes.
+                        yield return wait;
                     }
                 }
                 else if (playedDuration > 0f)
@@ -174,7 +186,7 @@ namespace UDA2.Audio
             return UnityEngine.Random.Range(min, max);
         }
 
-        private static AudioCue PickRandomCue(AudioCue[] list)
+        private static AudioCue PickRandomCue(AudioCue[] list, bool allowMusicCues)
         {
             if (list == null || list.Length == 0)
                 return null;
@@ -183,6 +195,12 @@ namespace UDA2.Audio
             for (int i = 0; i < list.Length; i++)
             {
                 var cue = list[(start + i) % list.Length];
+                if (cue == null || cue.Clip == null)
+                    continue;
+
+                if (!allowMusicCues && cue.Category == AudioCategory.Music)
+                    continue;
+
                 if (cue != null && cue.Clip != null)
                     return cue;
             }
@@ -206,7 +224,7 @@ namespace UDA2.Audio
             return null;
         }
 
-        private static bool PlayOneAndGetDuration(AmbientGroup group, out float durationSeconds)
+        private static bool PlayOneAndGetDuration(AmbientGroup group, bool allowMusicCues, out float durationSeconds)
         {
             durationSeconds = 0f;
 
@@ -214,7 +232,7 @@ namespace UDA2.Audio
             if (am == null)
                 return false;
 
-            var cue = PickRandomCue(group.cues);
+            var cue = PickRandomCue(group.cues, allowMusicCues);
             if (cue != null)
             {
                 if (cue.Category == AudioCategory.Music)

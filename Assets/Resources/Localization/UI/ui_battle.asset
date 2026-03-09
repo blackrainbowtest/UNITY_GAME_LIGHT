@@ -16,27 +16,27 @@ MonoBehaviour:
   - key: btn_attack
     entries:
     - languageCode: ru
-      text: Attack
+      text: "\u0410\u0442\u0430\u043A\u0430"
     - languageCode: en
       text: Attack
     - languageCode: fr
-      text: Attack
+      text: Attaque
   - key: btn_item
     entries:
     - languageCode: ru
-      text: Item
+      text: "\u041F\u0440\u0435\u0434\u043C\u0435\u0442"
     - languageCode: en
       text: Item
     - languageCode: fr
-      text: Item
+      text: Objet
   - key: btn_exit
     entries:
     - languageCode: ru
-      text: Exit
+      text: "\u0412\u044B\u0445\u043E\u0434"
     - languageCode: en
       text: Exit
     - languageCode: fr
-      text: Exit
+      text: Quitter
   - key: battle_tooltip_damage_fmt
     entries:
     - languageCode: ru
@@ -44,15 +44,15 @@ MonoBehaviour:
     - languageCode: en
       text: 'Damage: {0}'
     - languageCode: fr
-      text: "D\xE9g\xE2ts: {0}"
+      text: "D\xE9g\xE2ts : {0}"
   - key: battle_tooltip_heal_fmt
     entries:
     - languageCode: ru
       text: "\u041B\u0435\u0447\u0435\u043D\u0438\u0435: {0}"
     - languageCode: en
-      text: 'Heal: {0}'
+      text: 'Healing: {0}'
     - languageCode: fr
-      text: 'Soin: {0}'
+      text: 'Soins : {0}'
   - key: battle_tooltip_mp_cost_fmt
     entries:
     - languageCode: ru
@@ -60,7 +60,7 @@ MonoBehaviour:
     - languageCode: en
       text: 'MP: {0}'
     - languageCode: fr
-      text: 'MP: {0}'
+      text: 'PM : {0}'
   - key: battle_tooltip_sp_cost_fmt
     entries:
     - languageCode: ru
@@ -68,7 +68,7 @@ MonoBehaviour:
     - languageCode: en
       text: 'SP: {0}'
     - languageCode: fr
-      text: 'SP: {0}'
+      text: 'SP : {0}'
   - key: battle_tooltip_lp_cost_fmt
     entries:
     - languageCode: ru
@@ -76,7 +76,7 @@ MonoBehaviour:
     - languageCode: en
       text: 'LP: {0}'
     - languageCode: fr
-      text: 'LP: {0}'
+      text: 'LP : {0}'
   - key: battle_button_attack_menu_name
     entries:
     - languageCode: ru
@@ -88,30 +88,30 @@ MonoBehaviour:
   - key: battle_button_attack_menu_desc
     entries:
     - languageCode: ru
-      text: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u043C\u0435\u043D\u044E
-        \u0430\u0442\u0430\u043A."
+      text: "\u0421\u043F\u043E\u0441\u043E\u0431\u043D\u043E\u0441\u0442\u0438,
+        \u043D\u0430\u043D\u043E\u0441\u044F\u0449\u0438\u0435 \u0444\u0438\u0437\u0438\u0447\u0435\u0441\u043A\u0438\u0439
+        \u0443\u0440\u043E\u043D \u043F\u0440\u043E\u0442\u0438\u0432\u043D\u0438\u043A\u0443."
     - languageCode: en
-      text: Open the attack menu.
+      text: Abilities that deal physical damage to the enemy.
     - languageCode: fr
-      text: Ouvrir le menu des attaques.
+      text: "Comp\xE9tences infligeant des d\xE9g\xE2ts physiques \xE0 l\u2019ennemi."
   - key: battle_action_block_name
     entries:
     - languageCode: ru
       text: "\u0417\u0430\u0449\u0438\u0442\u0430"
     - languageCode: en
-      text: Defense
+      text: Defend
     - languageCode: fr
       text: "D\xE9fense"
   - key: battle_action_block_desc
     entries:
     - languageCode: ru
-      text: "\u041F\u043E\u0434\u0433\u043E\u0442\u043E\u0432\u0438\u0442\u044C\u0441\u044F
-        \u0438 \u0441\u043D\u0438\u0437\u0438\u0442\u044C \u0432\u0445\u043E\u0434\u044F\u0449\u0438\u0439
-        \u0443\u0440\u043E\u043D."
+      text: "\u0414\u0435\u0439\u0441\u0442\u0432\u0438\u044F, \u0443\u043C\u0435\u043D\u044C\u0448\u0430\u044E\u0449\u0438\u0435
+        \u0432\u0445\u043E\u0434\u044F\u0449\u0438\u0439 \u0443\u0440\u043E\u043D."
     - languageCode: en
-      text: Brace and reduce incoming damage.
+      text: Actions that reduce incoming damage.
     - languageCode: fr
-      text: "Se pr\xE9parer et r\xE9duire les d\xE9g\xE2ts entrants."
+      text: "Actions r\xE9duisant les d\xE9g\xE2ts re\xE7us."
   - key: battle_button_magic_menu_name
     entries:
     - languageCode: ru
@@ -123,12 +123,12 @@ MonoBehaviour:
   - key: battle_button_magic_menu_desc
     entries:
     - languageCode: ru
-      text: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u043C\u0435\u043D\u044E
-        \u0437\u0430\u043A\u043B\u0438\u043D\u0430\u043D\u0438\u0439."
+      text: "\u041C\u0430\u0433\u0438\u0447\u0435\u0441\u043A\u0438\u0435 \u0441\u043F\u043E\u0441\u043E\u0431\u043D\u043E\u0441\u0442\u0438,
+        \u0440\u0430\u0441\u0445\u043E\u0434\u0443\u044E\u0449\u0438\u0435 \u043C\u0430\u043D\u0443."
     - languageCode: en
-      text: Open the spell menu.
+      text: Abilities that use mana.
     - languageCode: fr
-      text: Ouvrir le menu des sorts.
+      text: "Comp\xE9tences magiques consommant du mana."
   - key: battle_button_actions_menu_name
     entries:
     - languageCode: ru
@@ -144,9 +144,9 @@ MonoBehaviour:
         \u0434\u043E\u043F\u043E\u043B\u043D\u0438\u0442\u0435\u043B\u044C\u043D\u044B\u0445
         \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0439."
     - languageCode: en
-      text: Open the utility actions menu.
+      text: Open the additional actions menu.
     - languageCode: fr
-      text: Ouvrir le menu des actions utilitaires.
+      text: "Ouvrir le menu d\u2019actions suppl\xE9mentaires."
   - key: battle_button_seduction_menu_name
     entries:
     - languageCode: ru
@@ -158,12 +158,13 @@ MonoBehaviour:
   - key: battle_button_seduction_menu_desc
     entries:
     - languageCode: ru
-      text: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u043C\u0435\u043D\u044E
-        \u0441\u043E\u0431\u043B\u0430\u0437\u043D\u0435\u043D\u0438\u044F."
+      text: "\u0421\u043E\u0431\u043B\u0430\u0437\u043D\u044F\u044E\u0449\u0438\u0435
+        \u0441\u043F\u043E\u0441\u043E\u0431\u043D\u043E\u0441\u0442\u0438, \u043F\u043E\u0432\u044B\u0448\u0430\u044E\u0449\u0438\u0435
+        \u043F\u043E\u0445\u043E\u0442\u044C \u043F\u0440\u043E\u0442\u0438\u0432\u043D\u0438\u043A\u0430."
     - languageCode: en
-      text: Open the seduction menu.
+      text: Seductive abilities that increase enemy lust.
     - languageCode: fr
-      text: "Ouvrir le menu de s\xE9duction."
+      text: "Comp\xE9tences de s\xE9duction augmentant la luxure de l\u2019ennemi."
   - key: battle_button_item_name
     entries:
     - languageCode: ru
@@ -180,7 +181,7 @@ MonoBehaviour:
     - languageCode: en
       text: Use an item in battle.
     - languageCode: fr
-      text: Utiliser un objet en combat.
+      text: Utiliser un objet pendant le combat.
   - key: battle_button_exit_name
     entries:
     - languageCode: ru
@@ -192,7 +193,7 @@ MonoBehaviour:
   - key: battle_button_exit_desc
     entries:
     - languageCode: ru
-      text: "\u0412\u044B\u0439\u0442\u0438 \u0438\u0437 \u0431\u043E\u044F."
+      text: "\u041F\u043E\u043A\u0438\u043D\u0443\u0442\u044C \u0431\u043E\u0439."
     - languageCode: en
       text: Leave the battle.
     - languageCode: fr
@@ -246,7 +247,7 @@ MonoBehaviour:
     - languageCode: en
       text: Skip the current turn.
     - languageCode: fr
-      text: Passer le tour en cours.
+      text: Pass the current turn.
   - key: battle_button_inventory_name
     entries:
     - languageCode: ru
@@ -260,9 +261,9 @@ MonoBehaviour:
     - languageCode: ru
       text: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u0438\u043D\u0432\u0435\u043D\u0442\u0430\u0440\u044C."
     - languageCode: en
-      text: Open inventory.
+      text: Open the inventory.
     - languageCode: fr
-      text: Ouvrir l'inventaire.
+      text: "Ouvrir l\u2019inventaire."
   - key: battle_button_button_back_name
     entries:
     - languageCode: ru
@@ -291,13 +292,15 @@ MonoBehaviour:
   - key: battle_action_fast_attack_desc
     entries:
     - languageCode: ru
-      text: "\u0411\u044B\u0441\u0442\u0440\u044B\u0439 \u0443\u0434\u0430\u0440
-        \u0441 \u043D\u0438\u0437\u043A\u0438\u043C \u0440\u0430\u0441\u0445\u043E\u0434\u043E\u043C
-        \u0440\u0435\u0441\u0443\u0440\u0441\u043E\u0432."
+      text: "\u0421\u0442\u0440\u0435\u043C\u0438\u0442\u0435\u043B\u044C\u043D\u044B\u0439
+        \u0443\u0434\u0430\u0440 \u0441 \u043D\u0438\u0437\u043A\u043E\u0439 \u0437\u0430\u0442\u0440\u0430\u0442\u043E\u0439
+        \u0440\u0435\u0441\u0443\u0440\u0441\u043E\u0432 (\u043C\u043E\u0436\u0435\u0442
+        \u0432\u044B\u0437\u0432\u0430\u0442\u044C \u043A\u0440\u043E\u0432\u043E\u0442\u0435\u0447\u0435\u043D\u0438\u0435)."
     - languageCode: en
-      text: Quick strike with low resource cost.
+      text: A swift strike with low resource cost (may cause bleeding).
     - languageCode: fr
-      text: "Frappe rapide avec un faible co\xFBt en ressources."
+      text: "Frappe rapide avec un faible co\xFBt en ressources (peut provoquer un
+        saignement)."
   - key: battle_action_normal_attack_name
     entries:
     - languageCode: ru
@@ -309,12 +312,16 @@ MonoBehaviour:
   - key: battle_action_normal_attack_desc
     entries:
     - languageCode: ru
-      text: "\u0421\u0431\u0430\u043B\u0430\u043D\u0441\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F
-        \u0430\u0442\u0430\u043A\u0430."
+      text: "\u0421\u0431\u0430\u043B\u0430\u043D\u0441\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0439
+        \u0443\u0434\u0430\u0440, \u0441\u043E\u0447\u0435\u0442\u0430\u044E\u0449\u0438\u0439
+        \u0441\u0438\u043B\u0443 \u0438 \u0442\u043E\u0447\u043D\u043E\u0441\u0442\u044C
+        (\u043C\u043E\u0436\u0435\u0442 \u043E\u0441\u043B\u0430\u0431\u0438\u0442\u044C
+        \u043F\u0440\u043E\u0442\u0438\u0432\u043D\u0438\u043A\u0430)."
     - languageCode: en
-      text: Balanced standard attack.
+      text: A balanced strike combining power and precision (may weaken the enemy).
     - languageCode: fr
-      text: "Attaque standard \xE9quilibr\xE9e."
+      text: "Frappe \xE9quilibr\xE9e alliant puissance et pr\xE9cision (peut affaiblir
+        l\u2019ennemi)."
   - key: battle_action_heavy_attack_name
     entries:
     - languageCode: ru
@@ -326,12 +333,15 @@ MonoBehaviour:
   - key: battle_action_heavy_attack_desc
     entries:
     - languageCode: ru
-      text: "\u041C\u043E\u0449\u043D\u044B\u0439 \u0443\u0434\u0430\u0440 \u0441
-        \u043F\u043E\u0432\u044B\u0448\u0435\u043D\u043D\u043E\u0439 \u0441\u0442\u043E\u0438\u043C\u043E\u0441\u0442\u044C\u044E."
+      text: "\u0421\u043E\u043A\u0440\u0443\u0448\u0438\u0442\u0435\u043B\u044C\u043D\u044B\u0439
+        \u0443\u0434\u0430\u0440 \u0441 \u0432\u044B\u0441\u043E\u043A\u043E\u0439
+        \u0441\u0442\u043E\u0438\u043C\u043E\u0441\u0442\u044C\u044E (\u043C\u043E\u0436\u0435\u0442
+        \u043E\u0433\u043B\u0443\u0448\u0438\u0442\u044C \u043F\u0440\u043E\u0442\u0438\u0432\u043D\u0438\u043A\u0430)."
     - languageCode: en
-      text: Powerful strike with higher cost.
+      text: A crushing blow with high cost (may stun the enemy).
     - languageCode: fr
-      text: "Frappe puissante avec un co\xFBt plus \xE9lev\xE9."
+      text: "Frappe d\xE9vastatrice avec un co\xFBt \xE9lev\xE9 (peut \xE9tourdir
+        l\u2019ennemi)."
   - key: battle_action_counter_attack_name
     entries:
     - languageCode: ru
@@ -344,11 +354,13 @@ MonoBehaviour:
     entries:
     - languageCode: ru
       text: "\u041F\u043E\u0434\u0433\u043E\u0442\u043E\u0432\u0438\u0442\u044C \u043E\u0442\u0432\u0435\u0442\u043D\u044B\u0439
-        \u0443\u0434\u0430\u0440."
+        \u0443\u0434\u0430\u0440, \u0432\u043E\u0437\u0432\u0440\u0430\u0449\u0430\u044E\u0449\u0438\u0439
+        \u0447\u0430\u0441\u0442\u044C \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u043D\u043E\u0433\u043E
+        \u0443\u0440\u043E\u043D\u0430 \u043F\u0440\u043E\u0442\u0438\u0432\u043D\u0438\u043A\u0443."
     - languageCode: en
-      text: Prepare a retaliatory strike.
+      text: Prepare a retaliatory strike that reflects part of the damage received.
     - languageCode: fr
-      text: "Pr\xE9parer une frappe de riposte."
+      text: "Pr\xE9parer une riposte qui renvoie une partie des d\xE9g\xE2ts subis."
   - key: battle_action_fire_spell_name
     entries:
     - languageCode: ru
@@ -360,12 +372,13 @@ MonoBehaviour:
   - key: battle_action_fire_spell_desc
     entries:
     - languageCode: ru
-      text: "\u041D\u0430\u043D\u043E\u0441\u0438\u0442 \u043E\u0433\u043D\u0435\u043D\u043D\u044B\u0439
-        \u0443\u0440\u043E\u043D \u0446\u0435\u043B\u0438."
+      text: "\u0412\u044B\u043F\u0443\u0441\u043A\u0430\u0435\u0442 \u043F\u043B\u0430\u043C\u044F,
+        \u043D\u0430\u043D\u043E\u0441\u044F\u0449\u0435\u0435 \u0446\u0435\u043B\u0438
+        \u043E\u0433\u043D\u0435\u043D\u043D\u044B\u0439 \u0443\u0440\u043E\u043D."
     - languageCode: en
-      text: Deals fire damage to the target.
+      text: Unleash flames that burn the target.
     - languageCode: fr
-      text: "Inflige des d\xE9g\xE2ts de feu \xE0 la cible."
+      text: "D\xE9cha\xEEne des flammes qui br\xFBlent la cible."
   - key: battle_action_ice_spell_name
     entries:
     - languageCode: ru
@@ -377,12 +390,13 @@ MonoBehaviour:
   - key: battle_action_ice_spell_desc
     entries:
     - languageCode: ru
-      text: "\u041D\u0430\u043D\u043E\u0441\u0438\u0442 \u043B\u0435\u0434\u044F\u043D\u043E\u0439
-        \u0443\u0440\u043E\u043D \u0446\u0435\u043B\u0438."
+      text: "\u041B\u0435\u0434\u044F\u043D\u0430\u044F \u043C\u0430\u0433\u0438\u044F,
+        \u043D\u0430\u043D\u043E\u0441\u044F\u0449\u0430\u044F \u0446\u0435\u043B\u0438
+        \u0445\u043E\u043B\u043E\u0434\u043D\u044B\u0439 \u0443\u0440\u043E\u043D."
     - languageCode: en
-      text: Deals ice damage to the target.
+      text: Ice magic that strikes the target with freezing power.
     - languageCode: fr
-      text: "Inflige des d\xE9g\xE2ts de glace \xE0 la cible."
+      text: "Magie de glace frappant la cible d\u2019un froid mordant."
   - key: battle_action_holy_spell_name
     entries:
     - languageCode: ru
@@ -394,12 +408,13 @@ MonoBehaviour:
   - key: battle_action_holy_spell_desc
     entries:
     - languageCode: ru
-      text: "\u0421\u0432\u044F\u0449\u0435\u043D\u043D\u0430\u044F \u043C\u0430\u0433\u0438\u044F,
-        \u0438\u0441\u0446\u0435\u043B\u044F\u044E\u0449\u0430\u044F \u0432\u0430\u0441."
+      text: "\u0421\u0432\u044F\u0449\u0435\u043D\u043D\u0430\u044F \u044D\u043D\u0435\u0440\u0433\u0438\u044F
+        \u0438\u0441\u0446\u0435\u043B\u044F\u0435\u0442 \u0432\u0430\u0448\u0438
+        \u0440\u0430\u043D\u044B."
     - languageCode: en
-      text: Holy magic that heals you.
+      text: Sacred energy restores your wounds.
     - languageCode: fr
-      text: "Magie sacr\xE9e qui vous soigne."
+      text: "L\u2019\xE9nergie sacr\xE9e restaure vos blessures."
   - key: battle_action_dark_spell_name
     entries:
     - languageCode: ru
@@ -411,159 +426,156 @@ MonoBehaviour:
   - key: battle_action_dark_spell_desc
     entries:
     - languageCode: ru
-      text: "\u041D\u0430\u043D\u043E\u0441\u0438\u0442 \u0443\u0440\u043E\u043D
-        \u0438 \u0438\u0441\u0446\u0435\u043B\u044F\u0435\u0442 \u0432\u0430\u0441
-        \u043D\u0430 \u0432\u0435\u043B\u0438\u0447\u0438\u043D\u0443 \u043D\u0430\u043D\u0435\u0441\u0451\u043D\u043D\u043E\u0433\u043E
-        \u0443\u0440\u043E\u043D\u0430."
+      text: "\u0422\u0451\u043C\u043D\u0430\u044F \u043C\u0430\u0433\u0438\u044F,
+        \u0432\u044B\u0441\u0430\u0441\u044B\u0432\u0430\u044E\u0449\u0430\u044F
+        \u0436\u0438\u0437\u043D\u044C \u0438\u0437 \u0432\u0440\u0430\u0433\u0430
+        \u0438 \u0438\u0441\u0446\u0435\u043B\u044F\u044E\u0449\u0430\u044F \u0432\u0430\u0441."
     - languageCode: en
-      text: Deals damage and heals you for the damage dealt.
+      text: Dark magic that drains life from the enemy and restores yours.
     - languageCode: fr
-      text: "Inflige des d\xE9g\xE2ts et vous soigne \xE0 hauteur des d\xE9g\xE2ts
-        inflig\xE9s."
+      text: "Magie t\xE9n\xE9breuse drainant la vie de l\u2019ennemi pour vous soigner."
   - key: battle_action_seduction_act1_name
     entries:
     - languageCode: ru
-      text: "\u0421\u043E\u0431\u043B\u0430\u0437\u043D\u0435\u043D\u0438\u0435 I"
+      text: "\u0421\u043B\u0430\u0431\u044B\u0439 \u043D\u0430\u043C\u0435\u043A
+        \u043D\u0430 \u0431\u043B\u0438\u0437\u043E\u0441\u0442\u044C"
     - languageCode: en
-      text: Seduction I
+      text: Subtle Hint of Intimacy
     - languageCode: fr
-      text: "S\xE9duction I"
+      text: "Subtile allusion \xE0 l\u2019intimit\xE9"
   - key: battle_action_seduction_act1_desc
     entries:
     - languageCode: ru
-      text: "\u0414\u043E\u0431\u0430\u0432\u043B\u044F\u0435\u0442 LP \u043F\u0440\u043E\u0442\u0438\u0432\u043D\u0438\u043A\u0443
-        \u0438 25% \u043E\u0442 \u044D\u0442\u043E\u0433\u043E \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u044F
-        \u0432\u0430\u043C."
+      text: "\u041D\u0430 \u043A\u0440\u0430\u0439\u043D\u0438\u0439 \u0441\u043B\u0443\u0447\u0430\u0439
+        \u0438 \u044D\u0442\u043E \u0441\u043E\u0439\u0434\u0435\u0442."
     - languageCode: en
-      text: Adds LP to the enemy and 25% of that amount to you.
+      text: If nothing else works, even this might do.
     - languageCode: fr
-      text: "Ajoute des LP \xE0 l\u2019ennemi et 25 % de cette valeur \xE0 vous."
+      text: En dernier recours, cela peut suffire.
   - key: battle_action_seduction_act2_name
     entries:
     - languageCode: ru
-      text: "\u0421\u043E\u0431\u043B\u0430\u0437\u043D\u0435\u043D\u0438\u0435 II"
+      text: "\u041E\u0447\u0435\u0432\u0438\u0434\u043D\u044B\u0439 \u043D\u0430\u043C\u0435\u043A
+        \u043D\u0430 \u0431\u043B\u0438\u0437\u043E\u0441\u0442\u044C"
     - languageCode: en
-      text: Seduction II
+      text: Obvious Hint of Intimacy
     - languageCode: fr
-      text: "S\xE9duction II"
+      text: "Allusion \xE9vidente \xE0 l\u2019intimit\xE9"
   - key: battle_action_seduction_act2_desc
     entries:
     - languageCode: ru
-      text: "\u0421\u0438\u043B\u044C\u043D\u0435\u0435 \u043F\u043E\u0432\u044B\u0448\u0430\u0435\u0442
-        LP \u043F\u0440\u043E\u0442\u0438\u0432\u043D\u0438\u043A\u0443 \u0438 25%
-        \u043E\u0442 \u044D\u0442\u043E\u0433\u043E \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u044F
-        \u0432\u0430\u043C."
+      text: "\u0412\u043E\u0437\u043C\u043E\u0436\u043D\u043E \u043E\u043D \u0432\u0430\u043C
+        \u043D\u0440\u0430\u0432\u0438\u0442\u0441\u044F."
     - languageCode: en
-      text: Raises enemy LP more and gives you 25% of that amount.
+      text: Perhaps you actually like them.
     - languageCode: fr
-      text: "Augmente davantage les LP de l\u2019ennemi et vous donne 25 % de cette
-        valeur."
+      text: "Peut-\xEAtre qu\u2019il vous pla\xEEt."
   - key: battle_action_seduction_act3_name
     entries:
     - languageCode: ru
-      text: "\u0421\u043E\u0431\u043B\u0430\u0437\u043D\u0435\u043D\u0438\u0435 III"
+      text: "\u0421\u0438\u043B\u044C\u043D\u044B\u0439 \u043D\u0430\u043C\u0435\u043A
+        \u043D\u0430 \u0431\u043B\u0438\u0437\u043E\u0441\u0442\u044C"
     - languageCode: en
-      text: Seduction III
+      text: Strong Hint of Intimacy
     - languageCode: fr
-      text: "S\xE9duction III"
+      text: "Forte allusion \xE0 l\u2019intimit\xE9"
   - key: battle_action_seduction_act3_desc
     entries:
     - languageCode: ru
-      text: "\u0417\u043D\u0430\u0447\u0438\u0442\u0435\u043B\u044C\u043D\u043E \u043F\u043E\u0432\u044B\u0448\u0430\u0435\u0442
-        LP \u043F\u0440\u043E\u0442\u0438\u0432\u043D\u0438\u043A\u0443 \u0438 25%
-        \u043E\u0442 \u044D\u0442\u043E\u0433\u043E \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u044F
-        \u0432\u0430\u043C."
+      text: "\u0412\u0441\u0435 \u043F\u043E \u043E\u0431\u043E\u044E\u0434\u043D\u043E\u043C\u0443
+        \u0441\u043E\u0433\u043B\u0430\u0441\u0438\u044E."
     - languageCode: en
-      text: Greatly raises enemy LP and gives you 25% of that amount.
+      text: All of it by mutual consent.
     - languageCode: fr
-      text: "Augmente fortement les LP de l\u2019ennemi et vous donne 25 % de cette
-        valeur."
+      text: "Tout cela d\u2019un commun accord."
   - key: battle_action_seduction_act4_name
     entries:
     - languageCode: ru
-      text: "\u0421\u043E\u0431\u043B\u0430\u0437\u043D\u0435\u043D\u0438\u0435 IV"
+      text: "\u0411\u0440\u0430\u0447\u043D\u044B\u0439 \u0441\u0435\u0437\u043E\u043D"
     - languageCode: en
-      text: Seduction IV
+      text: Mating Season
     - languageCode: fr
-      text: "S\xE9duction IV"
+      text: Saison des amours
   - key: battle_action_seduction_act4_desc
     entries:
     - languageCode: ru
-      text: "\u041C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u043E \u043F\u043E\u0432\u044B\u0448\u0430\u0435\u0442
-        LP \u043F\u0440\u043E\u0442\u0438\u0432\u043D\u0438\u043A\u0443 \u0438 25%
-        \u043E\u0442 \u044D\u0442\u043E\u0433\u043E \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u044F
-        \u0432\u0430\u043C."
+      text: "\u041A\u043E\u0433\u0434\u0430 \u043F\u0440\u043E\u0442\u0438\u0432\u043D\u0438\u043A
+        \u0441\u043E\u0432\u0441\u0435\u043C \u043D\u0435 \u043F\u043E\u043D\u0438\u043C\u0430\u0435\u0442
+        \u043D\u0430\u043C\u0435\u043A\u043E\u0432."
     - languageCode: en
-      text: Maximally raises enemy LP and gives you 25% of that amount.
+      text: When the enemy completely fails to understand hints.
     - languageCode: fr
-      text: "Augmente au maximum les LP de l\u2019ennemi et vous donne 25 % de cette
-        valeur."
+      text: "Quand l\u2019ennemi ne comprend vraiment pas les sous-entendus."
   - key: battle_action_action_act1_name
     entries:
     - languageCode: ru
-      text: "\u0420\u0435\u043B\u0430\u043A\u0441 I"
+      text: "\u0418\u043D\u0432\u0435\u043D\u0442\u0430\u0440\u044C"
     - languageCode: en
-      text: Relax I
+      text: Inventory
     - languageCode: fr
-      text: Relax I
+      text: Inventaire
   - key: battle_action_action_act1_desc
     entries:
     - languageCode: ru
-      text: "\u0421\u043D\u0438\u0436\u0430\u0435\u0442 \u0432\u0430\u0448 LP."
+      text: "\u0410 \u0447\u0442\u043E \u0443 \u043C\u0435\u043D\u044F \u0432 \u0441\u0443\u043C\u043A\u0435."
     - languageCode: en
-      text: Reduces your LP.
+      text: "Let\u2019s see what\u2019s in my bag."
     - languageCode: fr
-      text: "R\xE9duit vos LP."
+      text: "Voyons ce qu\u2019il y a dans mon sac."
   - key: battle_action_action_act2_name
     entries:
     - languageCode: ru
-      text: "\u0420\u0435\u043B\u0430\u043A\u0441 II"
+      text: "\u041F\u043E\u0431\u0435\u0433"
     - languageCode: en
-      text: Relax II
+      text: Run Away
     - languageCode: fr
-      text: Relax II
+      text: Fuite
   - key: battle_action_action_act2_desc
     entries:
     - languageCode: ru
-      text: "\u0421\u0438\u043B\u044C\u043D\u0435\u0435 \u0441\u043D\u0438\u0436\u0430\u0435\u0442
-        \u0432\u0430\u0448 LP."
+      text: "\u0414\u0430\u0436\u0435 \u0441\u043C\u0435\u043B\u044B\u0435 \u0438\u043D\u043E\u0433\u0434\u0430
+        \u043C\u043E\u0433\u0443\u0442 \u043F\u043E\u043A\u0430\u0437\u0430\u0442\u044C
+        \u0441\u043F\u0438\u043D\u0443 \u043F\u0440\u043E\u0442\u0438\u0432\u043D\u0438\u043A\u0443."
     - languageCode: en
-      text: Reduces your LP more.
+      text: Even the brave sometimes turn their back to survive.
     - languageCode: fr
-      text: "R\xE9duit davantage vos LP."
+      text: "M\xEAme les braves doivent parfois tourner le dos pour survivre."
   - key: battle_action_action_act3_name
     entries:
     - languageCode: ru
-      text: "\u0414\u0435\u0439\u0441\u0442\u0432\u0438\u0435 III"
+      text: "\u0421\u0434\u0430\u0432\u0430\u0442\u044C\u0441\u044F"
     - languageCode: en
-      text: Action III
+      text: Surrender
     - languageCode: fr
-      text: Action III
+      text: Abandonner
   - key: battle_action_action_act3_desc
     entries:
     - languageCode: ru
-      text: "\u0421\u0438\u043B\u044C\u043D\u043E\u0435 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0435."
+      text: "\u0418\u043D\u043E\u0433\u0434\u0430 \u0434\u0430\u0436\u0435 \u0441\u0438\u043B\u044C\u043D\u044B\u0439
+        \u0432\u043E\u0438\u043D \u043D\u0435 \u0432 \u0441\u043E\u0441\u0442\u043E\u044F\u043D\u0438\u0438
+        \u0432\u044B\u0438\u0433\u0440\u0430\u0442\u044C \u0431\u0438\u0442\u0432\u0443."
     - languageCode: en
-      text: Powerful action.
+      text: Sometimes even the strongest warrior cannot win the battle.
     - languageCode: fr
-      text: Action puissante.
+      text: "Parfois, m\xEAme le plus fort des guerriers ne peut pas gagner la bataille."
   - key: battle_action_action_act4_name
     entries:
     - languageCode: ru
-      text: "\u0414\u0435\u0439\u0441\u0442\u0432\u0438\u0435 IV"
+      text: "\u041F\u0440\u043E\u043F\u0443\u0441\u0442\u0438\u0442\u044C \u0445\u043E\u0434"
     - languageCode: en
-      text: Action IV
+      text: Skip Turn
     - languageCode: fr
-      text: Action IV
+      text: Passer le tour
   - key: battle_action_action_act4_desc
     entries:
     - languageCode: ru
-      text: "\u041C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u043E \u0441\u0438\u043B\u044C\u043D\u043E\u0435
-        \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0435."
+      text: "\u0418\u043D\u043E\u0433\u0434\u0430 \u0438\u043D\u0442\u0435\u0440\u0435\u0441\u043D\u043E
+        \u043F\u043E\u0441\u043C\u043E\u0442\u0440\u0435\u0442\u044C, \u0447\u0442\u043E
+        \u0435\u0449\u0451 \u0432\u044B\u043A\u0438\u043D\u0435\u0442 \u043F\u0440\u043E\u0442\u0438\u0432\u043D\u0438\u043A."
     - languageCode: en
-      text: Strongest action.
+      text: Sometimes it's worth seeing what the enemy will do next.
     - languageCode: fr
-      text: Action la plus puissante.
+      text: "Parfois, il vaut mieux voir ce que l\u2019ennemi fera ensuite."
   - key: battle_choice_easy
     entries:
     - languageCode: ru

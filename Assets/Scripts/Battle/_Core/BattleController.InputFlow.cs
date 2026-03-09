@@ -7,6 +7,8 @@ namespace Game.Battle
 {
     public partial class BattleController
     {
+    private const float EscapeFailedBattleMusicResumeFadeSeconds = 0.3f;
+
         #region UI entrypoints
 
         public void OnAttackPressed()
@@ -152,6 +154,12 @@ namespace Game.Battle
         {
             playerView?.SetAutoIdleFallbackEnabled(false);
 
+            var audio = UDA2.Audio.AudioManager.Instance;
+            bool canRestoreBattleMusic = false;
+            UnityEngine.AudioClip battleMusicClip = null;
+            float battleMusicTimeSeconds = 0f;
+            bool battleMusicLoop = false;
+
             var failAnimToPlay = escapeFailFallAnim == BattleVisualAnimId.ActionAct1
                 ? BattleVisualAnimId.ActionActFail
                 : escapeFailFallAnim;
@@ -166,6 +174,9 @@ namespace Game.Battle
             bool modalClosed = false;
             if (outcomeAnimationModal != null)
             {
+                if (audio != null)
+                    canRestoreBattleMusic = audio.TryGetCurrentMusicState(out battleMusicClip, out battleMusicTimeSeconds, out battleMusicLoop);
+
                 PlayOutcomeMusic(BattleFinishReason.EscapeFailed, allowLegacyFallback: false);
                 outcomeAnimationModal.Show(BattleFinishReason.EscapeFailed, playerWon: false, winningActionId: null, onClosed: () => modalClosed = true);
                 while (!modalClosed)
@@ -183,6 +194,17 @@ namespace Game.Battle
             {
                 FinishBattle(playerWon: false, reason: BattleFinishReason.DefeatByLp, winningActionId: null);
                 yield break;
+            }
+
+            if (canRestoreBattleMusic && battleMusicClip != null)
+            {
+                var currentAudio = UDA2.Audio.AudioManager.Instance;
+                currentAudio?.PlayMusicFromTime(
+                    battleMusicClip,
+                    battleMusicTimeSeconds,
+                    battleMusicLoop,
+                    EscapeFailedBattleMusicResumeFadeSeconds
+                );
             }
 
             // Escape failed modal path disables auto idle fallback while fail animation plays.

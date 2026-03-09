@@ -50,6 +50,9 @@ namespace UDA2.Audio
         [Header("Music")]
         [SerializeField] private AudioSource musicSource;
         [SerializeField] private UnityEngine.Audio.AudioMixerGroup musicGroup;
+        [Header("Music Transitions")]
+        [SerializeField, Min(0f)] private float defaultMusicFadeInSeconds = 0.3f;
+        [SerializeField, Min(0f)] private float defaultMusicFadeOutSeconds = 0.12f;
 
         private AudioClip currentClip;
         private Coroutine musicFadeCoroutine;
@@ -416,10 +419,125 @@ namespace UDA2.Audio
             if (musicFadeCoroutine != null)
                 StopCoroutine(musicFadeCoroutine);
 
+            musicFadeCoroutine = StartCoroutine(TransitionToMusicRoutine(
+                clip,
+                loop,
+                startTimeSeconds: 0f,
+                fadeInSeconds: defaultMusicFadeInSeconds,
+                fadeOutSeconds: defaultMusicFadeOutSeconds
+            ));
+        }
+
+        public bool TryGetCurrentMusicState(out AudioClip clip, out float timeSeconds, out bool loop)
+        {
+            clip = null;
+            timeSeconds = 0f;
+            loop = false;
+
+            if (musicSource == null || musicSource.clip == null)
+                return false;
+
+            clip = musicSource.clip;
+            loop = musicSource.loop;
+
+            float maxTime = clip.length > 0f ? clip.length : 0f;
+            timeSeconds = Mathf.Clamp(musicSource.time, 0f, maxTime);
+            return true;
+        }
+
+        public void PlayMusicFromTime(AudioClip clip, float timeSeconds, bool loop)
+        {
+            PlayMusicFromTime(clip, timeSeconds, loop, fadeInSeconds: defaultMusicFadeInSeconds);
+        }
+
+        public void PlayMusicFromTime(AudioClip clip, float timeSeconds, bool loop, float fadeInSeconds)
+        {
+            if (clip == null)
+                return;
+
+            if (musicSource == null)
+            {
+                Debug.LogWarning("AudioManager: musicSource не назначен — PlayMusicFromTime пропущен.");
+                return;
+            }
+
+            if (musicFadeCoroutine != null)
+            {
+                StopCoroutine(musicFadeCoroutine);
+                musicFadeCoroutine = null;
+            }
+
+            musicFadeCoroutine = StartCoroutine(TransitionToMusicRoutine(
+                clip,
+                loop,
+                startTimeSeconds: timeSeconds,
+                fadeInSeconds: Mathf.Max(0f, fadeInSeconds),
+                fadeOutSeconds: defaultMusicFadeOutSeconds
+            ));
+        }
+
+        private IEnumerator TransitionToMusicRoutine(AudioClip clip, bool loop, float startTimeSeconds, float fadeInSeconds, float fadeOutSeconds)
+        {
+            if (musicSource == null || clip == null)
+            {
+                musicFadeCoroutine = null;
+                yield break;
+            }
+
+            bool hasCurrentMusic = musicSource.isPlaying && musicSource.clip != null;
+
+            if (hasCurrentMusic && audioMixer != null && fadeOutSeconds > 0f)
+            {
+                float currentDb = targetMusicDb;
+                if (!audioMixer.GetFloat(MusicVolumeParam, out currentDb))
+                    currentDb = targetMusicDb;
+
+                float fadeOutDuration = Mathf.Max(0.001f, fadeOutSeconds);
+                float outT = 0f;
+                while (outT < 1f)
+                {
+                    outT += Time.unscaledDeltaTime / fadeOutDuration;
+                    audioMixer.SetFloat(MusicVolumeParam, Mathf.Lerp(currentDb, -80f, outT));
+                    yield return null;
+                }
+
+                audioMixer.SetFloat(MusicVolumeParam, -80f);
+            }
+
+            musicSource.Stop();
+
             currentClip = clip;
             musicSource.clip = clip;
             musicSource.loop = loop;
-            musicFadeCoroutine = StartCoroutine(FadeMusicIn());
+
+            float maxTime = clip.length > 0f ? Mathf.Max(0f, clip.length - 0.01f) : 0f;
+            musicSource.time = Mathf.Clamp(startTimeSeconds, 0f, maxTime);
+
+            if (audioMixer != null)
+            {
+                if (fadeInSeconds > 0f)
+                    audioMixer.SetFloat(MusicVolumeParam, -80f);
+                else
+                    audioMixer.SetFloat(MusicVolumeParam, targetMusicDb);
+            }
+
+            musicSource.Play();
+
+            if (audioMixer != null && fadeInSeconds > 0f)
+            {
+                float fadeInDuration = Mathf.Max(0.001f, fadeInSeconds);
+                float inT = 0f;
+                while (inT < 1f)
+                {
+                    inT += Time.unscaledDeltaTime / fadeInDuration;
+                    audioMixer.SetFloat(MusicVolumeParam, Mathf.Lerp(-80f, targetMusicDb, inT));
+                    yield return null;
+                }
+
+                audioMixer.SetFloat(MusicVolumeParam, targetMusicDb);
+            }
+
+            musicFadeCoroutine = null;
         }
 
         private static bool HasAnyValidCue(AudioCue[] cues)
