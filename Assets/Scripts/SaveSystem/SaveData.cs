@@ -217,6 +217,12 @@ public class SaveData
         public string lastMainSceneName;
 
         /// <summary>
+        /// Last known shelter scene for the current save.
+        /// Used by Home button to return player to city-specific shelter.
+        /// </summary>
+        public string lastShelterSceneName;
+
+        /// <summary>
         /// If set, loading this save should restore battle entry contexts and then load battle.
         /// Used for autosaves before battles (tutorial, encounters, etc.).
         /// </summary>

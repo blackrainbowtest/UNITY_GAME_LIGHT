@@ -1425,6 +1425,7 @@ MonoBehaviour:
   showTime: 1
   showProfile: 1
   showMenuButton: 1
+  showHomeButton: 0
   showBackButton: 1
   showQuestList: 1
   showInspectEye: 1

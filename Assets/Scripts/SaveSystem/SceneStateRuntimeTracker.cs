@@ -87,6 +87,11 @@ namespace UDA2.SaveSystem
                 save.sceneState.lastMainSceneName = sceneName;
             }
 
+            if (SceneCategoryResolver.IsShelterScene(sceneName))
+            {
+                save.sceneState.lastShelterSceneName = sceneName;
+            }
+
             // Deferred autosave request (e.g. after tutorial battle victory).
             // We do it here so that:
             // - sceneName is already updated
