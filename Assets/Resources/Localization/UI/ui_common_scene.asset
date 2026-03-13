@@ -21,4 +21,44 @@ MonoBehaviour:
       text: Guild Registry
     - languageCode: fr
       text: Registre de la Guilde
+  - key: player_bed
+    entries:
+    - languageCode: ru
+      text: "\u041A\u0440\u043E\u0432\u0430\u0442\u044C"
+    - languageCode: en
+      text: Bed
+    - languageCode: fr
+      text: Bed
+  - key: player_food_table
+    entries:
+    - languageCode: ru
+      text: "\u0421\u0442\u043E\u043B"
+    - languageCode: en
+      text: Food Table
+    - languageCode: fr
+      text: "Table \xE0 manger"
+  - key: player_campfire
+    entries:
+    - languageCode: ru
+      text: "\u041A\u043E\u0441\u0442\u0435\u0440"
+    - languageCode: en
+      text: Campfire
+    - languageCode: fr
+      text: Feu de camp
+  - key: player_workbench
+    entries:
+    - languageCode: ru
+      text: "\u0412\u0435\u0440\u0441\u0442\u0430\u043A"
+    - languageCode: en
+      text: Workbench
+    - languageCode: fr
+      text: "\xC9tabli"
+  - key: player_stash
+    entries:
+    - languageCode: ru
+      text: "\u0421\u043A\u043B\u0430\u0434"
+    - languageCode: en
+      text: Stash
+    - languageCode: fr
+      text: Stockage
   sourceCsvName: ui_common_scene

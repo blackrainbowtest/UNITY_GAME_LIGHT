@@ -57,6 +57,10 @@ namespace UDA2.SaveSystem
             if (string.Equals(from.name, to.name, StringComparison.Ordinal))
                 return;
 
+            // LoadingScene is a technical transit scene and should not become a back target.
+            if (string.Equals(from.name, "LoadingScene", StringComparison.Ordinal))
+                return;
+
             save.sceneState.previousSceneName = from.name;
         }
 
@@ -64,6 +68,10 @@ namespace UDA2.SaveSystem
         {
             var save = global::GameState.Instance.CurrentSave;
             if (save == null || save.player == null)
+                return;
+
+            // Never persist transit loading scene into save state.
+            if (string.Equals(sceneName, "LoadingScene", StringComparison.Ordinal))
                 return;
 
             // Keep current scene up to date.

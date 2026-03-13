@@ -268,6 +268,11 @@ namespace Game.Battle
             {
                 if (cue.Category == AudioCategory.Music)
                 {
+                    Debug.LogWarning("BattleEnvironmentController: Ambient group contains Music cue. It is ignored to protect the music channel.");
+                    return 0f;
+                }
+                else
+                {
                     float minPitch = cue.PitchRange.x;
                     float maxPitch = cue.PitchRange.y;
                     if (maxPitch < minPitch)
@@ -277,13 +282,7 @@ namespace Game.Battle
                         ? minPitch
                         : Random.Range(minPitch, maxPitch);
 
-                    // Safety: ambient group should never hijack music channel.
-                    am.PlaySfx(cue.Clip, cue.DefaultVolume, pitch);
-                }
-                else
-                {
-                    // Respect cue category/routing for Sound/Sfx/Ui.
-                    am.Play(cue);
+                    am.PlayAmbient(cue.Clip, cue.DefaultVolume, pitch);
                 }
 
                 return cue.Clip != null ? Mathf.Max(0f, cue.Clip.length) : 0f;
@@ -302,7 +301,7 @@ namespace Game.Battle
                 ? clipMinPitch
                 : Random.Range(clipMinPitch, clipMaxPitch);
 
-            am.PlaySfx(clip, group.clipVolume, clipPitch);
+            am.PlayAmbient(clip, group.clipVolume, clipPitch);
             return Mathf.Max(0f, clip.length);
         }
 

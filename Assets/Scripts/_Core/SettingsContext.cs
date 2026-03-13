@@ -27,6 +27,7 @@ namespace UDA2.Core
         public static event Action<string> OnLanguageChanged;
         public static event Action<float> OnMusicVolumeChanged;
         public static event Action<float> OnSfxVolumeChanged;
+        public static event Action<float> OnAmbientVolumeChanged;
         public static event Action<float> OnUiVolumeChanged;
 
         public static event Action<bool> OnCityInspectModeChanged;
@@ -38,6 +39,7 @@ namespace UDA2.Core
             OnLanguageChanged = null;
             OnMusicVolumeChanged = null;
             OnSfxVolumeChanged = null;
+            OnAmbientVolumeChanged = null;
             OnUiVolumeChanged = null;
 
             OnCityInspectModeChanged = null;
@@ -75,6 +77,7 @@ namespace UDA2.Core
                 return;
             OnMusicVolumeChanged?.Invoke(Current.musicVolume);
             OnSfxVolumeChanged?.Invoke(Current.sfxVolume);
+            OnAmbientVolumeChanged?.Invoke(Current.ambientVolume);
             OnUiVolumeChanged?.Invoke(Current.uiVolume);
         }
 
@@ -97,6 +100,13 @@ namespace UDA2.Core
             if (Current == null) return;
             Current.uiVolume = v;
             OnUiVolumeChanged?.Invoke(v);
+        }
+
+        public static void SetAmbientVolume(float v)
+        {
+            if (Current == null) return;
+            Current.ambientVolume = v;
+            OnAmbientVolumeChanged?.Invoke(v);
         }
     }
 }

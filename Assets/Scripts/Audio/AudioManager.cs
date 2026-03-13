@@ -30,6 +30,7 @@ namespace UDA2.Audio
 
         private const string MusicVolumeParam = "MusicVolume";
         private const string SfxVolumeParam = "SFXVolume";
+        private const string AmbientVolumeParam = "AmbientVolume";
         private const string UiVolumeParam = "UIVolume";
 
         [Header("Scene Music (Optional)")]
@@ -59,6 +60,7 @@ namespace UDA2.Audio
 
         // Target music dB for fade logic
         private float targetMusicDb = 0f;
+        private bool hasAmbientVolumeParam;
 
         /* ===================== SFX ===================== */
 
@@ -71,6 +73,16 @@ namespace UDA2.Audio
         private AudioSource[] sfxPool;
         private int sfxIndex;
         private float sfxVolume = 1f;
+
+        [Header("Ambient")]
+        [SerializeField] private AudioSource ambientPrefab;
+        [SerializeField] private UnityEngine.Audio.AudioMixerGroup ambientGroup;
+        [SerializeField] private int ambientPoolSize = 6;
+        [SerializeField] private Transform ambientParent;
+
+        private AudioSource[] ambientPool;
+        private int ambientIndex;
+        private float ambientVolume = 1f;
 
         /* ===================== UI ===================== */
 
@@ -119,6 +131,9 @@ namespace UDA2.Audio
             {
                 CheckParam(MusicVolumeParam);
                 CheckParam(SfxVolumeParam);
+                hasAmbientVolumeParam = audioMixer.GetFloat(AmbientVolumeParam, out _);
+                if (!hasAmbientVolumeParam)
+                    Debug.LogWarning("AudioManager: AudioMixer exposed parameter 'AmbientVolume' not found. Using source-volume fallback for ambient.");
                 CheckParam(UiVolumeParam);
             }
 
@@ -146,6 +161,7 @@ namespace UDA2.Audio
             var s = UDA2.Core.SettingsContext.Current;
             SetMusicVolume(s != null ? s.musicVolume : 1f);
             SetSfxVolume(s != null ? s.sfxVolume : 1f);
+            SetAmbientVolume(s != null ? s.ambientVolume : 1f);
             SetUiVolume(s != null ? s.uiVolume : 1f);
 
             if (musicSource == null)
@@ -165,11 +181,21 @@ namespace UDA2.Audio
             if (sfxParent != null && !sfxParent.IsChildOf(transform))
                 sfxParent.SetParent(transform, false);
 
+            if (ambientParent != null && !ambientParent.IsChildOf(transform))
+                ambientParent.SetParent(transform, false);
+
             if (sfxParent == null)
             {
                 var go = new GameObject("SFX");
                 go.transform.SetParent(transform, false);
                 sfxParent = go.transform;
+            }
+
+            if (ambientParent == null)
+            {
+                var go = new GameObject("Ambient");
+                go.transform.SetParent(transform, false);
+                ambientParent = go.transform;
             }
         }
 
@@ -196,12 +222,36 @@ namespace UDA2.Audio
             }
         }
 
+        private void EnsureAmbientPool()
+        {
+            if (ambientPrefab == null)
+                return;
+
+            EnsurePersistentAudioObjects();
+
+            if (ambientPool == null || ambientPool.Length != ambientPoolSize)
+            {
+                InitAmbientPool();
+                return;
+            }
+
+            for (int i = 0; i < ambientPool.Length; i++)
+            {
+                if (ambientPool[i] == null)
+                {
+                    InitAmbientPool();
+                    return;
+                }
+            }
+        }
+
         private void OnEnable()
         {
             SceneManager.sceneLoaded += OnSceneLoaded;
 
             UDA2.Core.SettingsContext.OnMusicVolumeChanged += SetMusicVolume;
             UDA2.Core.SettingsContext.OnSfxVolumeChanged += SetSfxVolume;
+            UDA2.Core.SettingsContext.OnAmbientVolumeChanged += SetAmbientVolume;
             UDA2.Core.SettingsContext.OnUiVolumeChanged += SetUiVolume;
         }
 
@@ -211,6 +261,7 @@ namespace UDA2.Audio
 
             UDA2.Core.SettingsContext.OnMusicVolumeChanged -= SetMusicVolume;
             UDA2.Core.SettingsContext.OnSfxVolumeChanged -= SetSfxVolume;
+            UDA2.Core.SettingsContext.OnAmbientVolumeChanged -= SetAmbientVolume;
             UDA2.Core.SettingsContext.OnUiVolumeChanged -= SetUiVolume;
         }
 
@@ -618,6 +669,23 @@ namespace UDA2.Audio
             }
         }
 
+        private void InitAmbientPool()
+        {
+            if (ambientPrefab == null)
+                return;
+
+            ambientPool = new AudioSource[ambientPoolSize];
+
+            for (int i = 0; i < ambientPoolSize; i++)
+            {
+                var src = Instantiate(ambientPrefab, ambientParent);
+                src.outputAudioMixerGroup = ambientGroup;
+                src.playOnAwake = false;
+                src.volume = 1f;
+                ambientPool[i] = src;
+            }
+        }
+
         public void PlaySfx(AudioClip clip, float volume = 1f, float pitch = 1f)
         {
             if (clip == null)
@@ -651,6 +719,37 @@ namespace UDA2.Audio
                 audioMixer.SetFloat(SfxVolumeParam, ToDb(sfxVolume));
         }
 
+        public void SetAmbientVolume(float volume)
+        {
+            ambientVolume = Mathf.Clamp01(volume);
+            if (audioMixer != null && hasAmbientVolumeParam)
+                audioMixer.SetFloat(AmbientVolumeParam, ToDb(ambientVolume));
+        }
+
+        public void PlayAmbient(AudioClip clip, float volume = 1f, float pitch = 1f)
+        {
+            if (clip == null)
+                return;
+
+            EnsureAmbientPool();
+
+            if (ambientPool == null)
+            {
+                // Fallback keeps ambient audible if pool is not configured yet.
+                PlaySfx(clip, volume, pitch);
+                return;
+            }
+
+            var src = ambientPool[ambientIndex];
+            ambientIndex = (ambientIndex + 1) % ambientPool.Length;
+
+            src.Stop();
+            src.clip = clip;
+            src.pitch = pitch;
+            src.volume = Mathf.Clamp01(volume) * ambientVolume;
+            src.Play();
+        }
+
         /* ===================== UI ===================== */
 
         public void PlayUiClick()
@@ -677,6 +776,19 @@ namespace UDA2.Audio
                 for (int i = 0; i < sfxPool.Length; i++)
                 {
                     var src = sfxPool[i];
+                    if (src == null)
+                        continue;
+
+                    src.Stop();
+                    src.clip = null;
+                }
+            }
+
+            if (ambientPool != null)
+            {
+                for (int i = 0; i < ambientPool.Length; i++)
+                {
+                    var src = ambientPool[i];
                     if (src == null)
                         continue;
 

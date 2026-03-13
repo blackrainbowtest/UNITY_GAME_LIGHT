@@ -37,14 +37,19 @@ namespace Game.Battle
                 BattleExitContext.SetReturnToScene(pending.returnSceneName);
 
             // Optional enemy/location resolution
-            var db = BattleContentDatabaseProvider.GetOrLoad();
-            if (db != null)
+            bool needsEnemyResolve = !string.IsNullOrEmpty(pending.enemyId);
+            bool needsLocationResolve = !string.IsNullOrEmpty(pending.locationId);
+            if (needsEnemyResolve || needsLocationResolve)
             {
-                if (!string.IsNullOrEmpty(pending.enemyId) && db.TryGetEnemy(pending.enemyId, out var enemy) && enemy != null)
-                    BattleEnemyContext.Set(enemy);
+                var db = BattleContentDatabaseProvider.GetOrLoad();
+                if (db != null)
+                {
+                    if (needsEnemyResolve && db.TryGetEnemy(pending.enemyId, out var enemy) && enemy != null)
+                        BattleEnemyContext.Set(enemy);
 
-                if (!string.IsNullOrEmpty(pending.locationId) && db.TryGetLocation(pending.locationId, out var location) && location != null)
-                    BattleLocationContext.Set(location);
+                    if (needsLocationResolve && db.TryGetLocation(pending.locationId, out var location) && location != null)
+                        BattleLocationContext.Set(location);
+                }
             }
 
             return true;
