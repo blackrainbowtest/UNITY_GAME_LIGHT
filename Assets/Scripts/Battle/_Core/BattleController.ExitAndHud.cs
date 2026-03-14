@@ -162,6 +162,8 @@ namespace Game.Battle
                 }
             }
 
+            RecordBattleStats(global::GameState.Instance?.CurrentSave, context, reason, goldGained, expGained);
+
             var result = new BattleResultData(
                 playerWon: playerWon,
                 goldGained: goldGained,
@@ -441,6 +443,98 @@ namespace Game.Battle
             }
 
             list.Add(new SaveData.Item { itemId = itemId, count = count });
+        }
+
+        private static void RecordBattleStats(SaveData save, BattleContext battleContext, BattleFinishReason reason, int goldGained, int expGained)
+        {
+            if (save == null)
+                return;
+
+            if (save.achievementStats == null)
+                save.achievementStats = new SaveData.AchievementStats();
+
+            var stats = save.achievementStats;
+            stats.battlesFinished = Mathf.Max(0, stats.battlesFinished) + 1;
+
+            if (goldGained > 0)
+                stats.totalGoldEarned = Mathf.Max(0, stats.totalGoldEarned) + goldGained;
+
+            if (expGained > 0)
+                stats.totalExpEarned = Mathf.Max(0, stats.totalExpEarned) + expGained;
+
+            switch (reason)
+            {
+                case BattleFinishReason.Victory:
+                case BattleFinishReason.VictoryByLp:
+                    stats.battlesWon = Mathf.Max(0, stats.battlesWon) + 1;
+                    RegisterEnemyKill(stats, battleContext?.Enemy);
+                    break;
+
+                case BattleFinishReason.Defeat:
+                case BattleFinishReason.DefeatByLp:
+                    stats.battlesLost = Mathf.Max(0, stats.battlesLost) + 1;
+                    break;
+
+                case BattleFinishReason.Surrender:
+                    stats.battlesSurrendered = Mathf.Max(0, stats.battlesSurrendered) + 1;
+                    break;
+
+                case BattleFinishReason.EscapeSuccess:
+                    stats.escapesSuccessful = Mathf.Max(0, stats.escapesSuccessful) + 1;
+                    break;
+
+                case BattleFinishReason.EscapeFailed:
+                    stats.escapesFailed = Mathf.Max(0, stats.escapesFailed) + 1;
+                    break;
+            }
+        }
+
+        private static void RegisterEnemyKill(SaveData.AchievementStats stats, EnemyData enemy)
+        {
+            if (stats == null || enemy == null)
+                return;
+
+            var enemyId = ResolveEnemyId(enemy);
+            if (string.IsNullOrWhiteSpace(enemyId))
+                return;
+
+            stats.totalMobKills = Mathf.Max(0, stats.totalMobKills) + 1;
+
+            if (stats.mobKillsByEnemyId == null)
+                stats.mobKillsByEnemyId = new System.Collections.Generic.List<SaveData.MobKillEntry>();
+
+            for (int i = 0; i < stats.mobKillsByEnemyId.Count; i++)
+            {
+                var entry = stats.mobKillsByEnemyId[i];
+                if (entry == null || string.IsNullOrWhiteSpace(entry.enemyId))
+                    continue;
+
+                if (!string.Equals(entry.enemyId, enemyId, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                entry.kills = Mathf.Max(0, entry.kills) + 1;
+                return;
+            }
+
+            stats.mobKillsByEnemyId.Add(new SaveData.MobKillEntry
+            {
+                enemyId = enemyId,
+                kills = 1
+            });
+        }
+
+        private static string ResolveEnemyId(EnemyData enemy)
+        {
+            if (enemy == null)
+                return null;
+
+            if (!string.IsNullOrWhiteSpace(enemy.id))
+                return enemy.id.Trim();
+
+            if (!string.IsNullOrWhiteSpace(enemy.enemyName))
+                return enemy.enemyName.Trim();
+
+            return enemy.name;
         }
 
         private void ExitBattle()

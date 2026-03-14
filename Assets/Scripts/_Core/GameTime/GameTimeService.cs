@@ -16,6 +16,7 @@ namespace UDA2.GameTime
 
         private bool initializedFromSave;
         private Coroutine animateRoutine;
+        private float realTimeAccumulatorSeconds;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void EnsureCreated()
@@ -49,16 +50,18 @@ namespace UDA2.GameTime
 
         private void Update()
         {
-            if (initializedFromSave)
-                return;
-
             var save = global::GameState.Instance?.CurrentSave;
             if (save == null)
                 return;
 
-            EnsureSaveHasTime(save);
-            initializedFromSave = true;
-            RaiseChanged(save);
+            if (!initializedFromSave)
+            {
+                EnsureSaveHasTime(save);
+                initializedFromSave = true;
+                RaiseChanged(save);
+            }
+
+            TickRealTimePlayed(save);
         }
 
         public int GetDay()
@@ -143,6 +146,7 @@ namespace UDA2.GameTime
             }
 
             initializedFromSave = false;
+            realTimeAccumulatorSeconds = 0f;
 
             var save = global::GameState.Instance?.CurrentSave;
             if (save == null)
@@ -151,6 +155,32 @@ namespace UDA2.GameTime
             EnsureSaveHasTime(save);
             initializedFromSave = true;
             RaiseChanged(save);
+        }
+
+        private void TickRealTimePlayed(SaveData save)
+        {
+            if (save == null)
+                return;
+
+            if (save.meta == null)
+                save.meta = new SaveData.Meta();
+
+            if (save.achievementStats == null)
+                save.achievementStats = new SaveData.AchievementStats();
+
+            float delta = Mathf.Max(0f, Time.unscaledDeltaTime);
+            if (delta <= 0f)
+                return;
+
+            realTimeAccumulatorSeconds += delta;
+            if (realTimeAccumulatorSeconds < 1f)
+                return;
+
+            int wholeSeconds = Mathf.FloorToInt(realTimeAccumulatorSeconds);
+            realTimeAccumulatorSeconds -= wholeSeconds;
+
+            save.meta.playTimeSeconds = Mathf.Max(0, save.meta.playTimeSeconds) + wholeSeconds;
+            save.achievementStats.realTimePlayedSeconds = Mathf.Max(0, save.achievementStats.realTimePlayedSeconds) + wholeSeconds;
         }
 
         private IEnumerator AddMinutesAnimatedRoutine(int totalMinutes)

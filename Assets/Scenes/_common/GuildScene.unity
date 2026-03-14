@@ -837,7 +837,9 @@ MonoBehaviour:
   imageTarget: {fileID: 387274180}
   animations:
   - animation: {fileID: 11400000, guid: f0d2272101b54d946a82419fc4074dc9, type: 2}
-    weight: 0
+    weight: 0.8
+  - animation: {fileID: 11400000, guid: a0508ed8237ef344ea70e226ea2e2ebf, type: 2}
+    weight: 0.4
   replayDelaySeconds: 0
   randomOrder: 0
   avoidImmediateRepeat: 1

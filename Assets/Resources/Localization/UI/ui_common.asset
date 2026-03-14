@@ -262,4 +262,318 @@ MonoBehaviour:
       text: 'To next level: {0}'
     - languageCode: fr
       text: 'Au niveau suivant: {0}'
+  - key: profile_rank_fmt
+    entries:
+    - languageCode: ru
+      text: "\u0420\u0430\u043D\u0433: {0}"
+    - languageCode: en
+      text: 'Rank: {0}'
+    - languageCode: fr
+      text: 'Rang : {0}'
+  - key: profile_location_fmt
+    entries:
+    - languageCode: ru
+      text: "\u041B\u043E\u043A\u0430\u0446\u0438\u044F: {0}"
+    - languageCode: en
+      text: 'Location: {0}'
+    - languageCode: fr
+      text: 'Lieu : {0}'
+  - key: profile_play_time_fmt
+    entries:
+    - languageCode: ru
+      text: "\u0412\u0440\u0435\u043C\u044F \u0432 \u0438\u0433\u0440\u0435: {0}"
+    - languageCode: en
+      text: 'Play Time: {0}'
+    - languageCode: fr
+      text: 'Temps de jeu : {0}'
+  - key: profile_gold_fmt
+    entries:
+    - languageCode: ru
+      text: "\u0417\u043E\u043B\u043E\u0442\u043E: {0}"
+    - languageCode: en
+      text: 'Gold: {0}'
+    - languageCode: fr
+      text: 'Or : {0}'
+  - key: profile_mana_crystals_fmt
+    entries:
+    - languageCode: ru
+      text: "\u041A\u0440\u0438\u0441\u0442\u0430\u043B\u043B\u044B \u043C\u0430\u043D\u044B:
+        {0}"
+    - languageCode: en
+      text: 'Mana Crystals: {0}'
+    - languageCode: fr
+      text: 'Cristaux de mana : {0}'
+  - key: profile_demon_crystals_fmt
+    entries:
+    - languageCode: ru
+      text: "\u0414\u0435\u043C\u043E\u043D\u0438\u0447\u0435\u0441\u043A\u0438\u0435
+        \u043A\u0440\u0438\u0441\u0442\u0430\u043B\u043B\u044B: {0}"
+    - languageCode: en
+      text: 'Demon Crystals: {0}'
+    - languageCode: fr
+      text: 'Cristaux demoniaques : {0}'
+  - key: profile_real_time_played_fmt
+    entries:
+    - languageCode: ru
+      text: "\u0420\u0435\u0430\u043B\u044C\u043D\u043E\u0435 \u0432\u0440\u0435\u043C\u044F:
+        {0}"
+    - languageCode: en
+      text: 'Real Time: {0}'
+    - languageCode: fr
+      text: 'Temps reel : {0}'
+  - key: profile_battles_finished_fmt
+    entries:
+    - languageCode: ru
+      text: "\u0411\u043E\u0435\u0432 \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043D\u043E:
+        {0}"
+    - languageCode: en
+      text: 'Battles Finished: {0}'
+    - languageCode: fr
+      text: 'Combats termines : {0}'
+  - key: profile_battles_won_fmt
+    entries:
+    - languageCode: ru
+      text: "\u041F\u043E\u0431\u0435\u0434: {0}"
+    - languageCode: en
+      text: 'Battles Won: {0}'
+    - languageCode: fr
+      text: 'Victoires : {0}'
+  - key: profile_battles_lost_fmt
+    entries:
+    - languageCode: ru
+      text: "\u041F\u043E\u0440\u0430\u0436\u0435\u043D\u0438\u0439: {0}"
+    - languageCode: en
+      text: 'Battles Lost: {0}'
+    - languageCode: fr
+      text: 'Defaites : {0}'
+  - key: profile_battles_surrendered_fmt
+    entries:
+    - languageCode: ru
+      text: "\u0421\u0434\u0430\u0447: {0}"
+    - languageCode: en
+      text: 'Surrenders: {0}'
+    - languageCode: fr
+      text: 'Abandons : {0}'
+  - key: profile_escapes_successful_fmt
+    entries:
+    - languageCode: ru
+      text: "\u0423\u0441\u043F\u0435\u0448\u043D\u044B\u0445 \u043F\u043E\u0431\u0435\u0433\u043E\u0432:
+        {0}"
+    - languageCode: en
+      text: 'Escapes Successful: {0}'
+    - languageCode: fr
+      text: 'Fuites reussies : {0}'
+  - key: profile_escapes_failed_fmt
+    entries:
+    - languageCode: ru
+      text: "\u041F\u0440\u043E\u0432\u0430\u043B\u0435\u043D\u043D\u044B\u0445 \u043F\u043E\u0431\u0435\u0433\u043E\u0432:
+        {0}"
+    - languageCode: en
+      text: 'Escapes Failed: {0}'
+    - languageCode: fr
+      text: 'Fuites ratees : {0}'
+  - key: profile_total_mob_kills_fmt
+    entries:
+    - languageCode: ru
+      text: "\u0423\u0431\u0438\u0439\u0441\u0442\u0432 \u043C\u043E\u0431\u043E\u0432:
+        {0}"
+    - languageCode: en
+      text: 'Mob Kills: {0}'
+    - languageCode: fr
+      text: 'Mobs tues : {0}'
+  - key: profile_total_gold_earned_fmt
+    entries:
+    - languageCode: ru
+      text: "\u0412\u0441\u0435\u0433\u043E \u0437\u043E\u043B\u043E\u0442\u0430
+        \u0434\u043E\u0431\u044B\u0442\u043E: {0}"
+    - languageCode: en
+      text: 'Total Gold Earned: {0}'
+    - languageCode: fr
+      text: 'Or total gagne : {0}'
+  - key: profile_total_exp_earned_fmt
+    entries:
+    - languageCode: ru
+      text: "\u0412\u0441\u0435\u0433\u043E \u043E\u043F\u044B\u0442\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u043E:
+        {0}"
+    - languageCode: en
+      text: 'Total EXP Earned: {0}'
+    - languageCode: fr
+      text: 'EXP totale gagnee : {0}'
+  - key: profile_no_status_effects
+    entries:
+    - languageCode: ru
+      text: "\u041D\u0435\u0442 \u0441\u0442\u0430\u0442\u0443\u0441-\u044D\u0444\u0444\u0435\u043A\u0442\u043E\u0432"
+    - languageCode: en
+      text: No status effects
+    - languageCode: fr
+      text: Aucun effet de statut
+  - key: profile_player_name_title
+    entries:
+    - languageCode: ru
+      text: "\u0418\u043C\u044F"
+    - languageCode: en
+      text: Name
+    - languageCode: fr
+      text: Nom
+  - key: profile_player_id_title
+    entries:
+    - languageCode: ru
+      text: "ID \u0438\u0433\u0440\u043E\u043A\u0430"
+    - languageCode: en
+      text: Player ID
+    - languageCode: fr
+      text: ID joueur
+  - key: profile_level_title
+    entries:
+    - languageCode: ru
+      text: "\u0423\u0440\u043E\u0432\u0435\u043D\u044C"
+    - languageCode: en
+      text: Level
+    - languageCode: fr
+      text: Niveau
+  - key: profile_rank_title
+    entries:
+    - languageCode: ru
+      text: "\u0420\u0430\u043D\u0433"
+    - languageCode: en
+      text: Rank
+    - languageCode: fr
+      text: Rang
+  - key: profile_location_title
+    entries:
+    - languageCode: ru
+      text: "\u041B\u043E\u043A\u0430\u0446\u0438\u044F"
+    - languageCode: en
+      text: Location
+    - languageCode: fr
+      text: Lieu
+  - key: profile_day_time_title
+    entries:
+    - languageCode: ru
+      text: "\u0414\u0435\u043D\u044C / \u0412\u0440\u0435\u043C\u044F"
+    - languageCode: en
+      text: Day / Time
+    - languageCode: fr
+      text: Jour / Heure
+  - key: profile_play_time_title
+    entries:
+    - languageCode: ru
+      text: "\u0412\u0440\u0435\u043C\u044F \u0432 \u0438\u0433\u0440\u0435"
+    - languageCode: en
+      text: Play Time
+    - languageCode: fr
+      text: Temps de jeu
+  - key: profile_gold_title
+    entries:
+    - languageCode: ru
+      text: "\u0417\u043E\u043B\u043E\u0442\u043E"
+    - languageCode: en
+      text: Gold
+    - languageCode: fr
+      text: Or
+  - key: profile_mana_crystals_title
+    entries:
+    - languageCode: ru
+      text: "\u041A\u0440\u0438\u0441\u0442\u0430\u043B\u043B\u044B \u043C\u0430\u043D\u044B"
+    - languageCode: en
+      text: Mana Crystals
+    - languageCode: fr
+      text: Cristaux de mana
+  - key: profile_demon_crystals_title
+    entries:
+    - languageCode: ru
+      text: "\u0414\u0435\u043C\u043E\u043D\u0438\u0447\u0435\u0441\u043A\u0438\u0435
+        \u043A\u0440\u0438\u0441\u0442\u0430\u043B\u043B\u044B"
+    - languageCode: en
+      text: Demon Crystals
+    - languageCode: fr
+      text: Cristaux demoniaques
+  - key: profile_status_effects_title
+    entries:
+    - languageCode: ru
+      text: "\u0421\u0442\u0430\u0442\u0443\u0441-\u044D\u0444\u0444\u0435\u043A\u0442\u044B"
+    - languageCode: en
+      text: Status Effects
+    - languageCode: fr
+      text: Effets de statut
+  - key: profile_real_time_played_title
+    entries:
+    - languageCode: ru
+      text: "\u0412\u0440\u0435\u043C\u044F \u0432 \u0438\u0433\u0440\u0435 (\u0440\u0435\u0430\u043B\u044C\u043D\u043E\u0435)"
+    - languageCode: en
+      text: Real Play Time
+    - languageCode: fr
+      text: Temps de jeu reel
+  - key: profile_battles_finished_title
+    entries:
+    - languageCode: ru
+      text: "\u0411\u043E\u0435\u0432 \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043D\u043E"
+    - languageCode: en
+      text: Battles Finished
+    - languageCode: fr
+      text: Combats termines
+  - key: profile_battles_won_title
+    entries:
+    - languageCode: ru
+      text: "\u041F\u043E\u0431\u0435\u0434"
+    - languageCode: en
+      text: Battles Won
+    - languageCode: fr
+      text: Victoires
+  - key: profile_battles_lost_title
+    entries:
+    - languageCode: ru
+      text: "\u041F\u043E\u0440\u0430\u0436\u0435\u043D\u0438\u0439"
+    - languageCode: en
+      text: Battles Lost
+    - languageCode: fr
+      text: Defaites
+  - key: profile_battles_surrendered_title
+    entries:
+    - languageCode: ru
+      text: "\u0421\u0434\u0430\u0447"
+    - languageCode: en
+      text: Surrenders
+    - languageCode: fr
+      text: Abandons
+  - key: profile_escapes_successful_title
+    entries:
+    - languageCode: ru
+      text: "\u0423\u0441\u043F\u0435\u0448\u043D\u044B\u0445 \u043F\u043E\u0431\u0435\u0433\u043E\u0432"
+    - languageCode: en
+      text: Escapes Successful
+    - languageCode: fr
+      text: Fuites reussies
+  - key: profile_escapes_failed_title
+    entries:
+    - languageCode: ru
+      text: "\u041F\u0440\u043E\u0432\u0430\u043B\u0435\u043D\u043D\u044B\u0445 \u043F\u043E\u0431\u0435\u0433\u043E\u0432"
+    - languageCode: en
+      text: Escapes Failed
+    - languageCode: fr
+      text: Fuites ratees
+  - key: profile_total_mob_kills_title
+    entries:
+    - languageCode: ru
+      text: "\u0423\u0431\u0438\u0439\u0441\u0442\u0432 \u043C\u043E\u0431\u043E\u0432"
+    - languageCode: en
+      text: Mob Kills
+    - languageCode: fr
+      text: Mobs tues
+  - key: profile_total_gold_earned_title
+    entries:
+    - languageCode: ru
+      text: "\u0417\u043E\u043B\u043E\u0442\u0430 \u0434\u043E\u0431\u044B\u0442\u043E"
+    - languageCode: en
+      text: Gold Earned
+    - languageCode: fr
+      text: Or gagne
+  - key: profile_total_exp_earned_title
+    entries:
+    - languageCode: ru
+      text: "\u041E\u043F\u044B\u0442\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u043E"
+    - languageCode: en
+      text: EXP Earned
+    - languageCode: fr
+      text: EXP gagnee
   sourceCsvName: ui_common

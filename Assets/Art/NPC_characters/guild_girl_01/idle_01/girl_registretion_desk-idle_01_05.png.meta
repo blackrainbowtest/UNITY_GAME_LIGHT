@@ -1,19 +1,10 @@
 fileFormatVersion: 2
-guid: 0085c5855b1f2034a9276190d7a6d1a3
+guid: 37bcb6b939e7b934093adf61cae58ddf
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1388790139225778864
-    second: girl_registretion_desk-idle_01_05_0
-  - first:
-      213: 5675987332122217913
-    second: girl_registretion_desk-idle_01_05_1
-  - first:
-      213: 5677832207455979296
-    second: girl_registretion_desk-idle_01_05_2
-  - first:
-      213: 4755242159956259131
-    second: girl_registretion_desk-idle_01_05_3
+      213: -5108044525925847780
+    second: girl_registretion_desk-idle_01_06_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -135,35 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: girl_registretion_desk-idle_01_05_0
+      name: girl_registretion_desk-idle_01_06_0
       rect:
         serializedVersion: 2
-        x: 47
-        y: 1103
-        width: 30
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 055d1ebf9b60abce0800000000000000
-      internalID: -1388790139225778864
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: girl_registretion_desk-idle_01_05_1
-      rect:
-        serializedVersion: 2
-        x: 100
+        x: 105
         y: 49
-        width: 905
-        height: 1062
+        width: 902
+        height: 1004
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -172,52 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9bd03c8e76825ce40800000000000000
-      internalID: 5675987332122217913
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: girl_registretion_desk-idle_01_05_2
-      rect:
-        serializedVersion: 2
-        x: 1047
-        y: 1103
-        width: 26
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 0278fab6f46bbce40800000000000000
-      internalID: 5677832207455979296
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: girl_registretion_desk-idle_01_05_3
-      rect:
-        serializedVersion: 2
-        x: 1083
-        y: 1103
-        width: 37
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b317725dc830ef140800000000000000
-      internalID: 4755242159956259131
+      spriteID: c1daf4731949c19b0800000000000000
+      internalID: -5108044525925847780
       vertices: []
       indices: 
       edges: []
@@ -236,10 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      girl_registretion_desk-idle_01_05_0: -1388790139225778864
-      girl_registretion_desk-idle_01_05_1: 5675987332122217913
-      girl_registretion_desk-idle_01_05_2: 5677832207455979296
-      girl_registretion_desk-idle_01_05_3: 4755242159956259131
+      girl_registretion_desk-idle_01_06_0: -5108044525925847780
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

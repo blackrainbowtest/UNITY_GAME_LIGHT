@@ -30,11 +30,93 @@ public static class SaveDataMigration
         if (save.inventory == null) { save.inventory = new SaveData.Inventory(); Mark("inventory initialized"); }
         if (save.storage == null) { save.storage = new SaveData.Storage(); Mark("storage initialized"); }
         if (save.progress == null) { save.progress = new SaveData.Progress(); Mark("progress initialized"); }
+        if (save.achievementStats == null) { save.achievementStats = new SaveData.AchievementStats(); Mark("achievementStats initialized"); }
         if (save.progress.guild == null) { save.progress.guild = new SaveData.GuildState(); Mark("progress.guild initialized"); }
         if (save.time == null) { save.time = new SaveData.TimeState(); Mark("time initialized"); }
         if (save.sceneState == null) { save.sceneState = new SaveData.SceneState(); Mark("sceneState initialized"); }
         if (save.sceneState.pendingBattle == null) { save.sceneState.pendingBattle = new SaveData.PendingBattle(); Mark("sceneState.pendingBattle initialized"); }
         if (save.locationStructures == null) { save.locationStructures = new SaveData.LocationStructuresState(); Mark("locationStructures initialized"); }
+
+        if (save.achievementStats.mobKillsByEnemyId == null)
+        {
+            save.achievementStats.mobKillsByEnemyId = new System.Collections.Generic.List<SaveData.MobKillEntry>();
+            Mark("achievementStats.mobKillsByEnemyId initialized");
+        }
+
+        if (save.achievementStats.realTimePlayedSeconds < 0)
+        {
+            save.achievementStats.realTimePlayedSeconds = 0;
+            Mark("achievementStats.realTimePlayedSeconds clamped");
+        }
+
+        if (save.achievementStats.battlesFinished < 0)
+        {
+            save.achievementStats.battlesFinished = 0;
+            Mark("achievementStats.battlesFinished clamped");
+        }
+
+        if (save.achievementStats.battlesWon < 0)
+        {
+            save.achievementStats.battlesWon = 0;
+            Mark("achievementStats.battlesWon clamped");
+        }
+
+        if (save.achievementStats.battlesLost < 0)
+        {
+            save.achievementStats.battlesLost = 0;
+            Mark("achievementStats.battlesLost clamped");
+        }
+
+        if (save.achievementStats.battlesSurrendered < 0)
+        {
+            save.achievementStats.battlesSurrendered = 0;
+            Mark("achievementStats.battlesSurrendered clamped");
+        }
+
+        if (save.achievementStats.escapesSuccessful < 0)
+        {
+            save.achievementStats.escapesSuccessful = 0;
+            Mark("achievementStats.escapesSuccessful clamped");
+        }
+
+        if (save.achievementStats.escapesFailed < 0)
+        {
+            save.achievementStats.escapesFailed = 0;
+            Mark("achievementStats.escapesFailed clamped");
+        }
+
+        if (save.achievementStats.totalMobKills < 0)
+        {
+            save.achievementStats.totalMobKills = 0;
+            Mark("achievementStats.totalMobKills clamped");
+        }
+
+        if (save.achievementStats.totalGoldEarned < 0)
+        {
+            save.achievementStats.totalGoldEarned = 0;
+            Mark("achievementStats.totalGoldEarned clamped");
+        }
+
+        if (save.achievementStats.totalExpEarned < 0)
+        {
+            save.achievementStats.totalExpEarned = 0;
+            Mark("achievementStats.totalExpEarned clamped");
+        }
+
+        if (save.meta.playTimeSeconds < 0)
+        {
+            save.meta.playTimeSeconds = 0;
+            Mark("meta.playTimeSeconds clamped");
+        }
+
+        if (save.achievementStats.realTimePlayedSeconds == 0 && save.meta.playTimeSeconds > 0)
+        {
+            save.achievementStats.realTimePlayedSeconds = save.meta.playTimeSeconds;
+            Mark("achievementStats.realTimePlayedSeconds synced from meta.playTimeSeconds");
+        }
+
+        if (SanitizeMobKillList(save.achievementStats.mobKillsByEnemyId))
+            Mark("achievementStats.mobKillsByEnemyId sanitized");
 
         if (save.progress.guild.activeQuestIds == null)
         {
@@ -256,6 +338,51 @@ public static class SaveDataMigration
 
         ids.Clear();
         ids.AddRange(sanitized);
+        return true;
+    }
+
+    private static bool SanitizeMobKillList(System.Collections.Generic.List<SaveData.MobKillEntry> entries)
+    {
+        if (entries == null)
+            return false;
+
+        var changed = false;
+        var totals = new System.Collections.Generic.Dictionary<string, int>(System.StringComparer.OrdinalIgnoreCase);
+
+        for (int i = 0; i < entries.Count; i++)
+        {
+            var e = entries[i];
+            if (e == null || string.IsNullOrWhiteSpace(e.enemyId) || e.kills <= 0)
+            {
+                changed = true;
+                continue;
+            }
+
+            var key = e.enemyId.Trim();
+            if (string.IsNullOrEmpty(key))
+            {
+                changed = true;
+                continue;
+            }
+
+            if (totals.TryGetValue(key, out var current))
+            {
+                totals[key] = current + e.kills;
+                changed = true;
+            }
+            else
+            {
+                totals[key] = e.kills;
+            }
+        }
+
+        if (!changed)
+            return false;
+
+        entries.Clear();
+        foreach (var kv in totals)
+            entries.Add(new SaveData.MobKillEntry { enemyId = kv.Key, kills = kv.Value });
+
         return true;
     }
 }

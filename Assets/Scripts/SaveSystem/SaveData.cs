@@ -10,9 +10,53 @@ public class SaveData
     public Inventory inventory = new Inventory();
     public Storage storage = new Storage();
     public Progress progress = new Progress();
+    public AchievementStats achievementStats = new AchievementStats();
     public TimeState time = new TimeState();
     public SceneState sceneState = new SceneState();
     public LocationStructuresState locationStructures = new LocationStructuresState();
+
+    [Serializable]
+    public class AchievementStats
+    {
+        /// <summary>
+        /// Total real-world play time in seconds (lifetime, across all sessions of this save).
+        /// </summary>
+        public int realTimePlayedSeconds;
+
+        /// <summary>
+        /// Number of completed battles in this save.
+        /// </summary>
+        public int battlesFinished;
+
+        public int battlesWon;
+        public int battlesLost;
+        public int battlesSurrendered;
+        public int escapesSuccessful;
+        public int escapesFailed;
+
+        /// <summary>
+        /// Total mob kills (player victories with a valid enemy target).
+        /// </summary>
+        public int totalMobKills;
+
+        /// <summary>
+        /// Cumulative rewards earned from battle outcomes.
+        /// </summary>
+        public int totalGoldEarned;
+        public int totalExpEarned;
+
+        /// <summary>
+        /// Per-enemy kill counters for achievement checks.
+        /// </summary>
+        public List<MobKillEntry> mobKillsByEnemyId = new List<MobKillEntry>();
+    }
+
+    [Serializable]
+    public class MobKillEntry
+    {
+        public string enemyId;
+        public int kills;
+    }
 
     [Serializable]
     public class LocationStructuresState

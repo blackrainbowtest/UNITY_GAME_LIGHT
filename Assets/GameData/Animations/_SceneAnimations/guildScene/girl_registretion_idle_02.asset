@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
-  m_Name: girl_registretion_idle_01
+  m_Name: girl_registretion_idle_02
   m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
-  id: girl_registretion_idle_01
+  id: girl_registretion_idle_02
   frames:
   - {fileID: 21300000, guid: 6850f740c3af23d4cb1f5debb48b0649, type: 3}
   - {fileID: 21300000, guid: 3328c7c2e83eb6e41a5b777e9aaabbbf, type: 3}
@@ -22,6 +22,15 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 0b73640512601644b93ab40fefc1744b, type: 3}
   - {fileID: 21300000, guid: d0745da8d8ae1c9428de5c6c637ca9a2, type: 3}
   - {fileID: 21300000, guid: 739921478b0fe704e8715e0a2632f6f6, type: 3}
+  - {fileID: 21300000, guid: 4ab26cbc7a64f9a4abfdddab52b45953, type: 3}
+  - {fileID: 21300000, guid: c570e3783d2acb5459c6b6590284c1b1, type: 3}
+  - {fileID: 21300000, guid: 087ffcb7adecade418098db87c73d962, type: 3}
+  - {fileID: 21300000, guid: b0adeea76f1712b44928c0238bfed08a, type: 3}
+  - {fileID: 21300000, guid: 48196aa81d0bec8499f196d8885081e7, type: 3}
+  - {fileID: 21300000, guid: 48196aa81d0bec8499f196d8885081e7, type: 3}
+  - {fileID: 21300000, guid: b0adeea76f1712b44928c0238bfed08a, type: 3}
+  - {fileID: 21300000, guid: 087ffcb7adecade418098db87c73d962, type: 3}
+  - {fileID: 21300000, guid: c570e3783d2acb5459c6b6590284c1b1, type: 3}
   - {fileID: 21300000, guid: 4ab26cbc7a64f9a4abfdddab52b45953, type: 3}
   - {fileID: 21300000, guid: 739921478b0fe704e8715e0a2632f6f6, type: 3}
   - {fileID: 21300000, guid: d0745da8d8ae1c9428de5c6c637ca9a2, type: 3}

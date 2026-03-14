@@ -15,6 +15,7 @@ namespace UDA2.UI.Game
         [SerializeField] private ProfileTabView profileTabView;
         [SerializeField] private ProfileExperienceView profileExperienceView;
         [SerializeField] private ProfileStatusView profileStatusView;
+        [SerializeField] private ProfileOverviewView profileOverviewView;
 
         [Header("Behavior")]
         [SerializeField] private bool refreshOnEnable = true;
@@ -31,6 +32,9 @@ namespace UDA2.UI.Game
 
             if (profileStatusView == null)
                 profileStatusView = GetComponentInChildren<ProfileStatusView>(includeInactive: true);
+
+            if (profileOverviewView == null)
+                profileOverviewView = GetComponentInChildren<ProfileOverviewView>(includeInactive: true);
         }
 
         private void OnEnable()
@@ -58,6 +62,9 @@ namespace UDA2.UI.Game
 
             // HP/MP/SP/LP bars
             profileStatusView?.RefreshFromCurrentSave();
+
+            // Generic profile text rows and portrait
+            profileOverviewView?.RefreshFromCurrentSave();
         }
 
         private void OnSlotClicked(EquipmentSlotId slotId)

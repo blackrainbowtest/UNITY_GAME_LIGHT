@@ -1,10 +1,25 @@
 fileFormatVersion: 2
-guid: 0b73640512601644b93ab40fefc1744b
+guid: d0745da8d8ae1c9428de5c6c637ca9a2
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4179446052461999295
-    second: girl_registretion_desk-idle_01_07_0
+      213: 5585538399008161317
+    second: girl_registretion_desk-idle_01_08_0
+  - first:
+      213: -8280736635660945577
+    second: girl_registretion_desk-idle_01_08_1
+  - first:
+      213: -943992722724995783
+    second: girl_registretion_desk-idle_01_08_2
+  - first:
+      213: 5852738144050992383
+    second: girl_registretion_desk-idle_01_08_3
+  - first:
+      213: -1286986147181817884
+    second: girl_registretion_desk-idle_01_08_4
+  - first:
+      213: 6072381088945214480
+    second: girl_registretion_desk-idle_01_08_5
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,13 +141,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: girl_registretion_desk-idle_01_07_0
+      name: girl_registretion_desk-idle_01_08_0
       rect:
         serializedVersion: 2
-        x: 106
-        y: 49
-        width: 901
-        height: 1004
+        x: 0
+        y: 1097
+        width: 146
+        height: 23
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +156,118 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 14b081d75ff9ff5c0800000000000000
-      internalID: -4179446052461999295
+      spriteID: 52e7f289491d38d40800000000000000
+      internalID: 5585538399008161317
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_registretion_desk-idle_01_08_1
+      rect:
+        serializedVersion: 2
+        x: 101
+        y: 49
+        width: 904
+        height: 1064
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 757bdd037e9e41d80800000000000000
+      internalID: -8280736635660945577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_registretion_desk-idle_01_08_2
+      rect:
+        serializedVersion: 2
+        x: 511
+        y: 1101
+        width: 51
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93d3c63ce9346e2f0800000000000000
+      internalID: -943992722724995783
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_registretion_desk-idle_01_08_3
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 1107
+        width: 14
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff4d987355a193150800000000000000
+      internalID: 5852738144050992383
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_registretion_desk-idle_01_08_4
+      rect:
+        serializedVersion: 2
+        x: 959
+        y: 1105
+        width: 34
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ef016afae4b32ee0800000000000000
+      internalID: -1286986147181817884
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_registretion_desk-idle_01_08_5
+      rect:
+        serializedVersion: 2
+        x: 999
+        y: 1099
+        width: 121
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01411637d6e654450800000000000000
+      internalID: 6072381088945214480
       vertices: []
       indices: 
       edges: []
@@ -161,7 +286,12 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      girl_registretion_desk-idle_01_07_0: -4179446052461999295
+      girl_registretion_desk-idle_01_08_0: 5585538399008161317
+      girl_registretion_desk-idle_01_08_1: -8280736635660945577
+      girl_registretion_desk-idle_01_08_2: -943992722724995783
+      girl_registretion_desk-idle_01_08_3: 5852738144050992383
+      girl_registretion_desk-idle_01_08_4: -1286986147181817884
+      girl_registretion_desk-idle_01_08_5: 6072381088945214480
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
