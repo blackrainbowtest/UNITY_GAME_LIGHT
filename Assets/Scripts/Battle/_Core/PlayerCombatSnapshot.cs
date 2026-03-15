@@ -25,6 +25,8 @@ namespace Game.Battle
     public class PlayerCombatSnapshot
     {
         public string OutfitId { get; }
+        public int PhysicalDamage { get; }
+        public int MagicDamage { get; }
 
         public int MaxHP { get; }
         public int CurrentHP { get; }
@@ -52,9 +54,13 @@ namespace Game.Battle
             int regenHpPerTurn = 5,
             int regenMpPerTurn = 2,
             int regenSpPerTurn = 4,
+            int physicalDamage = 10,
+            int magicDamage = 10,
             string outfitId = "outfit_01")
         {
             OutfitId = string.IsNullOrEmpty(outfitId) ? "outfit_01" : outfitId;
+            PhysicalDamage = physicalDamage < 0 ? 0 : physicalDamage;
+            MagicDamage = magicDamage < 0 ? 0 : magicDamage;
 
             MaxHP = maxHp;
             CurrentHP = currentHp;

@@ -139,6 +139,11 @@ public class SaveData
     [Serializable]
     public class Stats
     {
+        // Legacy field kept for backward compatibility with older saves.
+        public int damage;
+        public int physicalDamage;
+        public int magicDamage;
+
         public int hp;
         public int hpMax;
         public int mp;
@@ -353,6 +358,9 @@ public class SaveData
         save.player.stats.spMax = 60;
         save.player.stats.lp = 0;
         save.player.stats.lpMax = 100;
+        save.player.stats.damage = 10;
+        save.player.stats.physicalDamage = 10;
+        save.player.stats.magicDamage = 10;
         save.meta.version = version;
 
         // Time defaults

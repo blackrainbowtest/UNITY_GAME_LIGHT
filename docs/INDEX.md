@@ -28,6 +28,10 @@
 - [Roadmap (alt)](project/roadmap_2.md)
 - [Changelog](project/CHANGELOG.md)
 
+## Рефакторинг
+- [Profile Combat Stats Placeholders](refactoring/Profile_CombatStats_Placeholders.md)
+- [Battle Damage Model Roadmap](refactoring/Battle_DamageModel_Roadmap.md)
+
 ## Инструменты
 - [Debugging](tools/debuging.md)
 - [Tips from profi](tools/tips_from_profi.md)

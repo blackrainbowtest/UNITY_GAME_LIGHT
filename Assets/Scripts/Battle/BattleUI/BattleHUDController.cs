@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Game.Battle.UI;
+using Game.Battle.Combat;
 using Game.Battle.Combat.Actions;
 using Game.Battle.Statuses;
 using System;
@@ -98,6 +99,8 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
     private CombatActionRegistry tooltipActionRegistry;
     private LongPressProgressView longPressProgressViewInstance;
     private bool warnedMissingTooltipModal;
+    private int tooltipPlayerPhysicalDamage = CombatDamageModel.DefaultBaseAttack;
+    private int tooltipPlayerMagicDamage = CombatDamageModel.DefaultBaseAttack;
 
     private void Awake()
     {
@@ -363,12 +366,13 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
         var actionToken = ToSnakeCase(actionId.ToString());
         var actionData = tooltipActionRegistry != null ? tooltipActionRegistry.Get(actionId) : null;
 
-        int damage = actionData != null ? Mathf.Max(0, actionData.HpDamage + actionData.LpDamage) : 0;
-        int heal = actionData != null ? Mathf.Max(0, actionData.HpHealSelf) : 0;
-
-        // DarkSpell is lifesteal (see BattleCombatEngine): it heals for the HP damage dealt.
-        if (actionId == CombatActionId.DarkSpell && actionData != null)
-            heal = Mathf.Max(0, actionData.HpDamage);
+        int hpDamage = actionData != null
+            ? CombatDamageModel.ComputeHpDamage(tooltipPlayerPhysicalDamage, tooltipPlayerMagicDamage, actionData)
+            : 0;
+        int damage = actionData != null ? Mathf.Max(0, hpDamage + actionData.LpDamage) : 0;
+        int heal = actionData != null
+            ? CombatDamageModel.ComputeSelfHealPreviewFromHpDamage(actionId, hpDamage, actionData)
+            : 0;
 
         string titleKey = FormatSafe(actionNameKeyFormat, actionToken);
         if (string.IsNullOrWhiteSpace(titleKey))
@@ -565,6 +569,13 @@ public class BattleHUDController : MonoBehaviour, IBattleHUDView
         }
 
         return chars.ToString().Trim('_');
+    }
+
+    public void SetTooltipCombatContext(int playerPhysicalDamage, int playerMagicDamage)
+    {
+        tooltipPlayerPhysicalDamage = CombatDamageModel.NormalizeBaseAttack(playerPhysicalDamage);
+        tooltipPlayerMagicDamage = CombatDamageModel.NormalizeBaseAttack(playerMagicDamage);
+        SetupLongPressTooltips();
     }
 
     public void SetActions(IBattleUIActions actions)

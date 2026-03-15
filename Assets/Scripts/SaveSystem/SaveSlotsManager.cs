@@ -70,7 +70,7 @@ public static class SaveSlotsManager
             return;
         }
 
-        data = SaveDataMigration.Apply(data);
+        data = SaveDataMigration.Apply(data, out _, logChanges: false);
         if (data == null || data.meta == null)
         {
             Debug.LogError($"[SaveSlotsManager] SaveToSlot failed: SaveDataMigration returned invalid data (slotId={slotId}).");
@@ -93,6 +93,27 @@ public static class SaveSlotsManager
         if (!File.Exists(path)) return null;
         var json = File.ReadAllText(path);
         var save = JsonUtility.FromJson<SaveData>(json);
-        return SaveDataMigration.Apply(save);
+
+        save = SaveDataMigration.Apply(save, out var didMigrate, logChanges: true);
+        if (didMigrate && save != null)
+            PersistMigratedInPlace(path, save);
+
+        return save;
+    }
+
+    private static void PersistMigratedInPlace(string path, SaveData save)
+    {
+        if (string.IsNullOrEmpty(path) || save == null)
+            return;
+
+        try
+        {
+            var json = JsonUtility.ToJson(save, true);
+            File.WriteAllText(path, json);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[SaveSlotsManager] Failed to persist migrated save at '{path}': {ex.Message}");
+        }
     }
 }

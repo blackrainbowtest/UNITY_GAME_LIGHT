@@ -20,6 +20,8 @@ namespace Game.Battle
             BattleCombatEngine combatEngine,
             CombatActionRegistry actionRegistry,
             CombatState combatState,
+            int playerPhysicalDamage,
+            int playerMagicDamage,
             CombatActionId actionId,
             out CombatActionData action,
             out CombatResolution resolution,
@@ -42,7 +44,7 @@ namespace Game.Battle
                 return false;
             }
 
-            resolution = combatEngine.ResolvePlayerAction(combatState, action);
+            resolution = combatEngine.ResolvePlayerAction(combatState, action, playerPhysicalDamage, playerMagicDamage);
             if (resolution == null || resolution.Result != CombatActionResult.Executed)
             {
                 failure = BattleActionResolveFailure.ActionRejected;
@@ -57,6 +59,8 @@ namespace Game.Battle
             BattleCombatEngine combatEngine,
             CombatActionRegistry actionRegistry,
             CombatState combatState,
+            int enemyPhysicalDamage,
+            int enemyMagicDamage,
             System.Random rng,
             out CombatActionId actionId,
             out CombatActionData action,
@@ -101,7 +105,7 @@ namespace Game.Battle
                 return false;
             }
 
-            resolution = combatEngine.ResolveEnemyAction(combatState, action);
+            resolution = combatEngine.ResolveEnemyAction(combatState, action, enemyPhysicalDamage, enemyMagicDamage);
             if (resolution == null || resolution.Result != CombatActionResult.Executed)
             {
                 failure = BattleActionResolveFailure.ActionRejected;

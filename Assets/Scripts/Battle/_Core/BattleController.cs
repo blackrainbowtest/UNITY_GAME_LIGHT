@@ -269,6 +269,11 @@ namespace Game.Battle
             InitializeEnvironment();
             InitializeUI();
 
+            if (hudController != null)
+                hudController.SetTooltipCombatContext(
+                    context.Player != null ? context.Player.PhysicalDamage : CombatDamageModel.DefaultBaseAttack,
+                    context.Player != null ? context.Player.MagicDamage : CombatDamageModel.DefaultBaseAttack);
+
             ClearEndOfRoundEffects();
             ClearAllStatuses();
 
@@ -432,6 +437,8 @@ namespace Game.Battle
                 combatEngine,
                 actionRegistry,
                 combatState,
+                context.Player != null ? context.Player.PhysicalDamage : CombatDamageModel.DefaultBaseAttack,
+                context.Player != null ? context.Player.MagicDamage : CombatDamageModel.DefaultBaseAttack,
                 actionId,
                 out var action,
                 out var resolution,
@@ -570,6 +577,8 @@ namespace Game.Battle
                 combatEngine,
                 actionRegistry,
                 combatState,
+                context != null && context.Enemy != null ? context.Enemy.attack : CombatDamageModel.DefaultBaseAttack,
+                context != null && context.Enemy != null ? context.Enemy.attack : CombatDamageModel.DefaultBaseAttack,
                 rng,
                 out actionId,
                 out action,

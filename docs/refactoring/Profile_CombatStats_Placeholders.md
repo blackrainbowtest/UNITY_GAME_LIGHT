@@ -2,7 +2,10 @@
 
 ## Current state
 
-Profile UI now includes placeholder rows for planned combat stats. These rows are visible in `ProfileOverviewView` but currently show a placeholder value (`profile_stat_not_implemented`) until combat systems provide real data.
+Profile UI now includes combat stat rows in `ProfileOverviewView`.
+
+- `physical damage` and `magic damage` are already backed by `SaveData.player.stats` fields.
+- other combat rows still show placeholder value (`profile_stat_not_implemented`) until formulas are introduced.
 
 ### Placeholder rows added
 
@@ -23,6 +26,7 @@ Localization keys are defined in `Assets/GameData/Localization/CSV/ui_common.csv
 - UI rendering: `Assets/Scripts/UI/Game/ProfileOverviewView.cs`
 - Auto row template mapping: `AutoTemplateSpecs` in the same file.
 - Placeholder localization key: `profile_stat_not_implemented`.
+- Live save-backed fields: `stats.physicalDamage` and `stats.magicDamage` (with legacy fallback from `stats.damage`).
 
 ## Future implementation plan
 
@@ -38,8 +42,9 @@ Localization keys are defined in `Assets/GameData/Localization/CSV/ui_common.csv
   - evasion chance
   - hit chance
 
-2. Replace placeholders in profile view
-- Update `ProfileOverviewView.Refresh(...)` to map each row to real values from the runtime model.
+2. Replace remaining placeholders in profile view
+- Keep `physical damage` and `magic damage` mapped from save/runtime source.
+- Replace placeholders for resistance/crit/evasion/hit/attack speed as formulas are introduced.
 - Keep placeholder fallback when model is unavailable.
 
 3. Optional persistence strategy

@@ -18,4 +18,5 @@
 
 ## Остальное
 - [Боёвка: TODO](BATTLE_TODOS.md)
+- [Damage model roadmap (refactoring)](../refactoring/Battle_DamageModel_Roadmap.md)
 - [Legacy: Battle API Reference (monolith)](BATTLE_API_REFERENCE.md)

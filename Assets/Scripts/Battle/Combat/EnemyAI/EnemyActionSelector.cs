@@ -34,6 +34,8 @@ namespace Game.Battle.Combat.EnemyAI
             if (enemy == null || registry == null || state == null)
                 return null;
 
+            var enemyBaseAttack = CombatDamageModel.NormalizeBaseAttack(enemy.attack);
+
             var allowed = enemy.allowedActions;
             if (allowed == null || allowed.Length == 0)
             {
@@ -88,7 +90,7 @@ namespace Game.Battle.Combat.EnemyAI
 
                 // Enemy turn: action is meaningful if it damages the player OR heals the enemy.
                 // Heal should only be considered when enemy is below 60% HP.
-                var canDamagePlayer = action.HpDamage > 0;
+                var canDamagePlayer = CombatDamageModel.ComputeHpDamage(enemyBaseAttack, action) > 0;
                 var canHealSelf = action.HpHealSelf > 0 && hpRatio < 0.60f;
                 if (!canDamagePlayer && !canHealSelf)
                     continue;
@@ -112,7 +114,7 @@ namespace Game.Battle.Combat.EnemyAI
             var maxDamage = int.MinValue;
             foreach (var c in candidates)
             {
-                var v = PrimaryValue(c);
+                var v = PrimaryValue(c, enemyBaseAttack);
                 if (v < minDamage) minDamage = v;
                 if (v > maxDamage) maxDamage = v;
             }
@@ -121,9 +123,9 @@ namespace Game.Battle.Combat.EnemyAI
             var strong = new List<CombatActionData>();
             foreach (var c in candidates)
             {
-                if (PrimaryValue(c) == minDamage)
+                if (PrimaryValue(c, enemyBaseAttack) == minDamage)
                     weak.Add(c);
-                if (PrimaryValue(c) == maxDamage)
+                if (PrimaryValue(c, enemyBaseAttack) == maxDamage)
                     strong.Add(c);
             }
 
@@ -136,10 +138,10 @@ namespace Game.Battle.Combat.EnemyAI
                     return ChooseWeighted(rng, weak, strong, weakChance: 0.60f)?.Id;
 
                 case EnemyDifficulty.Hard:
-                    return ChooseMostEffective(enemy, state, candidates, rng)?.Id;
+                    return ChooseMostEffective(enemy, enemyBaseAttack, state, candidates, rng)?.Id;
 
                 default:
-                    return ChooseMostEffective(enemy, state, candidates, rng)?.Id;
+                    return ChooseMostEffective(enemy, enemyBaseAttack, state, candidates, rng)?.Id;
             }
         }
 
@@ -161,7 +163,7 @@ namespace Game.Battle.Combat.EnemyAI
             return ChooseRandom(rng, strong);
         }
 
-        private static CombatActionData ChooseMostEffective(EnemyData enemy, CombatState state, List<CombatActionData> candidates, Random rng)
+        private static CombatActionData ChooseMostEffective(EnemyData enemy, int enemyBaseAttack, CombatState state, List<CombatActionData> candidates, Random rng)
         {
             if (candidates == null || candidates.Count == 0)
                 return null;
@@ -172,7 +174,8 @@ namespace Game.Battle.Combat.EnemyAI
             var bestLethalScore = double.NegativeInfinity;
             foreach (var c in candidates)
             {
-                if (c.HpDamage < state.PlayerHp)
+                var computedDamage = CombatDamageModel.ComputeHpDamage(enemyBaseAttack, c);
+                if (computedDamage < state.PlayerHp)
                     continue;
 
                 var score = -RelativeCost(enemy, c);
@@ -193,7 +196,7 @@ namespace Game.Battle.Combat.EnemyAI
             foreach (var c in candidates)
             {
                 var cost = RelativeCost(enemy, c);
-                var score = PrimaryValue(c) / (0.10 + cost);
+                var score = PrimaryValue(c, enemyBaseAttack) / (0.10 + cost);
 
                 if (score > bestScore)
                 {
@@ -211,12 +214,13 @@ namespace Game.Battle.Combat.EnemyAI
             return best;
         }
 
-        private static int PrimaryValue(CombatActionData action)
+        private static int PrimaryValue(CombatActionData action, int enemyBaseAttack)
         {
             if (action == null)
                 return 0;
 
-            return action.HpDamage > 0 ? action.HpDamage : action.HpHealSelf;
+            var computedDamage = CombatDamageModel.ComputeHpDamage(enemyBaseAttack, action);
+            return computedDamage > 0 ? computedDamage : action.HpHealSelf;
         }
 
         private static double RelativeCost(EnemyData enemy, CombatActionData action)

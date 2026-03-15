@@ -8,15 +8,22 @@ public static class SaveDataMigration
     /// </summary>
     public static SaveData Apply(SaveData save)
     {
+        return Apply(save, out _, logChanges: true);
+    }
+
+    public static SaveData Apply(SaveData save, out bool didMigrate, bool logChanges = true)
+    {
+        didMigrate = false;
+        var migrated = false;
+
         if (save == null)
             return null;
 
-        var didMigrate = false;
         var changes = string.Empty;
 
         void Mark(string message)
         {
-            didMigrate = true;
+            migrated = true;
             if (string.IsNullOrEmpty(changes))
                 changes = message;
             else
@@ -281,6 +288,43 @@ public static class SaveDataMigration
         if (stats.hp != beforeHp || stats.mp != beforeMp || stats.sp != beforeSp || stats.lp != beforeLp)
             Mark("stats clamped");
 
+        var defaultDamage = 10;
+        if (stats.damage <= 0)
+        {
+            stats.damage = defaultDamage;
+            Mark("stats.damage defaulted");
+        }
+
+        if (stats.physicalDamage <= 0)
+        {
+            stats.physicalDamage = stats.damage > 0 ? stats.damage : defaultDamage;
+            Mark("stats.physicalDamage defaulted");
+        }
+
+        if (stats.magicDamage <= 0)
+        {
+            stats.magicDamage = stats.physicalDamage > 0 ? stats.physicalDamage : defaultDamage;
+            Mark("stats.magicDamage defaulted");
+        }
+
+        if (stats.damage < 0)
+        {
+            stats.damage = 0;
+            Mark("stats.damage clamped");
+        }
+
+        if (stats.physicalDamage < 0)
+        {
+            stats.physicalDamage = 0;
+            Mark("stats.physicalDamage clamped");
+        }
+
+        if (stats.magicDamage < 0)
+        {
+            stats.magicDamage = 0;
+            Mark("stats.magicDamage clamped");
+        }
+
         var ls = save.locationStructures;
         if (ls.bedLevel < 0)
         {
@@ -306,7 +350,9 @@ public static class SaveDataMigration
             Mark("locationStructures.storageLevel defaulted");
         }
 
-        if (didMigrate)
+        didMigrate = migrated;
+
+        if (didMigrate && logChanges)
             Debug.LogWarning($"[SaveDataMigration] Applied: {changes}");
 
         return save;

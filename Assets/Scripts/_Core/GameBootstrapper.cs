@@ -46,7 +46,7 @@ namespace UDA2.Core
 
             // Загрузка сейва (SaveData) или создание нового
             var loadedSave = SaveSlotsManager.LoadFromSlot(saveSlot);
-            global::GameState.Instance.CurrentSave = SaveDataMigration.Apply(loadedSave);
+            global::GameState.Instance.CurrentSave = loadedSave;
 
             // Если нет сейва — создаём новый с актуальной версией
             if (global::GameState.Instance.CurrentSave == null)

@@ -20,6 +20,8 @@ namespace UDA2.UI.Game
             [NonSerialized] private TMP_Text cachedTitle;
             [NonSerialized] private TMP_Text cachedValue;
 
+            public Transform RowRoot => rowRoot;
+
             public static ProfileRowBinding Create(Transform root, string titleName, string valueName)
             {
                 return new ProfileRowBinding
@@ -231,6 +233,10 @@ namespace UDA2.UI.Game
         [SerializeField] private bool refreshWhileVisible = true;
         [SerializeField, Min(0.1f)] private float refreshIntervalSeconds = 1f;
 
+        [Header("Debug Layout")]
+        [SerializeField] private bool debugLayout;
+        [SerializeField] private bool debugLayoutCombatOnly = true;
+
         private Coroutine delayedLayoutRebuildRoutine;
         private float refreshTimer;
 
@@ -304,6 +310,7 @@ namespace UDA2.UI.Game
             var inventory = save != null ? save.inventory : null;
             var progress = save != null ? save.progress : null;
             var achievementStats = save != null ? save.achievementStats : null;
+            var stats = player != null ? player.stats : null;
             string plannedStatsPlaceholder = GetLocalizedOrFallback(statNotImplementedKey, statNotImplementedText);
 
             SetRowValue(GetRow(ProfileRowId.PlayerName, playerNameRow), EmptyToFallback(player != null ? player.name : null));
@@ -329,9 +336,9 @@ namespace UDA2.UI.Game
             SetRowValue(GetRow(ProfileRowId.TotalGoldEarned, totalGoldEarnedRow), achievementStats != null ? Mathf.Max(0, achievementStats.totalGoldEarned).ToString() : "0");
             SetRowValue(GetRow(ProfileRowId.TotalExpEarned, totalExpEarnedRow), achievementStats != null ? Mathf.Max(0, achievementStats.totalExpEarned).ToString() : "0");
 
-            // Planned combat stats: placeholders until combat formulas and save fields are implemented.
-            SetRowValue(GetRow(ProfileRowId.PhysicalDamage, physicalDamageRow), plannedStatsPlaceholder);
-            SetRowValue(GetRow(ProfileRowId.MagicDamage, magicDamageRow), plannedStatsPlaceholder);
+            // Physical/Magic damage are now sourced from save stats.
+            SetRowValue(GetRow(ProfileRowId.PhysicalDamage, physicalDamageRow), Mathf.Max(0, ResolvePhysicalDamage(stats)).ToString());
+            SetRowValue(GetRow(ProfileRowId.MagicDamage, magicDamageRow), Mathf.Max(0, ResolveMagicDamage(stats)).ToString());
             SetRowValue(GetRow(ProfileRowId.PhysicalResistance, physicalResistanceRow), plannedStatsPlaceholder);
             SetRowValue(GetRow(ProfileRowId.MagicResistance, magicResistanceRow), plannedStatsPlaceholder);
             SetRowValue(GetRow(ProfileRowId.AttackSpeed, attackSpeedRow), plannedStatsPlaceholder);
@@ -339,6 +346,29 @@ namespace UDA2.UI.Game
             SetRowValue(GetRow(ProfileRowId.CritMultiplier, critMultiplierRow), plannedStatsPlaceholder);
             SetRowValue(GetRow(ProfileRowId.EvasionChance, evasionChanceRow), plannedStatsPlaceholder);
             SetRowValue(GetRow(ProfileRowId.HitChance, hitChanceRow), plannedStatsPlaceholder);
+        }
+
+        private static int ResolvePhysicalDamage(SaveData.Stats stats)
+        {
+            if (stats == null)
+                return 0;
+
+            if (stats.physicalDamage > 0)
+                return stats.physicalDamage;
+
+            // Backward compatibility with older save format.
+            return stats.damage > 0 ? stats.damage : 0;
+        }
+
+        private static int ResolveMagicDamage(SaveData.Stats stats)
+        {
+            if (stats == null)
+                return 0;
+
+            if (stats.magicDamage > 0)
+                return stats.magicDamage;
+
+            return ResolvePhysicalDamage(stats);
         }
 
         private ProfileRowBinding GetRow(ProfileRowId id, ProfileRowBinding fallback)
@@ -390,6 +420,7 @@ namespace UDA2.UI.Game
                 EnsureInnerContentLayout(binding);
                 ApplyLocalizedTitleKey(binding, spec.TitleLocalizationKey);
                 autoRows[spec.Id] = binding;
+                DebugLogRowLayout(binding, spec.Id, stage: "auto-build", isCombatSection: spec.IsCombatSection);
             }
 
             RebuildContainerLayoutNow();
@@ -422,21 +453,40 @@ namespace UDA2.UI.Game
             EnsureInnerContentLayout(totalMobKillsRow);
             EnsureInnerContentLayout(totalGoldEarnedRow);
             EnsureInnerContentLayout(totalExpEarnedRow);
-            EnsureInnerContentLayout(physicalDamageRow);
-            EnsureInnerContentLayout(magicDamageRow);
-            EnsureInnerContentLayout(physicalResistanceRow);
-            EnsureInnerContentLayout(magicResistanceRow);
-            EnsureInnerContentLayout(attackSpeedRow);
-            EnsureInnerContentLayout(critChanceRow);
-            EnsureInnerContentLayout(critMultiplierRow);
-            EnsureInnerContentLayout(evasionChanceRow);
-            EnsureInnerContentLayout(hitChanceRow);
+            EnsureInnerContentLayout(physicalDamageRow, isCombatSection: true);
+            EnsureInnerContentLayout(magicDamageRow, isCombatSection: true);
+            EnsureInnerContentLayout(physicalResistanceRow, isCombatSection: true);
+            EnsureInnerContentLayout(magicResistanceRow, isCombatSection: true);
+            EnsureInnerContentLayout(attackSpeedRow, isCombatSection: true);
+            EnsureInnerContentLayout(critChanceRow, isCombatSection: true);
+            EnsureInnerContentLayout(critMultiplierRow, isCombatSection: true);
+            EnsureInnerContentLayout(evasionChanceRow, isCombatSection: true);
+            EnsureInnerContentLayout(hitChanceRow, isCombatSection: true);
 
             foreach (var kv in autoRows)
-                EnsureInnerContentLayout(kv.Value);
+                EnsureInnerContentLayout(kv.Value, IsCombatRowId(kv.Key));
         }
 
-        private void EnsureInnerContentLayout(ProfileRowBinding row)
+        private static bool IsCombatRowId(ProfileRowId id)
+        {
+            switch (id)
+            {
+                case ProfileRowId.PhysicalDamage:
+                case ProfileRowId.MagicDamage:
+                case ProfileRowId.PhysicalResistance:
+                case ProfileRowId.MagicResistance:
+                case ProfileRowId.AttackSpeed:
+                case ProfileRowId.CritChance:
+                case ProfileRowId.CritMultiplier:
+                case ProfileRowId.EvasionChance:
+                case ProfileRowId.HitChance:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private void EnsureInnerContentLayout(ProfileRowBinding row, bool isCombatSection = false)
         {
             if (row == null)
                 return;
@@ -449,18 +499,22 @@ namespace UDA2.UI.Game
             var titleRect = title.rectTransform;
             var valueRect = value.rectTransform;
 
-            if (forceStretchInnerContent)
+            bool allowForcedSplit = !isCombatSection;
+
+            if (forceStretchInnerContent && allowForcedSplit)
             {
                 float split = Mathf.Clamp01(titleWidthRatio);
                 StretchRectX(titleRect, 0f, split);
                 StretchRectX(valueRect, split, 1f);
             }
 
-            if (forceInnerLayoutElements)
+            if (forceInnerLayoutElements && allowForcedSplit)
             {
                 ForceFlexibleLayout(title.gameObject, 1f);
                 ForceFlexibleLayout(value.gameObject, 1f);
             }
+
+            DebugLogRowLayout(row, null, stage: "ensure-layout", isCombatSection: isCombatSection);
         }
 
         private static void StretchRectX(RectTransform rt, float minX, float maxX)
@@ -525,7 +579,68 @@ namespace UDA2.UI.Game
         {
             yield return null;
             RebuildContainerLayoutNow();
+
+            if (debugLayout)
+            {
+                foreach (var kv in autoRows)
+                    DebugLogRowLayout(kv.Value, kv.Key, stage: "post-rebuild", isCombatSection: IsCombatRowId(kv.Key));
+            }
+
             delayedLayoutRebuildRoutine = null;
+        }
+
+        private void DebugLogRowLayout(ProfileRowBinding row, ProfileRowId? rowId, string stage, bool isCombatSection)
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (!debugLayout)
+                return;
+
+            if (debugLayoutCombatOnly && !isCombatSection)
+                return;
+
+            if (row == null)
+            {
+                Debug.Log($"[ProfileLayoutDebug] stage={stage}; row=NULL", this);
+                return;
+            }
+
+            var root = row.RowRoot;
+            var title = row.GetTitleText();
+            var value = row.GetValueText();
+
+            string idText = rowId.HasValue ? rowId.Value.ToString() : "n/a";
+            string rootName = root != null ? root.name : "NULL";
+            string parentName = root != null && root.parent != null ? root.parent.name : "NULL";
+
+            string titleInfo = BuildRectInfo(title != null ? title.rectTransform : null, title != null ? title.name : "content_title(NULL)");
+            string valueInfo = BuildRectInfo(value != null ? value.rectTransform : null, value != null ? value.name : "content_value(NULL)");
+
+            Debug.Log(
+                $"[ProfileLayoutDebug] stage={stage}; rowId={idText}; combat={isCombatSection}; root={rootName}; parent={parentName}; {titleInfo}; {valueInfo}",
+                this);
+#endif
+        }
+
+        private static string BuildRectInfo(RectTransform rt, string label)
+        {
+            if (rt == null)
+                return $"{label}: rect=NULL";
+
+            var le = rt.GetComponent<LayoutElement>();
+            var hlg = rt.parent != null ? rt.parent.GetComponent<HorizontalLayoutGroup>() : null;
+            var vlg = rt.parent != null ? rt.parent.GetComponent<VerticalLayoutGroup>() : null;
+
+            string leInfo = le == null
+                ? "LE=null"
+                : $"LE[minW={le.minWidth:0.##},prefW={le.preferredWidth:0.##},flexW={le.flexibleWidth:0.##},minH={le.minHeight:0.##},prefH={le.preferredHeight:0.##},flexH={le.flexibleHeight:0.##}]";
+
+            string parentLayout = hlg != null
+                ? "ParentLayout=Horizontal"
+                : (vlg != null ? "ParentLayout=Vertical" : "ParentLayout=None");
+
+            return
+                $"{label}: rect=({rt.rect.width:0.##}x{rt.rect.height:0.##}), sizeDelta=({rt.sizeDelta.x:0.##},{rt.sizeDelta.y:0.##}), " +
+                $"anchorMin=({rt.anchorMin.x:0.##},{rt.anchorMin.y:0.##}), anchorMax=({rt.anchorMax.x:0.##},{rt.anchorMax.y:0.##}), {leInfo}, {parentLayout}";
         }
 
         private bool HasValidAutoRows()

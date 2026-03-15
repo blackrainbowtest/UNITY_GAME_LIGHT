@@ -576,4 +576,84 @@ MonoBehaviour:
       text: EXP Earned
     - languageCode: fr
       text: EXP gagnee
+  - key: profile_physical_damage_title
+    entries:
+    - languageCode: ru
+      text: "\u0424\u0438\u0437. \u0443\u0440\u043E\u043D"
+    - languageCode: en
+      text: Physical Damage
+    - languageCode: fr
+      text: Degats physiques
+  - key: profile_magic_damage_title
+    entries:
+    - languageCode: ru
+      text: "\u041C\u0430\u0433. \u0443\u0440\u043E\u043D"
+    - languageCode: en
+      text: Magic Damage
+    - languageCode: fr
+      text: Degats magiques
+  - key: profile_physical_resistance_title
+    entries:
+    - languageCode: ru
+      text: "\u0421\u043E\u043F\u0440. \u0444\u0438\u0437. \u0443\u0440\u043E\u043D\u0443"
+    - languageCode: en
+      text: Physical Resistance
+    - languageCode: fr
+      text: Resistance physique
+  - key: profile_magic_resistance_title
+    entries:
+    - languageCode: ru
+      text: "\u0421\u043E\u043F\u0440. \u043C\u0430\u0433. \u0443\u0440\u043E\u043D\u0443"
+    - languageCode: en
+      text: Magic Resistance
+    - languageCode: fr
+      text: Resistance magique
+  - key: profile_attack_speed_title
+    entries:
+    - languageCode: ru
+      text: "\u0421\u043A\u043E\u0440\u043E\u0441\u0442\u044C \u0430\u0442\u0430\u043A\u0438"
+    - languageCode: en
+      text: Attack Speed
+    - languageCode: fr
+      text: Vitesse d'attaque
+  - key: profile_crit_chance_title
+    entries:
+    - languageCode: ru
+      text: "\u0428\u0430\u043D\u0441 \u043A\u0440\u0438\u0442\u0430"
+    - languageCode: en
+      text: Critical Chance
+    - languageCode: fr
+      text: Chance de critique
+  - key: profile_crit_multiplier_title
+    entries:
+    - languageCode: ru
+      text: "\u041C\u043D\u043E\u0436\u0438\u0442\u0435\u043B\u044C \u043A\u0440\u0438\u0442\u0430"
+    - languageCode: en
+      text: Critical Multiplier
+    - languageCode: fr
+      text: Multiplicateur critique
+  - key: profile_evasion_chance_title
+    entries:
+    - languageCode: ru
+      text: "\u0428\u0430\u043D\u0441 \u0443\u043A\u043B\u043E\u043D\u0435\u043D\u0438\u044F"
+    - languageCode: en
+      text: Evasion Chance
+    - languageCode: fr
+      text: Chance d'esquive
+  - key: profile_hit_chance_title
+    entries:
+    - languageCode: ru
+      text: "\u0428\u0430\u043D\u0441 \u043F\u043E\u043F\u0430\u0434\u0430\u043D\u0438\u044F"
+    - languageCode: en
+      text: Hit Chance
+    - languageCode: fr
+      text: Chance de toucher
+  - key: profile_stat_not_implemented
+    entries:
+    - languageCode: ru
+      text: "\u0412 \u0440\u0430\u0437\u0440\u0430\u0431\u043E\u0442\u043A\u0435"
+    - languageCode: en
+      text: In development
+    - languageCode: fr
+      text: En developpement
   sourceCsvName: ui_common
