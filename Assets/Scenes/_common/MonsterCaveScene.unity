@@ -822,7 +822,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: UDA2.Audio::UDA2.Audio.SceneAmbientSoundController
   playOnEnable: 1
   allowMusicCues: 0
-  musicEndPollInterval: 0.1
   delayFirstPlay: 0
   groups:
   - name: nature_rain_fall
@@ -833,6 +832,11 @@ MonoBehaviour:
     clips: []
     clipVolume: 0
     clipPitchRange: {x: 0.95, y: 1.05}
+    useStereoPan: 0
+    panStart: 0
+    panEnd: 0
+    panSweepOverClipDuration: 0
+    panSweepDuration: 0
   - name: birds_morning
     randomLoop: 1
     intervalSeconds: {x: 0, y: 0}
@@ -842,14 +846,24 @@ MonoBehaviour:
     clips: []
     clipVolume: 0
     clipPitchRange: {x: 0.95, y: 1.05}
+    useStereoPan: 0
+    panStart: 0
+    panEnd: 0
+    panSweepOverClipDuration: 0
+    panSweepDuration: 0
   - name: river
     randomLoop: 1
     intervalSeconds: {x: 0, y: 0}
     cues:
     - {fileID: 11400000, guid: c78eb7ac7df64f64288f614965e0692c, type: 2}
     clips: []
-    clipVolume: 0
+    clipVolume: 1
     clipPitchRange: {x: 0.95, y: 1.05}
+    useStereoPan: 1
+    panStart: -0.83
+    panEnd: -0.76
+    panSweepOverClipDuration: 0
+    panSweepDuration: 0
 --- !u!1 &360478445
 GameObject:
   m_ObjectHideFlags: 0

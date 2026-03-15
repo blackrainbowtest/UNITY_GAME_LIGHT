@@ -181,6 +181,7 @@ namespace UDA2.City
             }
 
             frame.SetHeaderTitle(contentMeta.TitleLocalizationKey, contentMeta.TitleFallbackText);
+            frame.SetBackgroundSprite(contentMeta.FrameBackgroundSprite);
             contentMeta.ApplyTitleToContentIfAssigned();
         }
 

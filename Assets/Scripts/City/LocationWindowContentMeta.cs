@@ -17,8 +17,13 @@ namespace UDA2.City
         [Tooltip("Optional direct text target inside content (if content also shows title internally).")]
         [SerializeField] private TMP_Text contentTitleText;
 
+        [Header("Frame Visual")]
+        [Tooltip("Optional sprite for LocationWindowFrame background.")]
+        [SerializeField] private Sprite frameBackgroundSprite;
+
         public string TitleLocalizationKey => titleLocalizationKey;
         public string TitleFallbackText => titleText;
+        public Sprite FrameBackgroundSprite => frameBackgroundSprite;
 
         public string ResolveTitle()
         {

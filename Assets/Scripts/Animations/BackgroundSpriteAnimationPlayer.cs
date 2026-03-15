@@ -21,6 +21,7 @@ public sealed class BackgroundSpriteAnimationPlayer : MonoBehaviour
     [SerializeField, Min(0f)] private float replayDelaySeconds = 0f;
     [SerializeField] private bool randomOrder;
     [SerializeField] private bool avoidImmediateRepeat = true;
+    [SerializeField, Range(0f, 1f)] private float immediateRepeatWeightMultiplier = 0.35f;
     [SerializeField] private bool playOnEnable = true;
     [SerializeField] private bool useUnscaledTime = true;
 
@@ -157,10 +158,16 @@ public sealed class BackgroundSpriteAnimationPlayer : MonoBehaviour
         if (validCount == 0)
             return null;
 
-        int chosenIndex = WeightedPickIndex(skipIndex: avoidImmediateRepeat ? lastRandomIndex : -1);
-
-        if (chosenIndex < 0 && avoidImmediateRepeat)
+        int chosenIndex;
+        if (avoidImmediateRepeat && validCount > 1 && lastRandomIndex >= 0)
+        {
+            // Soft repeat prevention: keep weights meaningful even when there are only two animations.
+            chosenIndex = WeightedPickIndexWithPenalty(lastRandomIndex, Mathf.Clamp01(immediateRepeatWeightMultiplier));
+        }
+        else
+        {
             chosenIndex = WeightedPickIndex(skipIndex: -1);
+        }
 
         if (chosenIndex < 0)
             return null;
@@ -209,6 +216,54 @@ public sealed class BackgroundSpriteAnimationPlayer : MonoBehaviour
         }
 
         return GetFirstValidIndex(skipIndex);
+    }
+
+    private int WeightedPickIndexWithPenalty(int penalizedIndex, float penaltyMultiplier)
+    {
+        if (animations == null || animations.Length == 0)
+            return -1;
+
+        float totalWeight = 0f;
+        for (int i = 0; i < animations.Length; i++)
+        {
+            var candidate = animations[i].animation;
+            if (candidate == null || !candidate.IsValid())
+                continue;
+
+            float w = animations[i].weight > 0f ? animations[i].weight : 1f;
+            if (i == penalizedIndex)
+                w *= penaltyMultiplier;
+
+            if (w <= 0f)
+                continue;
+
+            totalWeight += w;
+        }
+
+        if (totalWeight <= 0f)
+            return -1;
+
+        float roll = Random.Range(0f, totalWeight);
+        float cumulative = 0f;
+        for (int i = 0; i < animations.Length; i++)
+        {
+            var candidate = animations[i].animation;
+            if (candidate == null || !candidate.IsValid())
+                continue;
+
+            float w = animations[i].weight > 0f ? animations[i].weight : 1f;
+            if (i == penalizedIndex)
+                w *= penaltyMultiplier;
+
+            if (w <= 0f)
+                continue;
+
+            cumulative += w;
+            if (roll <= cumulative)
+                return i;
+        }
+
+        return GetFirstValidIndex();
     }
 
     private int CountValidAnimations()

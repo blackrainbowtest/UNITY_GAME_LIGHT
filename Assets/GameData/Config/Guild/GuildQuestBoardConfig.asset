@@ -15,4 +15,7 @@ MonoBehaviour:
   questsPerDay: 3
   refreshMinuteOfDay: 720
   questPool:
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 21277c84f5132ba44b2314b5689765b6, type: 2}
+  - {fileID: 11400000, guid: 21277c84f5132ba44b2314b5689765b6, type: 2}
+  - {fileID: 11400000, guid: 21277c84f5132ba44b2314b5689765b6, type: 2}
+  - {fileID: 11400000, guid: 21277c84f5132ba44b2314b5689765b6, type: 2}

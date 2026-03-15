@@ -5,9 +5,6 @@ namespace UDA2.SaveSystem.Guild
 {
     public static class GuildRuntimeAPI
     {
-        private const string RankConfigResourcePath = "Config/Guild/GuildRankProgressionConfig";
-        private const string BoardConfigResourcePath = "Config/Guild/GuildQuestBoardConfig";
-
         private static SaveData cachedSave;
         private static GuildService cachedService;
         private static GuildRankProgressionConfigAsset rankConfig;
@@ -29,14 +26,12 @@ namespace UDA2.SaveSystem.Guild
             if (save == null)
                 return null;
 
+            // Runtime service must be configured by scene/UI components.
+            if (rankConfig == null || boardConfig == null)
+                return null;
+
             if (ReferenceEquals(cachedSave, save) && cachedService != null)
                 return cachedService;
-
-            if (rankConfig == null)
-                rankConfig = Resources.Load<GuildRankProgressionConfigAsset>(RankConfigResourcePath);
-
-            if (boardConfig == null)
-                boardConfig = Resources.Load<GuildQuestBoardConfigAsset>(BoardConfigResourcePath);
 
             cachedSave = save;
             cachedService = new GuildService(save, rankConfig, boardConfig);
@@ -58,7 +53,12 @@ namespace UDA2.SaveSystem.Guild
 
             var refreshed = service.RefreshQuestBoardIfNeeded();
             if (refreshed)
+            {
+                if (save != null)
+                    global::SaveSlotsManager.SaveToSlot(global::SaveSlotsManager.GetRuntimeSaveSlotOrAutosave(), save, rememberAsCurrentRuntimeSlot: false);
+
                 GuildNotificationAPI.NotifyQuestBoardRefreshed();
+            }
 
             return refreshed;
         }
@@ -122,7 +122,7 @@ namespace UDA2.SaveSystem.Guild
             {
                 var save = global::GameState.Instance?.CurrentSave;
                 if (save != null)
-                    global::SaveSlotsManager.SaveToSlot(0, save);
+                    global::SaveSlotsManager.SaveToSlot(global::SaveSlotsManager.GetRuntimeSaveSlotOrAutosave(), save, rememberAsCurrentRuntimeSlot: false);
 
                 GuildNotificationAPI.NotifyRankUp();
             }

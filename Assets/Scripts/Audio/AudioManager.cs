@@ -81,6 +81,7 @@ namespace UDA2.Audio
         [SerializeField] private Transform ambientParent;
 
         private AudioSource[] ambientPool;
+        private Coroutine[] ambientPanCoroutines;
         private int ambientIndex;
         private float ambientVolume = 1f;
 
@@ -675,6 +676,7 @@ namespace UDA2.Audio
                 return;
 
             ambientPool = new AudioSource[ambientPoolSize];
+            ambientPanCoroutines = new Coroutine[ambientPoolSize];
 
             for (int i = 0; i < ambientPoolSize; i++)
             {
@@ -682,6 +684,7 @@ namespace UDA2.Audio
                 src.outputAudioMixerGroup = ambientGroup;
                 src.playOnAwake = false;
                 src.volume = 1f;
+                src.panStereo = 0f;
                 ambientPool[i] = src;
             }
         }
@@ -728,6 +731,17 @@ namespace UDA2.Audio
 
         public void PlayAmbient(AudioClip clip, float volume = 1f, float pitch = 1f)
         {
+            PlayAmbient(clip, volume, pitch, 0f, 0f, 0f);
+        }
+
+        public void PlayAmbient(
+            AudioClip clip,
+            float volume,
+            float pitch,
+            float panStart,
+            float panEnd,
+            float panSweepDurationSeconds)
+        {
             if (clip == null)
                 return;
 
@@ -740,14 +754,55 @@ namespace UDA2.Audio
                 return;
             }
 
-            var src = ambientPool[ambientIndex];
+            int sourceIndex = ambientIndex;
+            var src = ambientPool[sourceIndex];
             ambientIndex = (ambientIndex + 1) % ambientPool.Length;
+
+            if (ambientPanCoroutines != null && sourceIndex >= 0 && sourceIndex < ambientPanCoroutines.Length)
+            {
+                if (ambientPanCoroutines[sourceIndex] != null)
+                {
+                    StopCoroutine(ambientPanCoroutines[sourceIndex]);
+                    ambientPanCoroutines[sourceIndex] = null;
+                }
+            }
+
+            float clampedPanStart = Mathf.Clamp(panStart, -1f, 1f);
+            float clampedPanEnd = Mathf.Clamp(panEnd, -1f, 1f);
+            float safeSweepDuration = Mathf.Max(0f, panSweepDurationSeconds);
 
             src.Stop();
             src.clip = clip;
             src.pitch = pitch;
             src.volume = Mathf.Clamp01(volume) * ambientVolume;
+            src.panStereo = clampedPanStart;
             src.Play();
+
+            if (safeSweepDuration > 0f && !Mathf.Approximately(clampedPanStart, clampedPanEnd))
+            {
+                if (ambientPanCoroutines != null && sourceIndex >= 0 && sourceIndex < ambientPanCoroutines.Length)
+                    ambientPanCoroutines[sourceIndex] = StartCoroutine(SweepAmbientPanRoutine(src, clampedPanStart, clampedPanEnd, safeSweepDuration));
+            }
+        }
+
+        private static IEnumerator SweepAmbientPanRoutine(AudioSource src, float fromPan, float toPan, float durationSeconds)
+        {
+            if (src == null || durationSeconds <= 0f)
+                yield break;
+
+            float t = 0f;
+            src.panStereo = fromPan;
+
+            while (src != null && src.isActiveAndEnabled && src.isPlaying && t < durationSeconds)
+            {
+                t += Time.unscaledDeltaTime;
+                float k = Mathf.Clamp01(t / durationSeconds);
+                src.panStereo = Mathf.Lerp(fromPan, toPan, k);
+                yield return null;
+            }
+
+            if (src != null)
+                src.panStereo = toPan;
         }
 
         /* ===================== UI ===================== */
@@ -792,8 +847,15 @@ namespace UDA2.Audio
                     if (src == null)
                         continue;
 
+                    if (ambientPanCoroutines != null && i < ambientPanCoroutines.Length && ambientPanCoroutines[i] != null)
+                    {
+                        StopCoroutine(ambientPanCoroutines[i]);
+                        ambientPanCoroutines[i] = null;
+                    }
+
                     src.Stop();
                     src.clip = null;
+                    src.panStereo = 0f;
                 }
             }
 

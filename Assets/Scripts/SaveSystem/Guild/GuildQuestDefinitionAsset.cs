@@ -15,6 +15,16 @@ namespace UDA2.SaveSystem.Guild
         [FormerlySerializedAs("description")]
         public string descriptionLocalizationKey;
 
+        [Header("Presentation")]
+        [Tooltip("Optional image shown on quest card/details UI.")]
+        public Sprite questImage;
+        [Tooltip("Optional image shown when quest is already taken by player.")]
+        public Sprite questTakenImage;
+        [Tooltip("Optional image/portrait of the quest giver.")]
+        public Sprite questGiverImage;
+        [Tooltip("Localization key for quest giver display name.")]
+        public string questGiverNameLocalizationKey;
+
         [Header("Availability")]
         public AdventurerRank requiredRank = AdventurerRank.None;
         public int requiredHeroLevel = 1;

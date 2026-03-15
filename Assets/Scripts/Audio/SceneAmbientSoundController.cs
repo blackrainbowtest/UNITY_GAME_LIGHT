@@ -32,6 +32,25 @@ namespace UDA2.Audio
             [Tooltip("Pitch range for clip fallback playback.")]
             public Vector2 clipPitchRange = new Vector2(1f, 1f);
 
+            [Header("Stereo Pan")]
+            [Tooltip("Enable stereo pan control for this group (-1 = left, +1 = right).")]
+            public bool useStereoPan;
+
+            [Range(-1f, 1f)]
+            [Tooltip("Pan value at playback start.")]
+            public float panStart = 0f;
+
+            [Range(-1f, 1f)]
+            [Tooltip("Pan value at playback end.")]
+            public float panEnd = 0f;
+
+            [Tooltip("If enabled, pan sweep duration equals current clip length.")]
+            public bool panSweepOverClipDuration;
+
+            [Min(0f)]
+            [Tooltip("Manual pan sweep duration in seconds (used when 'panSweepOverClipDuration' is disabled).")]
+            public float panSweepDuration = 0f;
+
             public bool HasAnyPlayable()
             {
                 if (cues != null)
@@ -228,9 +247,20 @@ namespace UDA2.Audio
                     ? minPitch
                     : UnityEngine.Random.Range(minPitch, maxPitch);
 
-                am.PlayAmbient(cue.Clip, cue.DefaultVolume, pitch);
+                float clipDuration = cue.Clip != null ? Mathf.Max(0f, cue.Clip.length) : 0f;
+                float panStart = group.useStereoPan ? Mathf.Clamp(group.panStart, -1f, 1f) : 0f;
+                float panEnd = group.useStereoPan ? Mathf.Clamp(group.panEnd, -1f, 1f) : panStart;
+                float panSweepDuration = 0f;
+                if (group.useStereoPan)
+                {
+                    panSweepDuration = group.panSweepOverClipDuration
+                        ? clipDuration
+                        : Mathf.Max(0f, group.panSweepDuration);
+                }
 
-                durationSeconds = cue.Clip != null ? Mathf.Max(0f, cue.Clip.length) : 0f;
+                am.PlayAmbient(cue.Clip, cue.DefaultVolume, pitch, panStart, panEnd, panSweepDuration);
+
+                durationSeconds = clipDuration;
                 return false;
             }
 
@@ -247,8 +277,19 @@ namespace UDA2.Audio
                 ? clipMinPitch
                 : UnityEngine.Random.Range(clipMinPitch, clipMaxPitch);
 
-            am.PlayAmbient(clip, group.clipVolume, clipPitch);
-            durationSeconds = Mathf.Max(0f, clip.length);
+            float clipDurationFallback = Mathf.Max(0f, clip.length);
+            float clipPanStart = group.useStereoPan ? Mathf.Clamp(group.panStart, -1f, 1f) : 0f;
+            float clipPanEnd = group.useStereoPan ? Mathf.Clamp(group.panEnd, -1f, 1f) : clipPanStart;
+            float clipPanSweepDuration = 0f;
+            if (group.useStereoPan)
+            {
+                clipPanSweepDuration = group.panSweepOverClipDuration
+                    ? clipDurationFallback
+                    : Mathf.Max(0f, group.panSweepDuration);
+            }
+
+            am.PlayAmbient(clip, group.clipVolume, clipPitch, clipPanStart, clipPanEnd, clipPanSweepDuration);
+            durationSeconds = clipDurationFallback;
             return false;
         }
     }

@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Game.Progression;
+using UnityEngine;
 
 namespace UDA2.SaveSystem.Guild
 {
     public sealed class GuildService
     {
         private const int FirstRegistrationGoldCost = 10;
+        private static readonly bool EnableDebugLogs = false;
 
         private readonly SaveData save;
         private readonly GuildRankProgressionConfigAsset rankConfig;
@@ -214,31 +216,82 @@ namespace UDA2.SaveSystem.Guild
         {
             EnsureGuildStateInitialized();
             if (boardConfig == null)
+            {
+                LogDebug("Refresh skipped: boardConfig is null");
                 return false;
+            }
 
             var nowDay = Math.Max(0, save.time.day);
             var nowMinute = ClampMinuteOfDay(save.time.minuteOfDay);
 
-            var shouldRefresh =
-                nowMinute >= boardConfig.refreshMinuteOfDay &&
+            // Initial bootstrap: if board has never been generated in this save,
+            // create first set immediately instead of waiting for refresh minute.
+            var isInitialBootstrap =
+                save.progress.guild.lastQuestRefreshDay <= 0 &&
+                save.progress.guild.activeQuestIds.Count == 0 &&
+                save.progress.guild.selectedQuestIds.Count == 0;
+
+            var hasNoCurrentBoard = HasNoCurrentBoard();
+
+            var hasGuildHistory =
+                save.progress.guild.lastQuestRefreshDay > 0 ||
+                save.progress.guild.completedQuestIds.Count > 0 ||
+                save.progress.guild.failedQuestIds.Count > 0 ||
+                save.progress.guild.remainingQuestPoolIds.Count > 0;
+
+            // Compatibility recovery for old saves: if board state is empty in migrated saves,
+            // regenerate once for the current day.
+            var isCompatibilityRecovery =
+                hasNoCurrentBoard &&
+                hasGuildHistory &&
                 save.progress.guild.lastQuestRefreshDay < nowDay;
+
+            // Legacy bug recovery: some saves were marked as already refreshed for this day,
+            // but board remained empty. Force one rebuild attempt.
+            var isStaleMarkedDayRecovery = IsLikelyLegacyEmptyBoard(nowDay);
+
+            var shouldRefresh =
+                isInitialBootstrap ||
+                isCompatibilityRecovery ||
+                isStaleMarkedDayRecovery ||
+                (nowMinute >= boardConfig.refreshMinuteOfDay &&
+                 save.progress.guild.lastQuestRefreshDay < nowDay);
+
+            LogDebug(
+                $"Refresh check: day={nowDay}, minute={nowMinute}, refreshAt={boardConfig.refreshMinuteOfDay}, " +
+                $"lastDay={save.progress.guild.lastQuestRefreshDay}, active={save.progress.guild.activeQuestIds.Count}, " +
+                $"selected={save.progress.guild.selectedQuestIds.Count}, completed={save.progress.guild.completedQuestIds.Count}, " +
+                $"failed={save.progress.guild.failedQuestIds.Count}, pool={save.progress.guild.remainingQuestPoolIds.Count}, " +
+                $"initial={isInitialBootstrap}, " +
+                $"compat={isCompatibilityRecovery}, staleRecovery={isStaleMarkedDayRecovery}, shouldRefresh={shouldRefresh}");
 
             if (!shouldRefresh)
                 return false;
 
-            RebuildActiveQuestBoard();
+            var built = RebuildActiveQuestBoard();
+            if (!built)
+            {
+                LogDebug("Refresh aborted: no quests were generated (day marker not updated, will retry later)");
+                return false;
+            }
+
             save.progress.guild.lastQuestRefreshDay = nowDay;
+            LogDebug($"Refresh applied: new active={save.progress.guild.activeQuestIds.Count}, lastDay={save.progress.guild.lastQuestRefreshDay}");
             return true;
         }
 
-        private void RebuildActiveQuestBoard()
+        private bool RebuildActiveQuestBoard()
         {
             var guild = save.progress.guild;
             guild.activeQuestIds.Clear();
 
             var eligibleIds = GetEligibleQuestIds();
+            LogDebug($"Rebuild start: eligible={eligibleIds.Count}, poolBefore={guild.remainingQuestPoolIds.Count}");
             if (eligibleIds.Count == 0)
-                return;
+            {
+                LogDebug("Rebuild aborted: eligibleIds is empty");
+                return false;
+            }
 
             if (guild.remainingQuestPoolIds.Count == 0)
                 guild.remainingQuestPoolIds.AddRange(eligibleIds);
@@ -251,8 +304,9 @@ namespace UDA2.SaveSystem.Guild
             if (guild.remainingQuestPoolIds.Count == 0)
                 guild.remainingQuestPoolIds.AddRange(eligibleIds);
 
-            var random = new Random(CombineSeed(save.time.day, save.time.minuteOfDay, guild.completedQuestsTotal));
+            var random = new System.Random(CombineSeed(save.time.day, save.time.minuteOfDay, guild.completedQuestsTotal));
             var picks = Math.Max(1, boardConfig.questsPerDay);
+            LogDebug($"Rebuild picks: picks={picks}, seedDay={save.time.day}, seedMinute={save.time.minuteOfDay}, completedTotal={guild.completedQuestsTotal}");
 
             for (var i = 0; i < picks; i++)
             {
@@ -268,6 +322,9 @@ namespace UDA2.SaveSystem.Guild
                 if (!guild.activeQuestIds.Contains(questId))
                     guild.activeQuestIds.Add(questId);
             }
+
+            LogDebug($"Rebuild done: active={guild.activeQuestIds.Count}, poolAfter={guild.remainingQuestPoolIds.Count}");
+            return guild.activeQuestIds.Count > 0;
         }
 
         private List<string> GetEligibleQuestIds()
@@ -275,15 +332,59 @@ namespace UDA2.SaveSystem.Guild
             if (boardConfig == null || boardConfig.questPool == null)
                 return new List<string>();
 
-            return boardConfig.questPool
-                .Where(q =>
-                    q != null &&
-                    !string.IsNullOrWhiteSpace(q.questId) &&
-                    CanTakeQuest(q) &&
-                    !save.progress.guild.selectedQuestIds.Contains(q.questId))
-                .Select(q => q.questId)
-                .Distinct()
-                .ToList();
+            var eligible = new List<string>();
+            var heroLevel = Math.Max(1, save.player?.level ?? 1);
+
+            // Daily quests are repeatable: completed/failed history must not block future offers.
+            // We only exclude quests already in progress (selected).
+            for (var i = 0; i < boardConfig.questPool.Count; i++)
+            {
+                var q = boardConfig.questPool[i];
+                if (q == null)
+                {
+                    LogDebug($"Eligible skip [#{i}]: null quest reference");
+                    continue;
+                }
+
+                if (string.IsNullOrWhiteSpace(q.questId))
+                {
+                    LogDebug($"Eligible skip [#{i}]: empty questId (titleKey='{q.titleLocalizationKey ?? string.Empty}')");
+                    continue;
+                }
+
+                if (save.progress.guild.selectedQuestIds.Contains(q.questId))
+                {
+                    LogDebug($"Eligible skip [{q.questId}]: already selected");
+                    continue;
+                }
+
+                if (CurrentRank < q.requiredRank)
+                {
+                    LogDebug($"Eligible skip [{q.questId}]: rank too low ({CurrentRank} < {q.requiredRank})");
+                    continue;
+                }
+
+                var requiredLevel = Math.Max(1, q.requiredHeroLevel);
+                if (heroLevel < requiredLevel)
+                {
+                    LogDebug($"Eligible skip [{q.questId}]: hero level too low ({heroLevel} < {requiredLevel})");
+                    continue;
+                }
+
+                if (!eligible.Contains(q.questId))
+                    eligible.Add(q.questId);
+            }
+
+            LogDebug($"Eligible quests: pool={boardConfig.questPool.Count}, eligible={eligible.Count}, rank={CurrentRank}, heroLevel={heroLevel}");
+            return eligible;
+        }
+
+        private static void LogDebug(string message)
+        {
+            if (!EnableDebugLogs)
+                return;
+
+            Debug.Log($"[GuildService] {message}");
         }
 
         private GuildQuestDefinitionAsset FindQuestById(string questId)
@@ -454,7 +555,43 @@ namespace UDA2.SaveSystem.Guild
             save.player ??= new SaveData.Player();
             save.time ??= new SaveData.TimeState();
 
+            SanitizeQuestState();
             save.time.minuteOfDay = ClampMinuteOfDay(save.time.minuteOfDay);
+        }
+
+        private void SanitizeQuestState()
+        {
+            var guild = save.progress.guild;
+            if (guild == null)
+                return;
+
+            SanitizeQuestIdList(guild.activeQuestIds);
+            SanitizeQuestIdList(guild.selectedQuestIds);
+            SanitizeQuestIdList(guild.completedQuestIds);
+            SanitizeQuestIdList(guild.failedQuestIds);
+            SanitizeQuestIdList(guild.remainingQuestPoolIds);
+
+            // Same quest cannot exist as both offer and accepted at the same time.
+            guild.activeQuestIds.RemoveAll(guild.selectedQuestIds.Contains);
+        }
+
+        private static void SanitizeQuestIdList(List<string> ids)
+        {
+            if (ids == null)
+                return;
+
+            var seen = new HashSet<string>(StringComparer.Ordinal);
+            for (var i = ids.Count - 1; i >= 0; i--)
+            {
+                var id = ids[i]?.Trim();
+                if (string.IsNullOrWhiteSpace(id) || !seen.Add(id))
+                {
+                    ids.RemoveAt(i);
+                    continue;
+                }
+
+                ids[i] = id;
+            }
         }
 
         private int GetInventoryItemCount(string itemId)
@@ -494,6 +631,22 @@ namespace UDA2.SaveSystem.Guild
                 hash = hash * 31 + completed;
                 return hash;
             }
+        }
+
+        private bool HasNoCurrentBoard()
+        {
+            var guild = save.progress.guild;
+            return guild.activeQuestIds.Count == 0 && guild.selectedQuestIds.Count == 0;
+        }
+
+        private bool IsLikelyLegacyEmptyBoard(int nowDay)
+        {
+            var guild = save.progress.guild;
+            return
+                HasNoCurrentBoard() &&
+                guild.lastQuestRefreshDay >= nowDay &&
+                guild.completedQuestIds.Count == 0 &&
+                guild.failedQuestIds.Count == 0;
         }
     }
 }
