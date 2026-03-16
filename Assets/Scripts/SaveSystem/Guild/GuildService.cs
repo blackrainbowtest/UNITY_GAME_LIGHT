@@ -171,6 +171,7 @@ namespace UDA2.SaveSystem.Guild
 
             save.progress.guild.activeQuestIds.Remove(questId);
             save.progress.guild.selectedQuestIds.Remove(questId);
+            RemoveQuestKillBaselines(questId);
             AddUnique(save.progress.guild.completedQuestIds, questId);
             save.progress.guild.completedQuestsSinceLastRank++;
             save.progress.guild.completedQuestsTotal++;
@@ -197,6 +198,7 @@ namespace UDA2.SaveSystem.Guild
 
             save.progress.guild.activeQuestIds.Remove(questId);
             AddUnique(save.progress.guild.selectedQuestIds, questId);
+            CaptureQuestKillBaselinesOnAccept(questId, quest);
             return true;
         }
 
@@ -208,6 +210,7 @@ namespace UDA2.SaveSystem.Guild
             if (!save.progress.guild.selectedQuestIds.Remove(questId))
                 return false;
 
+            RemoveQuestKillBaselines(questId);
             AddUnique(save.progress.guild.failedQuestIds, questId);
             return true;
         }
@@ -305,20 +308,20 @@ namespace UDA2.SaveSystem.Guild
                 guild.remainingQuestPoolIds.AddRange(eligibleIds);
 
             var random = new System.Random(CombineSeed(save.time.day, save.time.minuteOfDay, guild.completedQuestsTotal));
-            var picks = Math.Max(1, boardConfig.questsPerDay);
-            LogDebug($"Rebuild picks: picks={picks}, seedDay={save.time.day}, seedMinute={save.time.minuteOfDay}, completedTotal={guild.completedQuestsTotal}");
+            var spawnPlan = BuildRankSpawnPlanForCurrentRank();
+            var picks = spawnPlan.Count > 0 ? spawnPlan.Count : Math.Max(1, boardConfig.questsPerDay);
+            LogDebug($"Rebuild picks: picks={picks}, rankPlan={spawnPlan.Count}, seedDay={save.time.day}, seedMinute={save.time.minuteOfDay}, completedTotal={guild.completedQuestsTotal}");
 
             for (var i = 0; i < picks; i++)
             {
-                if (guild.remainingQuestPoolIds.Count == 0)
-                    guild.remainingQuestPoolIds.AddRange(eligibleIds);
+                var desiredRank = spawnPlan.Count > 0 ? (AdventurerRank?)spawnPlan[i] : null;
+                var questId = TakeNextQuestFromPool(eligibleIds, random, desiredRank);
+                if (string.IsNullOrWhiteSpace(questId) && desiredRank.HasValue)
+                    questId = TakeNextQuestFromPool(eligibleIds, random, null);
 
-                if (guild.remainingQuestPoolIds.Count == 0)
+                if (string.IsNullOrWhiteSpace(questId))
                     break;
 
-                var index = random.Next(0, guild.remainingQuestPoolIds.Count);
-                var questId = guild.remainingQuestPoolIds[index];
-                guild.remainingQuestPoolIds.RemoveAt(index);
                 if (!guild.activeQuestIds.Contains(questId))
                     guild.activeQuestIds.Add(questId);
             }
@@ -379,6 +382,67 @@ namespace UDA2.SaveSystem.Guild
             return eligible;
         }
 
+        private List<AdventurerRank> BuildRankSpawnPlanForCurrentRank()
+        {
+            var plan = new List<AdventurerRank>();
+            if (boardConfig == null)
+                return plan;
+
+            if (!boardConfig.TryGetRuleForPlayerRank(CurrentRank, out var rule) || rule == null || rule.rankCounts == null)
+                return plan;
+
+            for (var i = 0; i < rule.rankCounts.Count; i++)
+            {
+                var item = rule.rankCounts[i];
+                if (item == null || item.count <= 0)
+                    continue;
+
+                for (var j = 0; j < item.count; j++)
+                    plan.Add(item.questRequiredRank);
+            }
+
+            return plan;
+        }
+
+        private string TakeNextQuestFromPool(List<string> eligibleIds, System.Random random, AdventurerRank? requiredRank)
+        {
+            var guild = save.progress.guild;
+            if (eligibleIds == null || eligibleIds.Count == 0)
+                return null;
+
+            if (guild.remainingQuestPoolIds.Count == 0)
+                guild.remainingQuestPoolIds.AddRange(eligibleIds);
+
+            if (guild.remainingQuestPoolIds.Count == 0)
+                return null;
+
+            var candidateIndexes = new List<int>();
+            for (var i = 0; i < guild.remainingQuestPoolIds.Count; i++)
+            {
+                var questId = guild.remainingQuestPoolIds[i];
+                if (string.IsNullOrWhiteSpace(questId))
+                    continue;
+
+                if (!requiredRank.HasValue)
+                {
+                    candidateIndexes.Add(i);
+                    continue;
+                }
+
+                var quest = FindQuestById(questId);
+                if (quest != null && quest.requiredRank == requiredRank.Value)
+                    candidateIndexes.Add(i);
+            }
+
+            if (candidateIndexes.Count == 0)
+                return null;
+
+            var selectedCandidate = candidateIndexes[random.Next(0, candidateIndexes.Count)];
+            var selectedQuestId = guild.remainingQuestPoolIds[selectedCandidate];
+            guild.remainingQuestPoolIds.RemoveAt(selectedCandidate);
+            return selectedQuestId;
+        }
+
         private static void LogDebug(string message)
         {
             if (!EnableDebugLogs)
@@ -427,7 +491,36 @@ namespace UDA2.SaveSystem.Guild
             if (save.inventory.gold < Math.Max(0, quest.requiredGold))
                 return false;
 
-            return HasItems(quest.requiredItems, includeStorage: false);
+            if (!HasItems(quest.requiredItems, includeStorage: false))
+                return false;
+
+            return HasMobKillRequirements(quest);
+        }
+
+        private bool HasMobKillRequirements(GuildQuestDefinitionAsset quest)
+        {
+            if (quest == null || quest.requiredMobKills == null || quest.requiredMobKills.Count == 0)
+                return true;
+
+            for (var i = 0; i < quest.requiredMobKills.Count; i++)
+            {
+                var requirement = quest.requiredMobKills[i];
+                if (requirement == null || string.IsNullOrWhiteSpace(requirement.enemyId))
+                    continue;
+
+                var needed = Math.Max(0, requirement.amount);
+                if (needed <= 0)
+                    continue;
+
+                var enemyId = requirement.enemyId.Trim();
+                var currentKills = GetMobKillCount(enemyId);
+                var baselineKills = GetQuestKillBaseline(quest.questId, enemyId);
+                var progressKills = Math.Max(0, currentKills - baselineKills);
+                if (progressKills < needed)
+                    return false;
+            }
+
+            return true;
         }
 
         private bool HasItems(List<GuildItemAmount> requirements, bool includeStorage)
@@ -548,6 +641,7 @@ namespace UDA2.SaveSystem.Guild
             save.progress.guild.completedQuestIds ??= new List<string>();
             save.progress.guild.failedQuestIds ??= new List<string>();
             save.progress.guild.remainingQuestPoolIds ??= new List<string>();
+            save.progress.guild.questKillBaselines ??= new List<SaveData.QuestKillBaselineEntry>();
             save.inventory ??= new SaveData.Inventory();
             save.inventory.items ??= new List<SaveData.Item>();
             save.storage ??= new SaveData.Storage();
@@ -570,9 +664,139 @@ namespace UDA2.SaveSystem.Guild
             SanitizeQuestIdList(guild.completedQuestIds);
             SanitizeQuestIdList(guild.failedQuestIds);
             SanitizeQuestIdList(guild.remainingQuestPoolIds);
+            SanitizeQuestKillBaselines(guild.questKillBaselines);
 
             // Same quest cannot exist as both offer and accepted at the same time.
             guild.activeQuestIds.RemoveAll(guild.selectedQuestIds.Contains);
+
+            // Keep baselines only for currently selected quests.
+            guild.questKillBaselines.RemoveAll(e => e == null || string.IsNullOrWhiteSpace(e.questId) || !guild.selectedQuestIds.Contains(e.questId));
+        }
+
+        private static void SanitizeQuestKillBaselines(List<SaveData.QuestKillBaselineEntry> entries)
+        {
+            if (entries == null)
+                return;
+
+            var merged = new Dictionary<string, SaveData.QuestKillBaselineEntry>(StringComparer.OrdinalIgnoreCase);
+            for (var i = 0; i < entries.Count; i++)
+            {
+                var e = entries[i];
+                if (e == null || string.IsNullOrWhiteSpace(e.questId) || string.IsNullOrWhiteSpace(e.enemyId))
+                    continue;
+
+                var questId = e.questId.Trim();
+                var enemyId = e.enemyId.Trim();
+                var key = questId + "::" + enemyId;
+                var kills = Math.Max(0, e.killsAtAccept);
+
+                if (merged.TryGetValue(key, out var existing))
+                {
+                    if (kills < existing.killsAtAccept)
+                        existing.killsAtAccept = kills;
+                    continue;
+                }
+
+                merged[key] = new SaveData.QuestKillBaselineEntry
+                {
+                    questId = questId,
+                    enemyId = enemyId,
+                    killsAtAccept = kills
+                };
+            }
+
+            entries.Clear();
+            foreach (var kv in merged)
+                entries.Add(kv.Value);
+        }
+
+        private int GetMobKillCount(string enemyId)
+        {
+            if (string.IsNullOrWhiteSpace(enemyId))
+                return 0;
+
+            var list = save.achievementStats?.mobKillsByEnemyId;
+            if (list == null || list.Count == 0)
+                return 0;
+
+            var id = enemyId.Trim();
+            for (var i = 0; i < list.Count; i++)
+            {
+                var e = list[i];
+                if (e == null || string.IsNullOrWhiteSpace(e.enemyId))
+                    continue;
+
+                if (!string.Equals(e.enemyId, id, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                return Math.Max(0, e.kills);
+            }
+
+            return 0;
+        }
+
+        private int GetQuestKillBaseline(string questId, string enemyId)
+        {
+            var baselines = save.progress.guild?.questKillBaselines;
+            if (baselines == null || baselines.Count == 0)
+                return 0;
+
+            for (var i = 0; i < baselines.Count; i++)
+            {
+                var e = baselines[i];
+                if (e == null)
+                    continue;
+
+                if (!string.Equals(e.questId, questId, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                if (!string.Equals(e.enemyId, enemyId, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                return Math.Max(0, e.killsAtAccept);
+            }
+
+            return 0;
+        }
+
+        private void CaptureQuestKillBaselinesOnAccept(string questId, GuildQuestDefinitionAsset quest)
+        {
+            if (string.IsNullOrWhiteSpace(questId) || quest == null || quest.requiredMobKills == null)
+                return;
+
+            var baselines = save.progress.guild.questKillBaselines;
+            if (baselines == null)
+                return;
+
+            RemoveQuestKillBaselines(questId);
+
+            for (var i = 0; i < quest.requiredMobKills.Count; i++)
+            {
+                var requirement = quest.requiredMobKills[i];
+                if (requirement == null || string.IsNullOrWhiteSpace(requirement.enemyId))
+                    continue;
+
+                var enemyId = requirement.enemyId.Trim();
+                var current = GetMobKillCount(enemyId);
+                baselines.Add(new SaveData.QuestKillBaselineEntry
+                {
+                    questId = questId,
+                    enemyId = enemyId,
+                    killsAtAccept = current
+                });
+            }
+        }
+
+        private void RemoveQuestKillBaselines(string questId)
+        {
+            if (string.IsNullOrWhiteSpace(questId))
+                return;
+
+            var baselines = save.progress.guild?.questKillBaselines;
+            if (baselines == null)
+                return;
+
+            baselines.RemoveAll(e => e == null || string.Equals(e.questId, questId, StringComparison.OrdinalIgnoreCase));
         }
 
         private static void SanitizeQuestIdList(List<string> ids)

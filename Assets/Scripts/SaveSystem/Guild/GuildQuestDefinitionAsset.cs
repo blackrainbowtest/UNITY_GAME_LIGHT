@@ -32,6 +32,8 @@ namespace UDA2.SaveSystem.Guild
         [Header("Turn-in Requirements")]
         public int requiredGold = 0;
         public List<GuildItemAmount> requiredItems = new List<GuildItemAmount>();
+        [Tooltip("Optional kill requirements tracked by enemy id (kills after quest acceptance).")]
+        public List<GuildMobKillAmount> requiredMobKills = new List<GuildMobKillAmount>();
 
         [Header("Rewards")]
         public int rewardGold = 0;

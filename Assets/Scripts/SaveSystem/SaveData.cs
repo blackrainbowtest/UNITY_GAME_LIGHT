@@ -59,6 +59,14 @@ public class SaveData
     }
 
     [Serializable]
+    public class QuestKillBaselineEntry
+    {
+        public string questId;
+        public string enemyId;
+        public int killsAtAccept;
+    }
+
+    [Serializable]
     public class LocationStructuresState
     {
         public int bedLevel = 0;
@@ -239,6 +247,12 @@ public class SaveData
         /// Remaining quest ids in the current no-repeat random cycle.
         /// </summary>
         public List<string> remainingQuestPoolIds = new List<string>();
+
+        /// <summary>
+        /// Kill counters snapshot at acceptance time for kill-based quest requirements.
+        /// Progress for a quest is (current kills - killsAtAccept) per enemy id.
+        /// </summary>
+        public List<QuestKillBaselineEntry> questKillBaselines = new List<QuestKillBaselineEntry>();
 
         /// <summary>
         /// Completed quests counted toward the next rank upgrade requirement.
