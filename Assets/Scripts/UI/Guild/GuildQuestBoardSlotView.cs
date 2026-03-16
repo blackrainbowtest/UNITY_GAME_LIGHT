@@ -22,6 +22,7 @@ namespace UDA2.UI.Guild
 
         private GuildQuestDefinitionAsset quest;
         private Action<GuildQuestDefinitionAsset> clickHandler;
+        private bool isQuestTaken;
 
         private void Awake()
         {
@@ -47,6 +48,10 @@ namespace UDA2.UI.Guild
         {
             quest = questDefinition;
             clickHandler = onClick;
+            isQuestTaken = isTaken;
+
+            if (clickButton != null)
+                clickButton.interactable = !isTaken;
 
             if (questImage != null)
             {
@@ -58,17 +63,53 @@ namespace UDA2.UI.Guild
                 questImage.enabled = questImage.sprite != null;
             }
 
-            ApplyLocalized(titleLocalized, titleText, quest != null ? quest.titleLocalizationKey : string.Empty);
-            ApplyLocalized(descriptionLocalized, descriptionText, quest != null ? quest.descriptionLocalizationKey : string.Empty);
-            ApplyLocalized(employerNameLocalized, employerNameText, quest != null ? quest.questGiverNameLocalizationKey : string.Empty);
+            if (isTaken)
+            {
+                SetTextVisibility(titleLocalized, titleText, visible: false);
+                SetTextVisibility(descriptionLocalized, descriptionText, visible: false);
+                SetTextVisibility(employerNameLocalized, employerNameText, visible: false);
 
-            if (questIdText != null)
-                questIdText.text = quest != null ? (quest.questId ?? string.Empty) : string.Empty;
+                if (questIdText != null)
+                {
+                    questIdText.text = string.Empty;
+                    questIdText.enabled = false;
+                }
+            }
+            else
+            {
+                SetTextVisibility(titleLocalized, titleText, visible: true);
+                SetTextVisibility(descriptionLocalized, descriptionText, visible: true);
+                SetTextVisibility(employerNameLocalized, employerNameText, visible: true);
+
+                ApplyLocalized(titleLocalized, titleText, quest != null ? quest.titleLocalizationKey : string.Empty);
+                ApplyLocalized(descriptionLocalized, descriptionText, quest != null ? quest.descriptionLocalizationKey : string.Empty);
+                ApplyLocalized(employerNameLocalized, employerNameText, quest != null ? quest.questGiverNameLocalizationKey : string.Empty);
+
+                if (questIdText != null)
+                {
+                    questIdText.text = quest != null ? (quest.questId ?? string.Empty) : string.Empty;
+                    questIdText.enabled = true;
+                }
+            }
+        }
+
+        private static void SetTextVisibility(LocalizedGlobalComponent localized, TMP_Text text, bool visible)
+        {
+            if (localized != null)
+                localized.enabled = visible;
+
+            if (text != null)
+            {
+                if (!visible)
+                    text.text = string.Empty;
+
+                text.enabled = visible;
+            }
         }
 
         private void HandleClick()
         {
-            if (quest == null)
+            if (quest == null || isQuestTaken)
                 return;
 
             clickHandler?.Invoke(quest);
