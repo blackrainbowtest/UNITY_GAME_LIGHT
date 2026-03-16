@@ -4,6 +4,26 @@
 	Branch Collection;
 	Collecte de branches;
 *guild_daily_branch_01_desc;
-	Принеси в гильдию 1 ветку.
-	Bring 1 branch to the guild.
-	Apportez 1 branche a la guilde.
+	Принеси в гильдию 1 ветку;
+	Bring 1 branch to the guild;
+	Apportez 1 branche a la guilde;
+*guild_daily_task_02_title;
+	Сбор руды;
+	Ore Collection;
+	Collecte de minerai;
+*guild_daily_task_02_desc;
+	Принеси в гильдию 1 руду;
+	Bring 1 ore to the guild;
+	Apportez 1 minerai a la guilde;
+*guild_daily_task_03_title;
+	Сбор трав;
+	Herb Collection;
+	Collecte d'herbes;
+*guild_daily_task_03_desc;
+	Принеси в гильдию 1 траву;
+	Bring 1 herb to the guild;
+	Apportez 1 herbe a la guilde;
+*guild_giver_board_master;
+	Мастер гильдии;
+	Guild Master;
+	Maitre de guilde;

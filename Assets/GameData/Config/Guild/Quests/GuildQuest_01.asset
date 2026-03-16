@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3ccf3e3e57ba12d43a56a75a7a204949, type: 3}
-  m_Name: GuildQuest
+  m_Name: GuildQuest_01
   m_EditorClassIdentifier: UDA2.SaveSystem::UDA2.SaveSystem.Guild.GuildQuestDefinitionAsset
   questId: guild_daily_branch_01
   titleLocalizationKey: guild_daily_branch_01_title

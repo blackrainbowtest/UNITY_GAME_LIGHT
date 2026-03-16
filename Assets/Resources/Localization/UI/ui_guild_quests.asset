@@ -25,9 +25,51 @@ MonoBehaviour:
     entries:
     - languageCode: ru
       text: "\u041F\u0440\u0438\u043D\u0435\u0441\u0438 \u0432 \u0433\u0438\u043B\u044C\u0434\u0438\u044E
-        1 \u0432\u0435\u0442\u043A\u0443."
+        1 \u0432\u0435\u0442\u043A\u0443"
     - languageCode: en
-      text: Bring 1 branch to the guild.
+      text: Bring 1 branch to the guild
     - languageCode: fr
-      text: Apportez 1 branche a la guilde.
+      text: Apportez 1 branche a la guilde
+  - key: guild_daily_task_02_title
+    entries:
+    - languageCode: ru
+      text: "\u0421\u0431\u043E\u0440 \u0440\u0443\u0434\u044B"
+    - languageCode: en
+      text: Ore Collection
+    - languageCode: fr
+      text: Collecte de minerai
+  - key: guild_daily_task_02_desc
+    entries:
+    - languageCode: ru
+      text: "\u041F\u0440\u0438\u043D\u0435\u0441\u0438 \u0432 \u0433\u0438\u043B\u044C\u0434\u0438\u044E
+        1 \u0440\u0443\u0434\u0443"
+    - languageCode: en
+      text: Bring 1 ore to the guild
+    - languageCode: fr
+      text: Apportez 1 minerai a la guilde
+  - key: guild_daily_task_03_title
+    entries:
+    - languageCode: ru
+      text: "\u0421\u0431\u043E\u0440 \u0442\u0440\u0430\u0432"
+    - languageCode: en
+      text: Herb Collection
+    - languageCode: fr
+      text: Collecte d'herbes
+  - key: guild_daily_task_03_desc
+    entries:
+    - languageCode: ru
+      text: "\u041F\u0440\u0438\u043D\u0435\u0441\u0438 \u0432 \u0433\u0438\u043B\u044C\u0434\u0438\u044E
+        1 \u0442\u0440\u0430\u0432\u0443"
+    - languageCode: en
+      text: Bring 1 herb to the guild
+    - languageCode: fr
+      text: Apportez 1 herbe a la guilde
+  - key: guild_giver_board_master
+    entries:
+    - languageCode: ru
+      text: "\u041C\u0430\u0441\u0442\u0435\u0440 \u0433\u0438\u043B\u044C\u0434\u0438\u0438"
+    - languageCode: en
+      text: Guild Master
+    - languageCode: fr
+      text: Maitre de guilde
   sourceCsvName: ui_guild_quests

@@ -23,13 +23,11 @@ namespace UDA2.UI.Guild
 
         [Header("Slots")]
         [SerializeField] private List<QuestSlot> slots = new List<QuestSlot>();
-        [Tooltip("Card prefab GameObject. It must contain GuildQuestBoardCardView component.")]
-        [SerializeField] private GameObject questCardPrefab;
         [Tooltip("If enabled, slotRoot GameObject is hidden when there is no quest in the slot.")]
         [SerializeField] private bool hideSlotRootWhenEmpty = true;
 
         [Header("Details")]
-        [Tooltip("Details prefab GameObject. It must contain GuildQuestDetailsView component.")]
+        [Tooltip("Details prefab GameObject. It must contain GuildQuestDetailsView on root or in children.")]
         [SerializeField] private GameObject questDetailsPrefab;
         [Tooltip("Optional explicit parent for details window. If empty, root Canvas is auto-detected.")]
         [SerializeField] private Transform detailsParent;
@@ -52,7 +50,6 @@ namespace UDA2.UI.Guild
             }
         }
 
-        private readonly List<GameObject> spawnedCards = new List<GameObject>();
         private bool runtimeConfigured;
 
         private void OnEnable()
@@ -64,8 +61,7 @@ namespace UDA2.UI.Guild
 
         public void RefreshBoard()
         {
-            LogDebug($"RefreshBoard start: slots={slots.Count}, hasCardPrefab={questCardPrefab != null}, hasDetailsPrefab={questDetailsPrefab != null}");
-            ClearSpawnedCards();
+            LogDebug($"RefreshBoard start: slots={slots.Count}, hasDetailsPrefab={questDetailsPrefab != null}");
             SetAllSlotsHasQuest(hasQuest: false);
 
             var service = GuildRuntimeAPI.GetService();
@@ -115,7 +111,7 @@ namespace UDA2.UI.Guild
                 SpawnCard(slot, quest, displayQuest.isTaken);
             }
 
-            LogDebug($"RefreshBoard done: rendered={spawnedCards.Count}");
+            LogDebug($"RefreshBoard done");
         }
 
         private void SpawnCard(QuestSlot slot, GuildQuestDefinitionAsset quest, bool isTaken)
@@ -124,37 +120,18 @@ namespace UDA2.UI.Guild
                 return;
 
             SetSlotHasQuest(slot, hasQuest: true);
+            var slotCard = ResolveSlotView(slot.slotRoot.gameObject);
+            if (slotCard == null)
+                slotCard = slot.slotRoot.gameObject.AddComponent<GuildQuestBoardSlotView>();
 
-            if (questCardPrefab != null)
-            {
-                var cardGo = Instantiate(questCardPrefab, slot.slotRoot, worldPositionStays: false);
-                if (cardGo == null)
-                    return;
-
-                cardGo.SetActive(true);
-                var card = ResolveCardView(cardGo);
-                if (card == null)
-                {
-                    Debug.LogWarning("[GuildQuestBoardSpawner] questCardPrefab has no GuildQuestBoardCardView component.", this);
-                    return;
-                }
-
-                card.Bind(quest, q => HandleQuestCardClicked(q, isTaken), isTaken);
-                spawnedCards.Add(cardGo);
-                LogDebug($"SpawnCard: instantiated prefab card for questId={quest.questId}, taken={isTaken}");
-                return;
-            }
-
-            // Fallback mode: use component on slot object itself when no prefab is assigned.
-            var slotCard = ResolveCardView(slot.slotRoot.gameObject);
             if (slotCard != null)
             {
-                slotCard.Bind(quest, q => HandleQuestCardClicked(q, isTaken), isTaken);
+                slotCard.Bind(quest, isTaken, q => HandleQuestCardClicked(q, isTaken));
                 LogDebug($"SpawnCard: bound existing slot card for questId={quest.questId}, taken={isTaken}");
             }
             else
             {
-                LogDebug($"SpawnCard: no GuildQuestBoardCardView on slotRoot '{slot.slotRoot.name}'");
+                LogDebug($"SpawnCard: no GuildQuestBoardSlotView on slotRoot '{slot.slotRoot.name}'");
             }
         }
 
@@ -165,14 +142,19 @@ namespace UDA2.UI.Guild
 
             var parent = ResolveDetailsParent();
             var detailsGo = Instantiate(questDetailsPrefab, parent, worldPositionStays: false);
+            if (detailsGo == null)
+                return;
+
             BringDetailsToFront(detailsGo, parent);
+
             var details = ResolveDetailsView(detailsGo);
             if (details == null)
             {
-                Debug.LogWarning("[GuildQuestBoardSpawner] questDetailsPrefab has no GuildQuestDetailsView component.", this);
+                Debug.LogWarning("[GuildQuestBoardSpawner] questDetailsPrefab has no GuildQuestDetailsView component (on root or children).", this);
                 return;
             }
 
+            details.SetOwningRoot(detailsGo);
             details.Bind(quest, TryAcceptQuest, isTaken);
         }
 
@@ -319,17 +301,6 @@ namespace UDA2.UI.Guild
             }
         }
 
-        private void ClearSpawnedCards()
-        {
-            for (var i = 0; i < spawnedCards.Count; i++)
-            {
-                if (spawnedCards[i] != null)
-                    Destroy(spawnedCards[i]);
-            }
-
-            spawnedCards.Clear();
-        }
-
         private void SetAllSlotsHasQuest(bool hasQuest)
         {
             for (var i = 0; i < slots.Count; i++)
@@ -354,18 +325,6 @@ namespace UDA2.UI.Guild
                 slot.emptyState.SetActive(!hasQuest && !hideSlotRootWhenEmpty);
         }
 
-        private static GuildQuestBoardCardView ResolveCardView(GameObject root)
-        {
-            if (root == null)
-                return null;
-
-            var view = root.GetComponent<GuildQuestBoardCardView>();
-            if (view != null)
-                return view;
-
-            return root.GetComponentInChildren<GuildQuestBoardCardView>(includeInactive: true);
-        }
-
         private static GuildQuestDetailsView ResolveDetailsView(GameObject root)
         {
             if (root == null)
@@ -376,6 +335,18 @@ namespace UDA2.UI.Guild
                 return view;
 
             return root.GetComponentInChildren<GuildQuestDetailsView>(includeInactive: true);
+        }
+
+        private static GuildQuestBoardSlotView ResolveSlotView(GameObject root)
+        {
+            if (root == null)
+                return null;
+
+            var view = root.GetComponent<GuildQuestBoardSlotView>();
+            if (view != null)
+                return view;
+
+            return root.GetComponentInChildren<GuildQuestBoardSlotView>(includeInactive: true);
         }
 
         private void LogDebug(string message)
