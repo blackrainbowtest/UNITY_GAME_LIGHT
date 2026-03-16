@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Game.Progression;
 using UnityEngine;
 
@@ -505,14 +506,17 @@ namespace UDA2.SaveSystem.Guild
             for (var i = 0; i < quest.requiredMobKills.Count; i++)
             {
                 var requirement = quest.requiredMobKills[i];
-                if (requirement == null || string.IsNullOrWhiteSpace(requirement.enemyId))
+                if (requirement == null)
                     continue;
 
                 var needed = Math.Max(0, requirement.amount);
                 if (needed <= 0)
                     continue;
 
-                var enemyId = requirement.enemyId.Trim();
+                var enemyId = ResolveRequiredMobEnemyId(requirement);
+                if (string.IsNullOrWhiteSpace(enemyId))
+                    continue;
+
                 var currentKills = GetMobKillCount(enemyId);
                 var baselineKills = GetQuestKillBaseline(quest.questId, enemyId);
                 var progressKills = Math.Max(0, currentKills - baselineKills);
@@ -773,10 +777,13 @@ namespace UDA2.SaveSystem.Guild
             for (var i = 0; i < quest.requiredMobKills.Count; i++)
             {
                 var requirement = quest.requiredMobKills[i];
-                if (requirement == null || string.IsNullOrWhiteSpace(requirement.enemyId))
+                if (requirement == null)
                     continue;
 
-                var enemyId = requirement.enemyId.Trim();
+                var enemyId = ResolveRequiredMobEnemyId(requirement);
+                if (string.IsNullOrWhiteSpace(enemyId))
+                    continue;
+
                 var current = GetMobKillCount(enemyId);
                 baselines.Add(new SaveData.QuestKillBaselineEntry
                 {
@@ -797,6 +804,39 @@ namespace UDA2.SaveSystem.Guild
                 return;
 
             baselines.RemoveAll(e => e == null || string.Equals(e.questId, questId, StringComparison.OrdinalIgnoreCase));
+        }
+
+        private static string ResolveRequiredMobEnemyId(GuildMobKillAmount requirement)
+        {
+            if (requirement == null)
+                return null;
+
+            if (requirement.enemy != null)
+            {
+                var enemyObject = requirement.enemy;
+                var enemyType = enemyObject.GetType();
+
+                var idField = enemyType.GetField("id", BindingFlags.Public | BindingFlags.Instance);
+                if (idField != null && idField.GetValue(enemyObject) is string idValue && !string.IsNullOrWhiteSpace(idValue))
+                    return idValue.Trim();
+
+                var idProp = enemyType.GetProperty("id", BindingFlags.Public | BindingFlags.Instance);
+                if (idProp != null && idProp.GetValue(enemyObject) is string idPropValue && !string.IsNullOrWhiteSpace(idPropValue))
+                    return idPropValue.Trim();
+
+                var nameField = enemyType.GetField("enemyName", BindingFlags.Public | BindingFlags.Instance);
+                if (nameField != null && nameField.GetValue(enemyObject) is string enemyNameValue && !string.IsNullOrWhiteSpace(enemyNameValue))
+                    return enemyNameValue.Trim();
+
+                var nameProp = enemyType.GetProperty("enemyName", BindingFlags.Public | BindingFlags.Instance);
+                if (nameProp != null && nameProp.GetValue(enemyObject) is string enemyNamePropValue && !string.IsNullOrWhiteSpace(enemyNamePropValue))
+                    return enemyNamePropValue.Trim();
+
+                if (!string.IsNullOrWhiteSpace(enemyObject.name))
+                    return enemyObject.name.Trim();
+            }
+
+            return string.IsNullOrWhiteSpace(requirement.enemyId) ? null : requirement.enemyId.Trim();
         }
 
         private static void SanitizeQuestIdList(List<string> ids)

@@ -18,3 +18,14 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 21277c84f5132ba44b2314b5689765b6, type: 2}
   - {fileID: 11400000, guid: e22abaac4264a3940b50345dfeb2383a, type: 2}
   - {fileID: 11400000, guid: 481769e51f62d4741a3a4cf06c80ac5f, type: 2}
+  spawnRulesByPlayerRank:
+  - playerRank: 0
+    rankCounts:
+    - questRequiredRank: 0
+      count: 3
+  - playerRank: 1
+    rankCounts:
+    - questRequiredRank: 0
+      count: 4
+    - questRequiredRank: 1
+      count: 3

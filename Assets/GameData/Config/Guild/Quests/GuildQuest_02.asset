@@ -22,9 +22,12 @@ MonoBehaviour:
   requiredRank: 0
   requiredHeroLevel: 1
   requiredGold: 0
-  requiredItems: []
-  rewardGold: 25
+  requiredItems:
+  - itemId: stick
+    amount: 10
+  requiredMobKills: []
+  rewardGold: 15
   rewardExp: 15
   rewardItems:
-  - itemId: branch
-    amount: 1
+  - itemId: salt
+    amount: 2
