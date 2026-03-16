@@ -15,7 +15,7 @@ MonoBehaviour:
   questId: guild_daily_task_06
   titleLocalizationKey: guild_daily_task_06_title
   descriptionLocalizationKey: guild_daily_task_06_desc
-  questImage: {fileID: 21300000, guid: b31c3bf4e467122429355ada88a1bdcd, type: 3}
+  questImage: {fileID: 21300000, guid: ec625efdf350671479336c345eeec96d, type: 3}
   questTakenImage: {fileID: 21300000, guid: 9bdc417b141a0bb4c8abe075deef6186, type: 3}
   questGiverImage: {fileID: 21300000, guid: 3b86b9c168845e949bf61a437543a02d, type: 3}
   questGiverNameLocalizationKey: guild_giver_board_master

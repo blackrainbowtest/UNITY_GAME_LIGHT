@@ -91,12 +91,13 @@ namespace UDA2.UI.Guild
             LogDebug($"RefreshBoard: display quests count = {displayQuests.Count}");
 
             var questMap = BuildQuestMap();
-            var slotCount = Math.Min(slots.Count, displayQuests.Count);
-            LogDebug($"RefreshBoard: questMap={questMap.Count}, slotCount={slotCount}");
+            var availableSlotIndices = GetShuffledAvailableSlotIndices(ComputeLayoutSeed(displayQuests));
+            var slotCount = Math.Min(availableSlotIndices.Count, displayQuests.Count);
+            LogDebug($"RefreshBoard: questMap={questMap.Count}, slotCount={slotCount}, availableSlots={availableSlotIndices.Count}");
 
             for (var i = 0; i < slotCount; i++)
             {
-                var slot = slots[i];
+                var slot = slots[availableSlotIndices[i]];
                 if (slot == null || slot.slotRoot == null)
                     continue;
 
@@ -112,6 +113,51 @@ namespace UDA2.UI.Guild
             }
 
             LogDebug($"RefreshBoard done");
+        }
+
+        private int ComputeLayoutSeed(IReadOnlyList<DisplayQuest> displayQuests)
+        {
+            unchecked
+            {
+                var save = GameState.Instance?.CurrentSave;
+                var hash = 17;
+                hash = hash * 31 + (save?.time?.day ?? 0);
+                hash = hash * 31 + (save?.time?.minuteOfDay ?? 0);
+                hash = hash * 31 + (save?.progress?.guild?.completedQuestsTotal ?? 0);
+
+                if (displayQuests != null)
+                {
+                    for (var i = 0; i < displayQuests.Count; i++)
+                    {
+                        var id = displayQuests[i].questId ?? string.Empty;
+                        hash = hash * 31 + StringComparer.Ordinal.GetHashCode(id);
+                    }
+                }
+
+                return hash;
+            }
+        }
+
+        private List<int> GetShuffledAvailableSlotIndices(int seed)
+        {
+            var indices = new List<int>();
+            for (var i = 0; i < slots.Count; i++)
+            {
+                var slot = slots[i];
+                if (slot == null || slot.slotRoot == null)
+                    continue;
+
+                indices.Add(i);
+            }
+
+            var random = new System.Random(seed);
+            for (var i = indices.Count - 1; i > 0; i--)
+            {
+                var j = random.Next(0, i + 1);
+                (indices[i], indices[j]) = (indices[j], indices[i]);
+            }
+
+            return indices;
         }
 
         private void SpawnCard(QuestSlot slot, GuildQuestDefinitionAsset quest, bool isTaken)
