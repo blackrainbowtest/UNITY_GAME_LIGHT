@@ -216,6 +216,100 @@ namespace UDA2.SaveSystem.Guild
             return true;
         }
 
+        public bool TryBuildQuestTurnInProgress(string questId, out GuildQuestTurnInProgressData data)
+        {
+            data = null;
+            if (string.IsNullOrWhiteSpace(questId))
+                return false;
+
+            EnsureGuildStateInitialized();
+            RefreshQuestBoardIfNeeded();
+
+            var quest = FindQuestById(questId);
+            if (quest == null)
+                return false;
+
+            var isTaken = save.progress.guild.selectedQuestIds.Contains(questId);
+            var result = new GuildQuestTurnInProgressData
+            {
+                questId = questId,
+                isTaken = isTaken,
+                canSubmit = false
+            };
+
+            var requiredGold = Math.Max(0, quest.requiredGold);
+            if (requiredGold > 0)
+            {
+                result.objectives.Add(new GuildQuestTurnInObjectiveProgress
+                {
+                    type = GuildQuestObjectiveType.Gold,
+                    objectiveId = "gold",
+                    displayName = "Gold",
+                    current = Math.Max(0, save.inventory?.gold ?? 0),
+                    required = requiredGold
+                });
+            }
+
+            if (quest.requiredItems != null)
+            {
+                for (var i = 0; i < quest.requiredItems.Count; i++)
+                {
+                    var req = quest.requiredItems[i];
+                    if (req == null || string.IsNullOrWhiteSpace(req.itemId))
+                        continue;
+
+                    var required = Math.Max(0, req.amount);
+                    if (required <= 0)
+                        continue;
+
+                    result.objectives.Add(new GuildQuestTurnInObjectiveProgress
+                    {
+                        type = GuildQuestObjectiveType.Item,
+                        objectiveId = req.itemId,
+                        displayName = req.itemId,
+                        current = GetInventoryItemCount(req.itemId),
+                        required = required
+                    });
+                }
+            }
+
+            if (quest.requiredMobKills != null)
+            {
+                for (var i = 0; i < quest.requiredMobKills.Count; i++)
+                {
+                    var req = quest.requiredMobKills[i];
+                    if (req == null)
+                        continue;
+
+                    var enemyId = ResolveRequiredMobEnemyId(req);
+                    if (string.IsNullOrWhiteSpace(enemyId))
+                        continue;
+
+                    var required = Math.Max(0, req.amount);
+                    if (required <= 0)
+                        continue;
+
+                    var absoluteKills = GetMobKillCount(enemyId);
+                    var baseline = isTaken ? GetQuestKillBaseline(questId, enemyId) : absoluteKills;
+                    var progress = Math.Max(0, absoluteKills - baseline);
+
+                    result.objectives.Add(new GuildQuestTurnInObjectiveProgress
+                    {
+                        type = GuildQuestObjectiveType.MobKill,
+                        objectiveId = enemyId,
+                        displayName = ResolveRequiredMobDisplayName(req, enemyId),
+                        current = progress,
+                        required = required,
+                        sourceObject = req.enemy
+                    });
+                }
+            }
+
+            result.canSubmit = isTaken && CanTakeQuest(quest) && HasQuestTurnInRequirements(quest);
+            data = result;
+            return true;
+        }
+
         public bool RefreshQuestBoardIfNeeded()
         {
             EnsureGuildStateInitialized();
@@ -837,6 +931,28 @@ namespace UDA2.SaveSystem.Guild
             }
 
             return string.IsNullOrWhiteSpace(requirement.enemyId) ? null : requirement.enemyId.Trim();
+        }
+
+        private static string ResolveRequiredMobDisplayName(GuildMobKillAmount requirement, string fallbackEnemyId)
+        {
+            if (requirement?.enemy != null)
+            {
+                var enemyObject = requirement.enemy;
+                var enemyType = enemyObject.GetType();
+
+                var enemyNameField = enemyType.GetField("enemyName", BindingFlags.Public | BindingFlags.Instance);
+                if (enemyNameField != null && enemyNameField.GetValue(enemyObject) is string fieldValue && !string.IsNullOrWhiteSpace(fieldValue))
+                    return fieldValue.Trim();
+
+                var enemyNameProp = enemyType.GetProperty("enemyName", BindingFlags.Public | BindingFlags.Instance);
+                if (enemyNameProp != null && enemyNameProp.GetValue(enemyObject) is string propValue && !string.IsNullOrWhiteSpace(propValue))
+                    return propValue.Trim();
+
+                if (!string.IsNullOrWhiteSpace(enemyObject.name))
+                    return enemyObject.name.Trim();
+            }
+
+            return string.IsNullOrWhiteSpace(fallbackEnemyId) ? string.Empty : fallbackEnemyId.Trim();
         }
 
         private static void SanitizeQuestIdList(List<string> ids)

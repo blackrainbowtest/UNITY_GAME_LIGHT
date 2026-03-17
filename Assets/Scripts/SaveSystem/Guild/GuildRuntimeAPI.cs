@@ -103,6 +103,16 @@ namespace UDA2.SaveSystem.Guild
             return success;
         }
 
+        public static bool TryGetQuestTurnInProgress(string questId, out GuildQuestTurnInProgressData data)
+        {
+            data = null;
+            var service = GetService();
+            if (service == null)
+                return false;
+
+            return service.TryBuildQuestTurnInProgress(questId, out data);
+        }
+
         public static bool CanRankUp(out GuildRankRequirement requirement)
         {
             requirement = null;

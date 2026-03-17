@@ -201,7 +201,7 @@ namespace UDA2.UI.Guild
             }
 
             details.SetOwningRoot(detailsGo);
-            details.Bind(quest, TryAcceptQuest, isTaken);
+            details.Bind(quest, TryAcceptQuest, TrySubmitQuest, isTaken);
         }
 
         private static List<DisplayQuest> BuildDisplayQuestList(GuildService service)
@@ -244,6 +244,19 @@ namespace UDA2.UI.Guild
         private bool TryAcceptQuest(string questId)
         {
             if (!GuildRuntimeAPI.TrySelectQuest(questId))
+                return false;
+
+            var save = GameState.Instance?.CurrentSave;
+            if (save != null)
+                SaveSlotsManager.SaveToSlot(SaveSlotsManager.GetRuntimeSaveSlotOrAutosave(), save, rememberAsCurrentRuntimeSlot: false);
+
+            RefreshBoard();
+            return true;
+        }
+
+        private bool TrySubmitQuest(string questId)
+        {
+            if (!GuildRuntimeAPI.TrySubmitQuest(questId, out _))
                 return false;
 
             var save = GameState.Instance?.CurrentSave;

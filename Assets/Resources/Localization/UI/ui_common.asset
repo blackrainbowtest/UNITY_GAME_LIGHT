@@ -656,4 +656,20 @@ MonoBehaviour:
       text: In development
     - languageCode: fr
       text: En developpement
+  - key: required
+    entries:
+    - languageCode: ru
+      text: "\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044F"
+    - languageCode: en
+      text: Required
+    - languageCode: fr
+      text: Requis
+  - key: owned
+    entries:
+    - languageCode: ru
+      text: "\u0418\u043C\u0435\u0435\u0442\u0441\u044F"
+    - languageCode: en
+      text: Owned
+    - languageCode: fr
+      text: Owned
   sourceCsvName: ui_common
