@@ -1,4 +1,16 @@
 *key;ru;en;fr
+*npc_guild_registrar_name;
+	Регистратор гильдии: Мери;
+	Guild Registrar: Mary;
+	Registraire de guilde: Mary;
+*npc_adventurer_lizard_name;
+	Приключенец: Лиза;
+	Adventurer: Liza;
+	Aventurier: Liza;
+*act_task_board_name;
+	Доска объявлений;
+	Task Board;
+	Tableau d'affichage;
 *guild_giver_board_master;
 	Мастер гильдии;
 	Guild Master;

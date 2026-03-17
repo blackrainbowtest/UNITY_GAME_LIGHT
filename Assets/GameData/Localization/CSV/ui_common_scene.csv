@@ -1,4 +1,16 @@
 *key;ru;en;fr
+*scene_player_shelter;
+	Убежище;
+	Shelter;
+	Abri;
+*scene_monster_cave;
+	Пещера монстров;
+	Monster Cave;
+	Grotte de monstres;
+*scene_adventure_guild;
+	Гильдия приключенцев;
+	Adventure Guild;
+	Guilde des aventuriers;
 *guild_registrar_title;
 	Реестр Гильдии;
 	Guild Registry;
