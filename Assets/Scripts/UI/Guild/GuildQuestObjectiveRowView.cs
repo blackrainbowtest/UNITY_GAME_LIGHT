@@ -59,6 +59,12 @@ namespace UDA2.UI.Guild
             if (titleLocalized != null)
             {
                 var key = string.IsNullOrWhiteSpace(value) ? string.Empty : value.Trim();
+                if (!string.IsNullOrWhiteSpace(key))
+                {
+                    titleLocalized.Key = key;
+                    titleLocalized.ClearArgs();
+                }
+
                 var lang = UDA2.Core.SettingsContext.Current?.language;
                 if (string.IsNullOrWhiteSpace(lang))
                     lang = "en";
@@ -69,14 +75,7 @@ namespace UDA2.UI.Guild
                     && !string.Equals(provider.Get(key, lang), key, System.StringComparison.Ordinal);
 
                 if (hasLocalizedValue)
-                {
-                    titleLocalized.Key = key;
-                    titleLocalized.ClearArgs();
                     return;
-                }
-
-                // No localization value for this string (e.g. item id), render raw text.
-                titleLocalized.Key = string.Empty;
             }
 
             if (titleText != null)

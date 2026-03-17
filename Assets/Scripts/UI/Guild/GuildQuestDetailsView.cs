@@ -390,15 +390,31 @@ namespace UDA2.UI.Guild
 
         private string ResolveItemDisplayName(string itemId, string fallback)
         {
-            if (itemDatabase == null || string.IsNullOrWhiteSpace(itemId))
-                return string.IsNullOrWhiteSpace(fallback) ? itemId : fallback;
+            var normalizedId = NormalizeItemId(itemId);
+            var baseFallback = !string.IsNullOrWhiteSpace(fallback)
+                ? fallback
+                : (!string.IsNullOrWhiteSpace(normalizedId) ? normalizedId : itemId);
 
-            var def = ResolveItemDefinition(itemId);
+            var def = ResolveItemDefinition(normalizedId);
+
+            // Preferred: localize by ItemDefinition.DisplayNameKey (e.g. item.stick.name).
+            var displayNameKey = ResolveStringByMember(def, "DisplayNameKey", "displayNameKey");
+            var localizedFromKey = TryGetLocalizedString(displayNameKey);
+            if (!string.IsNullOrWhiteSpace(localizedFromKey))
+                return localizedFromKey;
+
+            // Secondary: localize by conventional key from id.
+            var conventionalKey = BuildItemNameKeyFromId(normalizedId);
+            var localizedFromId = TryGetLocalizedString(conventionalKey);
+            if (!string.IsNullOrWhiteSpace(localizedFromId))
+                return localizedFromId;
+
+            // Fallback: plain display name from definition.
             var fromDef = ResolveStringByMember(def, "DisplayName", "Name", "displayName", "name", "id", "Id");
             if (!string.IsNullOrWhiteSpace(fromDef))
                 return fromDef;
 
-            return string.IsNullOrWhiteSpace(fallback) ? itemId : fallback;
+            return baseFallback ?? string.Empty;
         }
 
         private Sprite ResolveItemIcon(string itemId)
@@ -419,12 +435,59 @@ namespace UDA2.UI.Guild
                 if (getById == null)
                     return null;
 
-                return getById.Invoke(itemDatabase, new object[] { itemId.Trim() });
+                var trimmed = itemId.Trim();
+                var definition = getById.Invoke(itemDatabase, new object[] { trimmed });
+                if (definition != null)
+                    return definition;
+
+                // Compatibility: some configs may still store ids like "item_stick".
+                var normalized = NormalizeItemId(trimmed);
+                if (!string.Equals(normalized, trimmed, StringComparison.OrdinalIgnoreCase))
+                    return getById.Invoke(itemDatabase, new object[] { normalized });
+
+                return null;
             }
             catch
             {
                 return null;
             }
+        }
+
+        private static string NormalizeItemId(string raw)
+        {
+            if (string.IsNullOrWhiteSpace(raw))
+                return raw;
+
+            var id = raw.Trim();
+            if (id.StartsWith("item_", StringComparison.OrdinalIgnoreCase))
+                id = id.Substring("item_".Length);
+
+            return id;
+        }
+
+        private static string BuildItemNameKeyFromId(string itemId)
+        {
+            if (string.IsNullOrWhiteSpace(itemId))
+                return null;
+
+            return "item." + itemId.Trim().Replace('_', '.') + ".name";
+        }
+
+        private static string TryGetLocalizedString(string key)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+                return null;
+
+            var lang = UDA2.Core.SettingsContext.Current?.language;
+            if (string.IsNullOrWhiteSpace(lang))
+                lang = "en";
+
+            var provider = UIStringsProvider.Instance;
+            if (provider == null)
+                return null;
+
+            var localized = provider.Get(key.Trim(), lang);
+            return string.Equals(localized, key, StringComparison.Ordinal) ? null : localized;
         }
 
         private static Sprite ResolveSpriteByMember(object target, params string[] memberNames)
