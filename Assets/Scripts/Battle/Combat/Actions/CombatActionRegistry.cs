@@ -37,7 +37,7 @@ namespace Game.Battle.Combat.Actions
                     new CombatActionData(
                         id: CombatActionId.FastAttack,
                         category: CombatActionCategory.Attack,
-                        hpDamage: 10,
+                        hpDamageMultiplier: 1.0f,
                         mpCost: 0,
                         spCost: 5,
                         lpCost: 0,
@@ -48,7 +48,7 @@ namespace Game.Battle.Combat.Actions
                     new CombatActionData(
                         CombatActionId.NormalAttack,
                         CombatActionCategory.Attack,
-                        hpDamage: 18,
+                        hpDamageMultiplier: 1.8f,
                         mpCost: 0,
                         spCost: 10,
                         lpCost: 0,
@@ -59,7 +59,7 @@ namespace Game.Battle.Combat.Actions
                     new CombatActionData(
                         CombatActionId.HeavyAttack,
                         CombatActionCategory.Attack,
-                        hpDamage: 30,
+                        hpDamageMultiplier: 3.0f,
                         mpCost: 0,
                         spCost: 20,
                         lpCost: 0,
@@ -70,7 +70,7 @@ namespace Game.Battle.Combat.Actions
                     new CombatActionData(
                         CombatActionId.CounterAttack,
                         CombatActionCategory.Attack,
-                        hpDamage: 30,
+                        hpDamageMultiplier: 3.0f,
                         mpCost: 0,
                         spCost: 8,
                         lpCost: 0,
@@ -81,7 +81,7 @@ namespace Game.Battle.Combat.Actions
                     new CombatActionData(
                         CombatActionId.Block,
                         CombatActionCategory.Defense,
-                        hpDamage: 0,
+                        hpDamageMultiplier: 0f,
                         mpCost: 0,
                         spCost: 5,
                         lpCost: 0,
@@ -94,7 +94,7 @@ namespace Game.Battle.Combat.Actions
                     new CombatActionData(
                         CombatActionId.FireSpell,
                         CombatActionCategory.Magic,
-                        hpDamage: 22,
+                        hpDamageMultiplier: 2.2f,
                         mpCost: 10,
                         spCost: 0,
                         lpCost: 0,
@@ -105,7 +105,7 @@ namespace Game.Battle.Combat.Actions
                     new CombatActionData(
                         CombatActionId.IceSpell,
                         CombatActionCategory.Magic,
-                        hpDamage: 18,
+                        hpDamageMultiplier: 1.8f,
                         mpCost: 8,
                         spCost: 0,
                         lpCost: 0,
@@ -116,7 +116,7 @@ namespace Game.Battle.Combat.Actions
                     new CombatActionData(
                         CombatActionId.HolySpell,
                         CombatActionCategory.Magic,
-                        hpDamage: 0,
+                        hpDamageMultiplier: 0f,
                         mpCost: 6,
                         spCost: 0,
                         lpCost: 0,
@@ -128,7 +128,7 @@ namespace Game.Battle.Combat.Actions
                     new CombatActionData(
                         CombatActionId.DarkSpell,
                         CombatActionCategory.Magic,
-                        hpDamage: 28,
+                        hpDamageMultiplier: 2.8f,
                         mpCost: 14,
                         spCost: 0,
                         lpCost: 0,
@@ -141,7 +141,7 @@ namespace Game.Battle.Combat.Actions
                     new CombatActionData(
                         CombatActionId.SeductionAct1,
                         CombatActionCategory.Seduction,
-                        hpDamage: 0,
+                        hpDamageMultiplier: 0f,
                         mpCost: 0,
                         spCost: 0,
                         lpCost: 0,
@@ -153,7 +153,7 @@ namespace Game.Battle.Combat.Actions
                     new CombatActionData(
                         CombatActionId.SeductionAct2,
                         CombatActionCategory.Seduction,
-                        hpDamage: 0,
+                        hpDamageMultiplier: 0f,
                         mpCost: 0,
                         spCost: 0,
                         lpCost: 0,
@@ -165,7 +165,7 @@ namespace Game.Battle.Combat.Actions
                     new CombatActionData(
                         CombatActionId.SeductionAct3,
                         CombatActionCategory.Seduction,
-                        hpDamage: 0,
+                        hpDamageMultiplier: 0f,
                         mpCost: 0,
                         spCost: 0,
                         lpCost: 0,
@@ -177,7 +177,7 @@ namespace Game.Battle.Combat.Actions
                     new CombatActionData(
                         CombatActionId.SeductionAct4,
                         CombatActionCategory.Seduction,
-                        hpDamage: 0,
+                        hpDamageMultiplier: 0f,
                         mpCost: 0,
                         spCost: 0,
                         lpCost: 0,
@@ -191,7 +191,7 @@ namespace Game.Battle.Combat.Actions
                     new CombatActionData(
                         CombatActionId.ActionAct1,
                         CombatActionCategory.Utility,
-                        hpDamage: 0,
+                        hpDamageMultiplier: 0f,
                         mpCost: 0,
                         spCost: 0,
                         lpCost: 0,
@@ -202,7 +202,7 @@ namespace Game.Battle.Combat.Actions
                     new CombatActionData(
                         CombatActionId.ActionAct2,
                         CombatActionCategory.Utility,
-                        hpDamage: 0,
+                        hpDamageMultiplier: 0f,
                         mpCost: 0,
                         spCost: 0,
                         lpCost: 0,
@@ -213,7 +213,7 @@ namespace Game.Battle.Combat.Actions
                     new CombatActionData(
                         CombatActionId.ActionAct3,
                         CombatActionCategory.Utility,
-                        hpDamage: 0,
+                        hpDamageMultiplier: 0f,
                         mpCost: 0,
                         spCost: 0,
                         lpCost: 0,
@@ -224,7 +224,7 @@ namespace Game.Battle.Combat.Actions
                     new CombatActionData(
                         CombatActionId.ActionAct4,
                         CombatActionCategory.Utility,
-                        hpDamage: 0,
+                        hpDamageMultiplier: 0f,
                         mpCost: 0,
                         spCost: 0,
                         lpCost: 0,

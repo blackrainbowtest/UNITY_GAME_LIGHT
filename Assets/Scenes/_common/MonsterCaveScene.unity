@@ -174,7 +174,7 @@ MonoBehaviour:
     requiredPlayerLevel: 2
   - button: {fileID: 1270807916}
     location: {fileID: 11400000, guid: 9fcec8c64fa3f704e9ddd2f6141528b4, type: 2}
-    requiredRank: 0
+    requiredRank: 1
     requiredPlayerLevel: 2
   - button: {fileID: 1478092934}
     location: {fileID: 11400000, guid: 1825abc97cb848f42aeecb81cdb61fe5, type: 2}
@@ -776,6 +776,94 @@ MonoBehaviour:
   stringArgs: []
   manageFont: 1
   fontType: 1
+--- !u!1 &322150828
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 322150829}
+  - component: {fileID: 322150830}
+  m_Layer: 0
+  m_Name: AmbientAudio
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &322150829
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 322150828}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1166553644}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &322150830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 322150828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6529315dbbb187d4abfafc2151395a67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UDA2.Audio::UDA2.Audio.SceneAmbientSoundController
+  playOnEnable: 1
+  allowMusicCues: 0
+  delayFirstPlay: 0
+  groups:
+  - name: nature_rain_fall
+    randomLoop: 1
+    intervalSeconds: {x: 0, y: 0}
+    cues:
+    - {fileID: 11400000, guid: 713e9512ae4c2b84aa38015f5de2fac6, type: 2}
+    clips: []
+    clipVolume: 0
+    clipPitchRange: {x: 0.95, y: 1.05}
+    useStereoPan: 0
+    panStart: 0
+    panEnd: 0
+    panSweepOverClipDuration: 0
+    panSweepDuration: 0
+  - name: birds_morning
+    randomLoop: 1
+    intervalSeconds: {x: 0, y: 0}
+    cues:
+    - {fileID: 11400000, guid: 3d9f69da8855fdd4ca23ce1fde3ce630, type: 2}
+    - {fileID: 11400000, guid: ad26e838d574dae49b3107e168226f07, type: 2}
+    clips: []
+    clipVolume: 0
+    clipPitchRange: {x: 0.95, y: 1.05}
+    useStereoPan: 0
+    panStart: 0
+    panEnd: 0
+    panSweepOverClipDuration: 0
+    panSweepDuration: 0
+  - name: river
+    randomLoop: 1
+    intervalSeconds: {x: 0, y: 0}
+    cues:
+    - {fileID: 11400000, guid: c78eb7ac7df64f64288f614965e0692c, type: 2}
+    clips: []
+    clipVolume: 1
+    clipPitchRange: {x: 0.95, y: 1.05}
+    useStereoPan: 1
+    panStart: -0.83
+    panEnd: -0.76
+    panSweepOverClipDuration: 0
+    panSweepDuration: 0
 --- !u!1 &360478445
 GameObject:
   m_ObjectHideFlags: 0
@@ -1439,6 +1527,7 @@ MonoBehaviour:
   showTime: 1
   showProfile: 1
   showMenuButton: 1
+  showHomeButton: 1
   showBackButton: 1
   showQuestList: 1
   showInspectEye: 0
@@ -2236,6 +2325,7 @@ Transform:
   m_Children:
   - {fileID: 31044669}
   - {fileID: 606831848}
+  - {fileID: 322150829}
   m_Father: {fileID: 848547020}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1195755677

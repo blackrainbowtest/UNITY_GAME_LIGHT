@@ -35,6 +35,10 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 4f5b20a084e3d1c49b6f0df5517287dc, type: 2}
     - {fileID: 11400000, guid: 48aab458850095845bbbf58067b37b23, type: 2}
     - {fileID: 11400000, guid: faaad44040ccf9e4d8b626515898e104, type: 2}
+    - {fileID: 11400000, guid: c3fee938cc35dbf4bac1e3e17c64fa66, type: 2}
+    - {fileID: 11400000, guid: 3d7ab3bc751217f4395929a1d8deec93, type: 2}
+    - {fileID: 11400000, guid: 358a24f3722d2eb419cf471bc7369a90, type: 2}
+    - {fileID: 11400000, guid: d2e5d518e3de4fb47afa0fe62cb13de8, type: 2}
     loopPlaylist: 1
   - sceneName: StartCityScene
     musicCue: {fileID: 11400000, guid: 66aec447f4be1c14a98a3ff506a64826, type: 2}

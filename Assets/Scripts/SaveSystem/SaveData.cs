@@ -10,9 +10,61 @@ public class SaveData
     public Inventory inventory = new Inventory();
     public Storage storage = new Storage();
     public Progress progress = new Progress();
+    public AchievementStats achievementStats = new AchievementStats();
     public TimeState time = new TimeState();
     public SceneState sceneState = new SceneState();
     public LocationStructuresState locationStructures = new LocationStructuresState();
+
+    [Serializable]
+    public class AchievementStats
+    {
+        /// <summary>
+        /// Total real-world play time in seconds (lifetime, across all sessions of this save).
+        /// </summary>
+        public int realTimePlayedSeconds;
+
+        /// <summary>
+        /// Number of completed battles in this save.
+        /// </summary>
+        public int battlesFinished;
+
+        public int battlesWon;
+        public int battlesLost;
+        public int battlesSurrendered;
+        public int escapesSuccessful;
+        public int escapesFailed;
+
+        /// <summary>
+        /// Total mob kills (player victories with a valid enemy target).
+        /// </summary>
+        public int totalMobKills;
+
+        /// <summary>
+        /// Cumulative rewards earned from battle outcomes.
+        /// </summary>
+        public int totalGoldEarned;
+        public int totalExpEarned;
+
+        /// <summary>
+        /// Per-enemy kill counters for achievement checks.
+        /// </summary>
+        public List<MobKillEntry> mobKillsByEnemyId = new List<MobKillEntry>();
+    }
+
+    [Serializable]
+    public class MobKillEntry
+    {
+        public string enemyId;
+        public int kills;
+    }
+
+    [Serializable]
+    public class QuestKillBaselineEntry
+    {
+        public string questId;
+        public string enemyId;
+        public int killsAtAccept;
+    }
 
     [Serializable]
     public class LocationStructuresState
@@ -95,6 +147,11 @@ public class SaveData
     [Serializable]
     public class Stats
     {
+        // Legacy field kept for backward compatibility with older saves.
+        public int damage;
+        public int physicalDamage;
+        public int magicDamage;
+
         public int hp;
         public int hpMax;
         public int mp;
@@ -137,6 +194,7 @@ public class SaveData
         public string introResult;
 
         public AdventurerRank adventurerRank = AdventurerRank.None;
+        public GuildState guild = new GuildState();
 
         /// <summary>
         /// Sets the intro result. Only allows non-null, non-empty values.
@@ -158,6 +216,57 @@ public class SaveData
     }
 
     [Serializable]
+    public class GuildState
+    {
+        /// <summary>
+        /// Day number of the last daily board refresh processed at/after 12:00.
+        /// </summary>
+        public int lastQuestRefreshDay = 0;
+
+        /// <summary>
+        /// Current active quest ids shown on the guild board.
+        /// </summary>
+        public List<string> activeQuestIds = new List<string>();
+
+        /// <summary>
+        /// Accepted/selected quests currently tracked by the player.
+        /// </summary>
+        public List<string> selectedQuestIds = new List<string>();
+
+        /// <summary>
+        /// Quest ids completed by the player.
+        /// </summary>
+        public List<string> completedQuestIds = new List<string>();
+
+        /// <summary>
+        /// Quest ids failed/cancelled by the player.
+        /// </summary>
+        public List<string> failedQuestIds = new List<string>();
+
+        /// <summary>
+        /// Remaining quest ids in the current no-repeat random cycle.
+        /// </summary>
+        public List<string> remainingQuestPoolIds = new List<string>();
+
+        /// <summary>
+        /// Kill counters snapshot at acceptance time for kill-based quest requirements.
+        /// Progress for a quest is (current kills - killsAtAccept) per enemy id.
+        /// </summary>
+        public List<QuestKillBaselineEntry> questKillBaselines = new List<QuestKillBaselineEntry>();
+
+        /// <summary>
+        /// Completed quests counted toward the next rank upgrade requirement.
+        /// Reset when rank is upgraded.
+        /// </summary>
+        public int completedQuestsSinceLastRank = 0;
+
+        /// <summary>
+        /// Lifetime completed quest count (analytics/progression).
+        /// </summary>
+        public int completedQuestsTotal = 0;
+    }
+
+    [Serializable]
     public class SceneState
     {
         /// <summary>
@@ -169,6 +278,12 @@ public class SaveData
         /// Anchor "main city" scene to return to from secondary locations.
         /// </summary>
         public string lastMainSceneName;
+
+        /// <summary>
+        /// Last known shelter scene for the current save.
+        /// Used by Home button to return player to city-specific shelter.
+        /// </summary>
+        public string lastShelterSceneName;
 
         /// <summary>
         /// If set, loading this save should restore battle entry contexts and then load battle.
@@ -257,6 +372,9 @@ public class SaveData
         save.player.stats.spMax = 60;
         save.player.stats.lp = 0;
         save.player.stats.lpMax = 100;
+        save.player.stats.damage = 10;
+        save.player.stats.physicalDamage = 10;
+        save.player.stats.magicDamage = 10;
         save.meta.version = version;
 
         // Time defaults

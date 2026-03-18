@@ -21,11 +21,16 @@
 
 ## Common / Core
 - [Common API Reference](common/COMMON_API_REFERENCE.md)
+- [Guild Runtime API](common/GUILD_RUNTIME_API.md)
 
 ## Проект
 - [Roadmap](project/ROADMAP.md)
 - [Roadmap (alt)](project/roadmap_2.md)
 - [Changelog](project/CHANGELOG.md)
+
+## Рефакторинг
+- [Profile Combat Stats Placeholders](refactoring/Profile_CombatStats_Placeholders.md)
+- [Battle Damage Model Roadmap](refactoring/Battle_DamageModel_Roadmap.md)
 
 ## Инструменты
 - [Debugging](tools/debuging.md)

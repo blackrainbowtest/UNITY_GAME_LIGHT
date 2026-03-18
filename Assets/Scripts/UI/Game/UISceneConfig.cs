@@ -9,6 +9,7 @@ namespace UDA2.UI.Game
         [SerializeField] private bool showTime = true;
         [SerializeField] private bool showProfile = true;
         [SerializeField] private bool showMenuButton = true;
+        [SerializeField] private bool showHomeButton = true;
         [SerializeField] private bool showBackButton = true;
         [SerializeField] private bool showQuestList = true;
         [SerializeField] private bool showInspectEye = true;
@@ -22,6 +23,7 @@ namespace UDA2.UI.Game
         public bool ShowTime => showTime;
         public bool ShowProfile => showProfile;
         public bool ShowMenuButton => showMenuButton;
+        public bool ShowHomeButton => showHomeButton;
         public bool ShowBackButton => showBackButton;
         public bool ShowQuestList => showQuestList;
         public bool ShowInspectEye => showInspectEye;

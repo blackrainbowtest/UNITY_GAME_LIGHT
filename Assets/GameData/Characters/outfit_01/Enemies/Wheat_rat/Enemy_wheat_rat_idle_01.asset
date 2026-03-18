@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
+  m_Name: Enemy_wheat_rat_idle_01
+  m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
+  id: wheat_rat_idle_01
+  frames:
+  - {fileID: 21300000, guid: ede97f535e3e52d40aaebb0f6d63335f, type: 3}
+  - {fileID: 21300000, guid: 7adb1d9a109f29f4e985d061364e1e72, type: 3}
+  - {fileID: 21300000, guid: 070a655498c3fa44db39014d8db42538, type: 3}
+  - {fileID: 21300000, guid: 6e551222fbc234e4c9ef017f7b094ffa, type: 3}
+  - {fileID: 21300000, guid: 9436ffe3cc0d5f04d88e822858599cf0, type: 3}
+  - {fileID: 21300000, guid: 4467374198b0f28458329cc189c6fa09, type: 3}
+  - {fileID: 21300000, guid: 8725c34c1db2bcd4fa6c5ead41199cba, type: 3}
+  - {fileID: 21300000, guid: 1d07b436270efa741a0b107c1f7e18c5, type: 3}
+  - {fileID: 21300000, guid: 3f85c6a2e8bc9e2469824b0fee49f10f, type: 3}
+  - {fileID: 21300000, guid: ce1710feed666c542a867d59874d4a23, type: 3}
+  - {fileID: 21300000, guid: fc862385359ec50469f88a29fe18949c, type: 3}
+  - {fileID: 21300000, guid: 319c40664a9052b4e9231fa33cdf3e65, type: 3}
+  - {fileID: 21300000, guid: f6521ecb48a282a43a16287f4594c99f, type: 3}
+  - {fileID: 21300000, guid: acd4ed338014b974aa1df24fc1a62095, type: 3}
+  - {fileID: 21300000, guid: 11f0ae0ea62042842b96d096c8f3fc81, type: 3}
+  - {fileID: 21300000, guid: 9584b15bd3c5c8e47a3eccab0ecdfd08, type: 3}
+  - {fileID: 21300000, guid: f98b0f01f26e22249882ec1126df594a, type: 3}
+  - {fileID: 21300000, guid: 7498ac1593ac79b47b24da6b05e811db, type: 3}
+  - {fileID: 21300000, guid: 96e5a4bf2cb590645805a27cae25632b, type: 3}
+  - {fileID: 21300000, guid: 3ead0fd80414f3d49a7e1ef8ca287e20, type: 3}
+  - {fileID: 21300000, guid: 57af5472bd5baef428767e689177c13b, type: 3}
+  - {fileID: 21300000, guid: cfe130af83be9804d9aef3224ba6977a, type: 3}
+  - {fileID: 21300000, guid: 460663358a334174a89591aae7efc0c2, type: 3}
+  frameRate: 12
+  hasImpact: 0
+  impactTimeNormalized: 0.5
+  impactFrameIndex: -1

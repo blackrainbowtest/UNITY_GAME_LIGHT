@@ -15,6 +15,13 @@ public class SaveMeta
 public static class SaveSlotsManager
 {
     private static string SavesDir => Path.Combine(Application.persistentDataPath, "saves");
+    public static int CurrentRuntimeSlotId { get; private set; } = 0;
+
+    public static int GetRuntimeSaveSlotOrAutosave()
+    {
+        return CurrentRuntimeSlotId > 0 ? CurrentRuntimeSlotId : 0;
+    }
+
     private static string GetSlotPath(int slotId)
     {
         if (slotId == 0) return Path.Combine(SavesDir, "slot_auto.json");
@@ -60,7 +67,7 @@ public static class SaveSlotsManager
         };
     }
 
-    public static void SaveToSlot(int slotId, SaveData data)
+    public static void SaveToSlot(int slotId, SaveData data, bool rememberAsCurrentRuntimeSlot = true)
     {
         if (slotId < 0 || slotId > 10) throw new ArgumentOutOfRangeException();
 
@@ -70,7 +77,7 @@ public static class SaveSlotsManager
             return;
         }
 
-        data = SaveDataMigration.Apply(data);
+        data = SaveDataMigration.Apply(data, out _, logChanges: false);
         if (data == null || data.meta == null)
         {
             Debug.LogError($"[SaveSlotsManager] SaveToSlot failed: SaveDataMigration returned invalid data (slotId={slotId}).");
@@ -85,6 +92,9 @@ public static class SaveSlotsManager
         data.meta.saveTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         var json = JsonUtility.ToJson(data, true);
         File.WriteAllText(path, json);
+
+        if (rememberAsCurrentRuntimeSlot && slotId > 0)
+            CurrentRuntimeSlotId = slotId;
     }
 
     public static SaveData LoadFromSlot(int slotId)
@@ -93,6 +103,30 @@ public static class SaveSlotsManager
         if (!File.Exists(path)) return null;
         var json = File.ReadAllText(path);
         var save = JsonUtility.FromJson<SaveData>(json);
-        return SaveDataMigration.Apply(save);
+
+        save = SaveDataMigration.Apply(save, out var didMigrate, logChanges: true);
+        if (didMigrate && save != null)
+            PersistMigratedInPlace(path, save);
+
+        if (save != null && slotId > 0)
+            CurrentRuntimeSlotId = slotId;
+
+        return save;
+    }
+
+    private static void PersistMigratedInPlace(string path, SaveData save)
+    {
+        if (string.IsNullOrEmpty(path) || save == null)
+            return;
+
+        try
+        {
+            var json = JsonUtility.ToJson(save, true);
+            File.WriteAllText(path, json);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[SaveSlotsManager] Failed to persist migrated save at '{path}': {ex.Message}");
+        }
     }
 }

@@ -1,0 +1,113 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce5885deaae081245b76a3c7c94ef83f, type: 3}
+  m_Name: Wheat_rat_outfit_01_Visuals
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Battle.Visual.OutfitVisuals
+  outfitId: outfit_01
+  idleVariations:
+  - {fileID: 11400000, guid: 3605d89060400fb4c8251984a6effc7c, type: 2}
+  - {fileID: 11400000, guid: 6e9785d1d80566849b3130c7033d5b76, type: 2}
+  hitVariations:
+  - {fileID: 11400000, guid: d26e7b3bae0d1524eaa14779e6ff97ff, type: 2}
+  lustHitVariations: []
+  hitTimings:
+  - attackAnimId: 2
+    hitAtFrame: 8
+    useLustHit: 0
+  fastAttackVariations:
+  - {fileID: 11400000, guid: 31d88954ea990ea4da5c9d7cdc67bc1f, type: 2}
+  normalAttackVariations: []
+  heavyAttackVariations: []
+  counterAttackVariations: []
+  castVariations: []
+  fireSpellVariations:
+  - {fileID: 11400000, guid: 77f03ac01b582084ca1aba8d658bc4e0, type: 2}
+  iceSpellVariations:
+  - {fileID: 11400000, guid: 77f03ac01b582084ca1aba8d658bc4e0, type: 2}
+  holySpellVariations:
+  - {fileID: 11400000, guid: 77f03ac01b582084ca1aba8d658bc4e0, type: 2}
+  darkSpellVariations:
+  - {fileID: 11400000, guid: 77f03ac01b582084ca1aba8d658bc4e0, type: 2}
+  castProjectile:
+    projectilePrefab: {fileID: 0}
+    projectileAnimation: {fileID: 0}
+    spawnAtFrame: 0
+    impactAtFrame: 0
+    pixelsPerUnit: 0
+    spawnOffsetPixels: {x: 0, y: 0}
+    travelDistancePixels: 0
+    travelTimeSeconds: 0
+  fireSpellProjectile:
+    projectilePrefab: {fileID: 0}
+    projectileAnimation: {fileID: 0}
+    spawnAtFrame: 0
+    impactAtFrame: 0
+    pixelsPerUnit: 0
+    spawnOffsetPixels: {x: 0, y: 0}
+    travelDistancePixels: 0
+    travelTimeSeconds: 0
+  iceSpellProjectile:
+    projectilePrefab: {fileID: 9137764033155392843, guid: 9b0929501d22190488c2bc22c943f167, type: 3}
+    projectileAnimation: {fileID: 11400000, guid: 3458b1095ce7179478cb7f7aa8ba7cc8, type: 2}
+    spawnAtFrame: 15
+    impactAtFrame: -1
+    pixelsPerUnit: 100
+    spawnOffsetPixels: {x: 145, y: -75}
+    travelDistancePixels: 1000
+    travelTimeSeconds: 0.85
+  holySpellProjectile:
+    projectilePrefab: {fileID: 0}
+    projectileAnimation: {fileID: 0}
+    spawnAtFrame: 0
+    impactAtFrame: 0
+    pixelsPerUnit: 0
+    spawnOffsetPixels: {x: 0, y: 0}
+    travelDistancePixels: 0
+    travelTimeSeconds: 0
+  darkSpellProjectile:
+    projectilePrefab: {fileID: 0}
+    projectileAnimation: {fileID: 0}
+    spawnAtFrame: 0
+    impactAtFrame: 0
+    pixelsPerUnit: 0
+    spawnOffsetPixels: {x: 0, y: 0}
+    travelDistancePixels: 0
+    travelTimeSeconds: 0
+  actionStatusEffects:
+  - actionId: 0
+    statusId: 0
+    target: 0
+    randomTurns: 0
+    turns: 2
+    randomTurnsMin: 0
+    randomTurnsMax: 0
+  seductionAct1Variations: []
+  seductionAct2Variations: []
+  seductionAct3Variations: []
+  seductionAct4Variations: []
+  actionAct1Variations: []
+  actionAct2Variations: []
+  actionAct3Variations: []
+  actionAct4Variations: []
+  actionActFailVariations: []
+  escapeRunMotion:
+    enabled: 0
+    startAtFrame: 0
+    speedLeftUnitsPerSecond: 0
+  inventoryOpenVariations: []
+  inventorySearchVariations: []
+  inventoryCloseVariations: []
+  blockVariations: []
+  loseVariations:
+  - {fileID: 11400000, guid: caf379a5aa02a3b4689e72eb08801b32, type: 2}
+  lustLoseVariations:
+  - {fileID: 11400000, guid: caf379a5aa02a3b4689e72eb08801b32, type: 2}

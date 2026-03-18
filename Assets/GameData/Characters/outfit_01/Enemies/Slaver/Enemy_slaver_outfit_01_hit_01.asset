@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
+  m_Name: Enemy_slaver_outfit_01_hit_01
+  m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
+  id: hit_01
+  frames:
+  - {fileID: 21300000, guid: 944cf7a1a97e15845a7d3c7d32c4beb6, type: 3}
+  - {fileID: 21300000, guid: c49af75fe027fcd4d9e3c745494abbc7, type: 3}
+  - {fileID: 21300000, guid: 9d6dbc79cc46cbd499ad09c6678b2e22, type: 3}
+  - {fileID: 21300000, guid: 2256182b669c0f549a079188bdbb600c, type: 3}
+  - {fileID: 21300000, guid: 4052fbb0bec909142a1e8c1654adc589, type: 3}
+  - {fileID: 21300000, guid: 7d4ca981097665a43924bd5fbf00c663, type: 3}
+  - {fileID: 21300000, guid: c866099bb06f7fd40bd8f4c632e87132, type: 3}
+  - {fileID: 21300000, guid: 0d793e80f89a90142be30f540b1aa67a, type: 3}
+  - {fileID: 21300000, guid: 46e9c2b5ee00721498928174b65db5fb, type: 3}
+  - {fileID: 21300000, guid: a0ee0ac9c5870f14aaa6d81a0c522c71, type: 3}
+  frameRate: 12
+  hasImpact: 0
+  impactTimeNormalized: 0.5
+  impactFrameIndex: -1

@@ -26,8 +26,11 @@ namespace UDA2.Audio
     {
         public static AudioManager Instance;
 
+        public bool IsMusicPlaying => musicSource != null && musicSource.isPlaying;
+
         private const string MusicVolumeParam = "MusicVolume";
         private const string SfxVolumeParam = "SFXVolume";
+        private const string AmbientVolumeParam = "AmbientVolume";
         private const string UiVolumeParam = "UIVolume";
 
         [Header("Scene Music (Optional)")]
@@ -48,12 +51,16 @@ namespace UDA2.Audio
         [Header("Music")]
         [SerializeField] private AudioSource musicSource;
         [SerializeField] private UnityEngine.Audio.AudioMixerGroup musicGroup;
+        [Header("Music Transitions")]
+        [SerializeField, Min(0f)] private float defaultMusicFadeInSeconds = 0.3f;
+        [SerializeField, Min(0f)] private float defaultMusicFadeOutSeconds = 0.12f;
 
         private AudioClip currentClip;
         private Coroutine musicFadeCoroutine;
 
         // Target music dB for fade logic
         private float targetMusicDb = 0f;
+        private bool hasAmbientVolumeParam;
 
         /* ===================== SFX ===================== */
 
@@ -66,6 +73,17 @@ namespace UDA2.Audio
         private AudioSource[] sfxPool;
         private int sfxIndex;
         private float sfxVolume = 1f;
+
+        [Header("Ambient")]
+        [SerializeField] private AudioSource ambientPrefab;
+        [SerializeField] private UnityEngine.Audio.AudioMixerGroup ambientGroup;
+        [SerializeField] private int ambientPoolSize = 6;
+        [SerializeField] private Transform ambientParent;
+
+        private AudioSource[] ambientPool;
+        private Coroutine[] ambientPanCoroutines;
+        private int ambientIndex;
+        private float ambientVolume = 1f;
 
         /* ===================== UI ===================== */
 
@@ -114,6 +132,9 @@ namespace UDA2.Audio
             {
                 CheckParam(MusicVolumeParam);
                 CheckParam(SfxVolumeParam);
+                hasAmbientVolumeParam = audioMixer.GetFloat(AmbientVolumeParam, out _);
+                if (!hasAmbientVolumeParam)
+                    Debug.LogWarning("AudioManager: AudioMixer exposed parameter 'AmbientVolume' not found. Using source-volume fallback for ambient.");
                 CheckParam(UiVolumeParam);
             }
 
@@ -141,6 +162,7 @@ namespace UDA2.Audio
             var s = UDA2.Core.SettingsContext.Current;
             SetMusicVolume(s != null ? s.musicVolume : 1f);
             SetSfxVolume(s != null ? s.sfxVolume : 1f);
+            SetAmbientVolume(s != null ? s.ambientVolume : 1f);
             SetUiVolume(s != null ? s.uiVolume : 1f);
 
             if (musicSource == null)
@@ -160,11 +182,21 @@ namespace UDA2.Audio
             if (sfxParent != null && !sfxParent.IsChildOf(transform))
                 sfxParent.SetParent(transform, false);
 
+            if (ambientParent != null && !ambientParent.IsChildOf(transform))
+                ambientParent.SetParent(transform, false);
+
             if (sfxParent == null)
             {
                 var go = new GameObject("SFX");
                 go.transform.SetParent(transform, false);
                 sfxParent = go.transform;
+            }
+
+            if (ambientParent == null)
+            {
+                var go = new GameObject("Ambient");
+                go.transform.SetParent(transform, false);
+                ambientParent = go.transform;
             }
         }
 
@@ -191,12 +223,36 @@ namespace UDA2.Audio
             }
         }
 
+        private void EnsureAmbientPool()
+        {
+            if (ambientPrefab == null)
+                return;
+
+            EnsurePersistentAudioObjects();
+
+            if (ambientPool == null || ambientPool.Length != ambientPoolSize)
+            {
+                InitAmbientPool();
+                return;
+            }
+
+            for (int i = 0; i < ambientPool.Length; i++)
+            {
+                if (ambientPool[i] == null)
+                {
+                    InitAmbientPool();
+                    return;
+                }
+            }
+        }
+
         private void OnEnable()
         {
             SceneManager.sceneLoaded += OnSceneLoaded;
 
             UDA2.Core.SettingsContext.OnMusicVolumeChanged += SetMusicVolume;
             UDA2.Core.SettingsContext.OnSfxVolumeChanged += SetSfxVolume;
+            UDA2.Core.SettingsContext.OnAmbientVolumeChanged += SetAmbientVolume;
             UDA2.Core.SettingsContext.OnUiVolumeChanged += SetUiVolume;
         }
 
@@ -206,6 +262,7 @@ namespace UDA2.Audio
 
             UDA2.Core.SettingsContext.OnMusicVolumeChanged -= SetMusicVolume;
             UDA2.Core.SettingsContext.OnSfxVolumeChanged -= SetSfxVolume;
+            UDA2.Core.SettingsContext.OnAmbientVolumeChanged -= SetAmbientVolume;
             UDA2.Core.SettingsContext.OnUiVolumeChanged -= SetUiVolume;
         }
 
@@ -225,6 +282,7 @@ namespace UDA2.Audio
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
+            StopSceneSounds();
             ApplySceneMusic(scene);
         }
 
@@ -322,9 +380,18 @@ namespace UDA2.Audio
 
                 PlayMusic(cue.Clip, loop: false);
 
+                // Give AudioSource at least one frame to transition into playing state.
+                // Without this, focus/background edge-cases can cause a tight loop with high CPU.
+                yield return null;
+
                 // Wait for clip to end (or until cancelled).
                 while (sessionId == sceneMusicSessionId && musicSource != null && musicSource.isPlaying)
                     yield return null;
+
+                // If clip did not start playing at all (e.g., app unfocused / audio suspended),
+                // throttle retries to avoid spinning the playlist loop.
+                if (sessionId == sceneMusicSessionId && musicSource != null && !musicSource.isPlaying)
+                    yield return new WaitForSecondsRealtime(0.2f);
 
                 if (sessionId != sceneMusicSessionId)
                     yield break;
@@ -404,10 +471,125 @@ namespace UDA2.Audio
             if (musicFadeCoroutine != null)
                 StopCoroutine(musicFadeCoroutine);
 
+            musicFadeCoroutine = StartCoroutine(TransitionToMusicRoutine(
+                clip,
+                loop,
+                startTimeSeconds: 0f,
+                fadeInSeconds: defaultMusicFadeInSeconds,
+                fadeOutSeconds: defaultMusicFadeOutSeconds
+            ));
+        }
+
+        public bool TryGetCurrentMusicState(out AudioClip clip, out float timeSeconds, out bool loop)
+        {
+            clip = null;
+            timeSeconds = 0f;
+            loop = false;
+
+            if (musicSource == null || musicSource.clip == null)
+                return false;
+
+            clip = musicSource.clip;
+            loop = musicSource.loop;
+
+            float maxTime = clip.length > 0f ? clip.length : 0f;
+            timeSeconds = Mathf.Clamp(musicSource.time, 0f, maxTime);
+            return true;
+        }
+
+        public void PlayMusicFromTime(AudioClip clip, float timeSeconds, bool loop)
+        {
+            PlayMusicFromTime(clip, timeSeconds, loop, fadeInSeconds: defaultMusicFadeInSeconds);
+        }
+
+        public void PlayMusicFromTime(AudioClip clip, float timeSeconds, bool loop, float fadeInSeconds)
+        {
+            if (clip == null)
+                return;
+
+            if (musicSource == null)
+            {
+                Debug.LogWarning("AudioManager: musicSource не назначен — PlayMusicFromTime пропущен.");
+                return;
+            }
+
+            if (musicFadeCoroutine != null)
+            {
+                StopCoroutine(musicFadeCoroutine);
+                musicFadeCoroutine = null;
+            }
+
+            musicFadeCoroutine = StartCoroutine(TransitionToMusicRoutine(
+                clip,
+                loop,
+                startTimeSeconds: timeSeconds,
+                fadeInSeconds: Mathf.Max(0f, fadeInSeconds),
+                fadeOutSeconds: defaultMusicFadeOutSeconds
+            ));
+        }
+
+        private IEnumerator TransitionToMusicRoutine(AudioClip clip, bool loop, float startTimeSeconds, float fadeInSeconds, float fadeOutSeconds)
+        {
+            if (musicSource == null || clip == null)
+            {
+                musicFadeCoroutine = null;
+                yield break;
+            }
+
+            bool hasCurrentMusic = musicSource.isPlaying && musicSource.clip != null;
+
+            if (hasCurrentMusic && audioMixer != null && fadeOutSeconds > 0f)
+            {
+                float currentDb = targetMusicDb;
+                if (!audioMixer.GetFloat(MusicVolumeParam, out currentDb))
+                    currentDb = targetMusicDb;
+
+                float fadeOutDuration = Mathf.Max(0.001f, fadeOutSeconds);
+                float outT = 0f;
+                while (outT < 1f)
+                {
+                    outT += Time.unscaledDeltaTime / fadeOutDuration;
+                    audioMixer.SetFloat(MusicVolumeParam, Mathf.Lerp(currentDb, -80f, outT));
+                    yield return null;
+                }
+
+                audioMixer.SetFloat(MusicVolumeParam, -80f);
+            }
+
+            musicSource.Stop();
+
             currentClip = clip;
             musicSource.clip = clip;
             musicSource.loop = loop;
-            musicFadeCoroutine = StartCoroutine(FadeMusicIn());
+
+            float maxTime = clip.length > 0f ? Mathf.Max(0f, clip.length - 0.01f) : 0f;
+            musicSource.time = Mathf.Clamp(startTimeSeconds, 0f, maxTime);
+
+            if (audioMixer != null)
+            {
+                if (fadeInSeconds > 0f)
+                    audioMixer.SetFloat(MusicVolumeParam, -80f);
+                else
+                    audioMixer.SetFloat(MusicVolumeParam, targetMusicDb);
+            }
+
+            musicSource.Play();
+
+            if (audioMixer != null && fadeInSeconds > 0f)
+            {
+                float fadeInDuration = Mathf.Max(0.001f, fadeInSeconds);
+                float inT = 0f;
+                while (inT < 1f)
+                {
+                    inT += Time.unscaledDeltaTime / fadeInDuration;
+                    audioMixer.SetFloat(MusicVolumeParam, Mathf.Lerp(-80f, targetMusicDb, inT));
+                    yield return null;
+                }
+
+                audioMixer.SetFloat(MusicVolumeParam, targetMusicDb);
+            }
+
+            musicFadeCoroutine = null;
         }
 
         private static bool HasAnyValidCue(AudioCue[] cues)
@@ -488,6 +670,25 @@ namespace UDA2.Audio
             }
         }
 
+        private void InitAmbientPool()
+        {
+            if (ambientPrefab == null)
+                return;
+
+            ambientPool = new AudioSource[ambientPoolSize];
+            ambientPanCoroutines = new Coroutine[ambientPoolSize];
+
+            for (int i = 0; i < ambientPoolSize; i++)
+            {
+                var src = Instantiate(ambientPrefab, ambientParent);
+                src.outputAudioMixerGroup = ambientGroup;
+                src.playOnAwake = false;
+                src.volume = 1f;
+                src.panStereo = 0f;
+                ambientPool[i] = src;
+            }
+        }
+
         public void PlaySfx(AudioClip clip, float volume = 1f, float pitch = 1f)
         {
             if (clip == null)
@@ -521,6 +722,89 @@ namespace UDA2.Audio
                 audioMixer.SetFloat(SfxVolumeParam, ToDb(sfxVolume));
         }
 
+        public void SetAmbientVolume(float volume)
+        {
+            ambientVolume = Mathf.Clamp01(volume);
+            if (audioMixer != null && hasAmbientVolumeParam)
+                audioMixer.SetFloat(AmbientVolumeParam, ToDb(ambientVolume));
+        }
+
+        public void PlayAmbient(AudioClip clip, float volume = 1f, float pitch = 1f)
+        {
+            PlayAmbient(clip, volume, pitch, 0f, 0f, 0f);
+        }
+
+        public void PlayAmbient(
+            AudioClip clip,
+            float volume,
+            float pitch,
+            float panStart,
+            float panEnd,
+            float panSweepDurationSeconds)
+        {
+            if (clip == null)
+                return;
+
+            EnsureAmbientPool();
+
+            if (ambientPool == null)
+            {
+                // Fallback keeps ambient audible if pool is not configured yet.
+                PlaySfx(clip, volume, pitch);
+                return;
+            }
+
+            int sourceIndex = ambientIndex;
+            var src = ambientPool[sourceIndex];
+            ambientIndex = (ambientIndex + 1) % ambientPool.Length;
+
+            if (ambientPanCoroutines != null && sourceIndex >= 0 && sourceIndex < ambientPanCoroutines.Length)
+            {
+                if (ambientPanCoroutines[sourceIndex] != null)
+                {
+                    StopCoroutine(ambientPanCoroutines[sourceIndex]);
+                    ambientPanCoroutines[sourceIndex] = null;
+                }
+            }
+
+            float clampedPanStart = Mathf.Clamp(panStart, -1f, 1f);
+            float clampedPanEnd = Mathf.Clamp(panEnd, -1f, 1f);
+            float safeSweepDuration = Mathf.Max(0f, panSweepDurationSeconds);
+
+            src.Stop();
+            src.clip = clip;
+            src.pitch = pitch;
+            src.volume = Mathf.Clamp01(volume) * ambientVolume;
+            src.panStereo = clampedPanStart;
+            src.Play();
+
+            if (safeSweepDuration > 0f && !Mathf.Approximately(clampedPanStart, clampedPanEnd))
+            {
+                if (ambientPanCoroutines != null && sourceIndex >= 0 && sourceIndex < ambientPanCoroutines.Length)
+                    ambientPanCoroutines[sourceIndex] = StartCoroutine(SweepAmbientPanRoutine(src, clampedPanStart, clampedPanEnd, safeSweepDuration));
+            }
+        }
+
+        private static IEnumerator SweepAmbientPanRoutine(AudioSource src, float fromPan, float toPan, float durationSeconds)
+        {
+            if (src == null || durationSeconds <= 0f)
+                yield break;
+
+            float t = 0f;
+            src.panStereo = fromPan;
+
+            while (src != null && src.isActiveAndEnabled && src.isPlaying && t < durationSeconds)
+            {
+                t += Time.unscaledDeltaTime;
+                float k = Mathf.Clamp01(t / durationSeconds);
+                src.panStereo = Mathf.Lerp(fromPan, toPan, k);
+                yield return null;
+            }
+
+            if (src != null)
+                src.panStereo = toPan;
+        }
+
         /* ===================== UI ===================== */
 
         public void PlayUiClick()
@@ -538,6 +822,51 @@ namespace UDA2.Audio
         {
             if (audioMixer != null)
                 audioMixer.SetFloat(UiVolumeParam, ToDb(volume));
+        }
+
+        public void StopSceneSounds()
+        {
+            if (sfxPool != null)
+            {
+                for (int i = 0; i < sfxPool.Length; i++)
+                {
+                    var src = sfxPool[i];
+                    if (src == null)
+                        continue;
+
+                    src.Stop();
+                    src.clip = null;
+                }
+            }
+
+            if (ambientPool != null)
+            {
+                for (int i = 0; i < ambientPool.Length; i++)
+                {
+                    var src = ambientPool[i];
+                    if (src == null)
+                        continue;
+
+                    if (ambientPanCoroutines != null && i < ambientPanCoroutines.Length && ambientPanCoroutines[i] != null)
+                    {
+                        StopCoroutine(ambientPanCoroutines[i]);
+                        ambientPanCoroutines[i] = null;
+                    }
+
+                    src.Stop();
+                    src.clip = null;
+                    src.panStereo = 0f;
+                }
+            }
+
+            if (characterSource != null)
+                characterSource.Stop();
+
+            if (environmentSource != null)
+                environmentSource.Stop();
+
+            if (combatSource != null)
+                combatSource.Stop();
         }
 
         /* ===================== UTILS ===================== */

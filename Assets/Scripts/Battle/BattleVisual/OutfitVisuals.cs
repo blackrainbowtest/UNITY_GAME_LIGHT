@@ -18,12 +18,48 @@
 
 using UnityEngine;
 using UnityEngine.Serialization;
+using Game.Battle.Combat.Actions;
+using Game.Battle.Statuses;
 
 namespace Game.Battle.Visual
 {
     [CreateAssetMenu(menuName = "Game/Battle/Visuals/Outfit Visuals")]
     public sealed class OutfitVisuals : ScriptableObject
     {
+        public enum StatusEffectTarget
+        {
+            Player = 0,
+            Enemy = 1
+        }
+
+        [System.Serializable]
+        public struct ActionStatusEffectConfig
+        {
+            [Tooltip("Action that can apply this status.")]
+            public CombatActionId actionId;
+
+            [Tooltip("Status to apply.")]
+            public StatusEffectId statusId;
+
+            [Tooltip("Who receives this status when action is executed.")]
+            public StatusEffectTarget target;
+
+            [Tooltip("Enable random duration instead of fixed turns.")]
+            public bool randomTurns;
+
+            [Min(0)]
+            [Tooltip("Fixed duration in turns when Random Turns is disabled.")]
+            public int turns;
+
+            [Min(0)]
+            [Tooltip("Minimum duration in turns when Random Turns is enabled.")]
+            public int randomTurnsMin;
+
+            [Min(0)]
+            [Tooltip("Maximum duration in turns when Random Turns is enabled.")]
+            public int randomTurnsMax;
+        }
+
         [System.Serializable]
         public struct EscapeRunMotionConfig
         {
@@ -146,6 +182,10 @@ namespace Game.Battle.Visual
         public SpellProjectileConfig holySpellProjectile;
         [Tooltip("Projectile settings for Dark Spell.")]
         public SpellProjectileConfig darkSpellProjectile;
+
+        [Header("Action Status Effects (Optional)")]
+        [Tooltip("Per-action status effects. Supports multiple statuses per action with fixed or random duration and target side selection.")]
+        public ActionStatusEffectConfig[] actionStatusEffects;
 
         [Header("Seduction")]
         [Tooltip("Optional variations for Seduction Act 1.")]
@@ -306,6 +346,36 @@ namespace Game.Battle.Visual
         {
             config = escapeRunMotion;
             return config.IsEnabled;
+        }
+
+        public bool TryGetActionStatusEffects(CombatActionId actionId, out ActionStatusEffectConfig[] configs)
+        {
+            configs = null;
+
+            if (actionStatusEffects == null || actionStatusEffects.Length == 0)
+                return false;
+
+            int count = 0;
+            for (int i = 0; i < actionStatusEffects.Length; i++)
+            {
+                if (actionStatusEffects[i].actionId == actionId)
+                    count++;
+            }
+
+            if (count == 0)
+                return false;
+
+            configs = new ActionStatusEffectConfig[count];
+            int dst = 0;
+            for (int i = 0; i < actionStatusEffects.Length; i++)
+            {
+                if (actionStatusEffects[i].actionId != actionId)
+                    continue;
+
+                configs[dst++] = actionStatusEffects[i];
+            }
+
+            return true;
         }
 
         public IdleAnimation[] GetIdleVariationsOrNull()

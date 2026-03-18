@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab3e78317a66fb44db63c8bd4dc79d93, type: 3}
+  m_Name: BattleStatusCatalog
+  m_EditorClassIdentifier: UDA2.Battle::Game.Battle.Statuses.BattleStatusCatalog
+  statuses:
+  - id: 2
+    icon: {fileID: 21300000, guid: 9d9c22a9059e5c540887b403d1f15b44, type: 3}
+    titleLocalizationKey: status_burning_title
+    descriptionLocalizationKey: status_burning_description
+    effects:
+    - stat: 0
+      operation: 1
+      amount: 5
+    - stat: 2
+      operation: 1
+      amount: 1
+  - id: 1
+    icon: {fileID: 21300000, guid: 228d233c2c2c8fa4f9dbe3ea12bfcda7, type: 3}
+    titleLocalizationKey: status_bleeding_title
+    descriptionLocalizationKey: status_bleeding_description
+    effects:
+    - stat: 0
+      operation: 1
+      amount: 4
+  - id: 0
+    icon: {fileID: 21300000, guid: 9b5d6f9d61f449b40a2fa843aaf2e3a3, type: 3}
+    titleLocalizationKey: status_potioning_title
+    descriptionLocalizationKey: status_potioning_description
+    effects:
+    - stat: 0
+      operation: 1
+      amount: 2
+  - id: 3
+    icon: {fileID: 21300000, guid: 39e456e73bbcd7d42890ffb83d46f308, type: 3}
+    titleLocalizationKey: status_freezing_title
+    descriptionLocalizationKey: status_freezing_description
+    effects:
+    - stat: 0
+      operation: 1
+      amount: 2
+    - stat: 1
+      operation: 1
+      amount: 8

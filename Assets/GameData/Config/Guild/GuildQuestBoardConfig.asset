@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91c0cc7f08965f14f8b43c2d7ac5ecf1, type: 3}
+  m_Name: GuildQuestBoardConfig
+  m_EditorClassIdentifier: UDA2.SaveSystem::UDA2.SaveSystem.Guild.GuildQuestBoardConfigAsset
+  questsPerDay: 3
+  refreshMinuteOfDay: 720
+  questPool:
+  - {fileID: 11400000, guid: 21277c84f5132ba44b2314b5689765b6, type: 2}
+  - {fileID: 11400000, guid: e22abaac4264a3940b50345dfeb2383a, type: 2}
+  - {fileID: 11400000, guid: 481769e51f62d4741a3a4cf06c80ac5f, type: 2}
+  spawnRulesByPlayerRank:
+  - playerRank: 0
+    rankCounts:
+    - questRequiredRank: 0
+      count: 3
+  - playerRank: 1
+    rankCounts:
+    - questRequiredRank: 0
+      count: 4
+    - questRequiredRank: 1
+      count: 3

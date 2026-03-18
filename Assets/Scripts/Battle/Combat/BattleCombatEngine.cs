@@ -155,7 +155,9 @@ namespace Game.Battle.Combat
 
         public CombatResolution ResolvePlayerAction(
             CombatState state,
-            Actions.CombatActionData action)
+            Actions.CombatActionData action,
+            int playerPhysicalDamage,
+            int playerMagicDamage)
         {
             // 1. Check special requirements
             if (action.RequiresPlayerBlockedLastTurn && !state.PlayerBlockedLastTurn)
@@ -193,6 +195,8 @@ namespace Game.Battle.Combat
                 enemyBlockArmorAbsorbedLastPlayerAction: state.EnemyBlockArmorAbsorbedLastPlayerAction
             );
 
+            var actionHpDamage = CombatDamageModel.ComputeHpDamage(playerPhysicalDamage, playerMagicDamage, action);
+
             // 4. Apply action effects
             if (action.Id == Actions.CombatActionId.HolySpell)
             {
@@ -203,9 +207,9 @@ namespace Game.Battle.Combat
             else if (action.Id == Actions.CombatActionId.DarkSpell)
             {
                 // Dark = lifesteal (heal for actual damage dealt)
-                if (action.HpDamage > 0)
+                if (actionHpDamage > 0)
                 {
-                    var dealt = action.HpDamage;
+                    var dealt = actionHpDamage;
                     if (dealt > newState.EnemyHp)
                         dealt = newState.EnemyHp;
 
@@ -221,9 +225,9 @@ namespace Game.Battle.Combat
             else
             {
                 // Default: damage enemy
-                if (action.HpDamage > 0)
+                if (actionHpDamage > 0)
                 {
-                    var damage = action.HpDamage;
+                    var damage = actionHpDamage;
 
                     // CounterAttack bonus scales with the armor that was actually consumed by the last enemy hit.
                     if (action.Id == Actions.CombatActionId.CounterAttack)
@@ -253,7 +257,7 @@ namespace Game.Battle.Combat
                         newState = newState.WithPlayerLp(newState.PlayerLp - relaxReduction);
                 }
 
-                if (action.HpDamage <= 0 && action.LpDamage <= 0)
+                if (actionHpDamage <= 0 && action.LpDamage <= 0)
                 {
                     // Non-damaging player action clears enemy counter window.
                     newState = newState
@@ -282,7 +286,9 @@ namespace Game.Battle.Combat
 
         public CombatResolution ResolveEnemyAction(
             CombatState state,
-            Actions.CombatActionData action)
+            Actions.CombatActionData action,
+            int enemyPhysicalDamage,
+            int enemyMagicDamage)
         {
             // 0. Enemy requirements (counterattack requires actual absorbed damage).
             if (action.Id == Actions.CombatActionId.CounterAttack && state.EnemyBlockedLastTurn == false)
@@ -318,6 +324,8 @@ namespace Game.Battle.Combat
                 enemyBlockArmorAbsorbedLastPlayerAction: 0
             );
 
+            var actionHpDamage = CombatDamageModel.ComputeHpDamage(enemyPhysicalDamage, enemyMagicDamage, action);
+
             // 3. Apply effects
             if (action.Id == Actions.CombatActionId.HolySpell)
             {
@@ -328,11 +336,11 @@ namespace Game.Battle.Combat
             else if (action.Id == Actions.CombatActionId.DarkSpell)
             {
                 // Dark = lifesteal (enemy heals for actual damage dealt)
-                if (action.HpDamage > 0)
+                if (actionHpDamage > 0)
                 {
                     // With block armor, "effective HP" includes armor.
                     var effectiveHp = newState.PlayerHp + newState.PlayerBlockArmor;
-                    var incoming = action.HpDamage;
+                    var incoming = actionHpDamage;
                     if (incoming > effectiveHp)
                         incoming = effectiveHp;
 
@@ -343,9 +351,9 @@ namespace Game.Battle.Combat
             else
             {
                 // Default: enemy damages player
-                if (action.HpDamage > 0)
+                if (actionHpDamage > 0)
                 {
-                    var damage = action.HpDamage;
+                    var damage = actionHpDamage;
 
                     if (action.Id == Actions.CombatActionId.CounterAttack)
                         damage += state.EnemyBlockArmorAbsorbedLastPlayerAction;
@@ -374,7 +382,7 @@ namespace Game.Battle.Combat
                         newState = newState.WithEnemyLp(newState.EnemyLp - relaxReduction);
                 }
 
-                if (action.HpDamage <= 0 && action.LpDamage <= 0)
+                if (actionHpDamage <= 0 && action.LpDamage <= 0)
                 {
                     // Non-damaging enemy action clears the counter window.
                     newState = newState

@@ -37,7 +37,7 @@ public class SettingsController : MonoBehaviour, IMenuCloseHandler
             Debug.LogWarning("SettingsController: musicSlider не назначен.", this);
 
         if (sfxSlider != null)
-            sfxSlider.value = _editingState.sfxVolume;
+            sfxSlider.value = _editingState.ambientVolume;
         else
             Debug.LogWarning("SettingsController: sfxSlider не назначен.", this);
 
@@ -90,6 +90,7 @@ public class SettingsController : MonoBehaviour, IMenuCloseHandler
         {
             UDA2.Audio.AudioManager.Instance.SetMusicVolume(SettingsContext.Current.musicVolume);
             UDA2.Audio.AudioManager.Instance.SetSfxVolume(SettingsContext.Current.sfxVolume);
+            UDA2.Audio.AudioManager.Instance.SetAmbientVolume(SettingsContext.Current.ambientVolume);
             UDA2.Audio.AudioManager.Instance.SetUiVolume(SettingsContext.Current.uiVolume);
         }
         // Вызов события для возврата главного меню
@@ -124,10 +125,10 @@ public class SettingsController : MonoBehaviour, IMenuCloseHandler
 
     public void OnSfxVolumeChanged(float value)
     {
-        _editingState.sfxVolume = value;
+        _editingState.ambientVolume = value;
 
         if (UDA2.Audio.AudioManager.Instance != null)
-            UDA2.Audio.AudioManager.Instance.SetSfxVolume(value, 1f);
+            UDA2.Audio.AudioManager.Instance.SetAmbientVolume(value);
     }
 
     public void OnUiVolumeChanged(float value)
@@ -159,6 +160,7 @@ public class SettingsController : MonoBehaviour, IMenuCloseHandler
         {
             UDA2.Audio.AudioManager.Instance.SetMusicVolume(_editingState.musicVolume, 1f);
             UDA2.Audio.AudioManager.Instance.SetSfxVolume(_editingState.sfxVolume, 1f);
+            UDA2.Audio.AudioManager.Instance.SetAmbientVolume(_editingState.ambientVolume);
             UDA2.Audio.AudioManager.Instance.SetUiVolume(_editingState.uiVolume);
         }
 
@@ -176,7 +178,7 @@ public class SettingsController : MonoBehaviour, IMenuCloseHandler
             musicSlider.value = _editingState.musicVolume;
 
         if (sfxSlider != null)
-            sfxSlider.value = _editingState.sfxVolume;
+            sfxSlider.value = _editingState.ambientVolume;
 
         if (uiSlider != null)
             uiSlider.value = _editingState.uiVolume;
@@ -193,6 +195,7 @@ public class SettingsController : MonoBehaviour, IMenuCloseHandler
         {
             UDA2.Audio.AudioManager.Instance.SetMusicVolume(_editingState.musicVolume, 1f);
             UDA2.Audio.AudioManager.Instance.SetSfxVolume(_editingState.sfxVolume, 1f);
+            UDA2.Audio.AudioManager.Instance.SetAmbientVolume(_editingState.ambientVolume);
             UDA2.Audio.AudioManager.Instance.SetUiVolume(_editingState.uiVolume);
         }
     }
@@ -216,6 +219,7 @@ public class SettingsController : MonoBehaviour, IMenuCloseHandler
         {
             musicVolume = source.musicVolume,
             sfxVolume = source.sfxVolume,
+            ambientVolume = source.ambientVolume,
             uiVolume = source.uiVolume,
             language = source.language,
             tutorialShown = source.tutorialShown,

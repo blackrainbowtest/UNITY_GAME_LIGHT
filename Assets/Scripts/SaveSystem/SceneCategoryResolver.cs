@@ -39,6 +39,7 @@ namespace UDA2.SaveSystem
                 || sceneName.IndexOf("shop", StringComparison.OrdinalIgnoreCase) >= 0
                 || sceneName.IndexOf("craft", StringComparison.OrdinalIgnoreCase) >= 0
                 || sceneName.IndexOf("house", StringComparison.OrdinalIgnoreCase) >= 0
+                || sceneName.IndexOf("shelter", StringComparison.OrdinalIgnoreCase) >= 0
                 || sceneName.IndexOf("room", StringComparison.OrdinalIgnoreCase) >= 0)
                 return SceneCategory.Secondary;
 
@@ -54,6 +55,14 @@ namespace UDA2.SaveSystem
         public static bool IsMainScene(string sceneName)
         {
             return GetCategory(sceneName) == SceneCategory.Main;
+        }
+
+        public static bool IsShelterScene(string sceneName)
+        {
+            if (string.IsNullOrWhiteSpace(sceneName))
+                return false;
+
+            return sceneName.IndexOf("shelter", StringComparison.OrdinalIgnoreCase) >= 0;
         }
     }
 }

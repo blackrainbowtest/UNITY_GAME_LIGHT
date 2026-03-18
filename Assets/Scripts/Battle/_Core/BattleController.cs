@@ -20,7 +20,6 @@ using System.Collections;
 using UnityEngine;
 using Game.Battle.Combat;
 using Game.Battle.Combat.Actions;
-using Game.Battle.Combat.EnemyAI;
 using Game.Battle.Statuses;
 using Logger = UDA2.Logging.Logger;
 
@@ -31,20 +30,18 @@ namespace Game.Battle
 {
     public partial class BattleController : MonoBehaviour, IBattleUIActions
     {
-        private enum TurnPhase
-        {
-            NotStarted = 0,
-            PlayerTurn = 1,
-            EnemyTurn = 2,
-            BattleOver = 3
-        }
-
         private Coroutine playerActionRoutine;
 
         private BattleContext context;
         private bool battleStarted;
+        private BattleEscapeSystem escapeSystem;
+        private BattleVisualExecutor visualExecutor;
+        private BattleEndConditionSystem endConditionSystem;
+        private BattleTurnSystem turnSystem;
+        private BattleActionResolutionSystem actionResolutionSystem;
+        private BattleInputCommandHandler inputCommandHandler;
+        private BattleTurnFlowRunner turnFlowRunner;
 
-        private TurnPhase turnPhase = TurnPhase.NotStarted;
         private Coroutine enemyTurnRoutine;
         private readonly System.Random rng = new System.Random();
 
@@ -61,6 +58,9 @@ namespace Game.Battle
         [SerializeField] private BattleResultModalController resultModal;
         [Tooltip("Outcome animation modal reference. Can be either a scene instance (Hierarchy) OR a prefab asset (Project). If a prefab is assigned, BattleController will instantiate it into the scene at runtime.")]
         [SerializeField] private BattleOutcomeAnimationModalController outcomeAnimationModal;
+        [Tooltip("Centralized status definitions (icons, localization keys, resource effects).")]
+        [SerializeField] private BattleStatusCatalog statusCatalog;
+        private bool warnedMissingStatusCatalog;
 
         [Header("Visuals (Optional)")]
         [SerializeField] private BattleCharacterView playerView;
@@ -99,6 +99,13 @@ namespace Game.Battle
 
         private void Awake()
         {
+            EnsureEscapeSystem();
+            EnsureVisualExecutor();
+            EnsureEndConditionSystem();
+            EnsureTurnSystem();
+            EnsureActionResolutionSystem();
+            EnsureInputCommandHandler();
+
             if (resultModal == null)
             {
 #if UNITY_2023_1_OR_NEWER
@@ -126,6 +133,9 @@ namespace Game.Battle
             // Auto-instantiate such references into the battle scene Canvas.
             resultModal = EnsureSceneInstance(resultModal, "resultModal");
             outcomeAnimationModal = EnsureSceneInstance(outcomeAnimationModal, "outcomeAnimationModal");
+
+            if (statusCatalog == null && hudController != null)
+                statusCatalog = hudController.GetStatusCatalog();
         }
 
         private Transform ResolveModalParent()
@@ -224,7 +234,7 @@ namespace Game.Battle
 
             context = battleContext;
             battleStarted = true;
-            turnPhase = TurnPhase.PlayerTurn;
+            EnsureTurnSystem().Reset();
 
             combatEngine = new BattleCombatEngine();
             actionRegistry = new CombatActionRegistry();
@@ -259,6 +269,11 @@ namespace Game.Battle
             InitializeEnvironment();
             InitializeUI();
 
+            if (hudController != null)
+                hudController.SetTooltipCombatContext(
+                    context.Player != null ? context.Player.PhysicalDamage : CombatDamageModel.DefaultBaseAttack,
+                    context.Player != null ? context.Player.MagicDamage : CombatDamageModel.DefaultBaseAttack);
+
             ClearEndOfRoundEffects();
             ClearAllStatuses();
 
@@ -272,9 +287,78 @@ namespace Game.Battle
             if (!battleStarted)
                 return;
 
-            turnPhase = TurnPhase.PlayerTurn;
+            EnsureTurnSystem().BeginPlayerTurn();
             ResetPerTurnNonCombatActions();
             hudController?.SetInputEnabled(true);
+        }
+
+        private void RestorePlayerInputWithoutNewTurnReset()
+        {
+            EnsureTurnSystem().BeginPlayerTurn();
+            hudController?.SetInputEnabled(true);
+        }
+
+        private BattleEscapeSystem EnsureEscapeSystem()
+        {
+            if (escapeSystem == null)
+                escapeSystem = new BattleEscapeSystem(minEscapeChance, maxEscapeChance, escapeStaminaWeight, escapeLustWeight);
+            return escapeSystem;
+        }
+
+        private BattleVisualExecutor EnsureVisualExecutor()
+        {
+            if (visualExecutor == null)
+                visualExecutor = new BattleVisualExecutor(playerView, enemyView, projectilesRoot);
+            return visualExecutor;
+        }
+
+        private BattleEndConditionSystem EnsureEndConditionSystem()
+        {
+            if (endConditionSystem == null)
+                endConditionSystem = new BattleEndConditionSystem();
+            return endConditionSystem;
+        }
+
+        private BattleTurnFlowRunner EnsureTurnFlowRunner()
+        {
+            var endSystem = EnsureEndConditionSystem();
+            if (turnFlowRunner == null)
+                turnFlowRunner = new BattleTurnFlowRunner(endSystem);
+
+            return turnFlowRunner;
+        }
+
+        private BattleTurnSystem EnsureTurnSystem()
+        {
+            if (turnSystem == null)
+                turnSystem = new BattleTurnSystem();
+            return turnSystem;
+        }
+
+        private BattleActionResolutionSystem EnsureActionResolutionSystem()
+        {
+            if (actionResolutionSystem == null)
+                actionResolutionSystem = new BattleActionResolutionSystem();
+            return actionResolutionSystem;
+        }
+
+        private BattleInputCommandHandler EnsureInputCommandHandler()
+        {
+            if (inputCommandHandler == null)
+            {
+                inputCommandHandler = new BattleInputCommandHandler(
+                    isBattleStarted: () => battleStarted,
+                    isPlayerTurn: () => turnSystem != null && turnSystem.IsPlayerTurn,
+                    onAttack: HandleAttackPressed,
+                    onCombatActionSelected: HandleCombatActionSelected,
+                    onItem: HandleItemPressed,
+                    onRun: HandleRunPressed,
+                    onSurrender: HandleSurrenderPressed,
+                    onSkipTurn: HandleSkipTurnPressed,
+                    onExit: HandleExitPressed);
+            }
+
+            return inputCommandHandler;
         }
 
         private void InitializeParticipants()
@@ -332,604 +416,16 @@ namespace Game.Battle
             }
             hud.SetActions(this);
         }
-
-
-        public void OnAttackPressed()
-        {
-            if (!battleStarted)
-                return;
-
-            if (turnPhase != TurnPhase.PlayerTurn)
-                return;
-
-            ExecutePlayerAction(CombatActionId.NormalAttack);
-        }
-
-        public void OnCombatActionSelected(CombatActionId actionId)
-        {
-            if (!battleStarted)
-                return;
-
-            if (turnPhase != TurnPhase.PlayerTurn)
-                return;
-
-            ExecutePlayerAction(actionId);
-        }
-
-        public void OnItemPressed()
-        {
-            if (!battleStarted)
-                return;
-
-            if (turnPhase != TurnPhase.PlayerTurn)
-                return;
-
-            OpenInventoryForBattleItemUse();
-        }
-
-        public void OnRunPressed()
-        {
-            if (!battleStarted)
-                return;
-
-            if (turnPhase != TurnPhase.PlayerTurn)
-                return;
-
-            if (escapeFailedRoutine != null || escapeSuccessRoutine != null)
-                return;
-
-            float chance = CalculateEscapeChance01();
-            float roll = (float)rng.NextDouble();
-
-            Logger.LogInfo($"[BattleController] Run pressed. EscapeChance={chance:0.000}, Roll={roll:0.000}");
-
-            if (roll <= chance)
-            {
-                turnPhase = TurnPhase.EnemyTurn;
-                hudController?.SetInputEnabled(false);
-                escapeSuccessRoutine = StartCoroutine(EscapeSuccessSequenceRoutine());
-            }
-            else
-            {
-                // Escape failed: play fail sequence and continue battle.
-                turnPhase = TurnPhase.EnemyTurn;
-                hudController?.SetInputEnabled(false);
-                escapeFailedRoutine = StartCoroutine(EscapeFailedSequenceRoutine());
-            }
-        }
-
-        private IEnumerator EscapeSuccessSequenceRoutine()
-        {
-            Logger.LogInfo($"[BattleController] Escape success sequence: anim={escapeSuccessAnim}");
-
-            int moveStartFrame = -1;
-            float moveSpeed = 0f;
-            TryGetEscapeRunMotion(out moveStartFrame, out moveSpeed);
-
-            Coroutine moveRoutine = null;
-            System.Action onImpact = null;
-            if (moveStartFrame > 0 && moveSpeed > 0f && playerView != null)
-            {
-                onImpact = () =>
-                {
-                    if (moveRoutine != null)
-                        StopCoroutine(moveRoutine);
-
-                    moveRoutine = StartCoroutine(MoveTransformLeftUntilStopped(playerView.transform, moveSpeed));
-                };
-            }
-
-            yield return PlayCharacterAnimImmediateAndWait(playerView, escapeSuccessAnim, onImpact: onImpact, impactFrameIndexOverride: moveStartFrame);
-
-            if (moveRoutine != null)
-                StopCoroutine(moveRoutine);
-
-            escapeSuccessRoutine = null;
-
-            // Escape success: no rewards, outcome handled by escape flow.
-            FinishBattle(playerWon: false, reason: BattleFinishReason.EscapeSuccess, winningActionId: null);
-        }
-
-        private IEnumerator EscapeFailedSequenceRoutine()
-        {
-            playerView?.SetAutoIdleFallbackEnabled(false);
-
-            var failAnimToPlay = escapeFailFallAnim == BattleVisualAnimId.ActionAct1
-                ? BattleVisualAnimId.ActionActFail
-                : escapeFailFallAnim;
-
-            if (escapeFailFallAnim == BattleVisualAnimId.ActionAct1)
-                Logger.LogWarning("[BattleController] Escape fail anim is legacy ActionAct1 in serialized data. Overriding to ActionActFail at runtime.");
-
-            Logger.LogInfo($"[BattleController] Escape failed sequence: configured={escapeFailFallAnim}, playing={failAnimToPlay}");
-
-            yield return PlayCharacterAnimAndWait(playerView, failAnimToPlay);
-
-            bool modalClosed = false;
-            if (outcomeAnimationModal != null)
-            {
-                outcomeAnimationModal.Show(BattleFinishReason.EscapeFailed, playerWon: false, winningActionId: null, onClosed: () => modalClosed = true);
-                while (!modalClosed)
-                    yield return null;
-            }
-
-            int maxLp = context?.Player != null ? Mathf.Max(0, context.Player.MaxLP) : 0;
-            int nextLp = combatState.PlayerLp + Mathf.Max(0, escapeFailLpPenalty);
-            if (maxLp > 0)
-                nextLp = Mathf.Min(nextLp, maxLp);
-
-            combatState = combatState.WithPlayerLp(nextLp);
-            PushHudState();
-
-            escapeFailedRoutine = null;
-
-            playerView?.SetAutoIdleFallbackEnabled(true);
-
-            if (maxLp > 0 && combatState.PlayerLp >= maxLp)
-            {
-                FinishBattle(playerWon: false, reason: BattleFinishReason.DefeatByLp, winningActionId: null);
-                yield break;
-            }
-
-            BeginEnemyTurn();
-        }
-
-        private IEnumerator PlayCharacterAnimAndWait(BattleCharacterView view, BattleVisualAnimId animId)
-        {
-            if (view == null)
-                yield break;
-
-            bool finished = false;
-            // Non-combat utility actions (inventory/open/escape-fail flow) should react instantly
-            // and must not wait for idle loop boundary.
-            view.PlayImmediate(animId, onFinished: () => finished = true);
-
-            float timeout = 5f;
-            while (!finished && timeout > 0f)
-            {
-                timeout -= Time.deltaTime;
-                yield return null;
-            }
-        }
-
-        private IEnumerator PlayCharacterAnimImmediateAndWait(
-            BattleCharacterView view,
-            BattleVisualAnimId animId,
-            System.Action onImpact = null,
-            int impactFrameIndexOverride = -1)
-        {
-            if (view == null)
-                yield break;
-
-            bool finished = false;
-            view.PlayImmediate(animId, onFinished: () => finished = true, onImpact: onImpact, impactFrameIndexOverride: impactFrameIndexOverride);
-
-            float timeout = 5f;
-            while (!finished && timeout > 0f)
-            {
-                timeout -= Time.deltaTime;
-                yield return null;
-            }
-        }
-
-        private bool TryGetEscapeRunMotion(out int startAtFrame, out float speedLeftUnitsPerSecond)
-        {
-            startAtFrame = -1;
-            speedLeftUnitsPerSecond = 0f;
-
-            var outfit = playerView != null ? playerView.ResolveOutfitVisuals() : null;
-            if (outfit == null)
-                return false;
-
-            if (!outfit.TryGetEscapeRunMotion(out var cfg))
-                return false;
-
-            startAtFrame = cfg.startAtFrame;
-            speedLeftUnitsPerSecond = cfg.speedLeftUnitsPerSecond;
-            return true;
-        }
-
-        private static IEnumerator MoveTransformLeftUntilStopped(Transform target, float speedLeftUnitsPerSecond)
-        {
-            if (target == null || speedLeftUnitsPerSecond <= 0f)
-                yield break;
-
-            while (target != null)
-            {
-                target.position += Vector3.left * speedLeftUnitsPerSecond * Time.deltaTime;
-                yield return null;
-            }
-        }
-
-        public void OnSurrenderPressed()
-        {
-            if (!battleStarted)
-                return;
-
-            if (turnPhase != TurnPhase.PlayerTurn)
-                return;
-
-            if (surrenderRoutine != null || escapeSuccessRoutine != null || escapeFailedRoutine != null)
-                return;
-
-            Logger.LogInfo("BattleController: Surrender pressed");
-
-            turnPhase = TurnPhase.EnemyTurn;
-            hudController?.SetInputEnabled(false);
-            surrenderRoutine = StartCoroutine(SurrenderSequenceRoutine());
-        }
-
-        private IEnumerator SurrenderSequenceRoutine()
-        {
-            yield return PlayCharacterAnimImmediateAndWait(playerView, BattleVisualAnimId.ActionAct3);
-
-            surrenderRoutine = null;
-            FinishBattle(playerWon: false, reason: BattleFinishReason.Surrender, winningActionId: null);
-        }
-
-        private bool TryFinishByLpThreshold(bool actionByPlayer, CombatActionId? sourceActionId)
-        {
-            if (!battleStarted || context == null)
-                return false;
-
-            int playerMaxLp = context.Player != null ? Mathf.Max(0, context.Player.MaxLP) : 0;
-            int enemyMaxLp = context.Enemy != null ? Mathf.Max(0, context.Enemy.maxLp) : 0;
-
-            bool playerReachedMaxLp = playerMaxLp > 0 && combatState.PlayerLp >= playerMaxLp;
-            bool enemyReachedMaxLp = enemyMaxLp > 0 && combatState.EnemyLp >= enemyMaxLp;
-
-            if (!playerReachedMaxLp && !enemyReachedMaxLp)
-                return false;
-
-            bool playerWon;
-            if (playerReachedMaxLp && enemyReachedMaxLp)
-            {
-                // Rule requested: if the player filled enemy LP to max, enemy loses; otherwise player loses.
-                playerWon = actionByPlayer;
-            }
-            else
-            {
-                playerWon = enemyReachedMaxLp;
-            }
-
-            var reason = playerWon ? BattleFinishReason.VictoryByLp : BattleFinishReason.DefeatByLp;
-            FinishBattle(playerWon, reason, sourceActionId);
-            return true;
-        }
-
-        private float CalculateEscapeChance01()
-        {
-            if (context == null || combatState == null)
-                return minEscapeChance;
-
-            static float Safe01(int value, int max)
-            {
-                if (max <= 0)
-                    return 0f;
-                return Mathf.Clamp01((float)value / max);
-            }
-
-            float playerStamina01 = Safe01(combatState.PlayerSp, context.Player != null ? context.Player.MaxSP : 0);
-            float enemyStamina01 = Safe01(combatState.EnemySp, context.Enemy != null ? context.Enemy.maxSp : 0);
-
-            float playerLust01 = Safe01(combatState.PlayerLp, context.Player != null ? context.Player.MaxLP : 0);
-            float enemyLust01 = Safe01(combatState.EnemyLp, context.Enemy != null ? context.Enemy.maxLp : 0);
-
-            // Requirement:
-            // - Player: less lust + more stamina => higher chance
-            // - Enemy: less stamina + less lust => higher chance
-            float staminaScore01 = Mathf.Clamp01(0.5f + 0.5f * (playerStamina01 - enemyStamina01));
-            float lustScore01 = Mathf.Clamp01(1f - 0.5f * (playerLust01 + enemyLust01));
-
-            float wSum = Mathf.Max(0.0001f, escapeStaminaWeight + escapeLustWeight);
-            float combined01 = (escapeStaminaWeight * staminaScore01 + escapeLustWeight * lustScore01) / wSum;
-
-            float lo = Mathf.Clamp01(minEscapeChance);
-            float hi = Mathf.Clamp01(Mathf.Max(minEscapeChance, maxEscapeChance));
-            return Mathf.Clamp01(Mathf.Lerp(lo, hi, combined01));
-        }
-
-        public void OnSkipTurnPressed()
-        {
-            if (!battleStarted)
-                return;
-
-            if (turnPhase != TurnPhase.PlayerTurn)
-                return;
-
-            if (playerActionRoutine != null)
-                return;
-
-            turnPhase = TurnPhase.EnemyTurn;
-            hudController?.SetInputEnabled(false);
-            playerActionRoutine = StartCoroutine(SkipTurnSequenceRoutine());
-        }
-
-        private IEnumerator SkipTurnSequenceRoutine()
-        {
-            if (TryGetVisualAnimId(CombatActionId.ActionAct4, out var animId))
-                yield return PlayCharacterAnimImmediateAndWait(playerView, animId);
-
-            // CounterAttack window should last only until the end of the next player turn.
-            // If the player skips the turn, they lose the opportunity.
-            combatState = combatState
-                .WithPlayerBlockedLastTurn(false)
-                .WithPlayerBlockArmorAbsorbedLastEnemyAction(0);
-
-            PushHudState();
-
-            playerActionRoutine = null;
-
-            BeginEnemyTurn();
-        }
-
-        private static bool TryGetVisualAnimId(CombatActionId actionId, out BattleVisualAnimId animId)
-        {
-            switch (actionId)
-            {
-                case CombatActionId.FastAttack: animId = BattleVisualAnimId.FastAttack; return true;
-                case CombatActionId.NormalAttack: animId = BattleVisualAnimId.NormalAttack; return true;
-                case CombatActionId.HeavyAttack: animId = BattleVisualAnimId.HeavyAttack; return true;
-                case CombatActionId.CounterAttack: animId = BattleVisualAnimId.CounterAttack; return true;
-                case CombatActionId.Block: animId = BattleVisualAnimId.Block; return true;
-
-                case CombatActionId.FireSpell: animId = BattleVisualAnimId.FireSpell; return true;
-                case CombatActionId.IceSpell: animId = BattleVisualAnimId.IceSpell; return true;
-                case CombatActionId.HolySpell: animId = BattleVisualAnimId.HolySpell; return true;
-                case CombatActionId.DarkSpell: animId = BattleVisualAnimId.DarkSpell; return true;
-
-                case CombatActionId.SeductionAct1: animId = BattleVisualAnimId.SeductionAct1; return true;
-                case CombatActionId.SeductionAct2: animId = BattleVisualAnimId.SeductionAct2; return true;
-                case CombatActionId.SeductionAct3: animId = BattleVisualAnimId.SeductionAct3; return true;
-                case CombatActionId.SeductionAct4: animId = BattleVisualAnimId.SeductionAct4; return true;
-
-                case CombatActionId.ActionAct1: animId = BattleVisualAnimId.ActionAct1; return true;
-                case CombatActionId.ActionAct2: animId = BattleVisualAnimId.ActionAct2; return true;
-                case CombatActionId.ActionAct3: animId = BattleVisualAnimId.ActionAct3; return true;
-                case CombatActionId.ActionAct4: animId = BattleVisualAnimId.ActionAct4; return true;
-            }
-
-            animId = BattleVisualAnimId.Idle;
-            return false;
-        }
-
-        private IEnumerator PlayActionVisualAndWait(CombatActionId actionId, bool actorIsPlayer)
-        {
-            var view = actorIsPlayer ? playerView : enemyView;
-            if (view == null)
-                yield break;
-
-            if (!TryGetVisualAnimId(actionId, out var animId))
-                yield break;
-
-            bool finished = false;
-            view.RequestPlayAfterCurrent(animId, onFinished: () => finished = true);
-
-            // Safety timeout to avoid soft-lock if something is miswired.
-            float timeout = 5f;
-            while (!finished && timeout > 0f)
-            {
-                timeout -= Time.deltaTime;
-                yield return null;
-            }
-        }
-
-        private IEnumerator PlayActionWithTargetHitAndWait(
-            CombatActionId actionId,
-            bool actorIsPlayer,
-            CombatState before,
-            CombatState after)
-        {
-            var attackerView = actorIsPlayer ? playerView : enemyView;
-            var targetView = actorIsPlayer ? enemyView : playerView;
-
-            if (attackerView == null)
-                yield break;
-
-            if (!TryGetVisualAnimId(actionId, out var attackerAnimId))
-                yield break;
-
-            bool attackerFinished = false;
-            bool targetFinished = true; // updated after we decide willPlayTargetHit
-
-            // Optional: spell projectile config (comes from attacker's outfit visuals)
-            OutfitVisuals.SpellProjectileConfig projectileConfig = default;
-            bool hasProjectile = false;
-            var attackerOutfit = attackerView != null ? attackerView.ResolveOutfitVisuals() : null;
-            if (attackerOutfit != null)
-                hasProjectile = attackerOutfit.TryGetProjectileConfig(attackerAnimId, out projectileConfig);
-
-            // Optional: hit timing config (comes from attacker's outfit visuals)
-            int hitAtFrame = 1;
-            bool useLustHit = false;
-            if (attackerOutfit != null && attackerOutfit.TryGetHitTiming(attackerAnimId, out var hitTiming))
-            {
-                hitAtFrame = hitTiming.hitAtFrame;
-                useLustHit = hitTiming.useLustHit;
-            }
-
-            bool projectileSpawned = false;
-            bool targetHitTriggered = false;
-            BattleVisualAnimId targetHitAnimId = BattleVisualAnimId.Hit;
-            bool willPlayTargetHit = false;
-
-            void SpawnProjectileNow()
-            {
-                if (!hasProjectile)
-                    return;
-                if (projectileSpawned)
-                    return;
-                if (!projectileConfig.IsEnabled)
-                    return;
-                if (attackerView == null)
-                    return;
-
-                projectileSpawned = true;
-
-                int dir = actorIsPlayer ? 1 : -1;
-                var spawnOffsetUnits = new Vector3(
-                    projectileConfig.ToUnits(projectileConfig.spawnOffsetPixels.x) * dir,
-                    projectileConfig.ToUnits(projectileConfig.spawnOffsetPixels.y),
-                    0f);
-
-                var start = attackerView.transform.position + spawnOffsetUnits;
-                var end = start + Vector3.right * (projectileConfig.ToUnits(projectileConfig.travelDistancePixels) * dir);
-
-                var parent = projectilesRoot != null ? projectilesRoot : null;
-                var go = Instantiate(projectileConfig.projectilePrefab, start, Quaternion.identity, parent);
-                var proj = go.GetComponent<Game.Battle.Visual.BattleSpellProjectile>();
-                if (proj == null)
-                    proj = go.AddComponent<Game.Battle.Visual.BattleSpellProjectile>();
-
-                bool flipX = dir < 0;
-
-                // Impact moment for magic should be driven by the projectile animation.
-                // If impactAtFrame is not set (<= 0), projectile will trigger impact at the end of its animation.
-                proj.Initialize(
-                    start,
-                    end,
-                    projectileConfig.travelTimeSeconds,
-                    projectileConfig.projectileAnimation,
-                    flipX,
-                    impactAtFrame: projectileConfig.impactAtFrame,
-                    onImpact: () => TriggerTargetHitNow());
-            }
-
-            void HandleOneShotStarted(BattleVisualAnimId id, IdleAnimation anim)
-            {
-                if (id != attackerAnimId)
-                    return;
-
-                // If the attacker animation has no impact marker configured,
-                // spawn projectile immediately when the animation starts.
-                if (hasProjectile && !projectileSpawned)
-                {
-                    bool hasImpactMarker = anim != null && anim.HasImpact;
-                    if (!hasImpactMarker)
-                        SpawnProjectileNow();
-                }
-            }
-
-            attackerView.OnOneShotStarted += HandleOneShotStarted;
-
-            bool targetTookHpDamage = false;
-            if (before != null && after != null)
-            {
-                targetTookHpDamage = actorIsPlayer
-                    ? after.EnemyHp < before.EnemyHp
-                    : after.PlayerHp < before.PlayerHp;
-            }
-
-            bool targetTookLpDamage = false;
-            if (before != null && after != null)
-            {
-                // Lust "damage" is represented as LP INCREASE on the target.
-                targetTookLpDamage = actorIsPlayer
-                    ? after.EnemyLp > before.EnemyLp
-                    : after.PlayerLp > before.PlayerLp;
-            }
-
-            // Decide which target hit anim to play (physical vs emotional) and whether it should play at all.
-            if (useLustHit)
-            {
-                targetHitAnimId = BattleVisualAnimId.LustHit;
-                willPlayTargetHit = targetTookLpDamage;
-            }
-            else
-            {
-                targetHitAnimId = BattleVisualAnimId.Hit;
-                willPlayTargetHit = targetTookHpDamage;
-            }
-
-            // hitAtFrame == -1 means: ignore hit animation even if damage happened.
-            if (hitAtFrame == -1)
-                willPlayTargetHit = false;
-
-            // If we expect a hit, keep coroutine waiting until it actually happens and finishes.
-            targetFinished = !willPlayTargetHit;
-
-            void TriggerTargetHitNow()
-            {
-                if (!willPlayTargetHit)
-                    return;
-                if (targetHitTriggered)
-                    return;
-                if (targetView == null)
-                    return;
-
-                targetHitTriggered = true;
-                targetFinished = false;
-
-                // Immediate hit to avoid waiting for idle loop boundaries.
-                targetView.PlayImmediate(targetHitAnimId, onFinished: () => targetFinished = true);
-            }
-
-            // Start attacker animation immediately (do not wait for idle loop/ambient to finish).
-            // - For magic projectile attacks: onImpact is used to spawn the projectile at a specific caster frame.
-            // - For non-projectile attacks: onImpact triggers the target hit.
-            if (hasProjectile)
-            {
-                int spawnFrame = projectileConfig.spawnAtFrame;
-                if (spawnFrame <= 1)
-                    spawnFrame = 1;
-
-                attackerView.PlayImmediate(
-                    attackerAnimId,
-                    onFinished: () => attackerFinished = true,
-                    onImpact: () => SpawnProjectileNow(),
-                    impactFrameIndexOverride: spawnFrame);
-            }
-            else
-            {
-                attackerView.PlayImmediate(
-                    attackerAnimId,
-                    onFinished: () => attackerFinished = true,
-                    onImpact: () => TriggerTargetHitNow(),
-                    impactFrameIndexOverride: -1);
-            }
-
-            // Safety timeout to avoid soft-lock if something is miswired.
-            float timeout = 5f;
-            while ((!attackerFinished || !targetFinished) && timeout > 0f)
-            {
-                // Fallbacks for misconfiguration.
-                if (attackerFinished)
-                {
-                    if (hasProjectile && !projectileSpawned)
-                        SpawnProjectileNow();
-
-                    // If this is not a projectile action, and impact never fired, trigger hit at the end.
-                    if (!hasProjectile && !targetHitTriggered)
-                        TriggerTargetHitNow();
-                }
-
-                timeout -= Time.deltaTime;
-                yield return null;
-            }
-
-            attackerView.OnOneShotStarted -= HandleOneShotStarted;
-        }
-
-        public void OnExitPressed()
-        {
-            if (!battleStarted)
-                return;
-
-            Logger.LogInfo("BattleController: Exit pressed");
-            battleStarted = false;
-            ExitBattle();
-        }
-        
         private void ExecutePlayerAction(CombatActionId actionId)
         {
-            if (turnPhase != TurnPhase.PlayerTurn)
+            if (!EnsureTurnSystem().IsPlayerTurn)
                 return;
 
             if (playerActionRoutine != null)
                 return;
 
             // Lock input immediately to prevent spamming while enemy is about to act.
-            turnPhase = TurnPhase.EnemyTurn;
+            EnsureTurnSystem().BeginEnemyTurn();
             hudController?.SetInputEnabled(false);
 
             playerActionRoutine = StartCoroutine(ExecutePlayerActionRoutine(actionId));
@@ -937,41 +433,38 @@ namespace Game.Battle
 
         private IEnumerator ExecutePlayerActionRoutine(CombatActionId actionId)
         {
-            if (actionRegistry == null)
+            if (!EnsureActionResolutionSystem().TryResolvePlayerAction(
+                combatEngine,
+                actionRegistry,
+                combatState,
+                context.Player != null ? context.Player.PhysicalDamage : CombatDamageModel.DefaultBaseAttack,
+                context.Player != null ? context.Player.MagicDamage : CombatDamageModel.DefaultBaseAttack,
+                actionId,
+                out var action,
+                out var resolution,
+                out var failure))
             {
-                Logger.LogError("BattleController: actionRegistry is not initialized");
+                if (failure == BattleActionResolveFailure.BattleSystemsNotInitialized)
+                {
+                    Logger.LogError("BattleController: actionRegistry is not initialized");
+                }
+                else if (failure == BattleActionResolveFailure.ActionNotFound)
+                {
+                    Logger.LogError($"Action not found: {actionId}");
+                }
+                else if (failure == BattleActionResolveFailure.ActionRejected)
+                {
+                    var rejectedResult = resolution != null ? resolution.Result.ToString() : "Unknown";
+                    Logger.LogInfo($"Action rejected: {rejectedResult}");
+                }
 
-                turnPhase = TurnPhase.PlayerTurn;
-                hudController?.SetInputEnabled(true);
-                playerActionRoutine = null;
-                yield break;
-            }
-
-            var action = actionRegistry.Get(actionId);
-            if (action == null)
-            {
-                Logger.LogError($"Action not found: {actionId}");
-
-                turnPhase = TurnPhase.PlayerTurn;
-                hudController?.SetInputEnabled(true);
-                playerActionRoutine = null;
-                yield break;
-            }
-
-            var resolution = combatEngine.ResolvePlayerAction(combatState, action);
-
-            if (resolution.Result != CombatActionResult.Executed)
-            {
-                Logger.LogInfo($"Action rejected: {resolution.Result}");
-
-                turnPhase = TurnPhase.PlayerTurn;
-                hudController?.SetInputEnabled(true);
+                RestorePlayerInputWithoutNewTurnReset();
                 playerActionRoutine = null;
                 yield break;
             }
 
             // 1) Play attacker animation and (if HP damage happened) target Hit starting together.
-            yield return PlayActionWithTargetHitAndWait(actionId, actorIsPlayer: true, combatState, resolution.State);
+            yield return EnsureVisualExecutor().PlayActionWithTargetHitAndWait(actionId, actorIsPlayer: true, combatState, resolution.State);
 
             // 2) Apply results after animation.
             combatState = ClampPlayerResourcesToMax(resolution.State);
@@ -984,12 +477,9 @@ namespace Game.Battle
 
             playerActionRoutine = null;
 
-            if (TryFinishByLpThreshold(actionByPlayer: true, sourceActionId: actionId))
-                yield break;
-
-            if (combatState.IsEnemyDead)
+            if (EnsureTurnFlowRunner().TryResolveAfterPlayerAction(context, combatState, actionId, out var playerActionResolution))
             {
-                FinishBattle(playerWon: true, reason: BattleFinishReason.Victory, winningActionId: actionId);
+                FinishBattle(playerActionResolution.PlayerWon, playerActionResolution.Reason, playerActionResolution.WinningActionId);
                 yield break;
             }
 
@@ -1005,7 +495,7 @@ namespace Game.Battle
             if (enemyTurnRoutine != null)
                 return;
 
-            turnPhase = TurnPhase.EnemyTurn;
+            EnsureTurnSystem().BeginEnemyTurn();
             hudController?.SetInputEnabled(false);
             enemyTurnRoutine = StartCoroutine(EnemyTurnRoutine());
         }
@@ -1020,7 +510,7 @@ namespace Game.Battle
             if (TryResolveEnemyAction(out var enemyActionId, out var enemyAction, out var enemyResolution))
             {
                 // Play enemy animation and (if HP damage happened) player Hit starting together.
-                yield return PlayActionWithTargetHitAndWait(enemyActionId, actorIsPlayer: false, combatState, enemyResolution.State);
+                yield return EnsureVisualExecutor().PlayActionWithTargetHitAndWait(enemyActionId, actorIsPlayer: false, combatState, enemyResolution.State);
 
                 combatState = ClampEnemyResourcesToMax(enemyResolution.State);
                 ApplyPostActionEffects(enemyActionId, actorIsPlayer: false);
@@ -1034,15 +524,9 @@ namespace Game.Battle
 
                 PushHudState();
 
-                if (TryFinishByLpThreshold(actionByPlayer: false, sourceActionId: enemyActionId))
+                if (EnsureTurnFlowRunner().TryResolveAfterEnemyAction(context, combatState, enemyActionId, out var enemyActionResolution))
                 {
-                    enemyTurnRoutine = null;
-                    yield break;
-                }
-
-                if (combatState.IsPlayerDead)
-                {
-                    FinishBattle(playerWon: false, reason: BattleFinishReason.Defeat, winningActionId: enemyActionId);
+                    FinishBattle(enemyActionResolution.PlayerWon, enemyActionResolution.Reason, enemyActionResolution.WinningActionId);
                     enemyTurnRoutine = null;
                     yield break;
                 }
@@ -1053,9 +537,9 @@ namespace Game.Battle
             if (!battleStarted)
                 yield break;
 
-            if (combatState.IsPlayerDead)
+            if (EnsureTurnFlowRunner().TryResolveAfterEnemyRound(context, combatState, out var postEnemyTurnResolution))
             {
-                FinishBattle(playerWon: false, reason: BattleFinishReason.Defeat, winningActionId: null);
+                FinishBattle(postEnemyTurnResolution.PlayerWon, postEnemyTurnResolution.Reason, postEnemyTurnResolution.WinningActionId);
                 yield break;
             }
 
@@ -1066,8 +550,11 @@ namespace Game.Battle
             ApplyEndOfRoundEffects();
             PushHudState();
 
-            if (TryFinishByLpThreshold(actionByPlayer: false, sourceActionId: null))
+            if (EnsureTurnFlowRunner().TryResolveAfterEnemyRound(context, combatState, out var postRoundResolution))
+            {
+                FinishBattle(postRoundResolution.PlayerWon, postRoundResolution.Reason, postRoundResolution.WinningActionId);
                 yield break;
+            }
 
             BeginPlayerTurn();
         }
@@ -1077,53 +564,51 @@ namespace Game.Battle
             out CombatActionData action,
             out CombatResolution resolution)
         {
-            actionId = default;
-            action = null;
-            resolution = null;
-
             if (!battleStarted)
-                return false;
-
-            if (combatEngine == null || actionRegistry == null)
             {
-                Logger.LogError("BattleController: combatEngine/actionRegistry not initialized");
+                actionId = default;
+                action = null;
+                resolution = null;
                 return false;
             }
 
-            if (combatState.IsEnemyDead || combatState.IsPlayerDead)
-                return false;
-
-            var picked = EnemyActionSelector.SelectEnemyAction(
-                context.EnemyDifficulty,
-                context.Enemy,
+            if (!EnsureActionResolutionSystem().TryResolveEnemyAction(
+                context,
+                combatEngine,
                 actionRegistry,
                 combatState,
-                rng);
-
-            if (!picked.HasValue)
+                context != null && context.Enemy != null ? context.Enemy.attack : CombatDamageModel.DefaultBaseAttack,
+                context != null && context.Enemy != null ? context.Enemy.attack : CombatDamageModel.DefaultBaseAttack,
+                rng,
+                out actionId,
+                out action,
+                out resolution,
+                out var failure))
             {
-                Logger.LogInfo("[BattleController] Enemy skips turn (no affordable/allowed actions)");
-                return false;
-            }
-
-            actionId = picked.Value;
-            action = actionRegistry.Get(actionId);
-            if (action == null)
-            {
-                Logger.LogError($"[BattleController] Enemy action not found in registry: {actionId}");
+                if (failure == BattleActionResolveFailure.BattleSystemsNotInitialized)
+                {
+                    Logger.LogError("BattleController: combatEngine/actionRegistry not initialized");
+                }
+                else if (failure == BattleActionResolveFailure.EnemyNoActionPicked)
+                {
+                    Logger.LogInfo("[BattleController] Enemy skips turn (no affordable/allowed actions)");
+                }
+                else if (failure == BattleActionResolveFailure.ActionNotFound)
+                {
+                    Logger.LogError($"[BattleController] Enemy action not found in registry: {actionId}");
+                }
+                else if (failure == BattleActionResolveFailure.ActionRejected)
+                {
+                    var rejectedResult = resolution != null ? resolution.Result.ToString() : "Unknown";
+                    var actionIdText = action != null ? action.Id.ToString() : actionId.ToString();
+                    Logger.LogInfo($"[BattleController] Enemy action rejected: {actionIdText} -> {rejectedResult}");
+                }
                 return false;
             }
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log($"[Battle] Enemy used: {actionId}");
 #endif
-
-            resolution = combatEngine.ResolveEnemyAction(combatState, action);
-            if (resolution.Result != CombatActionResult.Executed)
-            {
-                Logger.LogInfo($"[BattleController] Enemy action rejected: {action.Id} -> {resolution.Result}");
-                return false;
-            }
 
             return true;
         }

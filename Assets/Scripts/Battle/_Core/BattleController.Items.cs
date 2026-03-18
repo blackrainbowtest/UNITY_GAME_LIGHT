@@ -73,7 +73,7 @@ namespace Game.Battle
             {
                 playerView?.SetAutoIdleFallbackEnabled(true);
                 inventoryOpenRoutine = null;
-                if (battleStarted && turnPhase == TurnPhase.PlayerTurn)
+                if (battleStarted && turnSystem != null && turnSystem.IsPlayerTurn)
                     hudController?.SetInputEnabled(true);
                 yield break;
             }
@@ -122,7 +122,7 @@ namespace Game.Battle
             inventoryClickHook = inventoryWindowInstance.AddComponent<BattleInventoryItemClickHook>();
             inventoryClickHook.Init(
                 onItemClicked: HandleBattleInventoryItemClicked,
-                resolveIsAllowed: () => battleStarted && turnPhase == TurnPhase.PlayerTurn && (!itemUsedThisPlayerTurn),
+                resolveIsAllowed: () => battleStarted && turnSystem != null && turnSystem.IsPlayerTurn && (!itemUsedThisPlayerTurn),
                 requireInsideInventoryTabView: true
             );
 
@@ -165,7 +165,7 @@ namespace Game.Battle
 
         private IEnumerator InventorySearchLoopRoutine()
         {
-            while (inventorySearchLoopActive && isInventoryWindowOpen && battleStarted && turnPhase == TurnPhase.PlayerTurn)
+            while (inventorySearchLoopActive && isInventoryWindowOpen && battleStarted && turnSystem != null && turnSystem.IsPlayerTurn)
             {
                 if (playerView == null)
                     yield break;
@@ -175,7 +175,7 @@ namespace Game.Battle
 
                 while (!finished)
                 {
-                    if (!inventorySearchLoopActive || !isInventoryWindowOpen || !battleStarted || turnPhase != TurnPhase.PlayerTurn)
+                    if (!inventorySearchLoopActive || !isInventoryWindowOpen || !battleStarted || turnSystem == null || !turnSystem.IsPlayerTurn)
                         yield break;
 
                     yield return null;
@@ -230,7 +230,7 @@ namespace Game.Battle
             playerView?.SetAutoIdleFallbackEnabled(true);
             playerView?.Play(BattleVisualAnimId.Idle);
 
-            if (battleStarted && turnPhase == TurnPhase.PlayerTurn && !isInventoryWindowOpen)
+            if (battleStarted && turnSystem != null && turnSystem.IsPlayerTurn && !isInventoryWindowOpen)
                 hudController?.SetInputEnabled(true);
 
             inventoryCloseRoutine = null;
@@ -241,7 +241,7 @@ namespace Game.Battle
             if (string.IsNullOrWhiteSpace(itemId))
                 return;
 
-            if (!battleStarted || turnPhase != TurnPhase.PlayerTurn)
+            if (!battleStarted || turnSystem == null || !turnSystem.IsPlayerTurn)
                 return;
 
             if (itemUsedThisPlayerTurn)

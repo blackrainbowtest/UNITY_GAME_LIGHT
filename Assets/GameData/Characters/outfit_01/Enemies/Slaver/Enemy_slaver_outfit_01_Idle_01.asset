@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
+  m_Name: Enemy_slaver_outfit_01_Idle_01
+  m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
+  id: idle_01
+  frames:
+  - {fileID: 21300000, guid: f2d90526eddd248498c35c65b51f9f4f, type: 3}
+  - {fileID: 21300000, guid: a688b2ba05e9e4645ac67c3f016ab83c, type: 3}
+  - {fileID: 21300000, guid: ad3f8a3e7b652574eb75d6a9d50bdc2b, type: 3}
+  - {fileID: 21300000, guid: 3f0509ae21aade7429af7d379ffac0a3, type: 3}
+  - {fileID: 21300000, guid: 925f800e74ea4fc4387f65151a142ab0, type: 3}
+  - {fileID: 21300000, guid: e762df4a3ffe6c947a4d581d845e4668, type: 3}
+  - {fileID: 21300000, guid: 1f8a55e8d23e4474798350d31faaacd5, type: 3}
+  - {fileID: 21300000, guid: de75d34bf532a6c40911721b3afa4d9b, type: 3}
+  - {fileID: 21300000, guid: 9e1cda71563836a40b1d428a648cf743, type: 3}
+  - {fileID: 21300000, guid: 1aabd920f0d142044ab441eead67a938, type: 3}
+  - {fileID: 21300000, guid: 001f34815529d754399bf9c828296d02, type: 3}
+  - {fileID: 21300000, guid: a44901ac25d5aa34d9ed2f7feca26d64, type: 3}
+  - {fileID: 21300000, guid: aab0f475c89bd334fbc94b2c916ec786, type: 3}
+  - {fileID: 21300000, guid: 5c846537197d4b64e82b998dc46243e8, type: 3}
+  - {fileID: 21300000, guid: 38b3fec0da77159418ee3e0ba3c41562, type: 3}
+  - {fileID: 21300000, guid: 4521daedc16f366438536a1d1399ae73, type: 3}
+  - {fileID: 21300000, guid: 1c06538d8bc57ce4ab3d1689152e2ed0, type: 3}
+  - {fileID: 21300000, guid: e8746fec45d7bbb4096ece8a8c8f522b, type: 3}
+  - {fileID: 21300000, guid: 0b7280b3ed324884e9bf7bc6adbecee3, type: 3}
+  - {fileID: 21300000, guid: 951a618835f7ec3469aa60c1e47b9a77, type: 3}
+  - {fileID: 21300000, guid: 248ea6165fdae8f47a97ed7c3836b81e, type: 3}
+  - {fileID: 21300000, guid: 8732be8f4a9f36942be168b48ecb95a2, type: 3}
+  - {fileID: 21300000, guid: 06666d701b607e0479ff0edc101f4da6, type: 3}
+  - {fileID: 21300000, guid: 11bdea5b2b039254f881f3c10a5a9102, type: 3}
+  - {fileID: 21300000, guid: 45b4d13b83351e6419fcd7ab8f485ecf, type: 3}
+  - {fileID: 21300000, guid: 38e7330825c31194daffe7339ace5bed, type: 3}
+  frameRate: 12
+  hasImpact: 0
+  impactTimeNormalized: 0.5
+  impactFrameIndex: -1

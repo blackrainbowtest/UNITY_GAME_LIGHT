@@ -27,7 +27,7 @@ namespace Game.Battle.Combat.Actions
         public CombatActionId Id { get; }
         public CombatActionCategory Category { get; }
 
-        public int HpDamage { get; }
+        public float HpDamageMultiplier { get; }
         public int LpDamage { get; }
         public int HpHealSelf { get; }
         public int MpCost { get; }
@@ -39,7 +39,7 @@ namespace Game.Battle.Combat.Actions
         public CombatActionData(
             CombatActionId id,
             CombatActionCategory category,
-            int hpDamage,
+            float hpDamageMultiplier,
             int mpCost,
             int spCost,
             int lpCost,
@@ -49,7 +49,7 @@ namespace Game.Battle.Combat.Actions
         {
             Id = id;
             Category = category;
-            HpDamage = hpDamage;
+            HpDamageMultiplier = hpDamageMultiplier;
             LpDamage = lpDamage;
             HpHealSelf = hpHealSelf;
             MpCost = mpCost;

@@ -38,16 +38,28 @@ namespace Game.Battle
         [Tooltip("Gold granted to the player even on Defeat (inclusive).")]
         [SerializeField] private int defeatGoldMax = 3;
 
-        [Header("Result Music (Optional)")]
-        [Tooltip("If assigned, plays this music when the battle ends and the results modal is shown.")]
+        [Header("Result Music (Legacy Optional)")]
+        [Tooltip("Legacy fallback: used when no per-outcome cue is assigned.")]
         [SerializeField] private AudioCue resultsMusicCue;
-        [Tooltip("Fallback (legacy): if no cue is assigned, plays this clip when the battle ends and the results modal is shown.")]
+        [Tooltip("Legacy fallback clip: used when no per-outcome cue and no legacy cue are assigned.")]
         [SerializeField] private AudioClip resultsMusic;
+
+        [Header("Outcome Music (Optional)")]
+        [Tooltip("Played for Victory result flow.")]
+        [SerializeField] private AudioCue victoryResultMusicCue;
+        [Tooltip("Played for Defeat/Surrender result flow.")]
+        [SerializeField] private AudioCue defeatResultMusicCue;
+        [Tooltip("Played for VictoryByLp (seduction victory) result flow. Falls back to Victory cue.")]
+        [SerializeField] private AudioCue victoryByLpResultMusicCue;
+        [Tooltip("Played for DefeatByLp (seduction defeat) result flow. Falls back to Defeat cue.")]
+        [SerializeField] private AudioCue defeatByLpResultMusicCue;
+        [Tooltip("Played when EscapeFailed outcome modal is opened (battle continues).")]
+        [SerializeField] private AudioCue escapeFailedModalMusicCue;
 
         private void FinishBattle(bool playerWon, BattleFinishReason reason = BattleFinishReason.Defeat, CombatActionId? winningActionId = null)
         {
             battleStarted = false;
-            turnPhase = TurnPhase.BattleOver;
+            turnSystem?.EndBattle();
             hudController?.SetInputEnabled(false);
 
             var showResult = UDA2.Core.SettingsContext.Current == null
@@ -58,15 +70,6 @@ namespace Game.Battle
             if (UDA2.Audio.AudioManager.Instance != null)
             {
                 UDA2.Audio.AudioManager.Instance.StopMusic();
-
-                // Optional: play separate results music while the results modal is on screen.
-                if (showResult)
-                {
-                    if (resultsMusicCue != null)
-                        UDA2.Audio.AudioManager.Instance.Play(resultsMusicCue);
-                    else if (resultsMusic != null)
-                        UDA2.Audio.AudioManager.Instance.PlayMusic(resultsMusic);
-                }
             }
 
             if (playerWon && reason == BattleFinishReason.Defeat)
@@ -159,6 +162,8 @@ namespace Game.Battle
                 }
             }
 
+            RecordBattleStats(global::GameState.Instance?.CurrentSave, context, reason, goldGained, expGained);
+
             var result = new BattleResultData(
                 playerWon: playerWon,
                 goldGained: goldGained,
@@ -178,6 +183,10 @@ namespace Game.Battle
 
                 if (resultModal != null && showResult)
                 {
+                    // Play outcome-specific music when entering results stage (after outcome visuals),
+                    // to avoid audio-switch hitch before defeat/victory presentation.
+                    PlayOutcomeMusic(reason, allowLegacyFallback: true);
+
                     resultModal.SetItemDatabase(itemDatabase);
                     resultModal.Show(result, ExitBattle);
                 }
@@ -202,36 +211,55 @@ namespace Game.Battle
 
             if (outcomeAnimationModal != null && shouldShowOutcomeModal)
             {
-                ShowOutcomeModalOrResultsWithOptionalLoseAnimation();
+                ShowOutcomeModalOrResultsWithOptionalEndAnimation();
             }
             else
             {
-                ShowOutcomeModalOrResultsWithOptionalLoseAnimation();
+                ShowOutcomeModalOrResultsWithOptionalEndAnimation();
             }
 
-            void ShowOutcomeModalOrResultsWithOptionalLoseAnimation()
+            void ShowOutcomeModalOrResultsWithOptionalEndAnimation()
             {
-                bool shouldPlayLoseAnim = !playerWon &&
-                    (reason == BattleFinishReason.Defeat
-                    || reason == BattleFinishReason.EscapeFailed
-                    || reason == BattleFinishReason.DefeatByLp);
+                bool shouldPlayPlayerLoseAnim = false;
 
-                if (!shouldPlayLoseAnim || playerView == null)
+                bool shouldPlayEnemyDefeatAnim = playerWon &&
+                    (reason == BattleFinishReason.Victory
+                    || reason == BattleFinishReason.VictoryByLp);
+
+                if (!shouldPlayPlayerLoseAnim && !shouldPlayEnemyDefeatAnim)
                 {
                     ShowOutcomeModalOrResults();
                     return;
                 }
 
-                var loseAnimId = reason == BattleFinishReason.DefeatByLp
-                    ? Game.Battle.Visual.BattleVisualAnimId.LustLose
-                    : Game.Battle.Visual.BattleVisualAnimId.Lose;
+                if (shouldPlayPlayerLoseAnim)
+                {
+                    if (playerView == null)
+                    {
+                        ShowOutcomeModalOrResults();
+                        return;
+                    }
 
-                StartCoroutine(PlayLoseAnimThenContinue(loseAnimId));
+                    var loseAnimId = reason == BattleFinishReason.DefeatByLp
+                        ? Game.Battle.Visual.BattleVisualAnimId.LustLose
+                        : Game.Battle.Visual.BattleVisualAnimId.Lose;
+
+                    StartCoroutine(PlayEndAnimThenContinue(playerView, loseAnimId));
+                    return;
+                }
+
+                if (enemyView == null)
+                {
+                    ShowOutcomeModalOrResults();
+                    return;
+                }
+
+                StartCoroutine(PlayEndAnimThenContinue(enemyView, Game.Battle.Visual.BattleVisualAnimId.Death));
             }
 
-            IEnumerator PlayLoseAnimThenContinue(Game.Battle.Visual.BattleVisualAnimId animId)
+            IEnumerator PlayEndAnimThenContinue(Game.Battle.Visual.BattleCharacterView view, Game.Battle.Visual.BattleVisualAnimId animId)
             {
-                yield return PlayCharacterAnimImmediateAndWait(playerView, animId);
+                yield return PlayCharacterAnimImmediateAndWait(view, animId);
                 ShowOutcomeModalOrResults();
             }
 
@@ -241,6 +269,57 @@ namespace Game.Battle
                     outcomeAnimationModal.Show(reason, playerWon, winningActionId, ShowResultsOrExit, hideOnClose: false);
                 else
                     ShowResultsOrExit();
+            }
+        }
+
+        private void PlayOutcomeMusic(BattleFinishReason reason, bool allowLegacyFallback)
+        {
+            var audio = UDA2.Audio.AudioManager.Instance;
+            if (audio == null)
+                return;
+
+            var cue = ResolveOutcomeMusicCue(reason);
+            if (cue != null)
+            {
+                audio.Play(cue);
+                return;
+            }
+
+            if (!allowLegacyFallback)
+                return;
+
+            if (resultsMusicCue != null)
+            {
+                audio.Play(resultsMusicCue);
+                return;
+            }
+
+            if (resultsMusic != null)
+                audio.PlayMusic(resultsMusic);
+        }
+
+        private AudioCue ResolveOutcomeMusicCue(BattleFinishReason reason)
+        {
+            switch (reason)
+            {
+                case BattleFinishReason.Victory:
+                    return victoryResultMusicCue;
+
+                case BattleFinishReason.Defeat:
+                case BattleFinishReason.Surrender:
+                    return defeatResultMusicCue;
+
+                case BattleFinishReason.VictoryByLp:
+                    return victoryByLpResultMusicCue != null ? victoryByLpResultMusicCue : victoryResultMusicCue;
+
+                case BattleFinishReason.DefeatByLp:
+                    return defeatByLpResultMusicCue != null ? defeatByLpResultMusicCue : defeatResultMusicCue;
+
+                case BattleFinishReason.EscapeFailed:
+                    return escapeFailedModalMusicCue;
+
+                default:
+                    return null;
             }
         }
 
@@ -364,6 +443,98 @@ namespace Game.Battle
             }
 
             list.Add(new SaveData.Item { itemId = itemId, count = count });
+        }
+
+        private static void RecordBattleStats(SaveData save, BattleContext battleContext, BattleFinishReason reason, int goldGained, int expGained)
+        {
+            if (save == null)
+                return;
+
+            if (save.achievementStats == null)
+                save.achievementStats = new SaveData.AchievementStats();
+
+            var stats = save.achievementStats;
+            stats.battlesFinished = Mathf.Max(0, stats.battlesFinished) + 1;
+
+            if (goldGained > 0)
+                stats.totalGoldEarned = Mathf.Max(0, stats.totalGoldEarned) + goldGained;
+
+            if (expGained > 0)
+                stats.totalExpEarned = Mathf.Max(0, stats.totalExpEarned) + expGained;
+
+            switch (reason)
+            {
+                case BattleFinishReason.Victory:
+                case BattleFinishReason.VictoryByLp:
+                    stats.battlesWon = Mathf.Max(0, stats.battlesWon) + 1;
+                    RegisterEnemyKill(stats, battleContext?.Enemy);
+                    break;
+
+                case BattleFinishReason.Defeat:
+                case BattleFinishReason.DefeatByLp:
+                    stats.battlesLost = Mathf.Max(0, stats.battlesLost) + 1;
+                    break;
+
+                case BattleFinishReason.Surrender:
+                    stats.battlesSurrendered = Mathf.Max(0, stats.battlesSurrendered) + 1;
+                    break;
+
+                case BattleFinishReason.EscapeSuccess:
+                    stats.escapesSuccessful = Mathf.Max(0, stats.escapesSuccessful) + 1;
+                    break;
+
+                case BattleFinishReason.EscapeFailed:
+                    stats.escapesFailed = Mathf.Max(0, stats.escapesFailed) + 1;
+                    break;
+            }
+        }
+
+        private static void RegisterEnemyKill(SaveData.AchievementStats stats, EnemyData enemy)
+        {
+            if (stats == null || enemy == null)
+                return;
+
+            var enemyId = ResolveEnemyId(enemy);
+            if (string.IsNullOrWhiteSpace(enemyId))
+                return;
+
+            stats.totalMobKills = Mathf.Max(0, stats.totalMobKills) + 1;
+
+            if (stats.mobKillsByEnemyId == null)
+                stats.mobKillsByEnemyId = new System.Collections.Generic.List<SaveData.MobKillEntry>();
+
+            for (int i = 0; i < stats.mobKillsByEnemyId.Count; i++)
+            {
+                var entry = stats.mobKillsByEnemyId[i];
+                if (entry == null || string.IsNullOrWhiteSpace(entry.enemyId))
+                    continue;
+
+                if (!string.Equals(entry.enemyId, enemyId, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                entry.kills = Mathf.Max(0, entry.kills) + 1;
+                return;
+            }
+
+            stats.mobKillsByEnemyId.Add(new SaveData.MobKillEntry
+            {
+                enemyId = enemyId,
+                kills = 1
+            });
+        }
+
+        private static string ResolveEnemyId(EnemyData enemy)
+        {
+            if (enemy == null)
+                return null;
+
+            if (!string.IsNullOrWhiteSpace(enemy.id))
+                return enemy.id.Trim();
+
+            if (!string.IsNullOrWhiteSpace(enemy.enemyName))
+                return enemy.enemyName.Trim();
+
+            return enemy.name;
         }
 
         private void ExitBattle()

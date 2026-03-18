@@ -18,6 +18,7 @@
 
 using UnityEngine;
 using Game.Battle;
+using Game.Battle.Combat;
 
 /// <summary>
 /// Entry point for the battle scene. Consumes BattleEntryContext and starts the battle via BattleController.
@@ -49,10 +50,14 @@ public class BattleSceneEntryPoint : MonoBehaviour
         public int sp;
         public int lpMax;
         public int lp;
+        public int attack;
+        public int magicAttack;
     }
 
     [SerializeField] private bool overridePlayerSnapshot;
     [SerializeField] private DebugPlayer debugPlayer;
+    [SerializeField, Min(0)] private int defaultPlayerBaseAttack = CombatDamageModel.DefaultBaseAttack;
+    [SerializeField, Min(0)] private int defaultPlayerMagicDamage = CombatDamageModel.DefaultBaseAttack;
     [SerializeField] private bool setDebugReturnScene = true;
     [SerializeField] private string debugReturnSceneName = "StartCityScene";
 
@@ -160,7 +165,9 @@ public class BattleSceneEntryPoint : MonoBehaviour
                 hpMax, Mathf.Clamp(debugPlayer.hp, 0, hpMax),
                 mpMax, Mathf.Clamp(debugPlayer.mp, 0, mpMax),
                 spMax, Mathf.Clamp(debugPlayer.sp, 0, spMax),
-                lpMax, Mathf.Clamp(debugPlayer.lp, 0, lpMax)
+                lpMax, Mathf.Clamp(debugPlayer.lp, 0, lpMax),
+                physicalDamage: debugPlayer.attack > 0 ? debugPlayer.attack : defaultPlayerBaseAttack,
+                magicDamage: debugPlayer.magicAttack > 0 ? debugPlayer.magicAttack : defaultPlayerMagicDamage
             );
         }
 
@@ -181,7 +188,18 @@ public class BattleSceneEntryPoint : MonoBehaviour
         {
             Debug.LogError("[BattleSceneEntryPoint] GameState.CurrentSave или player/stats не инициализированы!");
             // Fallback: безопасные значения
-            return new PlayerCombatSnapshot(100, 100, 50, 50, 30, 30, 10, 10, outfitId: "outfit_01");
+            return new PlayerCombatSnapshot(
+                100,
+                100,
+                50,
+                50,
+                30,
+                30,
+                10,
+                10,
+                physicalDamage: defaultPlayerBaseAttack,
+                magicDamage: defaultPlayerMagicDamage,
+                outfitId: "outfit_01");
         }
         var stats = save.player.stats;
         var outfitId = string.IsNullOrEmpty(save.player.outfitId) ? "outfit_01" : save.player.outfitId;
@@ -205,6 +223,9 @@ public class BattleSceneEntryPoint : MonoBehaviour
             currentSp = stats.spMax;
         }
 
+        var resolvedPhysicalDamage = ResolvePlayerPhysicalDamage(save);
+        var resolvedMagicDamage = ResolvePlayerMagicDamage(save, resolvedPhysicalDamage);
+
         return new PlayerCombatSnapshot(
             stats.hpMax,
             stats.hp,
@@ -214,7 +235,48 @@ public class BattleSceneEntryPoint : MonoBehaviour
             currentSp,
             stats.lpMax,
             stats.lp,
+            physicalDamage: resolvedPhysicalDamage,
+            magicDamage: resolvedMagicDamage,
             outfitId: outfitId
         );
+    }
+
+    /// <summary>
+    /// Future extension point for player physical damage source.
+    /// Keep one resolver method so equipment/perks/buffs can be connected without touching battle flow.
+    /// </summary>
+    private int ResolvePlayerPhysicalDamage(SaveData save)
+    {
+        // TODO(BattleStats): when equipment system is ready, resolve weapon/offhand/accessory attack bonuses here.
+        // TODO(BattleStats): apply additive/multiplicative modifiers from perks, statuses, weather and temporary effects.
+        // For now this reads from save stats so profile and battle use the same source.
+        var stats = save != null && save.player != null ? save.player.stats : null;
+        if (stats == null)
+            return CombatDamageModel.NormalizeBaseAttack(defaultPlayerBaseAttack);
+
+        var savedPhysical = stats.physicalDamage > 0 ? stats.physicalDamage : stats.damage;
+        if (savedPhysical > 0)
+            return CombatDamageModel.NormalizeBaseAttack(savedPhysical);
+
+        return CombatDamageModel.NormalizeBaseAttack(defaultPlayerBaseAttack);
+    }
+
+    /// <summary>
+    /// Future extension point for player magic damage source.
+    /// </summary>
+    private int ResolvePlayerMagicDamage(SaveData save, int fallbackPhysicalDamage)
+    {
+        // TODO(BattleStats): replace this with magic scaling from equipment/perks/statuses.
+        var stats = save != null && save.player != null ? save.player.stats : null;
+        if (stats == null)
+            return CombatDamageModel.NormalizeBaseAttack(defaultPlayerMagicDamage);
+
+        if (stats.magicDamage > 0)
+            return CombatDamageModel.NormalizeBaseAttack(stats.magicDamage);
+
+        if (fallbackPhysicalDamage > 0)
+            return CombatDamageModel.NormalizeBaseAttack(fallbackPhysicalDamage);
+
+        return CombatDamageModel.NormalizeBaseAttack(defaultPlayerMagicDamage);
     }
 }

@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad38d47d2791a6d47ac74864257dce00, type: 3}
+  m_Name: GuildRankProgressionConfig
+  m_EditorClassIdentifier: UDA2.SaveSystem::UDA2.SaveSystem.Guild.GuildRankProgressionConfigAsset
+  requirements:
+  - targetRank: 1
+    requiredGold: 150
+    requiredHeroLevel: 2
+    requiredCompletedQuests: 5
+    requiredItems:
+    - itemId: wooden_glue
+      amount: 5
+  - targetRank: 2
+    requiredGold: 450
+    requiredHeroLevel: 5
+    requiredCompletedQuests: 15
+    requiredItems:
+    - itemId: wooden_glue
+      amount: 10
+    - itemId: stone
+      amount: 10
+  - targetRank: 3
+    requiredGold: 850
+    requiredHeroLevel: 8
+    requiredCompletedQuests: 25
+    requiredItems: []
+  - targetRank: 4
+    requiredGold: 2500
+    requiredHeroLevel: 12
+    requiredCompletedQuests: 40
+    requiredItems: []
+  - targetRank: 5
+    requiredGold: 6500
+    requiredHeroLevel: 14
+    requiredCompletedQuests: 75
+    requiredItems: []
+  - targetRank: 6
+    requiredGold: 15000
+    requiredHeroLevel: 16
+    requiredCompletedQuests: 100
+    requiredItems: []
+  - targetRank: 7
+    requiredGold: 45000
+    requiredHeroLevel: 18
+    requiredCompletedQuests: 130
+    requiredItems: []
+  - targetRank: 8
+    requiredGold: 55000
+    requiredHeroLevel: 20
+    requiredCompletedQuests: 150
+    requiredItems: []

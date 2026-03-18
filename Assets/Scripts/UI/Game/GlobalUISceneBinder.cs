@@ -18,6 +18,7 @@ namespace UDA2.UI.Game
         [SerializeField] private GameObject timeOverlayRoot;
         [SerializeField] private GameObject profileRoot;
         [SerializeField] private GameObject menuButtonRoot;
+        [SerializeField] private GameObject homeButtonRoot;
         [SerializeField] private GameObject backButtonRoot;
         [SerializeField] private GameObject questListRoot;
 
@@ -28,6 +29,7 @@ namespace UDA2.UI.Game
         [SerializeField] private bool defaultShowTime = false;
         [SerializeField] private bool defaultShowProfile = false;
         [SerializeField] private bool defaultShowMenuButton = false;
+        [SerializeField] private bool defaultShowHomeButton = false;
         [SerializeField] private bool defaultShowBackButton = false;
         [SerializeField] private bool defaultShowQuestList = false;
         [SerializeField] private bool defaultShowInspectEye = false;
@@ -73,6 +75,7 @@ namespace UDA2.UI.Game
             bool showTime = config != null ? config.ShowTime : defaultShowTime;
             bool showProfile = config != null ? config.ShowProfile : defaultShowProfile;
             bool showMenuButton = config != null ? config.ShowMenuButton : defaultShowMenuButton;
+            bool showHomeButton = config != null ? config.ShowHomeButton : defaultShowHomeButton;
             bool showBack = config != null ? config.ShowBackButton : defaultShowBackButton;
             bool showQuest = config != null ? config.ShowQuestList : defaultShowQuestList;
             bool showInspect = config != null ? config.ShowInspectEye : defaultShowInspectEye;
@@ -81,6 +84,7 @@ namespace UDA2.UI.Game
             SetVisible(timeOverlayRoot, showTime);
             SetVisible(profileRoot, showProfile);
             SetVisible(menuButtonRoot, showMenuButton);
+            SetVisible(homeButtonRoot, showHomeButton);
             SetVisible(backButtonRoot, showBack);
             SetVisible(questListRoot, showQuest);
 

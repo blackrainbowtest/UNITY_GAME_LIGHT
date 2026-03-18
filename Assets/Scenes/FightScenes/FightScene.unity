@@ -13421,6 +13421,7 @@ MonoBehaviour:
   modalsRoot: {fileID: 1962314100}
   resultModal: {fileID: 1403937741582167887, guid: 033955e8b7a96964f9a163578c80cb49, type: 3}
   outcomeAnimationModal: {fileID: 7779633668407957838, guid: 83c613707bf1e8b4295ed7a824751d8e, type: 3}
+  statusCatalog: {fileID: 11400000, guid: fdbe505f022f72049bb0ac404c7daffa, type: 2}
   playerView: {fileID: 1816342352}
   enemyView: {fileID: 625450547}
   projectilesRoot: {fileID: 174536072}
@@ -13435,11 +13436,16 @@ MonoBehaviour:
   escapeStaminaWeight: 0.6
   escapeLustWeight: 0.4
   escapeFailFallAnim: 34
-  escapeFailLpPenalty: 20
+  escapeFailLpPenalty: 10
   defeatGoldMin: 1
   defeatGoldMax: 3
   resultsMusicCue: {fileID: 11400000, guid: b694056ca0dab7244b35a6fde989f4d9, type: 2}
   resultsMusic: {fileID: 8300000, guid: c28a8b377d8b1fb4ea9b345f7552c515, type: 3}
+  victoryResultMusicCue: {fileID: 11400000, guid: 12f96905eda05a0449706a38c005b9cd, type: 2}
+  defeatResultMusicCue: {fileID: 11400000, guid: 96c14bc546ceeb244baaf59722019611, type: 2}
+  victoryByLpResultMusicCue: {fileID: 11400000, guid: 8cbf29d1c6b607d4d9fb1cec7e66144d, type: 2}
+  defeatByLpResultMusicCue: {fileID: 11400000, guid: 5d84e3593dca67f4ca2e54cdbf820a50, type: 2}
+  escapeFailedModalMusicCue: {fileID: 11400000, guid: 8100249e867a4154e96628be07690c31, type: 2}
   playerCharacterWindowPrefab: {fileID: 5819298412677635782, guid: 58ce046522378304398939ad1289ac0b, type: 3}
   inventoryParentOverride: {fileID: 1962314100}
   itemDatabase: {fileID: 11400000, guid: ea48e7814522e8849a7792d9d32df653, type: 2}
@@ -13862,6 +13868,7 @@ MonoBehaviour:
   enemyGridRoot: {fileID: 883696421}
   iconPrefab: {fileID: 482198629714615607, guid: d4b20cfc40191d548b9a0bd25f832989, type: 3}
   maxIconsPerSide: 20
+  statusCatalog: {fileID: 0}
   icons:
   - id: 0
     icon: {fileID: 21300000, guid: 9b5d6f9d61f449b40a2fa843aaf2e3a3, type: 3}

@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
 using UDA2.UI.Common;
+using UDA2.UI.Game;
 using UDA2.SaveSystem;
 using UDA2.GameTime;
 
@@ -36,9 +37,39 @@ namespace UDA2.UI.SaveLoad
         public static SaveLoadModalController Show(SaveLoadMode mode)
         {
             var prefab = Resources.Load<SaveLoadModalController>("Prefabs/UI/SaveLoad/SaveLoadModal");
-            var instance = Instantiate(prefab);
+            var modalParent = ResolveModalParent();
+            var instance = modalParent != null
+                ? Instantiate(prefab, modalParent, worldPositionStays: false)
+                : Instantiate(prefab);
             instance.OpenInternal(mode);
             return instance;
+        }
+
+        private static Transform ResolveModalParent()
+        {
+            var binder = FindGlobalUiBinder();
+            if (binder == null)
+                return null;
+
+            var root = binder.transform.root != null ? binder.transform.root : binder.transform;
+            var all = root.GetComponentsInChildren<Transform>(includeInactive: true);
+            for (int i = 0; i < all.Length; i++)
+            {
+                var candidate = all[i];
+                if (candidate != null && string.Equals(candidate.name, "ModalsRoot", System.StringComparison.Ordinal))
+                    return candidate;
+            }
+
+            return binder.transform;
+        }
+
+        private static GlobalUISceneBinder FindGlobalUiBinder()
+        {
+#if UNITY_2023_1_OR_NEWER || UNITY_2022_2_OR_NEWER
+            return Object.FindFirstObjectByType<GlobalUISceneBinder>(FindObjectsInactive.Include);
+#else
+            return Object.FindObjectOfType<GlobalUISceneBinder>(includeInactive: true);
+#endif
         }
 
         /// <summary>
@@ -137,8 +168,16 @@ namespace UDA2.UI.SaveLoad
                     var targetScene = save.player.sceneName;
                     if (save.sceneState != null && save.sceneState.pendingBattle != null && save.sceneState.pendingBattle.isPending)
                     {
-                        if (!string.IsNullOrEmpty(save.sceneState.pendingBattle.battleSceneName))
+                        bool canResumeBattle = save.player != null && save.player.stats != null && save.player.stats.hp > 0;
+                        if (canResumeBattle && !string.IsNullOrEmpty(save.sceneState.pendingBattle.battleSceneName))
+                        {
                             targetScene = save.sceneState.pendingBattle.battleSceneName;
+                        }
+                        else if (!canResumeBattle)
+                        {
+                            save.sceneState.pendingBattle.Clear();
+                            Debug.LogWarning("[SaveLoadModal] Pending battle was cleared because player HP is 0.");
+                        }
                     }
 
                     // Ensures correct scene transition after load

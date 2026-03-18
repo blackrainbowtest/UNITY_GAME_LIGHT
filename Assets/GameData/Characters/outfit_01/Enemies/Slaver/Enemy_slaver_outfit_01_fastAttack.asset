@@ -14,8 +14,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
   id: idle_01
   frames:
-  - {fileID: 21300000, guid: 871a7f358a963ec459b92286e30c6f4f, type: 3}
-  - {fileID: 21300000, guid: 348b7da4f4652bf42b6f7c2d5eabdc5d, type: 3}
-  - {fileID: 21300000, guid: 8b81b5b1a9b89a745989fe622f21cc7e, type: 3}
-  - {fileID: 21300000, guid: 1e07babd9919ca446840f9cf5a024f94, type: 3}
+  - {fileID: 21300000, guid: 53e58524de873ed46b4eea4021db4ddd, type: 3}
+  - {fileID: 21300000, guid: 46983880cbe1a734bb24c261f9036106, type: 3}
+  - {fileID: 21300000, guid: 8c9cf39d19e0b8c488ac902daf8c4c2f, type: 3}
+  - {fileID: 21300000, guid: 4f0a6b515e8cc1c4889073e8aff27e4b, type: 3}
+  - {fileID: 21300000, guid: 7bbc10d9b90a00347bbb78c4787a57d9, type: 3}
+  - {fileID: 21300000, guid: 78099aa51b1cbc64989712810aa3abbc, type: 3}
+  - {fileID: 21300000, guid: d2ea9044f0422194d874f96e7296d76f, type: 3}
+  - {fileID: 21300000, guid: 9d4a2e6ab6c1a2b4cb12a29d5a33f77e, type: 3}
+  - {fileID: 21300000, guid: 8a59f4f145ec6f643be66796f4b3a3e9, type: 3}
+  - {fileID: 21300000, guid: 373399bc852d2054d8d9e998fa220b9b, type: 3}
+  - {fileID: 21300000, guid: 2af4edac3c8af1c44b2cf8302486201f, type: 3}
+  - {fileID: 21300000, guid: 87652d579c3bb744da3d29c1dd452b65, type: 3}
+  - {fileID: 21300000, guid: 831a0ac1778f5a44d8774a206f95cd0d, type: 3}
+  - {fileID: 21300000, guid: e84d5eae3e0f0ed47872de55aebf5b00, type: 3}
+  - {fileID: 21300000, guid: 6e56e9773f192ec49b30b54141f47320, type: 3}
+  - {fileID: 21300000, guid: 932a951f968e2a24983e9c3108e9cbad, type: 3}
+  - {fileID: 21300000, guid: c31b86362f685ca4994d4297e1391191, type: 3}
+  - {fileID: 21300000, guid: 1a1eb53499c277e4b9e315011b978aab, type: 3}
+  - {fileID: 21300000, guid: ceed37aee990e8744b644123200ff146, type: 3}
+  - {fileID: 21300000, guid: f1f5c833101a70349aab2c82e416c14e, type: 3}
+  - {fileID: 21300000, guid: 767ca7ded928e9f43a9da64491f26ecb, type: 3}
+  - {fileID: 21300000, guid: 619dc5062379987489a37cf108ae465a, type: 3}
+  - {fileID: 21300000, guid: 9588a2e23dc238c4999c8002e472f403, type: 3}
   frameRate: 12
+  hasImpact: 0
+  impactTimeNormalized: 0.5
+  impactFrameIndex: 14

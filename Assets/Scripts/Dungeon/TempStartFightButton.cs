@@ -54,6 +54,14 @@ namespace Game.Dungeon
 
         private void OnClick()
         {
+            if (!HasAlivePlayer())
+            {
+                Debug.LogWarning("[TempStartFightButton] Cannot start battle: player HP is 0. Restore HP before entering battle.");
+                if (button != null)
+                    button.interactable = false;
+                return;
+            }
+
             if (string.IsNullOrEmpty(fightSceneName))
             {
                 Debug.LogError("[TempStartFightButton] fightSceneName is empty.");
@@ -111,6 +119,12 @@ namespace Game.Dungeon
                 SceneFlowManager.Instance.LoadScene(fightSceneName);
             else
                 SceneManager.LoadScene(fightSceneName);
+        }
+
+        private static bool HasAlivePlayer()
+        {
+            var stats = GameState.Instance?.CurrentSave?.player?.stats;
+            return stats != null && stats.hp > 0;
         }
     }
 }

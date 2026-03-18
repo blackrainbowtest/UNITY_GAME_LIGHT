@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4c1cb433589eb04789a7dde4718d663, type: 3}
   m_Name: bld_firstFight
   m_EditorClassIdentifier: UDA2.Battle::Game.Battle.BattleLocationData
+  id: bld_firstfight
   background: {fileID: 21300000, guid: efbc47c1bd6bb3c47b2d478daaced3fb, type: 3}
-  musicCue: {fileID: 11400000, guid: b694056ca0dab7244b35a6fde989f4d9, type: 2}
-  music: {fileID: 8300000, guid: c28a8b377d8b1fb4ea9b345f7552c515, type: 3}
+  musicCue: {fileID: 11400000, guid: d2e5d518e3de4fb47afa0fe62cb13de8, type: 2}
+  music: {fileID: 8300000, guid: 9ff73714afa73fe43bb1c8d0f2f102d6, type: 3}
