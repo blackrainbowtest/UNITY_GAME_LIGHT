@@ -1,4 +1,8 @@
 *key;ru;en;fr
+*ui_guild_quests;
+	Гильдейские задания;
+	Guild Quests;
+	Quêtes de guilde;
 *npc_guild_registrar_name;
 	Регистратор гильдии: Мери;
 	Guild Registrar: Mary;

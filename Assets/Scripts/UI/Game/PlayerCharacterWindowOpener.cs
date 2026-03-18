@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Reflection;
 
 namespace UDA2.UI.Game
 {
@@ -23,6 +24,7 @@ namespace UDA2.UI.Game
         [SerializeField] private int forcedSortingOrder = 5000;
 
         private GameObject _instance;
+        private global::IMenuCloseHandler _closeHandler;
 
         private void Awake()
         {
@@ -68,9 +70,7 @@ namespace UDA2.UI.Game
             _instance.SetActive(true);
             _instance.transform.SetAsLastSibling();
 
-            var windowController = _instance.GetComponentInChildren<PlayerCharacterWindowController>(true);
-            if (windowController != null)
-                windowController.SetOwnerRoot(_instance);
+            TrySetOwnerRootOnControllers(_instance);
 
             if (forceWindowCanvasOnTop)
                 TryForceCanvasOnTop(_instance);
@@ -79,9 +79,9 @@ namespace UDA2.UI.Game
                 LogUIInfo(_instance, parent);
 
 
-            var closeHandler = _instance.GetComponent<global::IMenuCloseHandler>();
-            if (closeHandler != null)
-                closeHandler.OnMenuClosed += HandleClosed;
+            _closeHandler = _instance.GetComponentInChildren<global::IMenuCloseHandler>(true);
+            if (_closeHandler != null)
+                _closeHandler.OnMenuClosed += HandleClosed;
         }
 
         private void HandleClosed()
@@ -89,11 +89,48 @@ namespace UDA2.UI.Game
             if (_instance == null)
                 return;
 
-            var closeHandler = _instance.GetComponent<global::IMenuCloseHandler>();
-            if (closeHandler != null)
-                closeHandler.OnMenuClosed -= HandleClosed;
+            if (_closeHandler != null)
+            {
+                _closeHandler.OnMenuClosed -= HandleClosed;
+                _closeHandler = null;
+            }
 
             _instance = null;
+        }
+
+        private static void TrySetOwnerRootOnControllers(GameObject root)
+        {
+            if (root == null)
+                return;
+
+            var allBehaviours = root.GetComponentsInChildren<MonoBehaviour>(true);
+            if (allBehaviours == null || allBehaviours.Length == 0)
+                return;
+
+            for (int i = 0; i < allBehaviours.Length; i++)
+            {
+                var behaviour = allBehaviours[i];
+                if (behaviour == null)
+                    continue;
+
+                var method = behaviour.GetType().GetMethod(
+                    "SetOwnerRoot",
+                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+                    binder: null,
+                    types: new[] { typeof(GameObject) },
+                    modifiers: null);
+
+                if (method == null)
+                    continue;
+
+                try
+                {
+                    method.Invoke(behaviour, new object[] { root });
+                }
+                catch
+                {
+                }
+            }
         }
 
         private Transform FindParentCanvasTransform()
