@@ -51,6 +51,7 @@ namespace UDA2.UI.Guild
         private Action<GuildQuestDefinitionAsset> clickHandler;
         private GameObject owningRoot;
         private bool isTakenQuest;
+        private bool allowActions = true;
         private readonly List<GuildQuestObjectiveRowView> spawnedObjectiveRows = new List<GuildQuestObjectiveRowView>();
 
         public void SetOwningRoot(GameObject root)
@@ -190,7 +191,8 @@ namespace UDA2.UI.Guild
             Func<string, bool> onAccept,
             Func<string, bool> onSubmit,
             bool isTaken = false,
-            Action<GuildQuestDefinitionAsset> onClick = null)
+            Action<GuildQuestDefinitionAsset> onClick = null,
+            bool allowActions = true)
         {
             questDefinition = quest;
             questId = quest != null ? quest.questId : string.Empty;
@@ -198,6 +200,7 @@ namespace UDA2.UI.Guild
             submitHandler = onSubmit;
             clickHandler = onClick;
             isTakenQuest = isTaken;
+            this.allowActions = allowActions;
 
             if (questImage != null)
             {
@@ -232,6 +235,9 @@ namespace UDA2.UI.Guild
 
         private void HandleAcceptClicked()
         {
+            if (!allowActions)
+                return;
+
             if (string.IsNullOrWhiteSpace(questId))
                 return;
 
@@ -308,7 +314,7 @@ namespace UDA2.UI.Guild
         {
             if (acceptButton != null)
             {
-                acceptButton.gameObject.SetActive(questDefinition != null);
+                acceptButton.gameObject.SetActive(questDefinition != null && allowActions);
                 acceptButton.interactable = !isTakenQuest || canSubmit;
             }
 
