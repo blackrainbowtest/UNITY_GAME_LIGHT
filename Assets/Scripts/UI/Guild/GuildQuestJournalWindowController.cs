@@ -8,6 +8,7 @@ using UnityEngine.UI;
 
 namespace UDA2.UI.Guild
 {
+    [ExecuteAlways]
     [DisallowMultipleComponent]
     public sealed class GuildQuestJournalWindowController : MonoBehaviour
     {
@@ -69,6 +70,17 @@ namespace UDA2.UI.Guild
         [SerializeField] private bool singleExpandedSection = true;
         [SerializeField] private int itemsPerPage = 10;
 
+        [Header("Auto Pagination Style")]
+        [SerializeField] private Color paginationButtonColor = new Color(0.2f, 0.24f, 0.38f, 1f);
+        [SerializeField] private Color paginationTextColor = Color.white;
+        [SerializeField] private float paginationBarHeight = 48f;
+        [SerializeField] private float paginationButtonWidth = 72f;
+        [SerializeField] private float paginationButtonHeight = 36f;
+        [SerializeField] private float paginationPageTextWidth = 120f;
+        [SerializeField] private float paginationPageTextHeight = 36f;
+        [SerializeField] private float paginationButtonFontSize = 24f;
+        [SerializeField] private float paginationPageFontSize = 22f;
+
         private bool runtimeConfigured;
 
         public void ConfigureGeneratedSections(CategorySection active, CategorySection completed, CategorySection failed)
@@ -97,6 +109,17 @@ namespace UDA2.UI.Guild
         private void OnEnable()
         {
             AutoWireMissingReferences();
+
+            // Rebind after auto-wiring in case pagination controls were created in edit mode.
+            ConfigureSectionHeader(activeSection, HandleActiveHeaderClick);
+            ConfigureSectionHeader(completedSection, HandleCompletedHeaderClick);
+            ConfigureSectionHeader(failedSection, HandleFailedHeaderClick);
+            ConfigurePaginationButtons(activeSection, HandleActivePrevPage, HandleActiveNextPage);
+            ConfigurePaginationButtons(completedSection, HandleCompletedPrevPage, HandleCompletedNextPage);
+            ConfigurePaginationButtons(failedSection, HandleFailedPrevPage, HandleFailedNextPage);
+
+            if (!Application.isPlaying)
+                return;
 
             EnsureRuntimeConfigured();
 
@@ -131,6 +154,12 @@ namespace UDA2.UI.Guild
             AutoWireMissingReferences();
         }
 #endif
+
+        [ContextMenu("Create Missing Pagination Controls")]
+        public void CreateMissingPaginationControls()
+        {
+            AutoWireMissingReferences();
+        }
 
         public void RefreshAll()
         {
@@ -268,11 +297,20 @@ namespace UDA2.UI.Guild
                 return;
 
             if (onClick == HandleActiveHeaderClick)
+            {
+                section.headerButton.onClick.RemoveListener(HandleActiveHeaderClick);
                 section.headerButton.onClick.AddListener(HandleActiveHeaderClick);
+            }
             else if (onClick == HandleCompletedHeaderClick)
+            {
+                section.headerButton.onClick.RemoveListener(HandleCompletedHeaderClick);
                 section.headerButton.onClick.AddListener(HandleCompletedHeaderClick);
+            }
             else if (onClick == HandleFailedHeaderClick)
+            {
+                section.headerButton.onClick.RemoveListener(HandleFailedHeaderClick);
                 section.headerButton.onClick.AddListener(HandleFailedHeaderClick);
+            }
         }
 
         private void UnsubscribeHeader(CategorySection section, Action onClick)
@@ -450,6 +488,25 @@ namespace UDA2.UI.Guild
             if (section == null)
                 return;
 
+            var shouldShowPagination = totalPages > 1;
+            var paginationContainer = FindPaginationContainer(section);
+
+            if (paginationContainer != null)
+            {
+                paginationContainer.SetActive(shouldShowPagination);
+            }
+            else
+            {
+                if (section.pageText != null)
+                    section.pageText.gameObject.SetActive(shouldShowPagination);
+
+                if (section.prevPageButton != null)
+                    section.prevPageButton.gameObject.SetActive(shouldShowPagination);
+
+                if (section.nextPageButton != null)
+                    section.nextPageButton.gameObject.SetActive(shouldShowPagination);
+            }
+
             if (section.pageText != null)
                 section.pageText.text = page.ToString() + " / " + totalPages.ToString();
 
@@ -458,6 +515,29 @@ namespace UDA2.UI.Guild
 
             if (section.nextPageButton != null)
                 section.nextPageButton.interactable = page < totalPages;
+        }
+
+        private static GameObject FindPaginationContainer(CategorySection section)
+        {
+            if (section == null)
+                return null;
+
+            if (section.pageText != null)
+            {
+                var parent = section.pageText.transform.parent;
+                if (parent != null && parent.name.IndexOf("pagination", StringComparison.OrdinalIgnoreCase) >= 0)
+                    return parent.gameObject;
+            }
+
+            if (section.prevPageButton != null && section.nextPageButton != null)
+            {
+                var prevParent = section.prevPageButton.transform.parent;
+                var nextParent = section.nextPageButton.transform.parent;
+                if (prevParent != null && prevParent == nextParent)
+                    return prevParent.gameObject;
+            }
+
+            return null;
         }
 
         private static void ConfigurePaginationButtons(CategorySection section, UnityEngine.Events.UnityAction onPrev, UnityEngine.Events.UnityAction onNext)
@@ -597,28 +677,28 @@ namespace UDA2.UI.Guild
                 return;
 
             var sectionName = !string.IsNullOrWhiteSpace(section.id) ? section.id : fallbackSectionName;
-            if (string.IsNullOrWhiteSpace(sectionName))
-                return;
+            var sectionRoot = !string.IsNullOrWhiteSpace(sectionName)
+                ? FindDeepChild(transform, sectionName)
+                : null;
 
-            var sectionRoot = FindDeepChild(transform, sectionName);
             if (sectionRoot == null)
-                return;
+                sectionRoot = ResolveSectionRootFromKnownReferences(section);
 
-            if (section.headerButton == null)
+            if (sectionRoot != null && section.headerButton == null)
             {
                 var header = FindDeepChild(sectionRoot, "Header");
                 if (header != null)
                     section.headerButton = header.GetComponent<Button>();
             }
 
-            if (section.dropdownBody == null)
+            if (sectionRoot != null && section.dropdownBody == null)
             {
                 var body = FindDeepChild(sectionRoot, "Body");
                 if (body != null)
                     section.dropdownBody = body.gameObject;
             }
 
-            if (section.listContent == null)
+            if (sectionRoot != null && section.listContent == null)
             {
                 var content = FindDeepChild(sectionRoot, "Content");
                 if (content != null)
@@ -628,35 +708,35 @@ namespace UDA2.UI.Guild
             if (section.rowTemplate == null && section.listContent != null)
                 section.rowTemplate = section.listContent.GetComponentInChildren<GuildQuestJournalQuestRowView>(includeInactive: true);
 
-            if (section.titleText == null)
+            if (sectionRoot != null && section.titleText == null)
                 section.titleText = FindTextInSectionByHint(sectionRoot, "title");
 
             if (section.titleLocalized == null && section.titleText != null)
                 section.titleLocalized = section.titleText.GetComponent<LocalizedGlobalComponent>();
 
-            if (section.countText == null)
+            if (sectionRoot != null && section.countText == null)
                 section.countText = FindTextInSectionByHint(sectionRoot, "count", "counter");
 
-            if (section.arrow == null)
+            if (sectionRoot != null && section.arrow == null)
             {
                 var arrow = FindDeepChild(sectionRoot, "Arrow");
                 if (arrow != null)
                     section.arrow = arrow as RectTransform;
             }
 
-            if (section.prevPageButton == null)
+            if (sectionRoot != null && section.prevPageButton == null)
                 section.prevPageButton = FindButtonInSectionByHint(sectionRoot, "prev", "previous", "back");
 
-            if (section.nextPageButton == null)
+            if (sectionRoot != null && section.nextPageButton == null)
                 section.nextPageButton = FindButtonInSectionByHint(sectionRoot, "next", "forward");
 
-            if (section.pageText == null)
+            if (sectionRoot != null && section.pageText == null)
                 section.pageText = FindTextInSectionByHint(sectionRoot, "page", "pagination", "pager");
 
-            EnsurePaginationControls(section);
+            EnsurePaginationControls(section, sectionRoot);
         }
 
-        private void EnsurePaginationControls(CategorySection section)
+        private void EnsurePaginationControls(CategorySection section, Transform sectionRoot)
         {
             if (section == null)
                 return;
@@ -664,7 +744,7 @@ namespace UDA2.UI.Guild
             if (section.prevPageButton != null && section.nextPageButton != null && section.pageText != null)
                 return;
 
-            var bodyRoot = section.dropdownBody != null ? section.dropdownBody.transform : null;
+            var bodyRoot = ResolveBodyRoot(section, sectionRoot);
             if (bodyRoot == null)
                 return;
 
@@ -682,7 +762,42 @@ namespace UDA2.UI.Guild
                 section.pageText = FindTextInSectionByHint(paginationRoot, "page", "pagination", "pager");
         }
 
-        private static Transform CreatePaginationRoot(Transform bodyRoot)
+        private static Transform ResolveSectionRootFromKnownReferences(CategorySection section)
+        {
+            if (section == null)
+                return null;
+
+            if (section.dropdownBody != null)
+                return section.dropdownBody.transform.parent;
+
+            if (section.listContent != null)
+                return section.listContent.parent;
+
+            if (section.headerButton != null)
+                return section.headerButton.transform.parent;
+
+            return null;
+        }
+
+        private static Transform ResolveBodyRoot(CategorySection section, Transform sectionRoot)
+        {
+            if (section?.dropdownBody != null)
+                return section.dropdownBody.transform;
+
+            if (sectionRoot != null)
+            {
+                var body = FindDeepChild(sectionRoot, "Body");
+                if (body != null)
+                    return body;
+            }
+
+            if (section?.listContent != null)
+                return section.listContent.parent;
+
+            return null;
+        }
+
+        private Transform CreatePaginationRoot(Transform bodyRoot)
         {
             var go = new GameObject("Pagination", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(LayoutElement));
             var rt = go.GetComponent<RectTransform>();
@@ -698,7 +813,7 @@ namespace UDA2.UI.Guild
             layout.padding = new RectOffset(8, 8, 8, 8);
 
             var le = go.GetComponent<LayoutElement>();
-            le.preferredHeight = 48f;
+            le.preferredHeight = paginationBarHeight;
 
             CreatePaginationButton(go.transform, "PrevButton", "<");
             CreatePaginationText(go.transform, "PageText", "1 / 1");
@@ -707,18 +822,18 @@ namespace UDA2.UI.Guild
             return go.transform;
         }
 
-        private static void CreatePaginationButton(Transform parent, string name, string caption)
+        private void CreatePaginationButton(Transform parent, string name, string caption)
         {
             var go = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement));
             var rt = go.GetComponent<RectTransform>();
             rt.SetParent(parent, false);
 
             var img = go.GetComponent<Image>();
-            img.color = new Color(0.2f, 0.24f, 0.38f, 1f);
+            img.color = paginationButtonColor;
 
             var le = go.GetComponent<LayoutElement>();
-            le.preferredWidth = 72f;
-            le.preferredHeight = 36f;
+            le.preferredWidth = paginationButtonWidth;
+            le.preferredHeight = paginationButtonHeight;
 
             var textGo = new GameObject("Label", typeof(RectTransform), typeof(TextMeshProUGUI));
             var textRt = textGo.GetComponent<RectTransform>();
@@ -730,26 +845,26 @@ namespace UDA2.UI.Guild
 
             var text = textGo.GetComponent<TextMeshProUGUI>();
             text.text = caption;
-            text.fontSize = 24f;
+            text.fontSize = paginationButtonFontSize;
             text.alignment = TextAlignmentOptions.Center;
-            text.color = Color.white;
+            text.color = paginationTextColor;
         }
 
-        private static void CreatePaginationText(Transform parent, string name, string value)
+        private void CreatePaginationText(Transform parent, string name, string value)
         {
             var go = new GameObject(name, typeof(RectTransform), typeof(TextMeshProUGUI), typeof(LayoutElement));
             var rt = go.GetComponent<RectTransform>();
             rt.SetParent(parent, false);
 
             var le = go.GetComponent<LayoutElement>();
-            le.preferredWidth = 120f;
-            le.preferredHeight = 36f;
+            le.preferredWidth = paginationPageTextWidth;
+            le.preferredHeight = paginationPageTextHeight;
 
             var text = go.GetComponent<TextMeshProUGUI>();
             text.text = value;
-            text.fontSize = 22f;
+            text.fontSize = paginationPageFontSize;
             text.alignment = TextAlignmentOptions.Center;
-            text.color = Color.white;
+            text.color = paginationTextColor;
         }
 
         private static Transform FindDeepChild(Transform root, string childName)

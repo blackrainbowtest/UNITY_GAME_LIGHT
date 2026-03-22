@@ -178,7 +178,14 @@ namespace Game.Battle
                     canRestoreBattleMusic = audio.TryGetCurrentMusicState(out battleMusicClip, out battleMusicTimeSeconds, out battleMusicLoop);
 
                 PlayOutcomeMusic(BattleFinishReason.EscapeFailed, allowLegacyFallback: false);
-                outcomeAnimationModal.Show(BattleFinishReason.EscapeFailed, playerWon: false, winningActionId: null, onClosed: () => modalClosed = true);
+                outcomeAnimationModal.Show(
+                    BattleFinishReason.EscapeFailed,
+                    playerWon: false,
+                    winningActionId: null,
+                    onClosed: () => modalClosed = true,
+                    enemyId: context?.Enemy != null ? ResolveEnemyId(context.Enemy) : null,
+                    locationId: context?.Location != null ? context.Location.id : null,
+                    sourceLocationId: global::GameState.Instance?.CurrentSave?.sceneState?.pendingBattle?.locationId);
                 while (!modalClosed)
                     yield return null;
             }

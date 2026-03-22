@@ -266,7 +266,15 @@ namespace Game.Battle
             void ShowOutcomeModalOrResults()
             {
                 if (outcomeAnimationModal != null && shouldShowOutcomeModal)
-                    outcomeAnimationModal.Show(reason, playerWon, winningActionId, ShowResultsOrExit, hideOnClose: false);
+                    outcomeAnimationModal.Show(
+                        reason,
+                        playerWon,
+                        winningActionId,
+                        ShowResultsOrExit,
+                        hideOnClose: false,
+                        enemyId: context?.Enemy != null ? ResolveEnemyId(context.Enemy) : null,
+                        locationId: context?.Location != null ? context.Location.id : null,
+                        sourceLocationId: global::GameState.Instance?.CurrentSave?.sceneState?.pendingBattle?.locationId);
                 else
                     ShowResultsOrExit();
             }

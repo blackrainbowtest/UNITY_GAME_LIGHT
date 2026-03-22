@@ -77,6 +77,31 @@ public sealed class BackgroundSpriteAnimationPlayer : MonoBehaviour
         playRoutine = null;
     }
 
+    public void SetSingleAnimation(IdleAnimation singleAnimation, bool restartPlayback = true)
+    {
+        if (singleAnimation == null)
+        {
+            animations = System.Array.Empty<AnimationEntry>();
+            Stop();
+            return;
+        }
+
+        animations = new[]
+        {
+            new AnimationEntry
+            {
+                animation = singleAnimation,
+                weight = 1f
+            }
+        };
+
+        orderedIndex = 0;
+        lastRandomIndex = -1;
+
+        if (restartPlayback)
+            Play();
+    }
+
     private IEnumerator PlayRoutine()
     {
         while (true)
