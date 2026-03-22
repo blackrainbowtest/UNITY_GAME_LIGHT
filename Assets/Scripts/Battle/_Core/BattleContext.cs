@@ -31,6 +31,7 @@ namespace Game.Battle
         public EnemyDifficulty EnemyDifficulty { get; }
         public int EnemyLevel { get; }
         public int EnemyRankTier { get; }
+        public string SourceLocationId { get; }
 
         public BattleContext(
             PlayerCombatSnapshot player,
@@ -39,7 +40,8 @@ namespace Game.Battle
             BattleMode mode,
             EnemyDifficulty enemyDifficulty = EnemyDifficulty.Normal,
             int enemyLevel = 1,
-            int enemyRankTier = 0)
+            int enemyRankTier = 0,
+            string sourceLocationId = null)
         {
             Player = player;
             Enemy = enemy;
@@ -48,6 +50,7 @@ namespace Game.Battle
             EnemyDifficulty = enemyDifficulty;
             EnemyLevel = enemyLevel < 1 ? 1 : enemyLevel;
             EnemyRankTier = enemyRankTier < 0 ? 0 : enemyRankTier;
+            SourceLocationId = sourceLocationId;
         }
     }
 }

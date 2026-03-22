@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
   id: wheat_rat_loes_01
   frames:
-  - {fileID: 21300000, guid: 6c12d05fbe346344f87f3dafbfb6849f, type: 3}
-  - {fileID: 21300000, guid: 33dcdef2dc3d4e94fa144f7ad54bb409, type: 3}
-  - {fileID: 21300000, guid: 9b9b9150d1ac18742b348539f87420c2, type: 3}
+  - {fileID: 21300000, guid: cac56d5e40dce8341a36fbe7386deb43, type: 3}
+  - {fileID: 21300000, guid: 291791d2330ded743b7793d7be9897e9, type: 3}
+  - {fileID: 21300000, guid: c1e259a63ca7da34f96b69776ef09c6d, type: 3}
   - {fileID: 21300000, guid: 1b4b6cf8a78d1d84c8688bfd4313e991, type: 3}
   - {fileID: 21300000, guid: bf38f1141e9860645b9020b7df45080c, type: 3}
   - {fileID: 21300000, guid: 7a8002200e8199a4b9505a7ffd468a72, type: 3}

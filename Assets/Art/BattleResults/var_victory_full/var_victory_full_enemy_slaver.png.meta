@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: c1e259a63ca7da34f96b69776ef09c6d
+guid: dcfd9f6f6a572134c91a21d146f1a3ce
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8793915729297761979
-    second: 03_0
+      213: 8826322426086598045
+    second: var_victory_full_enemy_slaver_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: 03_0
+      name: var_victory_full_enemy_slaver_0
       rect:
         serializedVersion: 2
-        x: 33
-        y: 21
-        width: 830
-        height: 326
+        x: 338
+        y: 17
+        width: 985
+        height: 258
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: bb6638d73c34a0a70800000000000000
-      internalID: 8793915729297761979
+      spriteID: d95a4ff8b756d7a70800000000000000
+      internalID: 8826322426086598045
       vertices: []
       indices: 
       edges: []
@@ -151,7 +151,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      03_0: 8793915729297761979
+      var_victory_full_enemy_slaver_0: 8826322426086598045
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -185,7 +185,7 @@ namespace Game.Battle
                     onClosed: () => modalClosed = true,
                     enemyId: context?.Enemy != null ? ResolveEnemyId(context.Enemy) : null,
                     locationId: context?.Location != null ? context.Location.id : null,
-                    sourceLocationId: global::GameState.Instance?.CurrentSave?.sceneState?.pendingBattle?.locationId);
+                    sourceLocationId: context?.SourceLocationId);
                 while (!modalClosed)
                     yield return null;
             }

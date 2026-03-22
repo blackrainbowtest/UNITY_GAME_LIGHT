@@ -128,13 +128,40 @@ namespace Game.Battle.UI
         }
 
         [SerializeField] private List<EnemyGroup> enemyGroups = new List<EnemyGroup>();
+        [Header("Global Fallback")]
+        [Tooltip("Used when no enemy/outcome/location rule matched. Acts as a reserve default presentation.")]
+        [SerializeField] private List<VisualVariant> fallbackVariants = new List<VisualVariant>();
 
         public IReadOnlyList<VisualVariant> ResolveVariants(BattleFinishReason outcome, string enemyId, string locationId, string sourceLocationId, SaveData save)
         {
+            return ResolveVariants(outcome, enemyId, locationId, sourceLocationId, save, debugLogs: false, out _);
+        }
+
+        public IReadOnlyList<VisualVariant> ResolveVariants(
+            BattleFinishReason outcome,
+            string enemyId,
+            string locationId,
+            string sourceLocationId,
+            SaveData save,
+            bool debugLogs,
+            out string debugReport)
+        {
+            List<string> debugLines = debugLogs ? new List<string>(64) : null;
+            if (debugLines != null)
+            {
+                debugLines.Add($"Input: outcome={outcome}, enemyId='{enemyId}', locationId='{locationId}', sourceLocationId='{sourceLocationId}'");
+            }
+
             if (enemyGroups == null || enemyGroups.Count == 0)
+            {
+                debugReport = debugLines != null ? string.Join("\n", debugLines) + "\nNo enemy groups configured." : null;
                 return Array.Empty<VisualVariant>();
+            }
 
             RuleEntry bestRule = null;
+            int bestGroupIndex = -1;
+            int bestOutcomeIndex = -1;
+            int bestEntryIndex = -1;
             var bestScore = int.MinValue;
             var normalizedEnemyId = string.IsNullOrWhiteSpace(enemyId) ? string.Empty : enemyId.Trim();
             var normalizedLocationId = string.IsNullOrWhiteSpace(locationId) ? string.Empty : locationId.Trim();
@@ -144,56 +171,148 @@ namespace Game.Battle.UI
             {
                 var group = enemyGroups[i];
                 if (group == null)
+                {
+                    if (debugLines != null)
+                        debugLines.Add($"Group[{i}]: null -> skip");
                     continue;
+                }
 
                 if (!MatchesEnemyGroup(group, normalizedEnemyId, out var isExactEnemyMatch))
+                {
+                    if (debugLines != null)
+                    {
+                        var groupEnemyId = ResolveGroupEnemyId(group);
+                        debugLines.Add($"Group[{i}]: enemy mismatch (anyEnemy={group.anyEnemy}, groupEnemyId='{groupEnemyId}', actualEnemyId='{normalizedEnemyId}') -> skip");
+                    }
                     continue;
+                }
+
+                if (debugLines != null)
+                    debugLines.Add($"Group[{i}]: enemy matched (exact={isExactEnemyMatch})");
 
                 var rules = group.rules;
                 if (rules == null || rules.Count == 0)
+                {
+                    if (debugLines != null)
+                        debugLines.Add($"Group[{i}]: no outcome rules");
                     continue;
+                }
 
                 for (var r = 0; r < rules.Count; r++)
                 {
                     var outcomeGroup = rules[r];
                     if (outcomeGroup == null)
+                    {
+                        if (debugLines != null)
+                            debugLines.Add($"Group[{i}] Outcome[{r}]: null -> skip");
                         continue;
+                    }
 
                     if (outcomeGroup.outcome != outcome)
+                    {
+                        if (debugLines != null)
+                            debugLines.Add($"Group[{i}] Outcome[{r}]: expected={outcomeGroup.outcome}, actual={outcome} -> skip");
                         continue;
+                    }
+
+                    if (debugLines != null)
+                        debugLines.Add($"Group[{i}] Outcome[{r}]: matched outcome={outcome}");
 
                     var entries = outcomeGroup.entries;
                     if (entries == null || entries.Count == 0)
+                    {
+                        if (debugLines != null)
+                            debugLines.Add($"Group[{i}] Outcome[{r}]: entries empty");
                         continue;
+                    }
 
                     for (var e = 0; e < entries.Count; e++)
                     {
                         var entry = entries[e];
                         if (entry == null)
+                        {
+                            if (debugLines != null)
+                                debugLines.Add($"Group[{i}] Outcome[{r}] Entry[{e}]: null -> skip");
                             continue;
+                        }
 
-                        if (!MatchesLocation(entry, normalizedLocationId, normalizedSourceLocationId))
+                        var locationMatched = MatchesLocation(entry, normalizedLocationId, normalizedSourceLocationId);
+                        if (!locationMatched)
+                        {
+                            if (debugLines != null)
+                            {
+                                var expectedLoc = entry.filter != null ? entry.filter.locationId : "<null filter>";
+                                var anyLoc = entry.filter != null && entry.filter.anyLocation;
+                                debugLines.Add($"Group[{i}] Outcome[{r}] Entry[{e}]: location mismatch (anyLocation={anyLoc}, expected='{expectedLoc}', actual='{normalizedLocationId}', source='{normalizedSourceLocationId}')");
+                            }
                             continue;
+                        }
 
                         if (!MatchesAll(entry.match?.conditions, save))
+                        {
+                            if (debugLines != null)
+                                debugLines.Add($"Group[{i}] Outcome[{r}] Entry[{e}]: conditions mismatch");
                             continue;
+                        }
 
                         if (!HasAnyVariant(entry.presentation?.variants))
+                        {
+                            if (debugLines != null)
+                                debugLines.Add($"Group[{i}] Outcome[{r}] Entry[{e}]: no usable variants");
                             continue;
+                        }
 
                         // Exact enemy group should always win over fallback groups when priorities are equal.
                         var priority = entry.filter != null ? entry.filter.priority : 0;
                         var score = priority * 10 + (isExactEnemyMatch ? 1 : 0);
+                        if (debugLines != null)
+                            debugLines.Add($"Group[{i}] Outcome[{r}] Entry[{e}]: candidate matched (priority={priority}, score={score})");
+
                         if (bestRule == null || score > bestScore)
                         {
                             bestRule = entry;
                             bestScore = score;
+                            bestGroupIndex = i;
+                            bestOutcomeIndex = r;
+                            bestEntryIndex = e;
+
+                            if (debugLines != null)
+                                debugLines.Add($"Group[{i}] Outcome[{r}] Entry[{e}]: selected as best so far");
                         }
                     }
                 }
             }
 
-            return bestRule?.presentation?.variants ?? (IReadOnlyList<VisualVariant>)Array.Empty<VisualVariant>();
+            if (debugLines != null)
+            {
+                if (bestRule == null)
+                {
+                    debugLines.Add("Result: no matching rule found.");
+                }
+                else
+                {
+                    var variantsCount = bestRule.presentation?.variants != null ? bestRule.presentation.variants.Count : 0;
+                    debugLines.Add($"Result: selected Group[{bestGroupIndex}] Outcome[{bestOutcomeIndex}] Entry[{bestEntryIndex}], variants={variantsCount}, bestScore={bestScore}");
+                }
+            }
+
+            debugReport = debugLines != null ? string.Join("\n", debugLines) : null;
+
+            if (bestRule?.presentation?.variants != null)
+                return bestRule.presentation.variants;
+
+            if (HasAnyVariant(fallbackVariants))
+            {
+                if (debugLines != null)
+                    debugReport += "\nFallback: using global fallback variants.";
+
+                return fallbackVariants;
+            }
+
+            if (debugLines != null)
+                debugReport += "\nFallback: none configured.";
+
+            return Array.Empty<VisualVariant>();
         }
 
         private static bool MatchesEnemyGroup(EnemyGroup group, string actualEnemyId, out bool isExactEnemyMatch)

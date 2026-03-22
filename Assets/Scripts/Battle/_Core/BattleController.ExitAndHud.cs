@@ -274,7 +274,7 @@ namespace Game.Battle
                         hideOnClose: false,
                         enemyId: context?.Enemy != null ? ResolveEnemyId(context.Enemy) : null,
                         locationId: context?.Location != null ? context.Location.id : null,
-                        sourceLocationId: global::GameState.Instance?.CurrentSave?.sceneState?.pendingBattle?.locationId);
+                        sourceLocationId: context?.SourceLocationId);
                 else
                     ShowResultsOrExit();
             }

@@ -22,6 +22,10 @@ namespace Game.Battle.UI
         [SerializeField] private Image outcomeImage;
         [Tooltip("If assigned, animated variant prefabs will be instantiated under this root.")]
         [SerializeField] private Transform animatedVariantRoot;
+        [SerializeField] private bool enablePresentationDebugLogs = true;
+        [SerializeField] private bool showCharacterAnimationsAsStaticImages = true;
+        [SerializeField] private Image playerImage;
+        [SerializeField] private Image enemyImage;
         [Tooltip("Player animation target used to play selected player animation asset.")]
         [SerializeField] private BackgroundSpriteAnimationPlayer playerAnimationPlayer;
         [Tooltip("Enemy animation target used to play selected enemy animation asset.")]
@@ -197,6 +201,40 @@ namespace Game.Battle.UI
                 }
             }
 
+            if (playerImage == null)
+            {
+                var images = GetComponentsInChildren<Image>(includeInactive: true);
+                for (int i = 0; i < images.Length; i++)
+                {
+                    var img = images[i];
+                    if (img == null || img == outcomeImage || img == GetComponent<Image>())
+                        continue;
+
+                    if (img.name.IndexOf("player", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        playerImage = img;
+                        break;
+                    }
+                }
+            }
+
+            if (enemyImage == null)
+            {
+                var images = GetComponentsInChildren<Image>(includeInactive: true);
+                for (int i = 0; i < images.Length; i++)
+                {
+                    var img = images[i];
+                    if (img == null || img == outcomeImage || img == GetComponent<Image>())
+                        continue;
+
+                    if (img.name.IndexOf("enemy", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        enemyImage = img;
+                        break;
+                    }
+                }
+            }
+
             if (closeButton == null)
             {
                 // Try to find a close button by name.
@@ -221,7 +259,13 @@ namespace Game.Battle.UI
         private void ApplyPresentation(Game.Battle.BattleFinishReason reason, string enemyId, string locationId, string sourceLocationId)
         {
             if (presentationCatalog == null)
+            {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                if (enablePresentationDebugLogs)
+                    Debug.LogWarning("[BattleOutcomeAnimationModal] presentationCatalog is not assigned.", this);
+#endif
                 return;
+            }
 
             var save = global::GameState.Instance?.CurrentSave;
             var resolvedEnemyId = !string.IsNullOrWhiteSpace(enemyId)
@@ -234,13 +278,47 @@ namespace Game.Battle.UI
                 ? sourceLocationId
                 : save?.sceneState?.pendingBattle?.locationId;
 
-            var variants = presentationCatalog.ResolveVariants(reason, resolvedEnemyId, resolvedLocationId, resolvedSourceLocationId, save);
+            var variants = presentationCatalog.ResolveVariants(
+                reason,
+                resolvedEnemyId,
+                resolvedLocationId,
+                resolvedSourceLocationId,
+                save,
+                debugLogs: enablePresentationDebugLogs,
+                out var debugReport);
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (enablePresentationDebugLogs && !string.IsNullOrWhiteSpace(debugReport))
+                Debug.Log("[BattleOutcomeAnimationModal] Resolve debug:\n" + debugReport, this);
+#endif
+
             if (variants == null || variants.Count == 0)
+            {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                if (enablePresentationDebugLogs)
+                    Debug.LogWarning($"[BattleOutcomeAnimationModal] No variants matched. reason={reason}, enemyId='{resolvedEnemyId}', locationId='{resolvedLocationId}', sourceLocationId='{resolvedSourceLocationId}'", this);
+#endif
                 return;
+            }
 
             var selected = SelectWeightedVariant(variants);
             if (selected == null)
+            {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                if (enablePresentationDebugLogs)
+                    Debug.LogWarning("[BattleOutcomeAnimationModal] Variant list exists, but weighted selection returned null.", this);
+#endif
                 return;
+            }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (enablePresentationDebugLogs)
+            {
+                Debug.Log(
+                    $"[BattleOutcomeAnimationModal] Selected variant: id='{selected.id}', hasSprite={selected.sprite != null}, hasAnimatedPrefab={selected.animatedPrefab != null}, hasPlayerAnimation={selected.playerAnimation != null}, hasEnemyAnimation={selected.enemyAnimation != null}, weight={selected.weight}",
+                    this);
+            }
+#endif
 
             if (outcomeImage != null)
             {
@@ -256,11 +334,19 @@ namespace Game.Battle.UI
                 _spawnedAnimatedVariant = Instantiate(selected.animatedPrefab, parent, worldPositionStays: false);
             }
 
-            if (selected.playerAnimation != null && playerAnimationPlayer != null)
-                playerAnimationPlayer.SetSingleAnimation(selected.playerAnimation, restartPlayback: true);
+            if (showCharacterAnimationsAsStaticImages)
+            {
+                ApplyAnimationFirstFrameToImage(selected.playerAnimation, playerImage);
+                ApplyAnimationFirstFrameToImage(selected.enemyAnimation, enemyImage);
+            }
+            else
+            {
+                if (selected.playerAnimation != null && playerAnimationPlayer != null)
+                    playerAnimationPlayer.SetSingleAnimation(selected.playerAnimation, restartPlayback: true);
 
-            if (selected.enemyAnimation != null && enemyAnimationPlayer != null)
-                enemyAnimationPlayer.SetSingleAnimation(selected.enemyAnimation, restartPlayback: true);
+                if (selected.enemyAnimation != null && enemyAnimationPlayer != null)
+                    enemyAnimationPlayer.SetSingleAnimation(selected.enemyAnimation, restartPlayback: true);
+            }
         }
 
         private static BattleOutcomePresentationCatalogAsset.VisualVariant SelectWeightedVariant(IReadOnlyList<BattleOutcomePresentationCatalogAsset.VisualVariant> variants)
@@ -299,11 +385,50 @@ namespace Game.Battle.UI
 
         private void ClearSpawnedVariants()
         {
-            if (_spawnedAnimatedVariant == null)
+            if (_spawnedAnimatedVariant != null)
+            {
+                Destroy(_spawnedAnimatedVariant);
+                _spawnedAnimatedVariant = null;
+            }
+
+            if (showCharacterAnimationsAsStaticImages)
+            {
+                if (playerImage != null)
+                {
+                    playerImage.sprite = null;
+                    playerImage.enabled = false;
+                }
+
+                if (enemyImage != null)
+                {
+                    enemyImage.sprite = null;
+                    enemyImage.enabled = false;
+                }
+            }
+            else
+            {
+                if (playerAnimationPlayer != null)
+                    playerAnimationPlayer.SetSingleAnimation(null, restartPlayback: false);
+
+                if (enemyAnimationPlayer != null)
+                    enemyAnimationPlayer.SetSingleAnimation(null, restartPlayback: false);
+            }
+        }
+
+        private static void ApplyAnimationFirstFrameToImage(IdleAnimation animation, Image target)
+        {
+            if (target == null)
                 return;
 
-            Destroy(_spawnedAnimatedVariant);
-            _spawnedAnimatedVariant = null;
+            if (animation == null || animation.FramesArray == null || animation.FramesArray.Length == 0)
+            {
+                target.sprite = null;
+                target.enabled = false;
+                return;
+            }
+
+            target.sprite = animation.FramesArray[0];
+            target.enabled = target.sprite != null;
         }
     }
 }

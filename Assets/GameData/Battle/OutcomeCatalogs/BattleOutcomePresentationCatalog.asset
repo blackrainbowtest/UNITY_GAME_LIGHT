@@ -28,36 +28,75 @@ MonoBehaviour:
         presentation:
           variants:
           - id: 
-            sprite: {fileID: 21300000, guid: 166066cdf444f6b4aaf41d8636960290, type: 3}
+            sprite: {fileID: 21300000, guid: 8ce922dc753d0344996aafb7369087ca, type: 3}
             animatedPrefab: {fileID: 0}
-            playerAnimation: {fileID: 0}
-            enemyAnimation: {fileID: 0}
+            playerAnimation: {fileID: 11400000, guid: d606a4a9ca385a247a8af77be5eb9785, type: 2}
+            enemyAnimation: {fileID: 11400000, guid: 26ad8df7ebfa7e6459f108987f926d04, type: 2}
             weight: 0
-  - enemy: {fileID: 0}
-    anyEnemy: 1
-    enemyIdOverride: wheat_rat
-    rules:
-    - outcome: 4
-      entries:
-      - filter:
-          anyLocation: 1
-          locationId: 
-          priority: 0
-        match:
-          conditions: []
-        presentation:
-          variants: []
   - enemy: {fileID: 0}
     anyEnemy: 0
     enemyIdOverride: wheat_rat
     rules:
-    - outcome: 4
+    - outcome: 0
       entries:
       - filter:
-          anyLocation: 1
-          locationId: 
+          anyLocation: 0
+          locationId: dld_farm
           priority: 0
         match:
           conditions: []
         presentation:
-          variants: []
+          variants:
+          - id: 
+            sprite: {fileID: 21300000, guid: 8ce922dc753d0344996aafb7369087ca, type: 3}
+            animatedPrefab: {fileID: 0}
+            playerAnimation: {fileID: 11400000, guid: d606a4a9ca385a247a8af77be5eb9785, type: 2}
+            enemyAnimation: {fileID: 11400000, guid: c40e7b43227f8d244bd4e76c18766184, type: 2}
+            weight: 0
+  - enemy: {fileID: 0}
+    anyEnemy: 0
+    enemyIdOverride: slime
+    rules:
+    - outcome: 0
+      entries:
+      - filter:
+          anyLocation: 0
+          locationId: dld_farm
+          priority: 0
+        match:
+          conditions: []
+        presentation:
+          variants:
+          - id: 
+            sprite: {fileID: 21300000, guid: 8ce922dc753d0344996aafb7369087ca, type: 3}
+            animatedPrefab: {fileID: 0}
+            playerAnimation: {fileID: 11400000, guid: d606a4a9ca385a247a8af77be5eb9785, type: 2}
+            enemyAnimation: {fileID: 11400000, guid: 26ad8df7ebfa7e6459f108987f926d04, type: 2}
+            weight: 0
+  - enemy: {fileID: 0}
+    anyEnemy: 0
+    enemyIdOverride: slaver
+    rules:
+    - outcome: 0
+      entries:
+      - filter:
+          anyLocation: 0
+          locationId: dld_farm
+          priority: 0
+        match:
+          conditions: []
+        presentation:
+          variants:
+          - id: 
+            sprite: {fileID: 21300000, guid: 8ce922dc753d0344996aafb7369087ca, type: 3}
+            animatedPrefab: {fileID: 0}
+            playerAnimation: {fileID: 11400000, guid: d606a4a9ca385a247a8af77be5eb9785, type: 2}
+            enemyAnimation: {fileID: 11400000, guid: 26ad8df7ebfa7e6459f108987f926d04, type: 2}
+            weight: 0
+  fallbackVariants:
+  - id: 
+    sprite: {fileID: 21300000, guid: 063f1459767457641ba74cd6c5f86b2f, type: 3}
+    animatedPrefab: {fileID: 0}
+    playerAnimation: {fileID: 11400000, guid: d606a4a9ca385a247a8af77be5eb9785, type: 2}
+    enemyAnimation: {fileID: 11400000, guid: 26ad8df7ebfa7e6459f108987f926d04, type: 2}
+    weight: 0

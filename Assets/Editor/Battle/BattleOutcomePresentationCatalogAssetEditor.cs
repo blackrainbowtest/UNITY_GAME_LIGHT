@@ -51,7 +51,7 @@ namespace UDA2.Editor.Battle
             var contentRect = EditorGUI.IndentedRect(position);
             float y = contentRect.y;
             var foldoutRect = new Rect(contentRect.x, y, contentRect.width, EditorGUIUtility.singleLineHeight);
-            property.isExpanded = EditorGUI.Foldout(foldoutRect, property.isExpanded, label, true);
+            property.isExpanded = EditorGUI.Foldout(foldoutRect, property.isExpanded, BuildEnemyGroupLabel(property, label), true);
             y += EditorGUIUtility.singleLineHeight + VSpace;
 
             if (property.isExpanded)
@@ -167,6 +167,42 @@ namespace UDA2.Editor.Battle
                 return labels;
             }
         }
+
+        private static GUIContent BuildEnemyGroupLabel(SerializedProperty property, GUIContent fallback)
+        {
+            var anyEnemyProp = property.FindPropertyRelative("anyEnemy");
+            var enemyIdProp = property.FindPropertyRelative("enemyIdOverride");
+
+            if (anyEnemyProp != null && anyEnemyProp.boolValue)
+                return new GUIContent("Enemy Group: Any Enemy");
+
+            var enemyId = enemyIdProp != null ? enemyIdProp.stringValue : string.Empty;
+            if (string.IsNullOrWhiteSpace(enemyId))
+                return new GUIContent("Enemy Group: <not set>");
+
+            return new GUIContent("Enemy Group: " + enemyId.Trim());
+        }
+    }
+
+    [CustomPropertyDrawer(typeof(BattleOutcomePresentationCatalogAsset.OutcomeRuleGroup))]
+    public sealed class BattleOutcomeRuleGroupDrawer : PropertyDrawer
+    {
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {
+            var outcomeProp = property.FindPropertyRelative("outcome");
+            var entriesProp = property.FindPropertyRelative("entries");
+
+            var outcomeText = outcomeProp != null ? outcomeProp.enumDisplayNames[outcomeProp.enumValueIndex] : "Outcome";
+            var entriesCount = entriesProp != null ? entriesProp.arraySize : 0;
+            var customLabel = new GUIContent($"Outcome: {outcomeText} ({entriesCount} entries)");
+
+            EditorGUI.PropertyField(position, property, customLabel, includeChildren: true);
+        }
+
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        {
+            return EditorGUI.GetPropertyHeight(property, includeChildren: true);
+        }
     }
 
     [CustomPropertyDrawer(typeof(BattleOutcomePresentationCatalogAsset.RuleEntry))]
@@ -226,7 +262,7 @@ namespace UDA2.Editor.Battle
 
             // Draw a stable header row; avoids nested foldout height glitches in array elements.
             var headerRect = new Rect(contentRect.x, y, contentRect.width, EditorGUIUtility.singleLineHeight);
-            EditorGUI.LabelField(headerRect, label);
+            EditorGUI.LabelField(headerRect, BuildRuleEntryLabel(property, label));
             y += EditorGUIUtility.singleLineHeight + VSpace;
 
             EditorGUI.indentLevel++;
@@ -366,6 +402,26 @@ namespace UDA2.Editor.Battle
 
                 return labels;
             }
+        }
+
+        private static GUIContent BuildRuleEntryLabel(SerializedProperty property, GUIContent fallback)
+        {
+            var filterProp = property.FindPropertyRelative("filter");
+            if (filterProp == null)
+                return fallback;
+
+            var anyLocationProp = filterProp.FindPropertyRelative("anyLocation");
+            var locationIdProp = filterProp.FindPropertyRelative("locationId");
+            var priorityProp = filterProp.FindPropertyRelative("priority");
+
+            var locationText = (anyLocationProp != null && anyLocationProp.boolValue)
+                ? "default"
+                : (locationIdProp != null && !string.IsNullOrWhiteSpace(locationIdProp.stringValue)
+                    ? locationIdProp.stringValue.Trim()
+                    : "<location?>");
+
+            var priorityText = priorityProp != null ? priorityProp.intValue.ToString() : "0";
+            return new GUIContent($"Entry: {locationText} (p:{priorityText})");
         }
     }
 }
