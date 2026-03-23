@@ -222,7 +222,8 @@ namespace Game.Dungeon
                 pending.returnSceneName = location.returnToActiveSceneAfterBattle ? SceneManager.GetActiveScene().name : null;
                 pending.enemyDifficulty = "Normal";
                 pending.enemyId = enemy != null ? enemy.id : null;
-                pending.locationId = battleLocation != null ? battleLocation.id : null;
+                // Keep source world location id (dld_*) for outcome presentation matching.
+                pending.locationId = location != null ? location.id : null;
             }
 
             // Keep SaveData's current scene name aligned with the transition.

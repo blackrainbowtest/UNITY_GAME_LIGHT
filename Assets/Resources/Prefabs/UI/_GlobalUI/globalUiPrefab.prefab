@@ -1755,6 +1755,56 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &5077086053191037744
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5304113537925729900}
+  - component: {fileID: 2519454057936498905}
+  m_Layer: 0
+  m_Name: PlayerTaskWindowOpener
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5304113537925729900
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5077086053191037744}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6570525331210616091}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2519454057936498905
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5077086053191037744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0eee8cb8288721a4c880a60355ea0d4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UDA2.UI::UDA2.UI.Game.PlayerCharacterWindowOpener
+  openButton: {fileID: 3842819968745030843}
+  windowPrefab: {fileID: 8955515864637266488, guid: ef2a9fe92b0273949af12f8bfacccb6c, type: 3}
+  parentOverride: {fileID: 2479716418422355560}
+  logUIInfoOnOpen: 1
+  forceWindowCanvasOnTop: 1
+  forcedSortingOrder: 5000
 --- !u!1 &5419704464725532303
 GameObject:
   m_ObjectHideFlags: 0
@@ -2581,6 +2631,7 @@ Transform:
   - {fileID: 2559095654033285943}
   - {fileID: 2265981999327908035}
   - {fileID: 902243272882716149}
+  - {fileID: 5304113537925729900}
   m_Father: {fileID: 6277560875899601654}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7039409501355132420

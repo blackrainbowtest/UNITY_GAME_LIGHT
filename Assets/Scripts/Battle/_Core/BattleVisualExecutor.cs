@@ -115,7 +115,8 @@ namespace Game.Battle
             CombatActionId actionId,
             bool actorIsPlayer,
             CombatState before,
-            CombatState after)
+            CombatState after,
+            bool allowEarlyFinishOnLethalTargetHit = false)
         {
             var attackerView = actorIsPlayer ? playerView : enemyView;
             var targetView = actorIsPlayer ? enemyView : playerView;
@@ -211,6 +212,16 @@ namespace Game.Battle
             if (hitAtFrame == -1)
                 willPlayTargetHit = false;
 
+            bool targetDefeated = false;
+            if (after != null)
+            {
+                targetDefeated = actorIsPlayer
+                    ? after.EnemyHp <= 0
+                    : after.PlayerHp <= 0;
+            }
+
+            bool finishAfterTargetHitOnly = allowEarlyFinishOnLethalTargetHit && targetDefeated && willPlayTargetHit;
+
             targetFinished = !willPlayTargetHit;
 
             void TriggerTargetHitNow()
@@ -250,7 +261,7 @@ namespace Game.Battle
             }
 
             float timeout = 5f;
-            while ((!attackerFinished || !targetFinished) && timeout > 0f)
+            while (((finishAfterTargetHitOnly && !targetFinished) || (!finishAfterTargetHitOnly && (!attackerFinished || !targetFinished))) && timeout > 0f)
             {
                 if (attackerFinished)
                 {

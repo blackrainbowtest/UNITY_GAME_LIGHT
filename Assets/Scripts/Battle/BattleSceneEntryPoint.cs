@@ -69,6 +69,8 @@ public class BattleSceneEntryPoint : MonoBehaviour
     /// </summary>
     private void Start()
     {
+        string sourceLocationId = null;
+
         // Явная ссылка на BattleController (назначается в инспекторе)
         if (battleController == null)
         {
@@ -84,6 +86,7 @@ public class BattleSceneEntryPoint : MonoBehaviour
             var pending = save?.sceneState?.pendingBattle;
             if (pending != null && pending.isPending)
             {
+                sourceLocationId = pending.locationId;
                 Game.Battle.BattleSaveBridge.TryApplyPendingBattle(save);
                 pending.Clear();
             }
@@ -139,7 +142,8 @@ public class BattleSceneEntryPoint : MonoBehaviour
             mode,
             enemyDifficulty,
             enemyLevel,
-            enemyRankTier
+            enemyRankTier,
+            sourceLocationId
         );
 
         battleController.StartBattle(context);

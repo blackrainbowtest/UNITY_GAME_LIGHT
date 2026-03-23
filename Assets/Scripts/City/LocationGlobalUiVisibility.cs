@@ -7,6 +7,7 @@ namespace UDA2.City
     {
         private static readonly List<object> Requesters = new List<object>(8);
         private static readonly Dictionary<GameObject, bool> OriginalStates = new Dictionary<GameObject, bool>(8);
+        private static RestoreRunner restoreRunner;
 
         public static void RequestHide(object owner)
         {
@@ -47,16 +48,91 @@ namespace UDA2.City
             if (Requesters.Count > 0)
                 return;
 
+            var restorePairs = new List<KeyValuePair<GameObject, bool>>(OriginalStates.Count);
             foreach (var pair in OriginalStates)
+                restorePairs.Add(pair);
+
+            OriginalStates.Clear();
+            RestoreSafely(restorePairs);
+        }
+
+        private static void RestoreSafely(List<KeyValuePair<GameObject, bool>> restorePairs)
+        {
+            if (restorePairs == null || restorePairs.Count == 0)
+                return;
+
+            if (!Application.isPlaying)
             {
+                ApplyRestore(restorePairs);
+                return;
+            }
+
+            var runner = GetRunner();
+            if (runner == null)
+            {
+                ApplyRestore(restorePairs);
+                return;
+            }
+
+            runner.RunRestoreNextFrame(restorePairs);
+        }
+
+        private static void ApplyRestore(List<KeyValuePair<GameObject, bool>> restorePairs)
+        {
+            for (var i = 0; i < restorePairs.Count; i++)
+            {
+                var pair = restorePairs[i];
                 var root = pair.Key;
                 if (root == null)
                     continue;
 
+                if (root.activeSelf == pair.Value)
+                    continue;
+
                 root.SetActive(pair.Value);
             }
+        }
 
-            OriginalStates.Clear();
+        private static RestoreRunner GetRunner()
+        {
+            if (restoreRunner != null)
+                return restoreRunner;
+
+            var go = new GameObject("LocationGlobalUiVisibility_RestoreRunner");
+            go.hideFlags = HideFlags.HideAndDontSave;
+            Object.DontDestroyOnLoad(go);
+            restoreRunner = go.AddComponent<RestoreRunner>();
+            return restoreRunner;
+        }
+
+        private sealed class RestoreRunner : MonoBehaviour
+        {
+            private Coroutine restoreRoutine;
+            private List<KeyValuePair<GameObject, bool>> pendingRestore;
+
+            public void RunRestoreNextFrame(List<KeyValuePair<GameObject, bool>> restorePairs)
+            {
+                pendingRestore = restorePairs;
+
+                if (restoreRoutine != null)
+                    StopCoroutine(restoreRoutine);
+
+                restoreRoutine = StartCoroutine(RestoreAtEndOfFrame());
+            }
+
+            private System.Collections.IEnumerator RestoreAtEndOfFrame()
+            {
+                yield return null;
+
+                var toRestore = pendingRestore;
+                pendingRestore = null;
+                restoreRoutine = null;
+
+                if (toRestore == null || toRestore.Count == 0)
+                    yield break;
+
+                ApplyRestore(toRestore);
+            }
         }
 
         private static List<GameObject> FindGlobalUiRoots()

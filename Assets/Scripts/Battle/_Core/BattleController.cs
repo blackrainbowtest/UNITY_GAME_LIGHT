@@ -464,7 +464,13 @@ namespace Game.Battle
             }
 
             // 1) Play attacker animation and (if HP damage happened) target Hit starting together.
-            yield return EnsureVisualExecutor().PlayActionWithTargetHitAndWait(actionId, actorIsPlayer: true, combatState, resolution.State);
+            bool playerLethalHit = resolution.State != null && resolution.State.EnemyHp <= 0;
+            yield return EnsureVisualExecutor().PlayActionWithTargetHitAndWait(
+                actionId,
+                actorIsPlayer: true,
+                combatState,
+                resolution.State,
+                allowEarlyFinishOnLethalTargetHit: playerLethalHit);
 
             // 2) Apply results after animation.
             combatState = ClampPlayerResourcesToMax(resolution.State);
@@ -510,7 +516,13 @@ namespace Game.Battle
             if (TryResolveEnemyAction(out var enemyActionId, out var enemyAction, out var enemyResolution))
             {
                 // Play enemy animation and (if HP damage happened) player Hit starting together.
-                yield return EnsureVisualExecutor().PlayActionWithTargetHitAndWait(enemyActionId, actorIsPlayer: false, combatState, enemyResolution.State);
+                bool enemyLethalHit = enemyResolution.State != null && enemyResolution.State.PlayerHp <= 0;
+                yield return EnsureVisualExecutor().PlayActionWithTargetHitAndWait(
+                    enemyActionId,
+                    actorIsPlayer: false,
+                    combatState,
+                    enemyResolution.State,
+                    allowEarlyFinishOnLethalTargetHit: enemyLethalHit);
 
                 combatState = ClampEnemyResourcesToMax(enemyResolution.State);
                 ApplyPostActionEffects(enemyActionId, actorIsPlayer: false);
