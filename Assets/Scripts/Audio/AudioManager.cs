@@ -411,6 +411,23 @@ namespace UDA2.Audio
             nextSceneMusicCue = cue;
         }
 
+        public bool WillPlayMusicForScene(string sceneName)
+        {
+            if (nextSceneMusicCue != null && nextSceneMusicCue.Clip != null)
+                return true;
+
+            if (sceneMusicConfig != null && sceneMusicConfig.TryGet(sceneName, out var entry))
+            {
+                if (HasAnyValidCue(entry.playlist))
+                    return true;
+
+                if (entry.musicCue != null && entry.musicCue.Clip != null)
+                    return true;
+            }
+
+            return false;
+        }
+
         public void Play(AudioCue cue)
         {
             if (cue == null || cue.Clip == null)

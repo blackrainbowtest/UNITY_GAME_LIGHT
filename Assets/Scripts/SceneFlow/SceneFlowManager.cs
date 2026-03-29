@@ -15,6 +15,11 @@ namespace UDA2.SceneFlow
 	{
 		public static SceneFlowManager Instance { get; private set; }
 
+		[Header("Audio Sync")]
+		[SerializeField] private bool waitForMusicBeforeHideLoading = true;
+		[SerializeField, Min(0f)] private float musicReadyTimeoutSeconds = 2f;
+		[SerializeField] private bool skipMusicWaitIfSceneHasNoMusic = true;
+
 		private bool _sceneReady;
 		private ILoadingScreen loadingScreen;
 		private Coroutine _loadCoroutine;
@@ -138,8 +143,88 @@ namespace UDA2.SceneFlow
 				yield return null;
 			}
 
+			yield return WaitForMusicReady(sceneName);
+
 			if (loadingScreen != null)
 				loadingScreen.Hide();
+		}
+
+		private IEnumerator WaitForMusicReady(string sceneName)
+		{
+			if (!waitForMusicBeforeHideLoading)
+				yield break;
+
+			var timeout = Mathf.Max(0f, musicReadyTimeoutSeconds);
+			if (timeout <= 0f)
+				yield break;
+
+			float waited = 0f;
+			while (!TryGetAudioManagerSingleton(out var audio) && waited < timeout)
+			{
+				waited += Time.unscaledDeltaTime;
+				yield return null;
+			}
+
+			if (!TryGetAudioManagerSingleton(out var audioManager))
+				yield break;
+
+			if (skipMusicWaitIfSceneHasNoMusic && !WillPlayMusicForScene(audioManager, sceneName))
+				yield break;
+
+			waited = 0f;
+			while (!IsMusicPlaying(audioManager) && waited < timeout)
+			{
+				waited += Time.unscaledDeltaTime;
+				yield return null;
+			}
+		}
+
+		private static bool TryGetAudioManagerSingleton(out object audioManager)
+		{
+			audioManager = null;
+
+			var type = System.Type.GetType("UDA2.Audio.AudioManager, UDA2.Audio");
+			if (type == null)
+				return false;
+
+			var instanceField = type.GetField("Instance", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+			if (instanceField == null)
+				return false;
+
+			audioManager = instanceField.GetValue(null);
+			return audioManager != null;
+		}
+
+		private static bool IsMusicPlaying(object audioManager)
+		{
+			if (audioManager == null)
+				return false;
+
+			var property = audioManager.GetType().GetProperty("IsMusicPlaying", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+			if (property == null || property.PropertyType != typeof(bool))
+				return false;
+
+			var value = property.GetValue(audioManager);
+			return value is bool isPlaying && isPlaying;
+		}
+
+		private static bool WillPlayMusicForScene(object audioManager, string sceneName)
+		{
+			if (audioManager == null)
+				return false;
+
+			var method = audioManager.GetType().GetMethod(
+				"WillPlayMusicForScene",
+				System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance,
+				null,
+				new[] { typeof(string) },
+				null);
+
+			if (method == null)
+				return false;
+
+			var result = method.Invoke(audioManager, new object[] { sceneName });
+			return result is bool hasMusic && hasMusic;
 		}
 	}
 }

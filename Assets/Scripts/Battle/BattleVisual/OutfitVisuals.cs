@@ -20,6 +20,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using Game.Battle.Combat.Actions;
 using Game.Battle.Statuses;
+using UDA2.Audio;
 
 namespace Game.Battle.Visual
 {
@@ -83,6 +84,12 @@ namespace Game.Battle.Visual
 
             [Tooltip("Frame when the hit should be applied (1 = immediately on animation start). Set -1 to ignore target hit animation.")]
             public int hitAtFrame;
+
+            [Tooltip("Optional action cue played during the attacker animation.")]
+            public AudioCue actionCue;
+
+            [Tooltip("Frame for actionCue (1 = immediately). <=0 means use hitAtFrame.")]
+            public int actionCueAtFrame;
 
             [Tooltip("If enabled, the target will play LustHit variations instead of Hit when the hit moment is reached.")]
             public bool useLustHit;
@@ -148,6 +155,12 @@ namespace Game.Battle.Visual
         [Header("Hit Timing")]
         [Tooltip("Per-attack frame timing for when the target hit animation should start. If an entry is missing, defaults to frame 1 (immediate) and physical Hit.")]
         public HitTimingConfig[] hitTimings;
+
+        [Header("Hit Audio (Optional)")]
+        [Tooltip("Sound played when this character receives a regular Hit.")]
+        public AudioCue hitCue;
+        [Tooltip("Sound played when this character receives a LustHit. Falls back to hitCue if empty.")]
+        public AudioCue lustHitCue;
 
         [Header("Attacks")]
         [Tooltip("Optional variations for Fast Attack.")]
@@ -300,7 +313,8 @@ namespace Game.Battle.Visual
             if (hitTimings == null || hitTimings.Length == 0)
                 return false;
 
-            for (int i = 0; i < hitTimings.Length; i++)
+            // Iterate from the end so the newest/lowest entry in Inspector overrides older duplicates.
+            for (int i = hitTimings.Length - 1; i >= 0; i--)
             {
                 if (hitTimings[i].attackAnimId != attackAnimId)
                     continue;
@@ -310,6 +324,14 @@ namespace Game.Battle.Visual
             }
 
             return false;
+        }
+
+        public AudioCue GetReceivedHitCue(BattleVisualAnimId hitAnimId)
+        {
+            if (hitAnimId == BattleVisualAnimId.LustHit)
+                return lustHitCue != null ? lustHitCue : hitCue;
+
+            return hitCue;
         }
 
         public bool TryGetProjectileConfig(BattleVisualAnimId id, out SpellProjectileConfig config)

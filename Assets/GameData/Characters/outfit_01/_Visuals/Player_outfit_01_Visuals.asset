@@ -26,37 +26,61 @@ MonoBehaviour:
   hitTimings:
   - attackAnimId: 2
     hitAtFrame: 9
+    actionCue: {fileID: 11400000, guid: 75338fbe9ed473a41b68334b13793c21, type: 2}
+    actionCueAtFrame: 0
     useLustHit: 0
   - attackAnimId: 3
     hitAtFrame: 3
+    actionCue: {fileID: 0}
+    actionCueAtFrame: 0
     useLustHit: 0
   - attackAnimId: 4
     hitAtFrame: 5
+    actionCue: {fileID: 0}
+    actionCueAtFrame: 0
     useLustHit: 0
   - attackAnimId: 11
     hitAtFrame: 5
+    actionCue: {fileID: 0}
+    actionCueAtFrame: 0
     useLustHit: 0
   - attackAnimId: 12
     hitAtFrame: 5
+    actionCue: {fileID: 0}
+    actionCueAtFrame: 0
     useLustHit: 0
   - attackAnimId: 13
     hitAtFrame: -1
+    actionCue: {fileID: 0}
+    actionCueAtFrame: 0
     useLustHit: 0
   - attackAnimId: 14
     hitAtFrame: 5
+    actionCue: {fileID: 0}
+    actionCueAtFrame: 0
     useLustHit: 0
   - attackAnimId: 20
     hitAtFrame: 5
+    actionCue: {fileID: 0}
+    actionCueAtFrame: 0
     useLustHit: 1
   - attackAnimId: 21
     hitAtFrame: 5
+    actionCue: {fileID: 0}
+    actionCueAtFrame: 0
     useLustHit: 1
   - attackAnimId: 22
     hitAtFrame: 5
+    actionCue: {fileID: 0}
+    actionCueAtFrame: 0
     useLustHit: 1
   - attackAnimId: 23
     hitAtFrame: 5
+    actionCue: {fileID: 0}
+    actionCueAtFrame: 0
     useLustHit: 1
+  hitCue: {fileID: 0}
+  lustHitCue: {fileID: 0}
   fastAttackVariations:
   - {fileID: 11400000, guid: 74deed90e6bed1547ae16a2a6fe73e31, type: 2}
   normalAttackVariations:

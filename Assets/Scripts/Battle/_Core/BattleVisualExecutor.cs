@@ -3,6 +3,7 @@ using UnityEngine;
 using Game.Battle.Combat;
 using Game.Battle.Combat.Actions;
 using Game.Battle.Visual;
+using UDA2.Audio;
 using Logger = UDA2.Logging.Logger;
 
 namespace Game.Battle
@@ -120,6 +121,7 @@ namespace Game.Battle
         {
             var attackerView = actorIsPlayer ? playerView : enemyView;
             var targetView = actorIsPlayer ? enemyView : playerView;
+            var targetOutfit = targetView != null ? targetView.ResolveOutfitVisuals() : null;
 
             if (attackerView == null)
                 yield break;
@@ -138,11 +140,17 @@ namespace Game.Battle
 
             int hitAtFrame = 1;
             bool useLustHit = false;
+            AudioCue actionCue = null;
+            int actionCueAtFrame = -1;
             if (attackerOutfit != null && attackerOutfit.TryGetHitTiming(attackerAnimId, out var hitTiming))
             {
                 hitAtFrame = hitTiming.hitAtFrame;
                 useLustHit = hitTiming.useLustHit;
+                actionCue = hitTiming.actionCue;
+                actionCueAtFrame = hitTiming.actionCueAtFrame;
             }
+
+            bool actionCuePlayed = false;
 
             bool projectileSpawned = false;
             bool targetHitTriggered = false;
@@ -171,6 +179,24 @@ namespace Game.Battle
             {
                 if (id != attackerAnimId)
                     return;
+
+                if (!actionCuePlayed && actionCue != null)
+                {
+                    int frameToPlay = actionCueAtFrame > 0 ? actionCueAtFrame : hitAtFrame;
+                    if (anim != null && anim.FrameCount > 0 && frameToPlay > anim.FrameCount)
+                        frameToPlay = anim.FrameCount;
+
+                    if (frameToPlay <= 1 || anim == null || anim.FrameRate <= 0f)
+                    {
+                        PlayCue(actionCue);
+                        actionCuePlayed = true;
+                    }
+                    else
+                    {
+                        float delay = (frameToPlay - 1) / anim.FrameRate;
+                        attackerView.StartCoroutine(PlayCueAfterDelay(actionCue, delay, () => actionCuePlayed = true));
+                    }
+                }
 
                 if (hasProjectile && !projectileSpawned)
                 {
@@ -236,6 +262,15 @@ namespace Game.Battle
                 targetHitTriggered = true;
                 targetFinished = false;
 
+                if (!actionCuePlayed && actionCue != null)
+                {
+                    PlayCue(actionCue);
+                    actionCuePlayed = true;
+                }
+
+                if (targetOutfit != null)
+                    PlayCue(targetOutfit.GetReceivedHitCue(targetHitAnimId));
+
                 targetView.PlayImmediate(targetHitAnimId, onFinished: () => targetFinished = true);
             }
 
@@ -277,6 +312,29 @@ namespace Game.Battle
             }
 
             attackerView.OnOneShotStarted -= HandleOneShotStarted;
+        }
+
+        private static void PlayCue(AudioCue cue)
+        {
+            if (cue == null)
+                return;
+
+            if (AudioManager.Instance == null)
+                return;
+
+            AudioManager.Instance.Play(cue);
+        }
+
+        private static IEnumerator PlayCueAfterDelay(AudioCue cue, float delaySeconds, System.Action onPlayed)
+        {
+            if (cue == null)
+                yield break;
+
+            if (delaySeconds > 0f)
+                yield return new WaitForSeconds(delaySeconds);
+
+            PlayCue(cue);
+            onPlayed?.Invoke();
         }
 
         private bool TryGetEscapeRunMotion(out int startAtFrame, out float speedLeftUnitsPerSecond)
