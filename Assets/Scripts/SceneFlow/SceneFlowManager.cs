@@ -150,7 +150,12 @@ timer += Time.unscaledDeltaTime;
 yield return null;
 }
 
-if (waitForSceneReadySignal)
+if (logLoadTimings)
+Debug.Log($"[SceneFlow] Async load finished for '{sceneName}' at {timer:0.###}s");
+
+bool shouldWaitForSceneReady = waitForSceneReadySignal && SceneHasReadySignalReceiver();
+
+if (shouldWaitForSceneReady)
 {
 float sceneReadyWaited = 0f;
 float sceneReadyTimeout = Mathf.Max(0f, sceneReadyTimeoutSeconds);
@@ -172,7 +177,10 @@ Debug.Log($"[SceneFlow] Scene ready timeout for '{sceneName}' after {sceneReadyW
 }
 else if (logLoadTimings)
 {
+if (!waitForSceneReadySignal)
 Debug.Log($"[SceneFlow] Scene ready signal disabled for '{sceneName}'. Continuing after async load.");
+else
+Debug.Log($"[SceneFlow] Scene ready wait skipped for '{sceneName}' (no ISceneReady receiver in scene).");
 }
 
 // дём, если минимальное время не прошло
@@ -309,6 +317,30 @@ return false;
 
 var result = method.Invoke(audioManager, new object[] { sceneName });
 return result is bool hasMusic && hasMusic;
+}
+
+private static bool SceneHasReadySignalReceiver()
+{
+var scene = SceneManager.GetActiveScene();
+if (!scene.IsValid() || !scene.isLoaded)
+return false;
+
+var roots = scene.GetRootGameObjects();
+for (int i = 0; i < roots.Length; i++)
+{
+var root = roots[i];
+if (root == null)
+continue;
+
+var behaviours = root.GetComponentsInChildren<MonoBehaviour>(true);
+for (int j = 0; j < behaviours.Length; j++)
+{
+if (behaviours[j] is ISceneReady)
+return true;
+}
+}
+
+return false;
 }
 }
 }

@@ -844,10 +844,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UDA2.SceneFlow.SceneFlowManager
   waitForMusicBeforeHideLoading: 1
-  musicReadyTimeoutSeconds: 2
+  musicReadyTimeoutSeconds: 1
   skipMusicWaitIfSceneHasNoMusic: 1
   skipMusicWaitForScenes: []
   logLoadTimings: 1
+  waitForSceneReadySignal: 1
+  sceneReadyTimeoutSeconds: 1.5
 --- !u!1 &1285300809
 GameObject:
   m_ObjectHideFlags: 0
