@@ -183,6 +183,7 @@ MonoBehaviour:
   locationButtonAlpha: 1
   debugIgnoreRankLock: 0
   debugIgnoreLevelLock: 0
+  deferFirstRefreshFrames: 1
 --- !u!1 &118151288
 GameObject:
   m_ObjectHideFlags: 0
@@ -336,6 +337,7 @@ MonoBehaviour:
   stringArgs: []
   manageFont: 1
   fontType: 1
+  deferFirstUpdateFrames: 0
 --- !u!1 &272651740
 GameObject:
   m_ObjectHideFlags: 0
@@ -623,6 +625,7 @@ MonoBehaviour:
   stringArgs: []
   manageFont: 1
   fontType: 1
+  deferFirstUpdateFrames: 0
 --- !u!1 &306338876
 GameObject:
   m_ObjectHideFlags: 0
@@ -776,6 +779,7 @@ MonoBehaviour:
   stringArgs: []
   manageFont: 1
   fontType: 1
+  deferFirstUpdateFrames: 0
 --- !u!1 &360478445
 GameObject:
   m_ObjectHideFlags: 0
@@ -1004,6 +1008,7 @@ MonoBehaviour:
   stringArgs: []
   manageFont: 1
   fontType: 1
+  deferFirstUpdateFrames: 0
 --- !u!1 &449785468
 GameObject:
   m_ObjectHideFlags: 0
@@ -1954,6 +1959,7 @@ MonoBehaviour:
   stringArgs: []
   manageFont: 1
   fontType: 1
+  deferFirstUpdateFrames: 0
 --- !u!114 &965016481
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2206,6 +2212,7 @@ MonoBehaviour:
   stringArgs: []
   manageFont: 1
   fontType: 1
+  deferFirstUpdateFrames: 0
 --- !u!1 &1166553643
 GameObject:
   m_ObjectHideFlags: 0
@@ -2393,6 +2400,7 @@ MonoBehaviour:
   stringArgs: []
   manageFont: 1
   fontType: 1
+  deferFirstUpdateFrames: 0
 --- !u!1 &1256137137
 GameObject:
   m_ObjectHideFlags: 0
@@ -3294,13 +3302,12 @@ MonoBehaviour:
   preloadAmbientAudioData: 1
   preloadClipsPerFrame: 2
   groups:
-  - name: 
-    randomLoop: 0
+  - name: birds_morning
+    randomLoop: 1
     intervalSeconds: {x: 0, y: 0}
-    cues: []
-    clips: []
-    clipVolume: 0
-    clipPitchRange: {x: 0, y: 0}
+    cues:
+    - {fileID: 11400000, guid: ad26e838d574dae49b3107e168226f07, type: 2}
+    - {fileID: 11400000, guid: 3d9f69da8855fdd4ca23ce1fde3ce630, type: 2}
     useStereoPan: 0
     panStart: 0
     panEnd: 0
@@ -3360,6 +3367,7 @@ MonoBehaviour:
   stringArgs: []
   manageFont: 1
   fontType: 1
+  deferFirstUpdateFrames: 0
 --- !u!114 &1942419967
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3513,6 +3521,7 @@ MonoBehaviour:
   stringArgs: []
   manageFont: 1
   fontType: 1
+  deferFirstUpdateFrames: 0
 --- !u!114 &1994300463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3960,6 +3969,7 @@ MonoBehaviour:
   stringArgs: []
   manageFont: 1
   fontType: 1
+  deferFirstUpdateFrames: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

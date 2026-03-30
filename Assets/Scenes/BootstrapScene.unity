@@ -847,7 +847,7 @@ MonoBehaviour:
   musicReadyTimeoutSeconds: 1
   skipMusicWaitIfSceneHasNoMusic: 1
   skipMusicWaitForScenes: []
-  logLoadTimings: 1
+  logLoadTimings: 0
   waitForSceneReadySignal: 1
   sceneReadyTimeoutSeconds: 1.5
 --- !u!1 &1285300809

@@ -474,6 +474,11 @@ namespace UDA2.Audio
                 pitch = UnityEngine.Random.Range(cue.PitchRange.x, cue.PitchRange.y);
 
             PlaySfx(cue.Clip, cue.DefaultVolume, pitch);
+
+            Debug.Log($"[BattleAudio] PlayBattleCueAsSfx clip='{cue.Clip.name}' cueKey='{cue.Key}' defaultVol={cue.DefaultVolume:0.###} sfxMaster={sfxVolume:0.###} pitch={pitch:0.###}");
+
+            if (sfxVolume <= 0.01f)
+                Debug.LogWarning("[BattleAudio] SFX master volume is near zero. Battle cues may be inaudible.");
         }
 
         /* ===================== MUSIC ===================== */

@@ -152,6 +152,14 @@ namespace Game.Battle
                 actionCueAtFrame = hitTiming.actionCueAtFrame;
             }
 
+            // Convenience fallback: if one basic attack cue is missing, reuse the sibling one.
+            // This keeps attack SFX audible when only FastAttack or only NormalAttack timing is configured.
+            if (actionCue == null && TryGetBasicAttackCueFallback(attackerOutfit, attackerAnimId, out var fallbackCue, out var fallbackCueFrame))
+            {
+                actionCue = fallbackCue;
+                actionCueAtFrame = fallbackCueFrame;
+            }
+
             bool actionCuePlayed = false;
 
             bool projectileSpawned = false;
@@ -196,7 +204,13 @@ namespace Game.Battle
                     else
                     {
                         float delay = (frameToPlay - 1) / anim.FrameRate;
-                        attackerView.StartCoroutine(PlayCueAfterDelay(actionCue, delay, $"action:{attackerAnimId}:frame:{frameToPlay}", () => actionCuePlayed = true));
+                        attackerView.StartCoroutine(
+                            PlayCueAfterDelay(
+                                actionCue,
+                                delay,
+                                $"action:{attackerAnimId}:frame:{frameToPlay}",
+                                () => !actionCuePlayed,
+                                () => actionCuePlayed = true));
                     }
                 }
 
@@ -348,13 +362,21 @@ namespace Game.Battle
             }
         }
 
-        private static IEnumerator PlayCueAfterDelay(AudioCue cue, float delaySeconds, string context, System.Action onPlayed)
+        private static IEnumerator PlayCueAfterDelay(
+            AudioCue cue,
+            float delaySeconds,
+            string context,
+            System.Func<bool> shouldPlay,
+            System.Action onPlayed)
         {
             if (cue == null)
                 yield break;
 
             if (delaySeconds > 0f)
                 yield return new WaitForSeconds(delaySeconds);
+
+            if (shouldPlay != null && !shouldPlay())
+                yield break;
 
             PlayCue(cue, context);
             onPlayed?.Invoke();
@@ -405,6 +427,34 @@ namespace Game.Battle
 
             animId = BattleVisualAnimId.Idle;
             return false;
+        }
+
+        private static bool TryGetBasicAttackCueFallback(
+            OutfitVisuals outfit,
+            BattleVisualAnimId currentAttack,
+            out AudioCue cue,
+            out int cueAtFrame)
+        {
+            cue = null;
+            cueAtFrame = -1;
+
+            if (outfit == null)
+                return false;
+
+            BattleVisualAnimId fallbackAttack;
+            if (currentAttack == BattleVisualAnimId.NormalAttack)
+                fallbackAttack = BattleVisualAnimId.FastAttack;
+            else if (currentAttack == BattleVisualAnimId.FastAttack)
+                fallbackAttack = BattleVisualAnimId.NormalAttack;
+            else
+                return false;
+
+            if (!outfit.TryGetHitTiming(fallbackAttack, out var timing) || timing.actionCue == null)
+                return false;
+
+            cue = timing.actionCue;
+            cueAtFrame = timing.actionCueAtFrame;
+            return true;
         }
     }
 }

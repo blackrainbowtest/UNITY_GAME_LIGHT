@@ -37,7 +37,7 @@ public class SettingsController : MonoBehaviour, IMenuCloseHandler
             Debug.LogWarning("SettingsController: musicSlider не назначен.", this);
 
         if (sfxSlider != null)
-            sfxSlider.value = _editingState.ambientVolume;
+            sfxSlider.value = _editingState.sfxVolume;
         else
             Debug.LogWarning("SettingsController: sfxSlider не назначен.", this);
 
@@ -125,10 +125,10 @@ public class SettingsController : MonoBehaviour, IMenuCloseHandler
 
     public void OnSfxVolumeChanged(float value)
     {
-        _editingState.ambientVolume = value;
+        _editingState.sfxVolume = value;
 
         if (UDA2.Audio.AudioManager.Instance != null)
-            UDA2.Audio.AudioManager.Instance.SetAmbientVolume(value);
+            UDA2.Audio.AudioManager.Instance.SetSfxVolume(value);
     }
 
     public void OnUiVolumeChanged(float value)
@@ -178,7 +178,7 @@ public class SettingsController : MonoBehaviour, IMenuCloseHandler
             musicSlider.value = _editingState.musicVolume;
 
         if (sfxSlider != null)
-            sfxSlider.value = _editingState.ambientVolume;
+            sfxSlider.value = _editingState.sfxVolume;
 
         if (uiSlider != null)
             uiSlider.value = _editingState.uiVolume;
