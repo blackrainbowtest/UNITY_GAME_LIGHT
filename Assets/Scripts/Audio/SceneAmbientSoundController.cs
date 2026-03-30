@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace UDA2.Audio
@@ -84,6 +85,20 @@ namespace UDA2.Audio
         [Tooltip("If true, first sound in each group is delayed by its interval range. If false, plays immediately once.")]
         [SerializeField] private bool delayFirstPlay = false;
 
+        [Tooltip("If enabled, random-loop groups start with small stagger to avoid audio spikes on scene entry.")]
+        [SerializeField] private bool staggerGroupStartup = true;
+
+        [Min(0f)]
+        [Tooltip("Extra delay between random-loop groups startup (seconds).")]
+        [SerializeField] private float groupStartupStepSeconds = 0.08f;
+
+        [Tooltip("If enabled, requests audio data load for ambient clips before starting playback.")]
+        [SerializeField] private bool preloadAmbientAudioData = true;
+
+        [Min(1)]
+        [Tooltip("How many clips to schedule for preloading per frame.")]
+        [SerializeField] private int preloadClipsPerFrame = 2;
+
         [Header("Ambient Groups")]
         [SerializeField] private AmbientGroup[] groups = Array.Empty<AmbientGroup>();
 
@@ -110,6 +125,9 @@ namespace UDA2.Audio
         private IEnumerator PlayNextFrameRoutine()
         {
             yield return null;
+
+            if (preloadAmbientAudioData)
+                yield return PreloadAmbientClipsRoutine();
 
             delayedPlayRoutine = null;
 
@@ -140,7 +158,11 @@ namespace UDA2.Audio
                     continue;
                 }
 
-                groupRoutines[i] = StartCoroutine(GroupRoutine(group));
+                float startupDelay = 0f;
+                if (staggerGroupStartup)
+                    startupDelay = Mathf.Max(0f, groupStartupStepSeconds) * i;
+
+                groupRoutines[i] = StartCoroutine(GroupRoutine(group, startupDelay));
             }
         }
 
@@ -158,8 +180,11 @@ namespace UDA2.Audio
             groupRoutines = null;
         }
 
-        private IEnumerator GroupRoutine(AmbientGroup group)
+        private IEnumerator GroupRoutine(AmbientGroup group, float initialDelay)
         {
+            if (initialDelay > 0f)
+                yield return new WaitForSeconds(initialDelay);
+
             if (delayFirstPlay)
                 yield return new WaitForSeconds(GetDelay(group.intervalSeconds));
 
@@ -291,6 +316,67 @@ namespace UDA2.Audio
             am.PlayAmbient(clip, group.clipVolume, clipPitch, clipPanStart, clipPanEnd, clipPanSweepDuration);
             durationSeconds = clipDurationFallback;
             return false;
+        }
+
+        private IEnumerator PreloadAmbientClipsRoutine()
+        {
+            if (groups == null || groups.Length == 0)
+                yield break;
+
+            var unique = new HashSet<AudioClip>();
+            int scheduledThisFrame = 0;
+            int budget = Mathf.Max(1, preloadClipsPerFrame);
+
+            for (int i = 0; i < groups.Length; i++)
+            {
+                var group = groups[i];
+                if (group == null)
+                    continue;
+
+                if (group.cues != null)
+                {
+                    for (int c = 0; c < group.cues.Length; c++)
+                    {
+                        var cue = group.cues[c];
+                        if (cue == null || cue.Clip == null)
+                            continue;
+
+                        if (!unique.Add(cue.Clip))
+                            continue;
+
+                        cue.Clip.LoadAudioData();
+                        scheduledThisFrame++;
+
+                        if (scheduledThisFrame >= budget)
+                        {
+                            scheduledThisFrame = 0;
+                            yield return null;
+                        }
+                    }
+                }
+
+                if (group.clips != null)
+                {
+                    for (int c = 0; c < group.clips.Length; c++)
+                    {
+                        var clip = group.clips[c];
+                        if (clip == null)
+                            continue;
+
+                        if (!unique.Add(clip))
+                            continue;
+
+                        clip.LoadAudioData();
+                        scheduledThisFrame++;
+
+                        if (scheduledThisFrame >= budget)
+                        {
+                            scheduledThisFrame = 0;
+                            yield return null;
+                        }
+                    }
+                }
+            }
         }
     }
 }

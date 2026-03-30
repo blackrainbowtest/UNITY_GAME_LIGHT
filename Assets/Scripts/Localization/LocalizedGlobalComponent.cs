@@ -25,9 +25,14 @@ public sealed class LocalizedGlobalComponent : MonoBehaviour
     [SerializeField] private bool manageFont = true;
     [SerializeField] private FontType fontType = FontType.Body;
 
+    [Header("Startup")]
+    [SerializeField, Min(0)] private int deferFirstUpdateFrames = 0;
+
     private TMP_Text tmpText;
     private bool loggedMissingProvider;
     private object[] cachedArgs;
+    private bool initialTextApplied;
+    private Coroutine deferredUpdateRoutine;
 
     public string Key
     {
@@ -92,12 +97,28 @@ public sealed class LocalizedGlobalComponent : MonoBehaviour
         UDA2.Core.SettingsContext.OnLanguageChanged += HandleLanguageChanged;
         if (manageFont)
             HandleFontChanged();
+
+        if (!initialTextApplied && deferFirstUpdateFrames > 0)
+        {
+            if (deferredUpdateRoutine != null)
+                StopCoroutine(deferredUpdateRoutine);
+
+            deferredUpdateRoutine = StartCoroutine(DeferredInitialUpdateRoutine());
+            return;
+        }
+
         UpdateText();
     }
 
     private void OnDisable()
     {
         UDA2.Core.SettingsContext.OnLanguageChanged -= HandleLanguageChanged;
+
+        if (deferredUpdateRoutine != null)
+        {
+            StopCoroutine(deferredUpdateRoutine);
+            deferredUpdateRoutine = null;
+        }
     }
 
     private void OnDestroy()
@@ -108,7 +129,26 @@ public sealed class LocalizedGlobalComponent : MonoBehaviour
 
     private void HandleLanguageChanged(string lang)
     {
+        if (deferredUpdateRoutine != null)
+        {
+            StopCoroutine(deferredUpdateRoutine);
+            deferredUpdateRoutine = null;
+        }
+
         UpdateText(lang);
+    }
+
+    private System.Collections.IEnumerator DeferredInitialUpdateRoutine()
+    {
+        int frames = deferFirstUpdateFrames;
+        while (frames > 0)
+        {
+            frames--;
+            yield return null;
+        }
+
+        deferredUpdateRoutine = null;
+        UpdateText();
     }
 
     private void HandleFontChanged()
@@ -179,6 +219,7 @@ public sealed class LocalizedGlobalComponent : MonoBehaviour
         }
 
         tmpText.text = template;
+        initialTextApplied = true;
     }
 
     private object[] ResolveArgs()

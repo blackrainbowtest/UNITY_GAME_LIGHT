@@ -27,6 +27,7 @@ namespace UDA2.Audio
         public static AudioManager Instance;
 
         public bool IsMusicPlaying => musicSource != null && musicSource.isPlaying;
+        public float SfxVolume01 => sfxVolume;
 
         private const string MusicVolumeParam = "MusicVolume";
         private const string SfxVolumeParam = "SFXVolume";
@@ -459,6 +460,19 @@ namespace UDA2.Audio
             }
 
             // Gameplay sounds (Sound) and legacy Sfx both use the pooled SFX player.
+            PlaySfx(cue.Clip, cue.DefaultVolume, pitch);
+        }
+
+        // Battle-cues should always follow the SFX bus/slider regardless of cue category.
+        public void PlayBattleCueAsSfx(AudioCue cue)
+        {
+            if (cue == null || cue.Clip == null)
+                return;
+
+            float pitch = cue.PitchRange.x;
+            if (cue.PitchRange.y > cue.PitchRange.x)
+                pitch = UnityEngine.Random.Range(cue.PitchRange.x, cue.PitchRange.y);
+
             PlaySfx(cue.Clip, cue.DefaultVolume, pitch);
         }
 

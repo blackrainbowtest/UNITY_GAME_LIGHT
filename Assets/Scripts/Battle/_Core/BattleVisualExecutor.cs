@@ -10,6 +10,8 @@ namespace Game.Battle
 {
     public sealed class BattleVisualExecutor
     {
+        private const bool LogBattleCuePlayback = true;
+
         private readonly BattleCharacterView playerView;
         private readonly BattleCharacterView enemyView;
         private readonly BattleProjectileSpawner projectileSpawner;
@@ -188,13 +190,13 @@ namespace Game.Battle
 
                     if (frameToPlay <= 1 || anim == null || anim.FrameRate <= 0f)
                     {
-                        PlayCue(actionCue);
+                        PlayCue(actionCue, $"action:{attackerAnimId}:immediate");
                         actionCuePlayed = true;
                     }
                     else
                     {
                         float delay = (frameToPlay - 1) / anim.FrameRate;
-                        attackerView.StartCoroutine(PlayCueAfterDelay(actionCue, delay, () => actionCuePlayed = true));
+                        attackerView.StartCoroutine(PlayCueAfterDelay(actionCue, delay, $"action:{attackerAnimId}:frame:{frameToPlay}", () => actionCuePlayed = true));
                     }
                 }
 
@@ -264,12 +266,12 @@ namespace Game.Battle
 
                 if (!actionCuePlayed && actionCue != null)
                 {
-                    PlayCue(actionCue);
+                    PlayCue(actionCue, $"action-fallback-at-hit:{attackerAnimId}");
                     actionCuePlayed = true;
                 }
 
                 if (targetOutfit != null)
-                    PlayCue(targetOutfit.GetReceivedHitCue(targetHitAnimId));
+                    PlayCue(targetOutfit.GetReceivedHitCue(targetHitAnimId), $"target-hit:{targetHitAnimId}");
 
                 targetView.PlayImmediate(targetHitAnimId, onFinished: () => targetFinished = true);
             }
@@ -314,18 +316,39 @@ namespace Game.Battle
             attackerView.OnOneShotStarted -= HandleOneShotStarted;
         }
 
-        private static void PlayCue(AudioCue cue)
+        private static void PlayCue(AudioCue cue, string context)
         {
             if (cue == null)
+            {
+                if (LogBattleCuePlayback)
+                    Logger.LogInfo($"[BattleAudio] Skip cue (null). context={context}");
                 return;
+            }
+
+            if (cue.Clip == null)
+            {
+                if (LogBattleCuePlayback)
+                    Logger.LogInfo($"[BattleAudio] Skip cue (clip null). context={context}, cueKey={cue.Key}");
+                return;
+            }
 
             if (AudioManager.Instance == null)
+            {
+                if (LogBattleCuePlayback)
+                    Logger.LogInfo($"[BattleAudio] Skip cue (AudioManager null). context={context}, cueKey={cue.Key}");
                 return;
+            }
 
-            AudioManager.Instance.Play(cue);
+            AudioManager.Instance.PlayBattleCueAsSfx(cue);
+
+            if (LogBattleCuePlayback)
+            {
+                Logger.LogInfo(
+                    $"[BattleAudio] Play cue as SFX. context={context}, cueKey={cue.Key}, category={cue.Category}, defaultVol={cue.DefaultVolume:0.###}, sfxMaster={AudioManager.Instance.SfxVolume01:0.###}");
+            }
         }
 
-        private static IEnumerator PlayCueAfterDelay(AudioCue cue, float delaySeconds, System.Action onPlayed)
+        private static IEnumerator PlayCueAfterDelay(AudioCue cue, float delaySeconds, string context, System.Action onPlayed)
         {
             if (cue == null)
                 yield break;
@@ -333,7 +356,7 @@ namespace Game.Battle
             if (delaySeconds > 0f)
                 yield return new WaitForSeconds(delaySeconds);
 
-            PlayCue(cue);
+            PlayCue(cue, context);
             onPlayed?.Invoke();
         }
 
