@@ -80,9 +80,11 @@ namespace UDA2.Audio
         [SerializeField] private UnityEngine.Audio.AudioMixerGroup ambientGroup;
         [SerializeField] private int ambientPoolSize = 6;
         [SerializeField] private Transform ambientParent;
+        [SerializeField] private bool ambientFollowsSfxVolume = true;
 
         private AudioSource[] ambientPool;
         private Coroutine[] ambientPanCoroutines;
+        private float[] ambientBaseVolumes;
         private int ambientIndex;
         private float ambientVolume = 1f;
 
@@ -713,6 +715,7 @@ namespace UDA2.Audio
 
             ambientPool = new AudioSource[ambientPoolSize];
             ambientPanCoroutines = new Coroutine[ambientPoolSize];
+            ambientBaseVolumes = new float[ambientPoolSize];
 
             for (int i = 0; i < ambientPoolSize; i++)
             {
@@ -722,6 +725,7 @@ namespace UDA2.Audio
                 src.volume = 1f;
                 src.panStereo = 0f;
                 ambientPool[i] = src;
+                ambientBaseVolumes[i] = 1f;
             }
         }
 
@@ -756,13 +760,20 @@ namespace UDA2.Audio
             sfxVolume = Mathf.Clamp01(volume);
             if (audioMixer != null)
                 audioMixer.SetFloat(SfxVolumeParam, ToDb(sfxVolume));
+
+            if (audioMixer != null && hasAmbientVolumeParam)
+                audioMixer.SetFloat(AmbientVolumeParam, ToDb(GetEffectiveAmbientVolume()));
+
+            RefreshAmbientSourceVolumes();
         }
 
         public void SetAmbientVolume(float volume)
         {
             ambientVolume = Mathf.Clamp01(volume);
             if (audioMixer != null && hasAmbientVolumeParam)
-                audioMixer.SetFloat(AmbientVolumeParam, ToDb(ambientVolume));
+                audioMixer.SetFloat(AmbientVolumeParam, ToDb(GetEffectiveAmbientVolume()));
+
+            RefreshAmbientSourceVolumes();
         }
 
         public void PlayAmbient(AudioClip clip, float volume = 1f, float pitch = 1f)
@@ -810,7 +821,12 @@ namespace UDA2.Audio
             src.Stop();
             src.clip = clip;
             src.pitch = pitch;
-            src.volume = Mathf.Clamp01(volume) * ambientVolume;
+            float baseVolume = Mathf.Clamp01(volume);
+            if (ambientBaseVolumes != null && sourceIndex >= 0 && sourceIndex < ambientBaseVolumes.Length)
+                ambientBaseVolumes[sourceIndex] = baseVolume;
+
+            // If ambient is controlled by mixer param, avoid applying ambient scalar on source too.
+            src.volume = ComputeAmbientSourceVolume(baseVolume);
             src.panStereo = clampedPanStart;
             src.Play();
 
@@ -919,6 +935,37 @@ namespace UDA2.Audio
         private float ToDb(float v)
         {
             return Mathf.Log10(Mathf.Clamp(v, 0.0001f, 1f)) * 20f;
+        }
+
+        private float GetEffectiveAmbientVolume()
+        {
+            float sfxFactor = ambientFollowsSfxVolume ? sfxVolume : 1f;
+            return Mathf.Clamp01(ambientVolume * sfxFactor);
+        }
+
+        private float ComputeAmbientSourceVolume(float baseVolume)
+        {
+            float scalar = (audioMixer != null && hasAmbientVolumeParam) ? 1f : GetEffectiveAmbientVolume();
+            return Mathf.Clamp01(baseVolume) * scalar;
+        }
+
+        private void RefreshAmbientSourceVolumes()
+        {
+            if (ambientPool == null || ambientPool.Length == 0)
+                return;
+
+            for (int i = 0; i < ambientPool.Length; i++)
+            {
+                var src = ambientPool[i];
+                if (src == null)
+                    continue;
+
+                float baseVolume = 1f;
+                if (ambientBaseVolumes != null && i >= 0 && i < ambientBaseVolumes.Length)
+                    baseVolume = ambientBaseVolumes[i];
+
+                src.volume = ComputeAmbientSourceVolume(baseVolume);
+            }
         }
     }
 }
