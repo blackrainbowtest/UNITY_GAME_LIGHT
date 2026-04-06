@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace UDA2.Audio
@@ -21,16 +22,6 @@ namespace UDA2.Audio
 
             [Tooltip("Preferred source list. Every cue should usually have Category=Sound.")]
             public AudioCue[] cues = Array.Empty<AudioCue>();
-
-            [Tooltip("Optional fallback list if cues are not used.")]
-            public AudioClip[] clips = Array.Empty<AudioClip>();
-
-            [Range(0f, 1f)]
-            [Tooltip("Volume multiplier for clip fallback playback.")]
-            public float clipVolume = 1f;
-
-            [Tooltip("Pitch range for clip fallback playback.")]
-            public Vector2 clipPitchRange = new Vector2(1f, 1f);
 
             [Header("Stereo Pan")]
             [Tooltip("Enable stereo pan control for this group (-1 = left, +1 = right).")]
@@ -62,15 +53,6 @@ namespace UDA2.Audio
                     }
                 }
 
-                if (clips != null)
-                {
-                    for (int i = 0; i < clips.Length; i++)
-                    {
-                        if (clips[i] != null)
-                            return true;
-                    }
-                }
-
                 return false;
             }
         }
@@ -83,6 +65,20 @@ namespace UDA2.Audio
 
         [Tooltip("If true, first sound in each group is delayed by its interval range. If false, plays immediately once.")]
         [SerializeField] private bool delayFirstPlay = false;
+
+        [Tooltip("If enabled, random-loop groups start with small stagger to avoid audio spikes on scene entry.")]
+        [SerializeField] private bool staggerGroupStartup = true;
+
+        [Min(0f)]
+        [Tooltip("Extra delay between random-loop groups startup (seconds).")]
+        [SerializeField] private float groupStartupStepSeconds = 0.08f;
+
+        [Tooltip("If enabled, requests audio data load for ambient cue clips before starting playback.")]
+        [SerializeField] private bool preloadAmbientAudioData = true;
+
+        [Min(1)]
+        [Tooltip("How many cue clips to schedule for preloading per frame.")]
+        [SerializeField] private int preloadClipsPerFrame = 2;
 
         [Header("Ambient Groups")]
         [SerializeField] private AmbientGroup[] groups = Array.Empty<AmbientGroup>();
@@ -110,6 +106,9 @@ namespace UDA2.Audio
         private IEnumerator PlayNextFrameRoutine()
         {
             yield return null;
+
+            if (preloadAmbientAudioData)
+                yield return PreloadAmbientClipsRoutine();
 
             delayedPlayRoutine = null;
 
@@ -140,7 +139,11 @@ namespace UDA2.Audio
                     continue;
                 }
 
-                groupRoutines[i] = StartCoroutine(GroupRoutine(group));
+                float startupDelay = 0f;
+                if (staggerGroupStartup)
+                    startupDelay = Mathf.Max(0f, groupStartupStepSeconds) * i;
+
+                groupRoutines[i] = StartCoroutine(GroupRoutine(group, startupDelay));
             }
         }
 
@@ -158,8 +161,11 @@ namespace UDA2.Audio
             groupRoutines = null;
         }
 
-        private IEnumerator GroupRoutine(AmbientGroup group)
+        private IEnumerator GroupRoutine(AmbientGroup group, float initialDelay)
         {
+            if (initialDelay > 0f)
+                yield return new WaitForSeconds(initialDelay);
+
             if (delayFirstPlay)
                 yield return new WaitForSeconds(GetDelay(group.intervalSeconds));
 
@@ -211,22 +217,6 @@ namespace UDA2.Audio
             return null;
         }
 
-        private static AudioClip PickRandomClip(AudioClip[] list)
-        {
-            if (list == null || list.Length == 0)
-                return null;
-
-            int start = UnityEngine.Random.Range(0, list.Length);
-            for (int i = 0; i < list.Length; i++)
-            {
-                var clip = list[(start + i) % list.Length];
-                if (clip != null)
-                    return clip;
-            }
-
-            return null;
-        }
-
         private static bool PlayOneAndGetDuration(AmbientGroup group, out float durationSeconds)
         {
             durationSeconds = 0f;
@@ -261,36 +251,49 @@ namespace UDA2.Audio
                 am.PlayAmbient(cue.Clip, cue.DefaultVolume, pitch, panStart, panEnd, panSweepDuration);
 
                 durationSeconds = clipDuration;
-                return false;
+                return true;
             }
-
-            var clip = PickRandomClip(group.clips);
-            if (clip == null)
-                return false;
-
-            float clipMinPitch = group.clipPitchRange.x;
-            float clipMaxPitch = group.clipPitchRange.y;
-            if (clipMaxPitch < clipMinPitch)
-                (clipMinPitch, clipMaxPitch) = (clipMaxPitch, clipMinPitch);
-
-            float clipPitch = Mathf.Approximately(clipMinPitch, clipMaxPitch)
-                ? clipMinPitch
-                : UnityEngine.Random.Range(clipMinPitch, clipMaxPitch);
-
-            float clipDurationFallback = Mathf.Max(0f, clip.length);
-            float clipPanStart = group.useStereoPan ? Mathf.Clamp(group.panStart, -1f, 1f) : 0f;
-            float clipPanEnd = group.useStereoPan ? Mathf.Clamp(group.panEnd, -1f, 1f) : clipPanStart;
-            float clipPanSweepDuration = 0f;
-            if (group.useStereoPan)
-            {
-                clipPanSweepDuration = group.panSweepOverClipDuration
-                    ? clipDurationFallback
-                    : Mathf.Max(0f, group.panSweepDuration);
-            }
-
-            am.PlayAmbient(clip, group.clipVolume, clipPitch, clipPanStart, clipPanEnd, clipPanSweepDuration);
-            durationSeconds = clipDurationFallback;
             return false;
+        }
+
+        private IEnumerator PreloadAmbientClipsRoutine()
+        {
+            if (groups == null || groups.Length == 0)
+                yield break;
+
+            var unique = new HashSet<AudioClip>();
+            int scheduledThisFrame = 0;
+            int budget = Mathf.Max(1, preloadClipsPerFrame);
+
+            for (int i = 0; i < groups.Length; i++)
+            {
+                var group = groups[i];
+                if (group == null)
+                    continue;
+
+                if (group.cues != null)
+                {
+                    for (int c = 0; c < group.cues.Length; c++)
+                    {
+                        var cue = group.cues[c];
+                        if (cue == null || cue.Clip == null)
+                            continue;
+
+                        if (!unique.Add(cue.Clip))
+                            continue;
+
+                        cue.Clip.LoadAudioData();
+                        scheduledThisFrame++;
+
+                        if (scheduledThisFrame >= budget)
+                        {
+                            scheduledThisFrame = 0;
+                            yield return null;
+                        }
+                    }
+                }
+
+            }
         }
     }
 }

@@ -27,6 +27,7 @@ namespace UDA2.Audio
         public static AudioManager Instance;
 
         public bool IsMusicPlaying => musicSource != null && musicSource.isPlaying;
+        public float SfxVolume01 => sfxVolume;
 
         private const string MusicVolumeParam = "MusicVolume";
         private const string SfxVolumeParam = "SFXVolume";
@@ -79,9 +80,11 @@ namespace UDA2.Audio
         [SerializeField] private UnityEngine.Audio.AudioMixerGroup ambientGroup;
         [SerializeField] private int ambientPoolSize = 6;
         [SerializeField] private Transform ambientParent;
+        [SerializeField] private bool ambientFollowsSfxVolume = true;
 
         private AudioSource[] ambientPool;
         private Coroutine[] ambientPanCoroutines;
+        private float[] ambientBaseVolumes;
         private int ambientIndex;
         private float ambientVolume = 1f;
 
@@ -411,6 +414,23 @@ namespace UDA2.Audio
             nextSceneMusicCue = cue;
         }
 
+        public bool WillPlayMusicForScene(string sceneName)
+        {
+            if (nextSceneMusicCue != null && nextSceneMusicCue.Clip != null)
+                return true;
+
+            if (sceneMusicConfig != null && sceneMusicConfig.TryGet(sceneName, out var entry))
+            {
+                if (HasAnyValidCue(entry.playlist))
+                    return true;
+
+                if (entry.musicCue != null && entry.musicCue.Clip != null)
+                    return true;
+            }
+
+            return false;
+        }
+
         public void Play(AudioCue cue)
         {
             if (cue == null || cue.Clip == null)
@@ -443,6 +463,24 @@ namespace UDA2.Audio
 
             // Gameplay sounds (Sound) and legacy Sfx both use the pooled SFX player.
             PlaySfx(cue.Clip, cue.DefaultVolume, pitch);
+        }
+
+        // Battle-cues should always follow the SFX bus/slider regardless of cue category.
+        public void PlayBattleCueAsSfx(AudioCue cue)
+        {
+            if (cue == null || cue.Clip == null)
+                return;
+
+            float pitch = cue.PitchRange.x;
+            if (cue.PitchRange.y > cue.PitchRange.x)
+                pitch = UnityEngine.Random.Range(cue.PitchRange.x, cue.PitchRange.y);
+
+            PlaySfx(cue.Clip, cue.DefaultVolume, pitch);
+
+            Debug.Log($"[BattleAudio] PlayBattleCueAsSfx clip='{cue.Clip.name}' cueKey='{cue.Key}' defaultVol={cue.DefaultVolume:0.###} sfxMaster={sfxVolume:0.###} pitch={pitch:0.###}");
+
+            if (sfxVolume <= 0.01f)
+                Debug.LogWarning("[BattleAudio] SFX master volume is near zero. Battle cues may be inaudible.");
         }
 
         /* ===================== MUSIC ===================== */
@@ -677,6 +715,7 @@ namespace UDA2.Audio
 
             ambientPool = new AudioSource[ambientPoolSize];
             ambientPanCoroutines = new Coroutine[ambientPoolSize];
+            ambientBaseVolumes = new float[ambientPoolSize];
 
             for (int i = 0; i < ambientPoolSize; i++)
             {
@@ -686,6 +725,7 @@ namespace UDA2.Audio
                 src.volume = 1f;
                 src.panStereo = 0f;
                 ambientPool[i] = src;
+                ambientBaseVolumes[i] = 1f;
             }
         }
 
@@ -720,13 +760,20 @@ namespace UDA2.Audio
             sfxVolume = Mathf.Clamp01(volume);
             if (audioMixer != null)
                 audioMixer.SetFloat(SfxVolumeParam, ToDb(sfxVolume));
+
+            if (audioMixer != null && hasAmbientVolumeParam)
+                audioMixer.SetFloat(AmbientVolumeParam, ToDb(GetEffectiveAmbientVolume()));
+
+            RefreshAmbientSourceVolumes();
         }
 
         public void SetAmbientVolume(float volume)
         {
             ambientVolume = Mathf.Clamp01(volume);
             if (audioMixer != null && hasAmbientVolumeParam)
-                audioMixer.SetFloat(AmbientVolumeParam, ToDb(ambientVolume));
+                audioMixer.SetFloat(AmbientVolumeParam, ToDb(GetEffectiveAmbientVolume()));
+
+            RefreshAmbientSourceVolumes();
         }
 
         public void PlayAmbient(AudioClip clip, float volume = 1f, float pitch = 1f)
@@ -774,7 +821,12 @@ namespace UDA2.Audio
             src.Stop();
             src.clip = clip;
             src.pitch = pitch;
-            src.volume = Mathf.Clamp01(volume) * ambientVolume;
+            float baseVolume = Mathf.Clamp01(volume);
+            if (ambientBaseVolumes != null && sourceIndex >= 0 && sourceIndex < ambientBaseVolumes.Length)
+                ambientBaseVolumes[sourceIndex] = baseVolume;
+
+            // If ambient is controlled by mixer param, avoid applying ambient scalar on source too.
+            src.volume = ComputeAmbientSourceVolume(baseVolume);
             src.panStereo = clampedPanStart;
             src.Play();
 
@@ -883,6 +935,37 @@ namespace UDA2.Audio
         private float ToDb(float v)
         {
             return Mathf.Log10(Mathf.Clamp(v, 0.0001f, 1f)) * 20f;
+        }
+
+        private float GetEffectiveAmbientVolume()
+        {
+            float sfxFactor = ambientFollowsSfxVolume ? sfxVolume : 1f;
+            return Mathf.Clamp01(ambientVolume * sfxFactor);
+        }
+
+        private float ComputeAmbientSourceVolume(float baseVolume)
+        {
+            float scalar = (audioMixer != null && hasAmbientVolumeParam) ? 1f : GetEffectiveAmbientVolume();
+            return Mathf.Clamp01(baseVolume) * scalar;
+        }
+
+        private void RefreshAmbientSourceVolumes()
+        {
+            if (ambientPool == null || ambientPool.Length == 0)
+                return;
+
+            for (int i = 0; i < ambientPool.Length; i++)
+            {
+                var src = ambientPool[i];
+                if (src == null)
+                    continue;
+
+                float baseVolume = 1f;
+                if (ambientBaseVolumes != null && i >= 0 && i < ambientBaseVolumes.Length)
+                    baseVolume = ambientBaseVolumes[i];
+
+                src.volume = ComputeAmbientSourceVolume(baseVolume);
+            }
         }
     }
 }

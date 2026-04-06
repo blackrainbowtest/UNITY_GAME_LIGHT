@@ -18,6 +18,8 @@ namespace Game.Dungeon
             [Header("Requirements")]
             public AdventurerRank requiredRank = AdventurerRank.None;
             [Min(1)] public int requiredPlayerLevel = 1;
+
+            [NonSerialized] public Image cachedImage;
         }
 
         [Header("Buttons")]
@@ -31,11 +33,25 @@ namespace Game.Dungeon
         [SerializeField] private bool debugIgnoreRankLock;
         [SerializeField] private bool debugIgnoreLevelLock;
 
+        [Header("Startup")]
+        [SerializeField, Min(0)] private int deferFirstRefreshFrames = 1;
+
+        private Coroutine deferredRefreshRoutine;
+
         private void Awake()
         {
             WireButtons();
-
+            CacheButtonImages();
             ApplyLocationButtonAlpha();
+        }
+
+        private void OnDisable()
+        {
+            if (deferredRefreshRoutine != null)
+            {
+                StopCoroutine(deferredRefreshRoutine);
+                deferredRefreshRoutine = null;
+            }
         }
 
         private void ApplyLocationButtonAlpha()
@@ -45,7 +61,7 @@ namespace Game.Dungeon
             {
                 var binding = buttons[i];
                 if (binding?.button == null) continue;
-                var img = binding.button.GetComponent<UnityEngine.UI.Image>();
+                var img = binding.cachedImage;
                 if (img != null)
                 {
                     var c = img.color;
@@ -57,7 +73,38 @@ namespace Game.Dungeon
 
         private void OnEnable()
         {
+            if (deferredRefreshRoutine != null)
+                StopCoroutine(deferredRefreshRoutine);
+
+            deferredRefreshRoutine = StartCoroutine(DeferredFirstRefreshRoutine());
+        }
+
+        private System.Collections.IEnumerator DeferredFirstRefreshRoutine()
+        {
+            int frames = Mathf.Max(0, deferFirstRefreshFrames);
+            while (frames > 0)
+            {
+                frames--;
+                yield return null;
+            }
+
+            deferredRefreshRoutine = null;
             RefreshInteractable();
+        }
+
+        private void CacheButtonImages()
+        {
+            if (buttons == null)
+                return;
+
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                var binding = buttons[i];
+                if (binding == null || binding.button == null)
+                    continue;
+
+                binding.cachedImage = binding.button.GetComponent<Image>();
+            }
         }
 
         private void WireButtons()

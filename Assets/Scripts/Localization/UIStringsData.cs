@@ -24,6 +24,8 @@ public class UIStringsData : ScriptableObject
 {
     [SerializeField] private List<LocalizedUIString> strings = new();
 
+    [NonSerialized] private Dictionary<string, LocalizedUIString> cacheByKey;
+
     [Header("Editor Import")]
     [SerializeField, HideInInspector]
     [Tooltip("CSV file name without extension (e.g. 'ui_battle')")]
@@ -34,11 +36,9 @@ public class UIStringsData : ScriptableObject
         if (string.IsNullOrEmpty(key))
             return string.Empty;
 
-        for (int i = 0; i < strings.Count; i++)
-        {
-            if (strings[i].Key == key)
-                return strings[i].Get(languageCode);
-        }
+        EnsureCache();
+        if (cacheByKey != null && cacheByKey.TryGetValue(key, out var entry) && entry != null)
+            return entry.Get(languageCode);
 
         return key;
     }
@@ -50,16 +50,55 @@ public class UIStringsData : ScriptableObject
         if (string.IsNullOrEmpty(key))
             return false;
 
-        for (int i = 0; i < strings.Count; i++)
+        EnsureCache();
+        if (cacheByKey != null && cacheByKey.TryGetValue(key, out var entry) && entry != null)
         {
-            if (strings[i].Key == key)
-            {
-                value = strings[i].Get(languageCode);
-                return true;
-            }
+            value = entry.Get(languageCode);
+            return true;
         }
 
         return false;
+    }
+
+    private void OnEnable()
+    {
+        BuildCache();
+    }
+
+    private void OnValidate()
+    {
+        BuildCache();
+    }
+
+    private void EnsureCache()
+    {
+        if (cacheByKey == null)
+            BuildCache();
+    }
+
+    private void BuildCache()
+    {
+        if (cacheByKey == null)
+            cacheByKey = new Dictionary<string, LocalizedUIString>(StringComparer.Ordinal);
+        else
+            cacheByKey.Clear();
+
+        if (strings == null)
+            return;
+
+        for (int i = 0; i < strings.Count; i++)
+        {
+            var entry = strings[i];
+            if (entry == null)
+                continue;
+
+            var entryKey = entry.Key;
+            if (string.IsNullOrEmpty(entryKey))
+                continue;
+
+            if (!cacheByKey.ContainsKey(entryKey))
+                cacheByKey.Add(entryKey, entry);
+        }
     }
 
     public void CopyKeysTo(List<string> destination)
@@ -170,6 +209,7 @@ public class UIStringsData : ScriptableObject
 
         strings.Clear();
         strings.AddRange(newStrings);
+        BuildCache();
         EditorUtility.SetDirty(this);
         return true;
     }
