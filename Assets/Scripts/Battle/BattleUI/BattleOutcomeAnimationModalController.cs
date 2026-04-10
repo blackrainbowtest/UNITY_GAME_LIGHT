@@ -36,6 +36,7 @@ namespace Game.Battle.UI
         private bool _isOpen;
         private bool _hideOnClose = true;
         private GameObject _spawnedAnimatedVariant;
+        private Sprite _fallbackLocationBackground;
 
         public Game.Battle.BattleFinishReason LastReason { get; private set; } = Game.Battle.BattleFinishReason.Defeat;
         public bool LastPlayerWon { get; private set; }
@@ -70,11 +71,13 @@ namespace Game.Battle.UI
             bool hideOnClose = true,
             string enemyId = null,
             string locationId = null,
-            string sourceLocationId = null)
+            string sourceLocationId = null,
+            Sprite fallbackLocationBackground = null)
         {
             _onClosed = onClosed;
             _isOpen = true;
             _hideOnClose = hideOnClose;
+            _fallbackLocationBackground = fallbackLocationBackground;
             LastReason = reason;
             LastPlayerWon = playerWon;
             LastWinningActionId = winningActionId;
@@ -100,6 +103,7 @@ namespace Game.Battle.UI
         public void Hide()
         {
             ClearSpawnedVariants();
+            _fallbackLocationBackground = null;
 
             // Always hide the whole modal object to avoid leaving any overlay elements (e.g. TopHUD) active.
             if (root != null)
@@ -277,6 +281,10 @@ namespace Game.Battle.UI
             var resolvedSourceLocationId = !string.IsNullOrWhiteSpace(sourceLocationId)
                 ? sourceLocationId
                 : save?.sceneState?.pendingBattle?.locationId;
+            var resolvedLocationFallbackSprite = presentationCatalog.ResolveLocationFallbackSprite(
+                resolvedLocationId,
+                resolvedSourceLocationId,
+                _fallbackLocationBackground);
 
             var variants = presentationCatalog.ResolveVariants(
                 reason,
@@ -294,6 +302,12 @@ namespace Game.Battle.UI
 
             if (variants == null || variants.Count == 0)
             {
+                if (outcomeImage != null)
+                {
+                    outcomeImage.sprite = resolvedLocationFallbackSprite;
+                    outcomeImage.enabled = outcomeImage.sprite != null;
+                }
+
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 if (enablePresentationDebugLogs)
                     Debug.LogWarning($"[BattleOutcomeAnimationModal] No variants matched. reason={reason}, enemyId='{resolvedEnemyId}', locationId='{resolvedLocationId}', sourceLocationId='{resolvedSourceLocationId}'", this);
@@ -304,6 +318,12 @@ namespace Game.Battle.UI
             var selected = SelectWeightedVariant(variants);
             if (selected == null)
             {
+                if (outcomeImage != null)
+                {
+                    outcomeImage.sprite = resolvedLocationFallbackSprite;
+                    outcomeImage.enabled = outcomeImage.sprite != null;
+                }
+
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 if (enablePresentationDebugLogs)
                     Debug.LogWarning("[BattleOutcomeAnimationModal] Variant list exists, but weighted selection returned null.", this);
@@ -322,8 +342,10 @@ namespace Game.Battle.UI
 
             if (outcomeImage != null)
             {
-                outcomeImage.sprite = selected.sprite;
-                outcomeImage.enabled = selected.sprite != null;
+                var variantSprite = presentationCatalog.UseVariantSpriteOverrides ? selected.sprite : null;
+                var resolvedSprite = variantSprite != null ? variantSprite : resolvedLocationFallbackSprite;
+                outcomeImage.sprite = resolvedSprite;
+                outcomeImage.enabled = resolvedSprite != null;
             }
 
             ClearSpawnedVariants();

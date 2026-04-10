@@ -127,10 +127,72 @@ namespace Game.Battle.UI
             public List<OutcomeRuleGroup> rules = new List<OutcomeRuleGroup>();
         }
 
+        [Serializable]
+        public sealed class LocationBackgroundFallback
+        {
+            [Tooltip("If enabled, this entry can be used as a default for any location.")]
+            public bool anyLocation;
+
+            [Tooltip("Optional location asset reference. If assigned, id is taken from this asset.")]
+            public BattleLocationData location;
+
+            [Tooltip("Optional location id override. Used when Location is not assigned.")]
+            public string locationId;
+
+            [Tooltip("Background sprite used for this location fallback.")]
+            public Sprite sprite;
+        }
+
         [SerializeField] private List<EnemyGroup> enemyGroups = new List<EnemyGroup>();
+        [Header("Location Background Fallback")]
+        [Tooltip("Global location-to-background mapping used as fallback for all enemy groups/outcomes.")]
+        [SerializeField] private List<LocationBackgroundFallback> locationBackgrounds = new List<LocationBackgroundFallback>();
+        [Tooltip("If enabled, variant.sprite can override location fallback background. If disabled, location fallback background is always used.")]
+        [SerializeField] private bool useVariantSpriteOverrides = true;
         [Header("Global Fallback")]
         [Tooltip("Used when no enemy/outcome/location rule matched. Acts as a reserve default presentation.")]
         [SerializeField] private List<VisualVariant> fallbackVariants = new List<VisualVariant>();
+
+        public bool UseVariantSpriteOverrides => useVariantSpriteOverrides;
+
+        private void OnValidate()
+        {
+            SyncLocationBackgroundIds();
+        }
+
+        public Sprite ResolveLocationFallbackSprite(string locationId, string sourceLocationId, Sprite defaultSprite = null)
+        {
+            if (locationBackgrounds == null || locationBackgrounds.Count == 0)
+                return defaultSprite;
+
+            var normalizedLocationId = string.IsNullOrWhiteSpace(locationId) ? string.Empty : locationId.Trim();
+            var normalizedSourceLocationId = string.IsNullOrWhiteSpace(sourceLocationId) ? string.Empty : sourceLocationId.Trim();
+            Sprite anyLocationSprite = null;
+
+            for (int i = 0; i < locationBackgrounds.Count; i++)
+            {
+                var entry = locationBackgrounds[i];
+                if (entry == null || entry.sprite == null)
+                    continue;
+
+                if (entry.anyLocation)
+                {
+                    if (anyLocationSprite == null)
+                        anyLocationSprite = entry.sprite;
+
+                    continue;
+                }
+
+                var entryId = ResolveLocationFallbackId(entry);
+                if (string.IsNullOrWhiteSpace(entryId))
+                    continue;
+
+                if (AreEquivalentLocationId(entryId, normalizedLocationId) || AreEquivalentLocationId(entryId, normalizedSourceLocationId))
+                    return entry.sprite;
+            }
+
+            return anyLocationSprite != null ? anyLocationSprite : defaultSprite;
+        }
 
         public IReadOnlyList<VisualVariant> ResolveVariants(BattleFinishReason outcome, string enemyId, string locationId, string sourceLocationId, SaveData save)
         {
@@ -345,6 +407,60 @@ namespace Game.Battle.UI
                 return group.enemy.id.Trim();
 
             return string.Empty;
+        }
+
+        private static string ResolveLocationFallbackId(LocationBackgroundFallback entry)
+        {
+            if (entry == null)
+                return string.Empty;
+
+            if (entry.location != null)
+            {
+                var locationAssetId = ResolveLocationAssetId(entry.location);
+                if (!string.IsNullOrWhiteSpace(locationAssetId))
+                    return locationAssetId;
+            }
+
+            if (!string.IsNullOrWhiteSpace(entry.locationId))
+                return entry.locationId.Trim();
+
+            return string.Empty;
+        }
+
+        private void SyncLocationBackgroundIds()
+        {
+            if (locationBackgrounds == null || locationBackgrounds.Count == 0)
+                return;
+
+            for (int i = 0; i < locationBackgrounds.Count; i++)
+            {
+                var entry = locationBackgrounds[i];
+                if (entry == null || entry.location == null)
+                    continue;
+
+                var normalizedId = ResolveLocationAssetId(entry.location);
+                if (string.IsNullOrWhiteSpace(normalizedId))
+                    continue;
+
+                if (!string.Equals(entry.locationId, normalizedId, StringComparison.Ordinal))
+                    entry.locationId = normalizedId;
+            }
+        }
+
+        private static string ResolveLocationAssetId(BattleLocationData location)
+        {
+            if (location == null)
+                return string.Empty;
+
+            var id = string.IsNullOrWhiteSpace(location.id) ? string.Empty : location.id.Trim();
+            if (!string.IsNullOrWhiteSpace(id) && !string.Equals(id, "location", StringComparison.OrdinalIgnoreCase))
+                return id;
+
+            var assetName = location.name;
+            if (string.IsNullOrWhiteSpace(assetName))
+                return string.Empty;
+
+            return assetName.Trim().ToLowerInvariant().Replace(' ', '_');
         }
 
         private static bool HasAnyVariant(List<VisualVariant> variants)

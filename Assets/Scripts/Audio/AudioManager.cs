@@ -257,6 +257,15 @@ namespace UDA2.Audio
             UDA2.Core.SettingsContext.OnSfxVolumeChanged += SetSfxVolume;
             UDA2.Core.SettingsContext.OnAmbientVolumeChanged += SetAmbientVolume;
             UDA2.Core.SettingsContext.OnUiVolumeChanged += SetUiVolume;
+
+            // Pull latest snapshot immediately in case ApplyAll happened before subscriptions.
+            ApplySettingsSnapshotFromContext();
+        }
+
+        private void Start()
+        {
+            // A second pass after scene startup protects against late Current assignment on bootstrap.
+            StartCoroutine(ApplySettingsSnapshotNextFrame());
         }
 
         private void OnDisable()
@@ -279,6 +288,24 @@ namespace UDA2.Audio
 
             if (Instance == this)
                 Instance = null;
+        }
+
+        private IEnumerator ApplySettingsSnapshotNextFrame()
+        {
+            yield return null;
+            ApplySettingsSnapshotFromContext();
+        }
+
+        private void ApplySettingsSnapshotFromContext()
+        {
+            var s = UDA2.Core.SettingsContext.Current;
+            if (s == null)
+                return;
+
+            SetMusicVolume(s.musicVolume);
+            SetSfxVolume(s.sfxVolume);
+            SetAmbientVolume(s.ambientVolume);
+            SetUiVolume(s.uiVolume);
         }
 
         /* ===================== SCENE MUSIC ===================== */
