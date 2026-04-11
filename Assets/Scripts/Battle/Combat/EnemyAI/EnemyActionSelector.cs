@@ -29,7 +29,8 @@ namespace Game.Battle.Combat.EnemyAI
             EnemyData enemy,
             CombatActionRegistry registry,
             CombatState state,
-            Random rng)
+            Random rng,
+            bool allowHealActions = true)
         {
             if (enemy == null || registry == null || state == null)
                 return null;
@@ -47,14 +48,18 @@ namespace Game.Battle.Combat.EnemyAI
                 };
             }
 
+            var hpRatio = enemy.maxHp > 0 ? (float)state.EnemyHp / enemy.maxHp : 1f;
+            var healConsiderHpRatio = Clamp01(enemy.healConsiderHpRatio);
+
+            if (TrySelectHolySpellByHpThreshold(difficulty, enemy, allowed, registry, state, hpRatio, rng, allowHealActions, out var holyAction))
+                return holyAction.Id;
+
             var candidates = new List<CombatActionData>(allowed.Length);
             foreach (var id in allowed)
             {
                 var action = registry.Get(id);
                 if (action == null)
                     continue;
-
-                var hpRatio = enemy.maxHp > 0 ? (float)state.EnemyHp / enemy.maxHp : 1f;
 
                 // Special-case: allow defensive actions if they are meaningful.
                 if (action.Id == CombatActionId.Block)
@@ -89,9 +94,8 @@ namespace Game.Battle.Combat.EnemyAI
                 }
 
                 // Enemy turn: action is meaningful if it damages the player OR heals the enemy.
-                // Heal should only be considered when enemy is below 60% HP.
                 var canDamagePlayer = CombatDamageModel.ComputeHpDamage(enemyBaseAttack, action) > 0;
-                var canHealSelf = action.HpHealSelf > 0 && hpRatio < 0.60f;
+                var canHealSelf = allowHealActions && action.HpHealSelf > 0 && hpRatio < healConsiderHpRatio;
                 if (!canDamagePlayer && !canHealSelf)
                     continue;
 
@@ -212,6 +216,79 @@ namespace Game.Battle.Combat.EnemyAI
             }
 
             return best;
+        }
+
+        private static bool TrySelectHolySpellByHpThreshold(
+            EnemyDifficulty difficulty,
+            EnemyData enemy,
+            CombatActionId[] allowed,
+            CombatActionRegistry registry,
+            CombatState state,
+            float hpRatio,
+            Random rng,
+            bool allowHealActions,
+            out CombatActionData holyAction)
+        {
+            holyAction = null;
+
+            if (enemy == null || allowed == null || registry == null || state == null)
+                return false;
+
+            if (!allowHealActions)
+                return false;
+
+            bool holyAllowed = false;
+            for (int i = 0; i < allowed.Length; i++)
+            {
+                if (allowed[i] == CombatActionId.HolySpell)
+                {
+                    holyAllowed = true;
+                    break;
+                }
+            }
+
+            if (!holyAllowed)
+                return false;
+
+            holyAction = registry.Get(CombatActionId.HolySpell);
+            if (holyAction == null)
+                return false;
+
+            if (state.EnemyMp < holyAction.MpCost || state.EnemySp < holyAction.SpCost || state.EnemyLp < holyAction.LpCost)
+                return false;
+
+            var stage1 = Clamp01(enemy.holyPriorityHpRatioStage1);
+            var stage2 = Clamp01(enemy.holyPriorityHpRatioStage2);
+            var stage3 = Clamp01(enemy.holyPriorityHpRatioStage3);
+
+            if (stage2 > stage1)
+                stage2 = stage1;
+
+            if (stage3 > stage2)
+                stage3 = stage2;
+
+            if (hpRatio > stage1)
+                return false;
+
+            // Three HP stages are treated as deterministic
+            // Holy priority windows to guarantee healing behavior when affordable.
+            if (hpRatio <= stage3)
+                return true;
+
+            if (hpRatio <= stage2)
+                return true;
+
+            return true;
+        }
+
+        private static float Clamp01(float value)
+        {
+            if (float.IsNaN(value) || float.IsInfinity(value))
+                return 0f;
+
+            if (value < 0f) return 0f;
+            if (value > 1f) return 1f;
+            return value;
         }
 
         private static int PrimaryValue(CombatActionData action, int enemyBaseAttack)

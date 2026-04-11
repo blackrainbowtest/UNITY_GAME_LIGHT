@@ -51,6 +51,26 @@ namespace Game.Battle
         [Header("AI")]
         public CombatActionId[] allowedActions;
 
+        [Range(0f, 1f)]
+        [Tooltip("Enemy will consider self-heal actions only below this HP ratio.")]
+        public float healConsiderHpRatio = 0.80f;
+
+        [Range(0f, 1f)]
+        [Tooltip("HolySpell priority stage 1 threshold.")]
+        public float holyPriorityHpRatioStage1 = 0.80f;
+
+        [Range(0f, 1f)]
+        [Tooltip("HolySpell priority stage 2 threshold.")]
+        public float holyPriorityHpRatioStage2 = 0.50f;
+
+        [Range(0f, 1f)]
+        [Tooltip("HolySpell priority stage 3 threshold.")]
+        public float holyPriorityHpRatioStage3 = 0.30f;
+
+        [Min(0)]
+        [Tooltip("Minimum number of enemy non-heal actions required before heal can be used again.")]
+        public int nonHealActionsBetweenHeals = 2;
+
         [Header("Spawn Range")]
         [Min(1)]
         [Tooltip("Minimum random enemy level for spawn.")]
@@ -123,6 +143,20 @@ namespace Game.Battle
 
             minSpawnRankTier = Mathf.Max(0, minSpawnRankTier);
             maxSpawnRankTier = Mathf.Max(minSpawnRankTier, maxSpawnRankTier);
+
+            healConsiderHpRatio = Mathf.Clamp01(healConsiderHpRatio);
+            holyPriorityHpRatioStage1 = Mathf.Clamp01(holyPriorityHpRatioStage1);
+            holyPriorityHpRatioStage2 = Mathf.Clamp01(holyPriorityHpRatioStage2);
+            holyPriorityHpRatioStage3 = Mathf.Clamp01(holyPriorityHpRatioStage3);
+
+            // Keep stages ordered from broad to narrow (stage1 >= stage2 >= stage3).
+            if (holyPriorityHpRatioStage2 > holyPriorityHpRatioStage1)
+                holyPriorityHpRatioStage2 = holyPriorityHpRatioStage1;
+
+            if (holyPriorityHpRatioStage3 > holyPriorityHpRatioStage2)
+                holyPriorityHpRatioStage3 = holyPriorityHpRatioStage2;
+
+            nonHealActionsBetweenHeals = Mathf.Max(0, nonHealActionsBetweenHeals);
 
             EnsureId();
         }

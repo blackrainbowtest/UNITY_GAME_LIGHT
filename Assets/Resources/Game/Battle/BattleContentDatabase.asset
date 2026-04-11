@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: BattleContentDatabase
   m_EditorClassIdentifier: UDA2.Battle::Game.Battle.BattleContentDatabase
   enemies:
-  - {fileID: 11400000, guid: 20fc20ce415a1e0428a8ed3c9babc603, type: 2}
   - {fileID: 11400000, guid: 205537598eac29149a1f7e3b879dd003, type: 2}
   - {fileID: 11400000, guid: b80868a8ef627824fb5a308d1e756f23, type: 2}
   - {fileID: 11400000, guid: 4c0f8d9bb1b84f1e9b8ff3e2b8e8d0a1, type: 2}

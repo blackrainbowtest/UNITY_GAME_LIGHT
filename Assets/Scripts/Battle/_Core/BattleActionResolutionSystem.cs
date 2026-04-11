@@ -1,6 +1,7 @@
 using Game.Battle.Combat;
 using Game.Battle.Combat.Actions;
 using Game.Battle.Combat.EnemyAI;
+using Logger = UDA2.Logging.Logger;
 
 namespace Game.Battle
 {
@@ -16,6 +17,9 @@ namespace Game.Battle
 
     public sealed class BattleActionResolutionSystem
     {
+        private const int DefaultNonHealActionsBetweenHeals = 2;
+        private int nonHealActionsBeforeNextHeal;
+
         public bool TryResolvePlayerAction(
             BattleCombatEngine combatEngine,
             CombatActionRegistry actionRegistry,
@@ -84,17 +88,49 @@ namespace Game.Battle
                 return false;
             }
 
+            var allowHealActions = nonHealActionsBeforeNextHeal <= 0;
+
             var picked = EnemyActionSelector.SelectEnemyAction(
                 context.EnemyDifficulty,
                 context.Enemy,
                 actionRegistry,
                 combatState,
-                rng);
+                rng,
+                allowHealActions);
+
+            // Fallback: if heal is temporarily blocked but no non-heal action is available,
+            // let the enemy act instead of skipping the turn.
+            if (!picked.HasValue && !allowHealActions)
+            {
+                picked = EnemyActionSelector.SelectEnemyAction(
+                    context.EnemyDifficulty,
+                    context.Enemy,
+                    actionRegistry,
+                    combatState,
+                    rng,
+                    allowHealActions: true);
+            }
 
             if (!picked.HasValue)
             {
                 failure = BattleActionResolveFailure.EnemyNoActionPicked;
                 return false;
+            }
+
+            if (context.Enemy != null)
+            {
+                var allowed = context.Enemy.allowedActions;
+                var allowedText = (allowed != null && allowed.Length > 0)
+                    ? string.Join(", ", allowed)
+                    : "<default fallback>";
+
+                Logger.LogInfo(
+                    $"[Battle][AI] enemyId={context.Enemy.id}, hp={combatState.EnemyHp}/{context.Enemy.maxHp}, mp={combatState.EnemyMp}/{context.Enemy.maxMp}, " +
+                    $"allowed=[{allowedText}], picked={picked.Value}",
+                    UDA2.Logging.LogChannel.AI);
+
+                // Force update of uda2.log for easier bug-report sharing during active play sessions.
+                Logger.FlushToFile();
             }
 
             actionId = picked.Value;
@@ -110,6 +146,20 @@ namespace Game.Battle
             {
                 failure = BattleActionResolveFailure.ActionRejected;
                 return false;
+            }
+
+            var isHealAction = action.HpHealSelf > 0;
+            if (isHealAction)
+            {
+                var configured = context != null && context.Enemy != null
+                    ? context.Enemy.nonHealActionsBetweenHeals
+                    : DefaultNonHealActionsBetweenHeals;
+
+                nonHealActionsBeforeNextHeal = configured < 0 ? 0 : configured;
+            }
+            else if (nonHealActionsBeforeNextHeal > 0)
+            {
+                nonHealActionsBeforeNextHeal--;
             }
 
             return true;

@@ -21,27 +21,6 @@
     "allowedActions": ["FastAttack", "NormalAttack", "HeavyAttack"]
   },
   {
-    "enemyName": "Goblin",
-    "iconPath": "Assets/Art/Icons/goblin.png",
-    "goldReward": 10,
-    "expReward": 0,
-    "lootTable": [],
-    "hp": 50,
-    "mp": 15,
-    "sp": 10,
-    "lp": 5,
-    "maxHp": 50,
-    "maxMp": 15,
-    "maxSp": 10,
-    "maxLp": 20,
-    "attack": 8,
-    "regenHpPerTurn": 5,
-    "regenMpPerTurn": 2,
-    "regenSpPerTurn": 4,
-    "outfitId": "outfit_01",
-    "allowedActions": ["FastAttack", "NormalAttack", "HeavyAttack", "FireSpell"]
-  },
-  {
     "enemyName": "TrainingDummy",
     "iconPath": "Assets/Art/Icons/slime.png",
     "expReward": 0,

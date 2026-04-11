@@ -41,9 +41,20 @@ namespace UDA2.Core
 
         public static UDA2.Core.SettingsState Load()
         {
-            if (!File.Exists(SettingsPath)) return new SettingsState();
-            var json = File.ReadAllText(SettingsPath);
-            return JsonConvert.DeserializeObject<SettingsState>(json);
+            try
+            {
+                if (!File.Exists(SettingsPath))
+                    return Sanitize(new SettingsState());
+
+                var json = File.ReadAllText(SettingsPath);
+                var loaded = JsonConvert.DeserializeObject<SettingsState>(json);
+                return Sanitize(loaded ?? new SettingsState());
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"SettingsManager.Load: failed to read settings, using defaults. {ex.Message}");
+                return Sanitize(new SettingsState());
+            }
         }
         public static void ResetToDefault()
         {
@@ -72,6 +83,39 @@ namespace UDA2.Core
         public static string[] GetLanguageDisplayNames()
         {
             return SupportedLanguageDisplayNames;
+        }
+
+        private static SettingsState Sanitize(SettingsState state)
+        {
+            if (state == null)
+                state = new SettingsState();
+
+            state.musicVolume = Mathf.Clamp01(state.musicVolume);
+            state.sfxVolume = Mathf.Clamp01(state.sfxVolume);
+            state.ambientVolume = state.sfxVolume;
+            state.uiVolume = Mathf.Clamp01(state.uiVolume);
+
+            if (string.IsNullOrWhiteSpace(state.language))
+            {
+                state.language = SupportedLanguages[0];
+                return state;
+            }
+
+            bool supported = false;
+            for (int i = 0; i < SupportedLanguages.Length; i++)
+            {
+                if (string.Equals(SupportedLanguages[i], state.language, StringComparison.OrdinalIgnoreCase))
+                {
+                    state.language = SupportedLanguages[i];
+                    supported = true;
+                    break;
+                }
+            }
+
+            if (!supported)
+                state.language = SupportedLanguages[0];
+
+            return state;
         }
     }
 }

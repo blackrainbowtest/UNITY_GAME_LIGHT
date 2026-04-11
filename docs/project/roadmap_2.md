@@ -96,7 +96,6 @@
 ### Stage 13 — NPCs
 - ⬜ Crystal Wolfkin
 - ⬜ Crystal Slime
-- 🟡 Goblin (default)
 - 🟡 Slime (default)
 - ⬜ Crystal Rat
 
