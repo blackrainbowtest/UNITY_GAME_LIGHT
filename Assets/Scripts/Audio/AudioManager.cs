@@ -915,6 +915,29 @@ namespace UDA2.Audio
                 uiSource.volume = volume;
         }
 
+        public void StopAmbient()
+        {
+            if (ambientPool == null)
+                return;
+
+            for (int i = 0; i < ambientPool.Length; i++)
+            {
+                var src = ambientPool[i];
+                if (src == null)
+                    continue;
+
+                if (ambientPanCoroutines != null && i < ambientPanCoroutines.Length && ambientPanCoroutines[i] != null)
+                {
+                    StopCoroutine(ambientPanCoroutines[i]);
+                    ambientPanCoroutines[i] = null;
+                }
+
+                src.Stop();
+                src.clip = null;
+                src.panStereo = 0f;
+            }
+        }
+
         public void StopSceneSounds()
         {
             if (sfxPool != null)
@@ -930,25 +953,7 @@ namespace UDA2.Audio
                 }
             }
 
-            if (ambientPool != null)
-            {
-                for (int i = 0; i < ambientPool.Length; i++)
-                {
-                    var src = ambientPool[i];
-                    if (src == null)
-                        continue;
-
-                    if (ambientPanCoroutines != null && i < ambientPanCoroutines.Length && ambientPanCoroutines[i] != null)
-                    {
-                        StopCoroutine(ambientPanCoroutines[i]);
-                        ambientPanCoroutines[i] = null;
-                    }
-
-                    src.Stop();
-                    src.clip = null;
-                    src.panStereo = 0f;
-                }
-            }
+            StopAmbient();
 
             if (characterSource != null)
                 characterSource.Stop();

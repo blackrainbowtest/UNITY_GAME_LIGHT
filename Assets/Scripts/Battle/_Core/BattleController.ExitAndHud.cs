@@ -66,6 +66,9 @@ namespace Game.Battle
                 ? true
                 : UDA2.Core.SettingsContext.Current.showBattleResultModal;
 
+            // Stop location-level audio loops/coroutines so playlists cannot restart during result UI.
+            environmentController?.StopLocationAudioRoutines();
+
             // Battle is over: stop battle music immediately.
             if (UDA2.Audio.AudioManager.Instance != null)
             {

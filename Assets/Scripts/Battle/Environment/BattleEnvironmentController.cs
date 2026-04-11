@@ -28,6 +28,15 @@ namespace Game.Battle
             ApplyMusic(location);
             ApplyAmbient(location);
         }
+c
+        public void StopLocationAudioRoutines()
+        {
+            StopAllLocationAudioRoutines();
+
+            var am = AudioManager.Instance;
+            if (am != null)
+                am.StopAmbient();
+        }
 
         private void OnDisable()
         {
