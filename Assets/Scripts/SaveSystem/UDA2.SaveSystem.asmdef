@@ -2,7 +2,8 @@
   "name": "UDA2.SaveSystem",
   "rootNamespace": "UDA2.SaveSystem",
   "references": [
-    "UDA2.Progression"
+    "UDA2.Progression",
+    "UDA2.Logging"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

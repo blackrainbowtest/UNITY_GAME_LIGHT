@@ -2,7 +2,8 @@
   "name": "UDA2.Audio",
   "rootNamespace": "UDA2.Audio",
   "references": [
-    "UDA2.Core"
+    "UDA2.Core",
+    "UDA2.Logging"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

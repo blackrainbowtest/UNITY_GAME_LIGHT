@@ -12,22 +12,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c87d0a45448b47a419c3b527265d2c58, type: 3}
   m_Name: Enemy_slaver_outfit_01_loes_01
   m_EditorClassIdentifier: Assembly-CSharp::IdleAnimation
-  id: hit_02
+  id: loes_01
   frames:
-  - {fileID: 21300000, guid: 0f4a2f98faf4a024ea5b8b4e458a7649, type: 3}
-  - {fileID: 21300000, guid: ac7d1772a605cdf41b619626f09891e8, type: 3}
-  - {fileID: 21300000, guid: 2012277f03919f24ea9b705930e2e69e, type: 3}
-  - {fileID: 21300000, guid: c0da5ac59e3f2ab4582be2a6f40c65f8, type: 3}
-  - {fileID: 21300000, guid: a2979d6bca06ec04281b6d96f3d0a309, type: 3}
-  - {fileID: 21300000, guid: 951b16719a9575f48b79d1fb24e28cb1, type: 3}
-  - {fileID: 21300000, guid: 7effb0bb8ad258e48933b38fb6898698, type: 3}
-  - {fileID: 21300000, guid: 37e012e0a350566499cfc722e3990561, type: 3}
-  - {fileID: 21300000, guid: 957e82ec28e1c2c42a4863789e0ec377, type: 3}
-  - {fileID: 21300000, guid: c82c439f21fe59845a3cce486c7e5ecd, type: 3}
-  - {fileID: 21300000, guid: e83c908d9c9f04047b5b5bcad607891f, type: 3}
-  - {fileID: 21300000, guid: defab8004f1597d448755f0d4bd83c72, type: 3}
-  - {fileID: 21300000, guid: d94c0b62842788544a8bca2139b30298, type: 3}
-  - {fileID: 21300000, guid: 3ef17df13520f2b409e7ebf86234b950, type: 3}
+  - {fileID: 21300000, guid: 7e1fd119717d2c348b3b021066e69c9c, type: 3}
+  - {fileID: 21300000, guid: ec3b045f007fd1446ad8981dfce5baa3, type: 3}
+  - {fileID: 21300000, guid: dac1a008f5fee614b8f968d73aad2406, type: 3}
+  - {fileID: 21300000, guid: af6d7f76aa271e54a85465af755817ec, type: 3}
+  - {fileID: 21300000, guid: f2fad6843036e604aa4c804a4d8e0941, type: 3}
+  - {fileID: 21300000, guid: 85e1f88693d1a1d46ac2622204b0732d, type: 3}
+  - {fileID: 21300000, guid: 79bd1eec4416be04189f28f0e56a9bb1, type: 3}
+  - {fileID: 21300000, guid: 7b43889dc7762f64b96bdaa7683b010f, type: 3}
+  - {fileID: 21300000, guid: 6130bc83ec10295479b4e3f165b7a4af, type: 3}
+  - {fileID: 21300000, guid: 4aa1cb15564518b4da66e1c0031c5ffd, type: 3}
+  - {fileID: 21300000, guid: 8294b0ce64cc5f24e8de065077c9315d, type: 3}
+  - {fileID: 21300000, guid: f701de84d2a5660498f05309ea33f4a2, type: 3}
+  - {fileID: 21300000, guid: 734ce3f017087cd41b5d49d3031ebb77, type: 3}
+  - {fileID: 21300000, guid: aff98b2c8624c8340908a56b9417e7c5, type: 3}
+  - {fileID: 21300000, guid: c95b4d8c636995a4babaffbb954a79a5, type: 3}
+  - {fileID: 21300000, guid: 4e988cc9f66934d43a535bbf5061a4e5, type: 3}
+  - {fileID: 21300000, guid: e072246883e0104468ced8f033e591bc, type: 3}
+  - {fileID: 21300000, guid: 8de7c5f67abe9784090708403cd5515a, type: 3}
+  - {fileID: 21300000, guid: 582c4c3b96dd9d6408b95647da57c20e, type: 3}
+  - {fileID: 21300000, guid: 8e0313c437fab56439246d4ac8e9b69d, type: 3}
+  - {fileID: 21300000, guid: 045dad564ddf04e478bd40890af30076, type: 3}
+  - {fileID: 21300000, guid: 561f2bae0881961409791dc0fce72e1c, type: 3}
+  - {fileID: 21300000, guid: b84755b4cdc0c35489c945668dadba8b, type: 3}
+  - {fileID: 21300000, guid: 2db5d98ce25fdaa4f9927fb79700f39e, type: 3}
+  - {fileID: 21300000, guid: 1523894b7b39115439980f0be79f8144, type: 3}
   frameRate: 12
   hasImpact: 0
   impactTimeNormalized: 0.5

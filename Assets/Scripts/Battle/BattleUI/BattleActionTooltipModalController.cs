@@ -93,14 +93,14 @@ public sealed class BattleActionTooltipModalController : MonoBehaviour
 
         if (debugPositioning)
         {
-            Debug.Log($"[BattleTooltip] Activated: activeSelf={gameObject.activeSelf}, activeInHierarchy={gameObject.activeInHierarchy}", this);
+            UDA2.Logging.Logger.LogInfo($"[BattleTooltip] Activated: activeSelf={gameObject.activeSelf}, activeInHierarchy={gameObject.activeInHierarchy}", UDA2.Logging.LogChannel.UI, this);
             if (!gameObject.activeInHierarchy)
             {
                 var t = transform;
                 int depth = 0;
                 while (t != null && depth < 12)
                 {
-                    Debug.Log($"[BattleTooltip] Parent[{depth}]: '{t.name}' activeSelf={t.gameObject.activeSelf}", this);
+                    UDA2.Logging.Logger.LogInfo($"[BattleTooltip] Parent[{depth}]: '{t.name}' activeSelf={t.gameObject.activeSelf}", UDA2.Logging.LogChannel.UI, this);
                     t = t.parent;
                     depth++;
                 }
@@ -133,7 +133,7 @@ public sealed class BattleActionTooltipModalController : MonoBehaviour
             LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
 
         if (debugPositioning && panel != null)
-            Debug.Log($"[BattleTooltip] Show: screen={screenPoint}, panelSize={panel.rect.size}, pivot={panel.pivot}", this);
+            UDA2.Logging.Logger.LogInfo($"[BattleTooltip] Show: screen={screenPoint}, panelSize={panel.rect.size}, pivot={panel.pivot}", UDA2.Logging.LogChannel.UI, this);
 
         PositionAt(screenPoint);
 
@@ -145,7 +145,7 @@ public sealed class BattleActionTooltipModalController : MonoBehaviour
         if (Time.unscaledTime < ignoreBackdropCloseUntilUnscaledTime)
         {
             if (debugPositioning)
-                Debug.Log("[BattleTooltip] Backdrop close ignored (arming delay)", this);
+                UDA2.Logging.Logger.LogInfo("[BattleTooltip] Backdrop close ignored (arming delay)", UDA2.Logging.LogChannel.UI, this);
             return;
         }
 
@@ -162,7 +162,7 @@ public sealed class BattleActionTooltipModalController : MonoBehaviour
         {
             float dt = Time.unscaledTime - lastShowUnscaledTime;
             if (dt >= 0f && dt < 0.25f)
-                Debug.Log($"[BattleTooltip] Hide called after {dt:0.###}s\n{System.Environment.StackTrace}", this);
+                UDA2.Logging.Logger.LogInfo($"[BattleTooltip] Hide called after {dt:0.###}s\n{System.Environment.StackTrace}", UDA2.Logging.LogChannel.UI, this);
         }
         gameObject.SetActive(false);
     }

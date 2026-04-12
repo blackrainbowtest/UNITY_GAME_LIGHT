@@ -189,7 +189,7 @@ public partial class BattleHUDController
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         if (!debugLongPress)
             return;
-        Debug.Log($"[BattleLongPressHUD] {name}: {message}", this);
+        UDA2.Logging.Logger.LogInfo($"[BattleLongPressHUD] {name}: {message}", UDA2.Logging.LogChannel.UI, this);
 #endif
     }
 

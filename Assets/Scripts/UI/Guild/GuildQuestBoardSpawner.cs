@@ -413,7 +413,7 @@ namespace UDA2.UI.Guild
             if (!debugLogs)
                 return;
 
-            Debug.Log($"[GuildQuestBoardSpawner] {message}", this);
+                UDA2.Logging.Logger.LogInfo($"[GuildQuestBoardSpawner] {message}", UDA2.Logging.LogChannel.UI, this);
         }
     }
 }

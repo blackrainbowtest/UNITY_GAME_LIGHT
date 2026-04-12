@@ -55,9 +55,10 @@ public class LongPressProgressView : MonoBehaviour
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         if (debugPositioning)
         {
-            Debug.Log(
+            UDA2.Logging.Logger.LogInfo(
                 $"[LongPressProgressView] Show screen={screenPosition} -> target='{target.name}' pos={target.position} " +
                 $"anchors=({target.anchorMin}->{target.anchorMax}) pivot={target.pivot} canvas={(canvas != null ? canvas.renderMode.ToString() : "null")}",
+                UDA2.Logging.LogChannel.UI,
                 this);
         }
 #endif

@@ -635,7 +635,7 @@ namespace Game.Battle
             }
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            Debug.Log($"[Battle] Enemy used: {actionId}");
+            Logger.LogInfo($"[Battle] Enemy used: {actionId}");
 #endif
 
             return true;

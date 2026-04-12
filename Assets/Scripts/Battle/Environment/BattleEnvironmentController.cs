@@ -28,7 +28,7 @@ namespace Game.Battle
             ApplyMusic(location);
             ApplyAmbient(location);
         }
-c
+
         public void StopLocationAudioRoutines()
         {
             StopAllLocationAudioRoutines();

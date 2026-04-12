@@ -9,6 +9,17 @@ namespace Game.Battle.UI
         menuName = "UDA2/Battle/Outcome Presentation Catalog")]
     public sealed class BattleOutcomePresentationCatalogAsset : ScriptableObject
     {
+        private static readonly BattleFinishReason[] DefaultOutcomes =
+        {
+            BattleFinishReason.Victory,
+            BattleFinishReason.Defeat,
+            BattleFinishReason.EscapeSuccess,
+            BattleFinishReason.EscapeFailed,
+            BattleFinishReason.Surrender,
+            BattleFinishReason.VictoryByLp,
+            BattleFinishReason.DefeatByLp
+        };
+
         public enum ConditionType
         {
             None = 0,
@@ -157,7 +168,45 @@ namespace Game.Battle.UI
 
         private void OnValidate()
         {
+            EnsureAllOutcomesInEnemyGroups();
             SyncLocationBackgroundIds();
+        }
+
+        [ContextMenu("Ensure All Outcomes In Enemy Groups")]
+        public void EnsureAllOutcomesInEnemyGroups()
+        {
+            if (enemyGroups == null || enemyGroups.Count == 0)
+                return;
+
+            for (int i = 0; i < enemyGroups.Count; i++)
+            {
+                var group = enemyGroups[i];
+                if (group == null)
+                    continue;
+
+                if (group.rules == null)
+                    group.rules = new List<OutcomeRuleGroup>();
+
+                for (int r = 0; r < DefaultOutcomes.Length; r++)
+                {
+                    var outcome = DefaultOutcomes[r];
+                    if (HasOutcomeGroup(group.rules, outcome))
+                        continue;
+
+                    group.rules.Add(new OutcomeRuleGroup
+                    {
+                        outcome = outcome,
+                        entries = new List<RuleEntry>()
+                    });
+                }
+            }
+        }
+
+        [ContextMenu("Normalize And Sort Catalog")]
+        public void NormalizeAndSortCatalog()
+        {
+            SortEnemyGroups();
+            SortLocationBackgrounds();
         }
 
         public Sprite ResolveLocationFallbackSprite(string locationId, string sourceLocationId, Sprite defaultSprite = null)
@@ -445,6 +494,183 @@ namespace Game.Battle.UI
                 if (!string.Equals(entry.locationId, normalizedId, StringComparison.Ordinal))
                     entry.locationId = normalizedId;
             }
+        }
+
+        private void SortEnemyGroups()
+        {
+            if (enemyGroups == null || enemyGroups.Count == 0)
+                return;
+
+            for (int i = 0; i < enemyGroups.Count; i++)
+            {
+                var group = enemyGroups[i];
+                if (group == null)
+                    continue;
+
+                NormalizeAndSortOutcomeGroups(group);
+            }
+
+            enemyGroups.Sort(CompareEnemyGroups);
+        }
+
+        private static int CompareEnemyGroups(EnemyGroup a, EnemyGroup b)
+        {
+            if (ReferenceEquals(a, b))
+                return 0;
+
+            if (a == null)
+                return 1;
+            if (b == null)
+                return -1;
+
+            if (a.anyEnemy != b.anyEnemy)
+                return a.anyEnemy ? 1 : -1;
+
+            var aId = ResolveGroupEnemyId(a);
+            var bId = ResolveGroupEnemyId(b);
+            return string.Compare(aId, bId, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static void NormalizeAndSortOutcomeGroups(EnemyGroup group)
+        {
+            if (group == null)
+                return;
+
+            var rules = group.rules;
+            if (rules == null || rules.Count == 0)
+                return;
+
+            var mergedByOutcome = new Dictionary<BattleFinishReason, OutcomeRuleGroup>();
+            for (int i = 0; i < rules.Count; i++)
+            {
+                var src = rules[i];
+                if (src == null)
+                    continue;
+
+                if (!mergedByOutcome.TryGetValue(src.outcome, out var dst))
+                {
+                    dst = new OutcomeRuleGroup { outcome = src.outcome, entries = new List<RuleEntry>() };
+                    mergedByOutcome[src.outcome] = dst;
+                }
+
+                if (src.entries != null && src.entries.Count > 0)
+                    dst.entries.AddRange(src.entries);
+            }
+
+            rules.Clear();
+            foreach (var kv in mergedByOutcome)
+            {
+                var outcomeGroup = kv.Value;
+                if (outcomeGroup.entries != null)
+                    outcomeGroup.entries.Sort(CompareRuleEntries);
+                rules.Add(outcomeGroup);
+            }
+
+            rules.Sort((left, right) =>
+            {
+                if (ReferenceEquals(left, right))
+                    return 0;
+                if (left == null)
+                    return 1;
+                if (right == null)
+                    return -1;
+                return OutcomeSortKey(left.outcome).CompareTo(OutcomeSortKey(right.outcome));
+            });
+        }
+
+        private static bool HasOutcomeGroup(List<OutcomeRuleGroup> rules, BattleFinishReason outcome)
+        {
+            if (rules == null || rules.Count == 0)
+                return false;
+
+            for (int i = 0; i < rules.Count; i++)
+            {
+                var rule = rules[i];
+                if (rule == null)
+                    continue;
+
+                if (rule.outcome == outcome)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static int CompareRuleEntries(RuleEntry a, RuleEntry b)
+        {
+            if (ReferenceEquals(a, b))
+                return 0;
+            if (a == null)
+                return 1;
+            if (b == null)
+                return -1;
+
+            int aPriority = a.filter != null ? a.filter.priority : 0;
+            int bPriority = b.filter != null ? b.filter.priority : 0;
+            int byPriority = bPriority.CompareTo(aPriority);
+            if (byPriority != 0)
+                return byPriority;
+
+            bool aAnyLoc = a.filter == null || a.filter.anyLocation;
+            bool bAnyLoc = b.filter == null || b.filter.anyLocation;
+            if (aAnyLoc != bAnyLoc)
+                return aAnyLoc ? 1 : -1;
+
+            int aConditions = a.match != null && a.match.conditions != null ? a.match.conditions.Count : 0;
+            int bConditions = b.match != null && b.match.conditions != null ? b.match.conditions.Count : 0;
+            int byConditionCount = bConditions.CompareTo(aConditions);
+            if (byConditionCount != 0)
+                return byConditionCount;
+
+            var aLoc = a.filter != null ? a.filter.locationId : string.Empty;
+            var bLoc = b.filter != null ? b.filter.locationId : string.Empty;
+            return string.Compare(aLoc, bLoc, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static int OutcomeSortKey(BattleFinishReason reason)
+        {
+            switch (reason)
+            {
+                case BattleFinishReason.Victory:
+                    return 0;
+                case BattleFinishReason.Defeat:
+                    return 1;
+                case BattleFinishReason.EscapeSuccess:
+                    return 2;
+                case BattleFinishReason.EscapeFailed:
+                    return 3;
+                case BattleFinishReason.Surrender:
+                    return 4;
+                case BattleFinishReason.VictoryByLp:
+                    return 5;
+                case BattleFinishReason.DefeatByLp:
+                    return 6;
+                default:
+                    return 100;
+            }
+        }
+
+        private void SortLocationBackgrounds()
+        {
+            if (locationBackgrounds == null || locationBackgrounds.Count == 0)
+                return;
+
+            locationBackgrounds.Sort((a, b) =>
+            {
+                if (ReferenceEquals(a, b))
+                    return 0;
+                if (a == null)
+                    return 1;
+                if (b == null)
+                    return -1;
+
+                if (a.anyLocation != b.anyLocation)
+                    return a.anyLocation ? 1 : -1;
+
+                string aId = ResolveLocationFallbackId(a);
+                string bId = ResolveLocationFallbackId(b);
+                return string.Compare(aId, bId, StringComparison.OrdinalIgnoreCase);
+            });
         }
 
         private static string ResolveLocationAssetId(BattleLocationData location)

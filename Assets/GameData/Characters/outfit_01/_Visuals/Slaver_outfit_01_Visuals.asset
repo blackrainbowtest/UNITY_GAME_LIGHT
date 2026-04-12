@@ -99,5 +99,6 @@ MonoBehaviour:
   inventorySearchVariations: []
   inventoryCloseVariations: []
   blockVariations: []
-  loseVariations: []
+  loseVariations:
+  - {fileID: 11400000, guid: bf8b776a743dee042a3f232d5017e0ce, type: 2}
   lustLoseVariations: []

@@ -97,7 +97,7 @@ namespace Game.Battle.UI
 
             ApplyPresentation(reason, enemyId, locationId, sourceLocationId);
 
-            Debug.Log($"[BattleOutcomeAnimationModal] Show: reason={reason}, playerWon={playerWon}, winningAction={winningActionId}, root={(root != null ? root.name : "<self>")}", this);
+            UDA2.Logging.Logger.LogInfo($"[BattleOutcomeAnimationModal] Show: reason={reason}, playerWon={playerWon}, winningAction={winningActionId}, root={(root != null ? root.name : "<self>")}", UDA2.Logging.LogChannel.UI, this);
         }
 
         public void Hide()
@@ -131,7 +131,7 @@ namespace Game.Battle.UI
             _onClosed = null;
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            Debug.Log($"[BattleOutcomeAnimationModal] FinalizeClose from={from}, hasCallback={(cb != null)}", this);
+            UDA2.Logging.Logger.LogInfo($"[BattleOutcomeAnimationModal] FinalizeClose from={from}, hasCallback={(cb != null)}", UDA2.Logging.LogChannel.UI, this);
 #endif
 
             cb?.Invoke();
@@ -297,7 +297,7 @@ namespace Game.Battle.UI
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (enablePresentationDebugLogs && !string.IsNullOrWhiteSpace(debugReport))
-                Debug.Log("[BattleOutcomeAnimationModal] Resolve debug:\n" + debugReport, this);
+                UDA2.Logging.Logger.LogInfo("[BattleOutcomeAnimationModal] Resolve debug:\n" + debugReport, UDA2.Logging.LogChannel.UI, this);
 #endif
 
             if (variants == null || variants.Count == 0)
@@ -334,8 +334,9 @@ namespace Game.Battle.UI
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (enablePresentationDebugLogs)
             {
-                Debug.Log(
+                UDA2.Logging.Logger.LogInfo(
                     $"[BattleOutcomeAnimationModal] Selected variant: id='{selected.id}', hasSprite={selected.sprite != null}, hasAnimatedPrefab={selected.animatedPrefab != null}, hasPlayerAnimation={selected.playerAnimation != null}, hasEnemyAnimation={selected.enemyAnimation != null}, weight={selected.weight}",
+                    UDA2.Logging.LogChannel.UI,
                     this);
             }
 #endif

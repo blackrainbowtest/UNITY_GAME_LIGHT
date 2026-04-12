@@ -315,7 +315,7 @@ namespace UDA2.SaveSystem.Guild
             if (!EnableDebugLogs)
                 return;
 
-            Debug.Log($"[GuildService] {message}");
+            UDA2.Logging.Logger.LogInfo($"[GuildService] {message}", UDA2.Logging.LogChannel.Gameplay);
         }
 
         private GuildQuestDefinitionAsset FindQuestById(string questId)

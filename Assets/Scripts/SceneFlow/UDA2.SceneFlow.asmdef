@@ -1,7 +1,9 @@
 {
   "name": "UDA2.SceneFlow",
   "rootNamespace": "UDA2.SceneFlow",
-  "references": [],
+  "references": [
+    "UDA2.Logging"
+  ],
   "includePlatforms": [],
   "excludePlatforms": [],
   "allowUnsafeCode": false,
