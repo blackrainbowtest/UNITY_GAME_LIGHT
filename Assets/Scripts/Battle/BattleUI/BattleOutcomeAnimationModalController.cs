@@ -281,16 +281,43 @@ namespace Game.Battle.UI
             var resolvedSourceLocationId = !string.IsNullOrWhiteSpace(sourceLocationId)
                 ? sourceLocationId
                 : save?.sceneState?.pendingBattle?.locationId;
-            var resolvedLocationFallbackSprite = presentationCatalog.ResolveLocationFallbackSprite(
-                resolvedLocationId,
-                resolvedSourceLocationId,
-                _fallbackLocationBackground);
+            var normalizedLocationId = NormalizeLocationId(resolvedLocationId);
+            var normalizedSourceLocationId = NormalizeLocationId(resolvedSourceLocationId);
+
+            string locationFallbackDebug;
+            Sprite resolvedLocationFallbackSprite;
+            if (string.IsNullOrEmpty(normalizedLocationId) && _fallbackLocationBackground != null)
+            {
+                resolvedLocationFallbackSprite = _fallbackLocationBackground;
+                locationFallbackDebug = "Location fallback: normalized location id is empty and context fallback sprite is present -> using context fallback.";
+            }
+            else
+            {
+                resolvedLocationFallbackSprite = presentationCatalog.ResolveLocationFallbackSprite(
+                    normalizedLocationId,
+                    normalizedSourceLocationId,
+                    _fallbackLocationBackground,
+                    out locationFallbackDebug);
+            }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (enablePresentationDebugLogs)
+            {
+                UDA2.Logging.Logger.LogInfo(
+                    $"[BattleOutcomeAnimationModal] Context: reason={reason}, enemyId='{resolvedEnemyId}', locationIdRaw='{resolvedLocationId}', sourceLocationIdRaw='{resolvedSourceLocationId}', locationIdNorm='{normalizedLocationId}', sourceLocationIdNorm='{normalizedSourceLocationId}', fallbackFromContext='{(_fallbackLocationBackground != null ? _fallbackLocationBackground.name : "<null>")}', resolvedFallback='{(resolvedLocationFallbackSprite != null ? resolvedLocationFallbackSprite.name : "<null>")}'",
+                    UDA2.Logging.LogChannel.UI,
+                    this);
+
+                if (!string.IsNullOrWhiteSpace(locationFallbackDebug))
+                    UDA2.Logging.Logger.LogInfo("[BattleOutcomeAnimationModal] " + locationFallbackDebug, UDA2.Logging.LogChannel.UI, this);
+            }
+#endif
 
             var variants = presentationCatalog.ResolveVariants(
                 reason,
                 resolvedEnemyId,
-                resolvedLocationId,
-                resolvedSourceLocationId,
+                normalizedLocationId,
+                normalizedSourceLocationId,
                 save,
                 debugLogs: enablePresentationDebugLogs,
                 out var debugReport);
@@ -310,6 +337,11 @@ namespace Game.Battle.UI
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 if (enablePresentationDebugLogs)
+                    UDA2.Logging.Logger.LogInfo($"[BattleOutcomeAnimationModal] Final sprite source: fallback (no variants). sprite='{(resolvedLocationFallbackSprite != null ? resolvedLocationFallbackSprite.name : "<null>")}'", UDA2.Logging.LogChannel.UI, this);
+#endif
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                if (enablePresentationDebugLogs)
                     Debug.LogWarning($"[BattleOutcomeAnimationModal] No variants matched. reason={reason}, enemyId='{resolvedEnemyId}', locationId='{resolvedLocationId}', sourceLocationId='{resolvedSourceLocationId}'", this);
 #endif
                 return;
@@ -323,6 +355,11 @@ namespace Game.Battle.UI
                     outcomeImage.sprite = resolvedLocationFallbackSprite;
                     outcomeImage.enabled = outcomeImage.sprite != null;
                 }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                if (enablePresentationDebugLogs)
+                    UDA2.Logging.Logger.LogInfo($"[BattleOutcomeAnimationModal] Final sprite source: fallback (weighted selection returned null). sprite='{(resolvedLocationFallbackSprite != null ? resolvedLocationFallbackSprite.name : "<null>")}'", UDA2.Logging.LogChannel.UI, this);
+#endif
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 if (enablePresentationDebugLogs)
@@ -347,6 +384,14 @@ namespace Game.Battle.UI
                 var resolvedSprite = variantSprite != null ? variantSprite : resolvedLocationFallbackSprite;
                 outcomeImage.sprite = resolvedSprite;
                 outcomeImage.enabled = resolvedSprite != null;
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                if (enablePresentationDebugLogs)
+                {
+                    var source = variantSprite != null ? "variant" : "fallback";
+                    UDA2.Logging.Logger.LogInfo($"[BattleOutcomeAnimationModal] Final sprite source: {source}. sprite='{(resolvedSprite != null ? resolvedSprite.name : "<null>")}', variantSprite='{(variantSprite != null ? variantSprite.name : "<null>")}', fallbackSprite='{(resolvedLocationFallbackSprite != null ? resolvedLocationFallbackSprite.name : "<null>")}', useVariantSpriteOverrides={presentationCatalog.UseVariantSpriteOverrides}", UDA2.Logging.LogChannel.UI, this);
+                }
+#endif
             }
 
             ClearSpawnedVariants();
@@ -404,6 +449,18 @@ namespace Game.Battle.UI
             }
 
             return variants[0];
+        }
+
+        private static string NormalizeLocationId(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return string.Empty;
+
+            var value = id.Trim();
+            if (string.Equals(value, "location", StringComparison.OrdinalIgnoreCase))
+                return string.Empty;
+
+            return value;
         }
 
         private void ClearSpawnedVariants()

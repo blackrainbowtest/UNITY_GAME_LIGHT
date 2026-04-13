@@ -119,33 +119,25 @@ namespace Game.Dungeon
                 if (binding == null || binding.button == null)
                     continue;
 
-                binding.button.onClick.RemoveListener(OnAnyButtonClicked);
-                binding.button.onClick.AddListener(OnAnyButtonClicked);
+                var localBinding = binding;
+                binding.button.onClick.AddListener(() => OnLocationButtonClicked(localBinding));
             }
         }
 
-        private void OnAnyButtonClicked()
+        private void OnLocationButtonClicked(ButtonBinding binding)
         {
-            // Find which button fired.
-            var clicked = UnityEngine.EventSystems.EventSystem.current?.currentSelectedGameObject;
-            if (clicked == null)
+            if (binding == null)
                 return;
 
-            if (buttons == null)
-                return;
+            var buttonName = binding.button != null ? binding.button.name : "<null>";
+            var locationName = binding.location != null ? binding.location.name : "<null>";
+            var locationId = binding.location != null ? binding.location.id : "<null>";
 
-            for (int i = 0; i < buttons.Length; i++)
-            {
-                var binding = buttons[i];
-                if (binding == null || binding.button == null || binding.location == null)
-                    continue;
+            Logger.LogInfo(
+                $"[Dungeon] Location button clicked button='{buttonName}' location='{locationName}' id='{locationId}'",
+                UDA2.Logging.LogChannel.AI);
 
-                if (binding.button.gameObject == clicked)
-                {
-                    TryStartLocation(binding);
-                    return;
-                }
-            }
+            TryStartLocation(binding);
         }
 
         public void RefreshInteractable()

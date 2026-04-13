@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4c1cb433589eb04789a7dde4718d663, type: 3}
   m_Name: bld_river
   m_EditorClassIdentifier: UDA2.Battle::Game.Battle.BattleLocationData
-  id: location
+  id: bld_river
   background: {fileID: 21300000, guid: 8778e1ca706b6294a87d48c83266d64d, type: 3}
   musicCue: {fileID: 11400000, guid: 3d7ab3bc751217f4395929a1d8deec93, type: 2}
   music: {fileID: 8300000, guid: bb5df2c3965ae02498fadf37ad342f7f, type: 3}

@@ -9,6 +9,9 @@ public class LoggerInitializer : MonoBehaviour
 
     void Awake()
     {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        UDA2.Logging.Logger.MinUnityConsoleLevel = UDA2.Logging.LogType.Info;
+#endif
         UDA2.Logging.Logger.LogInfo($"Game started. Version: {UDA2.Logging.Logger.BuildId}, Device: {SystemInfo.deviceModel}, OS: {SystemInfo.operatingSystem}, Platform: {Application.platform}, Screen: {Screen.width}x{Screen.height}", LogChannel.Default);
     }
 

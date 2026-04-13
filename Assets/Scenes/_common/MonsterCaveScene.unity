@@ -173,11 +173,11 @@ MonoBehaviour:
     requiredRank: 0
     requiredPlayerLevel: 2
   - button: {fileID: 1270807916}
-    location: {fileID: 11400000, guid: 9fcec8c64fa3f704e9ddd2f6141528b4, type: 2}
+    location: {fileID: 11400000, guid: 1825abc97cb848f42aeecb81cdb61fe5, type: 2}
     requiredRank: 1
     requiredPlayerLevel: 2
   - button: {fileID: 1478092934}
-    location: {fileID: 11400000, guid: 1825abc97cb848f42aeecb81cdb61fe5, type: 2}
+    location: {fileID: 11400000, guid: 9fcec8c64fa3f704e9ddd2f6141528b4, type: 2}
     requiredRank: 0
     requiredPlayerLevel: 1
   locationButtonAlpha: 1

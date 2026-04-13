@@ -211,36 +211,82 @@ namespace Game.Battle.UI
 
         public Sprite ResolveLocationFallbackSprite(string locationId, string sourceLocationId, Sprite defaultSprite = null)
         {
+            return ResolveLocationFallbackSprite(locationId, sourceLocationId, defaultSprite, out _);
+        }
+
+        public Sprite ResolveLocationFallbackSprite(string locationId, string sourceLocationId, Sprite defaultSprite, out string debugInfo)
+        {
             if (locationBackgrounds == null || locationBackgrounds.Count == 0)
+            {
+                debugInfo = "Location fallback: locationBackgrounds is empty -> using defaultSprite.";
                 return defaultSprite;
+            }
 
             var normalizedLocationId = string.IsNullOrWhiteSpace(locationId) ? string.Empty : locationId.Trim();
             var normalizedSourceLocationId = string.IsNullOrWhiteSpace(sourceLocationId) ? string.Empty : sourceLocationId.Trim();
             Sprite anyLocationSprite = null;
+            int anyLocationIndex = -1;
+
+            var debug = new System.Text.StringBuilder(256);
+            debug.Append($"Location fallback input: locationId='{normalizedLocationId}', sourceLocationId='{normalizedSourceLocationId}', hasDefault={(defaultSprite != null)}");
 
             for (int i = 0; i < locationBackgrounds.Count; i++)
             {
                 var entry = locationBackgrounds[i];
-                if (entry == null || entry.sprite == null)
+                if (entry == null)
+                {
+                    debug.Append($"\n- Entry[{i}] null");
                     continue;
+                }
+
+                var resolvedEntrySprite = ResolveLocationFallbackSpriteAsset(entry);
+                if (resolvedEntrySprite == null)
+                {
+                    debug.Append($"\n- Entry[{i}] id='{ResolveLocationFallbackId(entry)}' has no sprite");
+                    continue;
+                }
 
                 if (entry.anyLocation)
                 {
                     if (anyLocationSprite == null)
-                        anyLocationSprite = entry.sprite;
+                    {
+                        anyLocationSprite = resolvedEntrySprite;
+                        anyLocationIndex = i;
+                    }
+
+                    debug.Append($"\n- Entry[{i}] anyLocation candidate sprite='{resolvedEntrySprite.name}'");
 
                     continue;
                 }
 
                 var entryId = ResolveLocationFallbackId(entry);
                 if (string.IsNullOrWhiteSpace(entryId))
+                {
+                    debug.Append($"\n- Entry[{i}] skipped: empty locationId");
                     continue;
+                }
 
-                if (AreEquivalentLocationId(entryId, normalizedLocationId) || AreEquivalentLocationId(entryId, normalizedSourceLocationId))
-                    return entry.sprite;
+                bool match = AreEquivalentLocationId(entryId, normalizedLocationId) || AreEquivalentLocationId(entryId, normalizedSourceLocationId);
+                debug.Append($"\n- Entry[{i}] id='{entryId}' sprite='{resolvedEntrySprite.name}' match={match}");
+
+                if (match)
+                {
+                    debug.Append($"\nResult: matched Entry[{i}] id='{entryId}' sprite='{resolvedEntrySprite.name}'");
+                    debugInfo = debug.ToString();
+                    return resolvedEntrySprite;
+                }
             }
 
-            return anyLocationSprite != null ? anyLocationSprite : defaultSprite;
+            if (anyLocationSprite != null)
+            {
+                debug.Append($"\nResult: using anyLocation Entry[{anyLocationIndex}] sprite='{anyLocationSprite.name}'");
+                debugInfo = debug.ToString();
+                return anyLocationSprite;
+            }
+
+            debug.Append($"\nResult: using defaultSprite='{(defaultSprite != null ? defaultSprite.name : "<null>")}'");
+            debugInfo = debug.ToString();
+            return defaultSprite;
         }
 
         public IReadOnlyList<VisualVariant> ResolveVariants(BattleFinishReason outcome, string enemyId, string locationId, string sourceLocationId, SaveData save)
@@ -474,6 +520,17 @@ namespace Game.Battle.UI
                 return entry.locationId.Trim();
 
             return string.Empty;
+        }
+
+        private static Sprite ResolveLocationFallbackSpriteAsset(LocationBackgroundFallback entry)
+        {
+            if (entry == null)
+                return null;
+
+            if (entry.sprite != null)
+                return entry.sprite;
+
+            return entry.location != null ? entry.location.background : null;
         }
 
         private void SyncLocationBackgroundIds()
