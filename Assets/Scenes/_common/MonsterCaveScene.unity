@@ -3313,6 +3313,16 @@ MonoBehaviour:
     panEnd: 0
     panSweepOverClipDuration: 0
     panSweepDuration: 0
+  - name: river_sound
+    randomLoop: 0
+    intervalSeconds: {x: 0, y: 0}
+    cues:
+    - {fileID: 11400000, guid: c78eb7ac7df64f64288f614965e0692c, type: 2}
+    useStereoPan: 0
+    panStart: 0
+    panEnd: 0
+    panSweepOverClipDuration: 0
+    panSweepDuration: 0
 --- !u!1 &1942419964
 GameObject:
   m_ObjectHideFlags: 0
