@@ -35,7 +35,7 @@ namespace Game.Battle.Visual
         [Tooltip("How often (seconds) to attempt playing an ambient idle while looping default idle.")]
         [SerializeField, Min(0.1f)] private float ambientIdleIntervalSeconds = 4f;
         [Tooltip("Additional volume scale for configured non-combat animation cues (idle/state sounds).")]
-        [SerializeField, Range(0f, 1f)] private float configuredAnimationCueVolumeScale = 0.25f;
+        [SerializeField, Range(0f, 1f)] private float configuredAnimationCueVolumeScale = 0.15f;
         [SerializeField] private bool avoidImmediateIdleRepeat = true;
         [SerializeField, Min(1)] private int minIdleVariationRepeats = 1;
         [SerializeField, Min(1)] private int maxIdleVariationRepeats = 1;
@@ -718,7 +718,7 @@ namespace Game.Battle.Visual
             if (frameToPlay <= 1 || animation == null || animation.FrameRate <= 0f)
             {
                 if (token == animationCueToken)
-                    AudioManager.Instance.PlayBattleCueAsSfx(cue, configuredAnimationCueVolumeScale);
+                    AudioManager.Instance.PlayBattleCueAsSfx(cue, configuredAnimationCueVolumeScale, AudioManager.BattleCueRoute.Character);
 
                 return;
             }
@@ -785,7 +785,7 @@ namespace Game.Battle.Visual
                 if (AudioManager.Instance == null || cue == null || cue.Clip == null || loopedAnimationCueSource == null)
                     yield break;
 
-                AudioManager.Instance.PlayBattleCueOnSource(cue, loopedAnimationCueSource, restartIfAlreadyPlaying: true, volumeScale: configuredAnimationCueVolumeScale);
+                AudioManager.Instance.PlayBattleCueOnSource(cue, loopedAnimationCueSource, restartIfAlreadyPlaying: true, volumeScale: configuredAnimationCueVolumeScale, route: AudioManager.BattleCueRoute.Character);
 
                 while (token == loopedAnimationCueToken && loopedAnimationCueSource != null && loopedAnimationCueSource.isPlaying)
                     yield return null;
@@ -808,7 +808,7 @@ namespace Game.Battle.Visual
             if (AudioManager.Instance == null)
                 yield break;
 
-            AudioManager.Instance.PlayBattleCueAsSfx(cue, configuredAnimationCueVolumeScale);
+            AudioManager.Instance.PlayBattleCueAsSfx(cue, configuredAnimationCueVolumeScale, AudioManager.BattleCueRoute.Character);
         }
 
         private static bool IsCombatAudioDrivenByExecutor(BattleVisualAnimId animId)

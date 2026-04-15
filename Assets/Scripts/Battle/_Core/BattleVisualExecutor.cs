@@ -353,7 +353,7 @@ namespace Game.Battle
                 return;
             }
 
-            AudioManager.Instance.PlayBattleCueAsSfx(cue);
+            AudioManager.Instance.PlayBattleCueAsSfx(cue, volumeScale: 1f, route: AudioManager.BattleCueRoute.Combat);
 
             if (LogBattleCuePlayback)
             {

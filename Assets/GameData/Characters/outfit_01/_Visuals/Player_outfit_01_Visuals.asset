@@ -85,7 +85,8 @@ MonoBehaviour:
   - animId: 0
     animation: {fileID: 0}
     cue: {fileID: 11400000, guid: 533c8cb47cbedfe43907132f079b6b84, type: 2}
-    cueAtFrame: 0
+    cueAtFrame: 4
+    loopWhileStateActive: 0
   fastAttackVariations:
   - {fileID: 11400000, guid: 74deed90e6bed1547ae16a2a6fe73e31, type: 2}
   normalAttackVariations:

@@ -24,6 +24,14 @@ namespace UDA2.Audio
 {
     public class AudioManager : MonoBehaviour
     {
+        public enum BattleCueRoute
+        {
+            Sfx = 0,
+            Character = 1,
+            Environment = 2,
+            Combat = 3,
+        }
+
         public static AudioManager Instance;
 
         public bool IsMusicPlaying => musicSource != null && musicSource.isPlaying;
@@ -80,6 +88,7 @@ namespace UDA2.Audio
         [SerializeField] private UnityEngine.Audio.AudioMixerGroup ambientGroup;
         [SerializeField] private int ambientPoolSize = 6;
         [SerializeField] private Transform ambientParent;
+        [SerializeField, Range(0f, 1f)] private float ambientGlobalVolumeScale = 0.35f;
 
         private AudioSource[] ambientPool;
         private Coroutine[] ambientPanCoroutines;
@@ -107,6 +116,12 @@ namespace UDA2.Audio
         [Header("Combat Audio")]
         [SerializeField] private AudioSource combatSource;
         [SerializeField] private UnityEngine.Audio.AudioMixerGroup combatGroup;
+
+        [Header("Battle Cue Route Volume")]
+        [SerializeField, Range(0f, 1f)] private float battleSfxRouteVolumeScale = 1f;
+        [SerializeField, Range(0f, 1f)] private float battleCharacterRouteVolumeScale = 0.6f;
+        [SerializeField, Range(0f, 1f)] private float battleEnvironmentRouteVolumeScale = 0.75f;
+        [SerializeField, Range(0f, 1f)] private float battleCombatRouteVolumeScale = 1f;
 
         /* ===================== UNITY ===================== */
 
@@ -496,34 +511,35 @@ namespace UDA2.Audio
         }
 
         // Battle-cues should always follow the SFX bus/slider regardless of cue category.
-        public void PlayBattleCueAsSfx(AudioCue cue, float volumeScale = 1f)
+        public void PlayBattleCueAsSfx(AudioCue cue, float volumeScale = 1f, BattleCueRoute route = BattleCueRoute.Sfx)
         {
             if (cue == null || cue.Clip == null)
                 return;
 
             float pitch = GetRandomCuePitch(cue);
 
-            float scaledVolume = Mathf.Clamp01(cue.DefaultVolume) * Mathf.Clamp01(volumeScale);
-            PlaySfx(cue.Clip, scaledVolume, pitch);
+            float routeScale = ResolveBattleCueRouteVolumeScale(route);
+            float scaledVolume = Mathf.Clamp01(cue.DefaultVolume) * Mathf.Clamp01(volumeScale) * routeScale;
+            PlaySfx(cue.Clip, scaledVolume, pitch, ResolveBattleCueGroup(route));
 
-            UDA2.Logging.Logger.LogInfo($"[BattleAudio] PlayBattleCueAsSfx clip='{cue.Clip.name}' cueKey='{cue.Key}' defaultVol={cue.DefaultVolume:0.###} volumeScale={Mathf.Clamp01(volumeScale):0.###} sfxMaster={sfxVolume:0.###} pitch={pitch:0.###}", UDA2.Logging.LogChannel.Audio);
+            UDA2.Logging.Logger.LogInfo($"[BattleAudio] PlayBattleCueAsSfx clip='{cue.Clip.name}' cueKey='{cue.Key}' defaultVol={cue.DefaultVolume:0.###} volumeScale={Mathf.Clamp01(volumeScale):0.###} routeScale={routeScale:0.###} route={route} sfxMaster={sfxVolume:0.###} pitch={pitch:0.###}", UDA2.Logging.LogChannel.Audio);
 
             if (sfxVolume <= 0.01f)
                 Debug.LogWarning("[BattleAudio] SFX master volume is near zero. Battle cues may be inaudible.");
         }
 
-        public void ConfigureAsSfxSource(AudioSource source)
+        public void ConfigureAsSfxSource(AudioSource source, BattleCueRoute route = BattleCueRoute.Sfx)
         {
             if (source == null)
                 return;
 
-            source.outputAudioMixerGroup = sfxGroup;
+            source.outputAudioMixerGroup = ResolveBattleCueGroup(route);
             source.playOnAwake = false;
             source.loop = false;
             source.spatialBlend = 0f;
         }
 
-        public bool PlayBattleCueOnSource(AudioCue cue, AudioSource source, bool restartIfAlreadyPlaying = true, float volumeScale = 1f)
+        public bool PlayBattleCueOnSource(AudioCue cue, AudioSource source, bool restartIfAlreadyPlaying = true, float volumeScale = 1f, BattleCueRoute route = BattleCueRoute.Sfx)
         {
             if (cue == null || cue.Clip == null || source == null)
                 return false;
@@ -531,14 +547,45 @@ namespace UDA2.Audio
             if (!restartIfAlreadyPlaying && source.isPlaying && source.clip == cue.Clip)
                 return true;
 
-            ConfigureAsSfxSource(source);
+            ConfigureAsSfxSource(source, route);
 
             source.Stop();
             source.clip = cue.Clip;
             source.pitch = GetRandomCuePitch(cue);
-            source.volume = GetScaledSfxVolume(Mathf.Clamp01(cue.DefaultVolume) * Mathf.Clamp01(volumeScale));
+            float routeScale = ResolveBattleCueRouteVolumeScale(route);
+            source.volume = GetScaledSfxVolume(Mathf.Clamp01(cue.DefaultVolume) * Mathf.Clamp01(volumeScale) * routeScale);
             source.Play();
             return true;
+        }
+
+        private UnityEngine.Audio.AudioMixerGroup ResolveBattleCueGroup(BattleCueRoute route)
+        {
+            switch (route)
+            {
+                case BattleCueRoute.Character:
+                    return characterGroup != null ? characterGroup : sfxGroup;
+                case BattleCueRoute.Environment:
+                    return environmentGroup != null ? environmentGroup : sfxGroup;
+                case BattleCueRoute.Combat:
+                    return combatGroup != null ? combatGroup : sfxGroup;
+                default:
+                    return sfxGroup;
+            }
+        }
+
+        private float ResolveBattleCueRouteVolumeScale(BattleCueRoute route)
+        {
+            switch (route)
+            {
+                case BattleCueRoute.Character:
+                    return Mathf.Clamp01(battleCharacterRouteVolumeScale);
+                case BattleCueRoute.Environment:
+                    return Mathf.Clamp01(battleEnvironmentRouteVolumeScale);
+                case BattleCueRoute.Combat:
+                    return Mathf.Clamp01(battleCombatRouteVolumeScale);
+                default:
+                    return Mathf.Clamp01(battleSfxRouteVolumeScale);
+            }
         }
 
         public float GetScaledSfxVolume(float baseVolume)
@@ -811,6 +858,11 @@ namespace UDA2.Audio
 
         public void PlaySfx(AudioClip clip, float volume = 1f, float pitch = 1f)
         {
+            PlaySfx(clip, volume, pitch, null);
+        }
+
+        private void PlaySfx(AudioClip clip, float volume, float pitch, UnityEngine.Audio.AudioMixerGroup outputGroupOverride)
+        {
             if (clip == null)
                 return;
 
@@ -823,6 +875,7 @@ namespace UDA2.Audio
             sfxIndex = (sfxIndex + 1) % sfxPool.Length;
 
             src.Stop();
+            src.outputAudioMixerGroup = outputGroupOverride != null ? outputGroupOverride : sfxGroup;
             src.clip = clip;
             src.pitch = pitch;
             src.volume = Mathf.Clamp01(volume) * sfxVolume;
@@ -877,7 +930,8 @@ namespace UDA2.Audio
             if (ambientPool == null)
             {
                 // Fallback keeps ambient audible if pool is not configured yet.
-                PlaySfx(clip, volume, pitch);
+                float fallbackAmbientVolume = Mathf.Clamp01(volume) * GetEffectiveAmbientVolume();
+                PlaySfx(clip, fallbackAmbientVolume, pitch);
                 return;
             }
 
@@ -1029,7 +1083,7 @@ namespace UDA2.Audio
 
         private float GetEffectiveAmbientVolume()
         {
-            return Mathf.Clamp01(sfxVolume);
+            return Mathf.Clamp01(sfxVolume * Mathf.Clamp01(ambientGlobalVolumeScale));
         }
 
         private float ComputeAmbientSourceVolume(float baseVolume)
