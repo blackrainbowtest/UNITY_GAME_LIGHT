@@ -264,6 +264,22 @@ namespace Game.Battle
             Logger.LogInfo("Battle started");
             Logger.LogInfo($"Enemy: {context.Enemy.name}");
             Logger.LogInfo($"Mode: {context.Mode}");
+            if (context != null && context.Enemy != null)
+            {
+                var allowed = context.Enemy.allowedActions;
+                var allowedText = (allowed != null && allowed.Length > 0)
+                    ? string.Join(", ", allowed)
+                    : "<default fallback>";
+
+                Logger.LogInfo(
+                    $"[Battle] Enemy context loaded: name={context.Enemy.enemyName}, id={context.Enemy.id}, " +
+                    $"hp={context.Enemy.hp}/{context.Enemy.maxHp}, mp={context.Enemy.mp}/{context.Enemy.maxMp}, " +
+                    $"sp={context.Enemy.sp}/{context.Enemy.maxSp}, lp={context.Enemy.lp}/{context.Enemy.maxLp}, " +
+                    $"allowedActions=[{allowedText}]",
+                    UDA2.Logging.LogChannel.AI);
+
+                Logger.FlushToFile();
+            }
 
             InitializeParticipants();
             InitializeEnvironment();
@@ -619,7 +635,7 @@ namespace Game.Battle
             }
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            Debug.Log($"[Battle] Enemy used: {actionId}");
+            Logger.LogInfo($"[Battle] Enemy used: {actionId}");
 #endif
 
             return true;

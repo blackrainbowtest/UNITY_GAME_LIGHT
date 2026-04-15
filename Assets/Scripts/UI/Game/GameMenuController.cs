@@ -94,7 +94,7 @@ public class GameMenuController : MonoBehaviour
         }
         else
         {
-            Debug.Log($"[GameMenu] Autosave skipped in scene '{sceneName}'");
+            UDA2.Logging.Logger.LogInfo($"[GameMenu] Autosave skipped in scene '{sceneName}'", UDA2.Logging.LogChannel.UI);
         }
 
         // Сначала гарантированно закрываем меню, чтобы оно не переехало в следующую сцену.
@@ -114,7 +114,7 @@ public class GameMenuController : MonoBehaviour
         }
         else
         {
-            Debug.Log($"[GameMenu] Autosave skipped in scene '{sceneName}'");
+            UDA2.Logging.Logger.LogInfo($"[GameMenu] Autosave skipped in scene '{sceneName}'", UDA2.Logging.LogChannel.UI);
         }
     #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;

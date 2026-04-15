@@ -102,9 +102,18 @@ namespace UDA2.Logging
                 _entries.RemoveAt(0);
             _entries.Add(entry);
 			OutputToUnityConsoleWithCallerInfo(entry, unityContext);
-            if (type == LogType.Error)
-                WriteToFile(entry); // ошибки пишем сразу
+                if (type == LogType.Error || type == LogType.Warning || IsInfoFileWriteEnabled())
+                WriteToFile(entry);
         }
+
+            private static bool IsInfoFileWriteEnabled()
+            {
+        #if UNITY_EDITOR || DEVELOPMENT_BUILD
+                return true;
+        #else
+                return false;
+        #endif
+            }
 
 		private static void OutputToUnityConsoleWithCallerInfo(LogEntry entry, UnityEngine.Object unityContext)
         {

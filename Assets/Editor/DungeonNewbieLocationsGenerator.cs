@@ -36,7 +36,7 @@ namespace UDA2.EditorTools
                 new LocationSeed("river", "River"),
             };
 
-            var goblin = FindEnemy("Goblin", "goblin");
+            var slaver = FindEnemy("Slaver", "slaver");
             var slime = FindEnemy("Slime", "slime");
 
             UnityEngine.Object last = null;
@@ -57,7 +57,7 @@ namespace UDA2.EditorTools
                     $"{EncounterTablesFolder}/est_{seed.key}.asset",
                     () => ScriptableObject.CreateInstance<EnemySpawnTable>());
 
-                FillSpawnTableIfEmpty(table, goblin, slime);
+                FillSpawnTableIfEmpty(table, slaver, slime);
 
                 var location = CreateOrLoad<DungeonLocationDefinition>(
                     $"{DungeonLocationsFolder}/dld_{seed.key}.asset",
@@ -104,14 +104,14 @@ namespace UDA2.EditorTools
             CreateNewbieLocationAssets();
         }
 
-        private static void FillSpawnTableIfEmpty(EnemySpawnTable table, EnemyData goblin, EnemyData slime)
+        private static void FillSpawnTableIfEmpty(EnemySpawnTable table, EnemyData slaver, EnemyData slime)
         {
             var so = new SerializedObject(table);
             var entries = so.FindProperty("entries");
             if (entries == null || !entries.isArray || entries.arraySize > 0)
                 return;
 
-            AddEntry(entries, goblin, 60);
+            AddEntry(entries, slaver, 60);
             AddEntry(entries, slime, 40);
 
             so.ApplyModifiedPropertiesWithoutUndo();

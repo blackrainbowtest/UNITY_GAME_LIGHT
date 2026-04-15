@@ -27,30 +27,30 @@ public class SettingsController : MonoBehaviour, IMenuCloseHandler
         _editingState = CopyState(EnsureSettings());
 
         if (languageDropdown != null)
-            languageDropdown.value = GetLanguageIndex(_editingState.language);
+            languageDropdown.SetValueWithoutNotify(GetLanguageIndex(_editingState.language));
         else
             Debug.LogWarning("SettingsController: languageDropdown не назначен.", this);
 
         if (musicSlider != null)
-            musicSlider.value = _editingState.musicVolume;
+            musicSlider.SetValueWithoutNotify(_editingState.musicVolume);
         else
             Debug.LogWarning("SettingsController: musicSlider не назначен.", this);
 
         if (sfxSlider != null)
-            sfxSlider.value = _editingState.sfxVolume;
+            sfxSlider.SetValueWithoutNotify(_editingState.sfxVolume);
         else
             Debug.LogWarning("SettingsController: sfxSlider не назначен.", this);
 
         if (uiSlider != null)
-            uiSlider.value = _editingState.uiVolume;
+            uiSlider.SetValueWithoutNotify(_editingState.uiVolume);
         else
             Debug.LogWarning("SettingsController: uiSlider не назначен.", this);
 
         if (vibrationToggle != null)
-            vibrationToggle.isOn = _editingState.vibrationEnabled;
+            vibrationToggle.SetIsOnWithoutNotify(_editingState.vibrationEnabled);
 
         if (showBattleResultToggle != null)
-            showBattleResultToggle.isOn = _editingState.showBattleResultModal;
+            showBattleResultToggle.SetIsOnWithoutNotify(_editingState.showBattleResultModal);
     }
 
     private void Start()
@@ -90,7 +90,6 @@ public class SettingsController : MonoBehaviour, IMenuCloseHandler
         {
             UDA2.Audio.AudioManager.Instance.SetMusicVolume(SettingsContext.Current.musicVolume);
             UDA2.Audio.AudioManager.Instance.SetSfxVolume(SettingsContext.Current.sfxVolume);
-            UDA2.Audio.AudioManager.Instance.SetAmbientVolume(SettingsContext.Current.ambientVolume);
             UDA2.Audio.AudioManager.Instance.SetUiVolume(SettingsContext.Current.uiVolume);
         }
         // Вызов события для возврата главного меню
@@ -126,6 +125,7 @@ public class SettingsController : MonoBehaviour, IMenuCloseHandler
     public void OnSfxVolumeChanged(float value)
     {
         _editingState.sfxVolume = value;
+        _editingState.ambientVolume = value;
 
         if (UDA2.Audio.AudioManager.Instance != null)
             UDA2.Audio.AudioManager.Instance.SetSfxVolume(value);
@@ -153,16 +153,9 @@ public class SettingsController : MonoBehaviour, IMenuCloseHandler
 
     public void OnApply()
     {
+        _editingState.ambientVolume = _editingState.sfxVolume;
         SettingsContext.Current = CopyState(_editingState);
         SettingsManager.Save(SettingsContext.Current);
-
-        if (UDA2.Audio.AudioManager.Instance != null)
-        {
-            UDA2.Audio.AudioManager.Instance.SetMusicVolume(_editingState.musicVolume, 1f);
-            UDA2.Audio.AudioManager.Instance.SetSfxVolume(_editingState.sfxVolume, 1f);
-            UDA2.Audio.AudioManager.Instance.SetAmbientVolume(_editingState.ambientVolume);
-            UDA2.Audio.AudioManager.Instance.SetUiVolume(_editingState.uiVolume);
-        }
 
         Close();
     }
@@ -170,24 +163,25 @@ public class SettingsController : MonoBehaviour, IMenuCloseHandler
     public void OnReset()
     {
         _editingState = new SettingsState();
+        _editingState.ambientVolume = _editingState.sfxVolume;
 
         if (languageDropdown != null)
-            languageDropdown.value = GetLanguageIndex(_editingState.language);
+            languageDropdown.SetValueWithoutNotify(GetLanguageIndex(_editingState.language));
 
         if (musicSlider != null)
-            musicSlider.value = _editingState.musicVolume;
+            musicSlider.SetValueWithoutNotify(_editingState.musicVolume);
 
         if (sfxSlider != null)
-            sfxSlider.value = _editingState.sfxVolume;
+            sfxSlider.SetValueWithoutNotify(_editingState.sfxVolume);
 
         if (uiSlider != null)
-            uiSlider.value = _editingState.uiVolume;
+            uiSlider.SetValueWithoutNotify(_editingState.uiVolume);
 
         if (vibrationToggle != null)
-            vibrationToggle.isOn = _editingState.vibrationEnabled;
+            vibrationToggle.SetIsOnWithoutNotify(_editingState.vibrationEnabled);
 
         if (showBattleResultToggle != null)
-            showBattleResultToggle.isOn = _editingState.showBattleResultModal;
+            showBattleResultToggle.SetIsOnWithoutNotify(_editingState.showBattleResultModal);
 
         SettingsContext.SetLanguage(_editingState.language);
 
@@ -195,7 +189,6 @@ public class SettingsController : MonoBehaviour, IMenuCloseHandler
         {
             UDA2.Audio.AudioManager.Instance.SetMusicVolume(_editingState.musicVolume, 1f);
             UDA2.Audio.AudioManager.Instance.SetSfxVolume(_editingState.sfxVolume, 1f);
-            UDA2.Audio.AudioManager.Instance.SetAmbientVolume(_editingState.ambientVolume);
             UDA2.Audio.AudioManager.Instance.SetUiVolume(_editingState.uiVolume);
         }
     }
@@ -219,7 +212,7 @@ public class SettingsController : MonoBehaviour, IMenuCloseHandler
         {
             musicVolume = source.musicVolume,
             sfxVolume = source.sfxVolume,
-            ambientVolume = source.ambientVolume,
+            ambientVolume = source.sfxVolume,
             uiVolume = source.uiVolume,
             language = source.language,
             tutorialShown = source.tutorialShown,

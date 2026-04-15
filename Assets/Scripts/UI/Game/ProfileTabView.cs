@@ -216,7 +216,7 @@ namespace UDA2.UI.Game
                 var equipped = player != null && player.equipment != null
                     ? GetEquippedItemId(player.equipment, slotId)
                     : null;
-                Debug.Log($"[ProfileTabView] Slot clicked: {slotId} (equipped='{(string.IsNullOrEmpty(equipped) ? "<empty>" : equipped)}')");
+                UDA2.Logging.Logger.LogInfo($"[ProfileTabView] Slot clicked: {slotId} (equipped='{(string.IsNullOrEmpty(equipped) ? "<empty>" : equipped)}')", UDA2.Logging.LogChannel.UI);
             }
             SlotClicked?.Invoke(slotId);
         }

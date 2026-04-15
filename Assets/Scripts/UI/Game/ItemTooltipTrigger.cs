@@ -108,7 +108,6 @@ namespace UDA2.UI.Game
             if (m == TriggerMode.InventoryOrStorage)
             {
                 // Inventory/storage click behavior is intentionally a stub for now.
-                Debug.Log($"[ItemTooltipTrigger] Clicked item '{slot.ItemId}' x{slot.Count}");
                 return;
             }
 

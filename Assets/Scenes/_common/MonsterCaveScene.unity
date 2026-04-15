@@ -173,11 +173,11 @@ MonoBehaviour:
     requiredRank: 0
     requiredPlayerLevel: 2
   - button: {fileID: 1270807916}
-    location: {fileID: 11400000, guid: 9fcec8c64fa3f704e9ddd2f6141528b4, type: 2}
+    location: {fileID: 11400000, guid: 1825abc97cb848f42aeecb81cdb61fe5, type: 2}
     requiredRank: 1
     requiredPlayerLevel: 2
   - button: {fileID: 1478092934}
-    location: {fileID: 11400000, guid: 1825abc97cb848f42aeecb81cdb61fe5, type: 2}
+    location: {fileID: 11400000, guid: 9fcec8c64fa3f704e9ddd2f6141528b4, type: 2}
     requiredRank: 0
     requiredPlayerLevel: 1
   locationButtonAlpha: 1
@@ -3308,6 +3308,16 @@ MonoBehaviour:
     cues:
     - {fileID: 11400000, guid: ad26e838d574dae49b3107e168226f07, type: 2}
     - {fileID: 11400000, guid: 3d9f69da8855fdd4ca23ce1fde3ce630, type: 2}
+    useStereoPan: 0
+    panStart: 0
+    panEnd: 0
+    panSweepOverClipDuration: 0
+    panSweepDuration: 0
+  - name: river_sound
+    randomLoop: 0
+    intervalSeconds: {x: 0, y: 0}
+    cues:
+    - {fileID: 11400000, guid: c78eb7ac7df64f64288f614965e0692c, type: 2}
     useStereoPan: 0
     panStart: 0
     panEnd: 0

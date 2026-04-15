@@ -142,7 +142,7 @@ loadingScreen.Show();
 float timer = 0f;
 var asyncOp = SceneManager.LoadSceneAsync(sceneName);
 if (logLoadTimings)
-Debug.Log($"[SceneFlow] Begin load '{sceneName}'. minLoadingTime={minLoadingTime:0.###}");
+UDA2.Logging.Logger.LogInfo($"[SceneFlow] Begin load '{sceneName}'. minLoadingTime={minLoadingTime:0.###}");
 
 while (!asyncOp.isDone)
 {
@@ -151,7 +151,7 @@ yield return null;
 }
 
 if (logLoadTimings)
-Debug.Log($"[SceneFlow] Async load finished for '{sceneName}' at {timer:0.###}s");
+UDA2.Logging.Logger.LogInfo($"[SceneFlow] Async load finished for '{sceneName}' at {timer:0.###}s");
 
 bool shouldWaitForSceneReady = waitForSceneReadySignal && SceneHasReadySignalReceiver();
 
@@ -170,17 +170,17 @@ yield return null;
 if (logLoadTimings)
 {
 if (_sceneReady)
-Debug.Log($"[SceneFlow] Scene ready signaled for '{sceneName}' after {timer:0.###}s (extraWait={sceneReadyWaited:0.###}s)");
+UDA2.Logging.Logger.LogInfo($"[SceneFlow] Scene ready signaled for '{sceneName}' after {timer:0.###}s (extraWait={sceneReadyWaited:0.###}s)");
 else
-Debug.Log($"[SceneFlow] Scene ready timeout for '{sceneName}' after {sceneReadyWaited:0.###}s. Continuing load.");
+UDA2.Logging.Logger.LogInfo($"[SceneFlow] Scene ready timeout for '{sceneName}' after {sceneReadyWaited:0.###}s. Continuing load.");
 }
 }
 else if (logLoadTimings)
 {
 if (!waitForSceneReadySignal)
-Debug.Log($"[SceneFlow] Scene ready signal disabled for '{sceneName}'. Continuing after async load.");
+UDA2.Logging.Logger.LogInfo($"[SceneFlow] Scene ready signal disabled for '{sceneName}'. Continuing after async load.");
 else
-Debug.Log($"[SceneFlow] Scene ready wait skipped for '{sceneName}' (no ISceneReady receiver in scene).");
+UDA2.Logging.Logger.LogInfo($"[SceneFlow] Scene ready wait skipped for '{sceneName}' (no ISceneReady receiver in scene).");
 }
 
 // дём, если минимальное время не прошло
@@ -191,14 +191,14 @@ yield return null;
 }
 
 if (logLoadTimings)
-Debug.Log($"[SceneFlow] Min loading time reached for '{sceneName}' at {timer:0.###}s");
+UDA2.Logging.Logger.LogInfo($"[SceneFlow] Min loading time reached for '{sceneName}' at {timer:0.###}s");
 
 yield return WaitForMusicReady(sceneName);
 
 if (logLoadTimings)
 {
 float total = Time.realtimeSinceStartup - startedAt;
-Debug.Log($"[SceneFlow] Hide loading for '{sceneName}'. total={total:0.###}s");
+UDA2.Logging.Logger.LogInfo($"[SceneFlow] Hide loading for '{sceneName}'. total={total:0.###}s");
 }
 
 if (loadingScreen != null)
@@ -213,7 +213,7 @@ yield break;
 if (ShouldSkipMusicWait(sceneName))
 {
 if (logLoadTimings)
-Debug.Log($"[SceneFlow] Skip music wait for scene '{sceneName}' (configured override)");
+UDA2.Logging.Logger.LogInfo($"[SceneFlow] Skip music wait for scene '{sceneName}' (configured override)");
 yield break;
 }
 
@@ -231,14 +231,14 @@ yield return null;
 if (!TryGetAudioManagerSingleton(out var audioManager))
 {
 if (logLoadTimings)
-Debug.Log($"[SceneFlow] Skip music wait for '{sceneName}' (AudioManager not found)");
+UDA2.Logging.Logger.LogInfo($"[SceneFlow] Skip music wait for '{sceneName}' (AudioManager not found)");
 yield break;
 }
 
 if (skipMusicWaitIfSceneHasNoMusic && !WillPlayMusicForScene(audioManager, sceneName))
 {
 if (logLoadTimings)
-Debug.Log($"[SceneFlow] Skip music wait for '{sceneName}' (no music configured)");
+UDA2.Logging.Logger.LogInfo($"[SceneFlow] Skip music wait for '{sceneName}' (no music configured)");
 yield break;
 }
 
@@ -250,7 +250,7 @@ yield return null;
 }
 
 if (logLoadTimings)
-Debug.Log($"[SceneFlow] Music wait for '{sceneName}' finished. waited={waited:0.###}s timeout={timeout:0.###}s");
+UDA2.Logging.Logger.LogInfo($"[SceneFlow] Music wait for '{sceneName}' finished. waited={waited:0.###}s timeout={timeout:0.###}s");
 }
 
 private bool ShouldSkipMusicWait(string sceneName)

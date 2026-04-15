@@ -600,7 +600,7 @@ namespace UDA2.UI.Game
 
             if (row == null)
             {
-                Debug.Log($"[ProfileLayoutDebug] stage={stage}; row=NULL", this);
+                UDA2.Logging.Logger.LogInfo($"[ProfileLayoutDebug] stage={stage}; row=NULL", UDA2.Logging.LogChannel.UI, this);
                 return;
             }
 
@@ -615,8 +615,9 @@ namespace UDA2.UI.Game
             string titleInfo = BuildRectInfo(title != null ? title.rectTransform : null, title != null ? title.name : "content_title(NULL)");
             string valueInfo = BuildRectInfo(value != null ? value.rectTransform : null, value != null ? value.name : "content_value(NULL)");
 
-            Debug.Log(
+            UDA2.Logging.Logger.LogInfo(
                 $"[ProfileLayoutDebug] stage={stage}; rowId={idText}; combat={isCombatSection}; root={rootName}; parent={parentName}; {titleInfo}; {valueInfo}",
+                UDA2.Logging.LogChannel.UI,
                 this);
 #endif
         }

@@ -189,7 +189,7 @@ public sealed class BattleButtonLongPressTooltipTrigger : MonoBehaviour, IPointe
             return;
 
         string label = !string.IsNullOrWhiteSpace(debugLabel) ? debugLabel : gameObject.name;
-        Debug.Log($"[BattleLongPress] {label}: {message}", this);
+        UDA2.Logging.Logger.LogInfo($"[BattleLongPress] {label}: {message}", UDA2.Logging.LogChannel.UI, this);
 #endif
     }
 }

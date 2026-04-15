@@ -80,13 +80,11 @@ namespace UDA2.Audio
         [SerializeField] private UnityEngine.Audio.AudioMixerGroup ambientGroup;
         [SerializeField] private int ambientPoolSize = 6;
         [SerializeField] private Transform ambientParent;
-        [SerializeField] private bool ambientFollowsSfxVolume = true;
 
         private AudioSource[] ambientPool;
         private Coroutine[] ambientPanCoroutines;
         private float[] ambientBaseVolumes;
         private int ambientIndex;
-        private float ambientVolume = 1f;
 
         /* ===================== UI ===================== */
 
@@ -161,12 +159,11 @@ namespace UDA2.Audio
             // SFX pool
             InitSfxPool();
 
-            // Load settings
-            var s = UDA2.Core.SettingsContext.Current;
-            SetMusicVolume(s != null ? s.musicVolume : 1f);
-            SetSfxVolume(s != null ? s.sfxVolume : 1f);
-            SetAmbientVolume(s != null ? s.ambientVolume : 1f);
-            SetUiVolume(s != null ? s.uiVolume : 1f);
+            // Load settings snapshot with fallback to persisted values when context is not initialized yet.
+            var s = ResolveSettingsSnapshot();
+            SetMusicVolume(s.musicVolume);
+            SetSfxVolume(s.sfxVolume);
+            SetUiVolume(s.uiVolume);
 
             if (musicSource == null)
                 Debug.LogWarning("AudioManager: musicSource не назначен в инспекторе — музыку не будет слышно.");
@@ -255,8 +252,16 @@ namespace UDA2.Audio
 
             UDA2.Core.SettingsContext.OnMusicVolumeChanged += SetMusicVolume;
             UDA2.Core.SettingsContext.OnSfxVolumeChanged += SetSfxVolume;
-            UDA2.Core.SettingsContext.OnAmbientVolumeChanged += SetAmbientVolume;
             UDA2.Core.SettingsContext.OnUiVolumeChanged += SetUiVolume;
+
+            // Pull latest snapshot immediately in case ApplyAll happened before subscriptions.
+            ApplySettingsSnapshotFromContext();
+        }
+
+        private void Start()
+        {
+            // A second pass after scene startup protects against late Current assignment on bootstrap.
+            StartCoroutine(ApplySettingsSnapshotNextFrame());
         }
 
         private void OnDisable()
@@ -265,7 +270,6 @@ namespace UDA2.Audio
 
             UDA2.Core.SettingsContext.OnMusicVolumeChanged -= SetMusicVolume;
             UDA2.Core.SettingsContext.OnSfxVolumeChanged -= SetSfxVolume;
-            UDA2.Core.SettingsContext.OnAmbientVolumeChanged -= SetAmbientVolume;
             UDA2.Core.SettingsContext.OnUiVolumeChanged -= SetUiVolume;
         }
 
@@ -279,6 +283,32 @@ namespace UDA2.Audio
 
             if (Instance == this)
                 Instance = null;
+        }
+
+        private IEnumerator ApplySettingsSnapshotNextFrame()
+        {
+            yield return null;
+            ApplySettingsSnapshotFromContext();
+        }
+
+        private void ApplySettingsSnapshotFromContext()
+        {
+            var s = ResolveSettingsSnapshot();
+
+            SetMusicVolume(s.musicVolume);
+            SetSfxVolume(s.sfxVolume);
+            SetUiVolume(s.uiVolume);
+        }
+
+        private static UDA2.Core.SettingsState ResolveSettingsSnapshot()
+        {
+            var current = UDA2.Core.SettingsContext.Current;
+            if (current != null)
+                return current;
+
+            var loaded = UDA2.Core.SettingsManager.Load();
+            UDA2.Core.SettingsContext.Current = loaded;
+            return loaded;
         }
 
         /* ===================== SCENE MUSIC ===================== */
@@ -477,7 +507,7 @@ namespace UDA2.Audio
 
             PlaySfx(cue.Clip, cue.DefaultVolume, pitch);
 
-            Debug.Log($"[BattleAudio] PlayBattleCueAsSfx clip='{cue.Clip.name}' cueKey='{cue.Key}' defaultVol={cue.DefaultVolume:0.###} sfxMaster={sfxVolume:0.###} pitch={pitch:0.###}");
+            UDA2.Logging.Logger.LogInfo($"[BattleAudio] PlayBattleCueAsSfx clip='{cue.Clip.name}' cueKey='{cue.Key}' defaultVol={cue.DefaultVolume:0.###} sfxMaster={sfxVolume:0.###} pitch={pitch:0.###}", UDA2.Logging.LogChannel.Audio);
 
             if (sfxVolume <= 0.01f)
                 Debug.LogWarning("[BattleAudio] SFX master volume is near zero. Battle cues may be inaudible.");
@@ -684,9 +714,13 @@ namespace UDA2.Audio
 
         public void SetMusicVolume(float volume)
         {
+            volume = Mathf.Clamp01(volume);
             targetMusicDb = ToDb(volume);
             if (audioMixer != null)
                 audioMixer.SetFloat(MusicVolumeParam, targetMusicDb);
+
+            if (audioMixer == null && musicSource != null)
+                musicSource.volume = volume;
         }
 
         /* ===================== SFX ===================== */
@@ -769,7 +803,7 @@ namespace UDA2.Audio
 
         public void SetAmbientVolume(float volume)
         {
-            ambientVolume = Mathf.Clamp01(volume);
+            // Ambient is explicitly tied to SFX master in this project.
             if (audioMixer != null && hasAmbientVolumeParam)
                 audioMixer.SetFloat(AmbientVolumeParam, ToDb(GetEffectiveAmbientVolume()));
 
@@ -872,8 +906,36 @@ namespace UDA2.Audio
 
         public void SetUiVolume(float volume)
         {
+            volume = Mathf.Clamp01(volume);
+
             if (audioMixer != null)
                 audioMixer.SetFloat(UiVolumeParam, ToDb(volume));
+
+            if (audioMixer == null && uiSource != null)
+                uiSource.volume = volume;
+        }
+
+        public void StopAmbient()
+        {
+            if (ambientPool == null)
+                return;
+
+            for (int i = 0; i < ambientPool.Length; i++)
+            {
+                var src = ambientPool[i];
+                if (src == null)
+                    continue;
+
+                if (ambientPanCoroutines != null && i < ambientPanCoroutines.Length && ambientPanCoroutines[i] != null)
+                {
+                    StopCoroutine(ambientPanCoroutines[i]);
+                    ambientPanCoroutines[i] = null;
+                }
+
+                src.Stop();
+                src.clip = null;
+                src.panStereo = 0f;
+            }
         }
 
         public void StopSceneSounds()
@@ -891,25 +953,7 @@ namespace UDA2.Audio
                 }
             }
 
-            if (ambientPool != null)
-            {
-                for (int i = 0; i < ambientPool.Length; i++)
-                {
-                    var src = ambientPool[i];
-                    if (src == null)
-                        continue;
-
-                    if (ambientPanCoroutines != null && i < ambientPanCoroutines.Length && ambientPanCoroutines[i] != null)
-                    {
-                        StopCoroutine(ambientPanCoroutines[i]);
-                        ambientPanCoroutines[i] = null;
-                    }
-
-                    src.Stop();
-                    src.clip = null;
-                    src.panStereo = 0f;
-                }
-            }
+            StopAmbient();
 
             if (characterSource != null)
                 characterSource.Stop();
@@ -939,8 +983,7 @@ namespace UDA2.Audio
 
         private float GetEffectiveAmbientVolume()
         {
-            float sfxFactor = ambientFollowsSfxVolume ? sfxVolume : 1f;
-            return Mathf.Clamp01(ambientVolume * sfxFactor);
+            return Mathf.Clamp01(sfxVolume);
         }
 
         private float ComputeAmbientSourceVolume(float baseVolume)

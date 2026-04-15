@@ -36,6 +36,7 @@ namespace Game.Battle.UI
         private bool _isOpen;
         private bool _hideOnClose = true;
         private GameObject _spawnedAnimatedVariant;
+        private Sprite _fallbackLocationBackground;
 
         public Game.Battle.BattleFinishReason LastReason { get; private set; } = Game.Battle.BattleFinishReason.Defeat;
         public bool LastPlayerWon { get; private set; }
@@ -70,11 +71,13 @@ namespace Game.Battle.UI
             bool hideOnClose = true,
             string enemyId = null,
             string locationId = null,
-            string sourceLocationId = null)
+            string sourceLocationId = null,
+            Sprite fallbackLocationBackground = null)
         {
             _onClosed = onClosed;
             _isOpen = true;
             _hideOnClose = hideOnClose;
+            _fallbackLocationBackground = fallbackLocationBackground;
             LastReason = reason;
             LastPlayerWon = playerWon;
             LastWinningActionId = winningActionId;
@@ -94,12 +97,13 @@ namespace Game.Battle.UI
 
             ApplyPresentation(reason, enemyId, locationId, sourceLocationId);
 
-            Debug.Log($"[BattleOutcomeAnimationModal] Show: reason={reason}, playerWon={playerWon}, winningAction={winningActionId}, root={(root != null ? root.name : "<self>")}", this);
+            UDA2.Logging.Logger.LogInfo($"[BattleOutcomeAnimationModal] Show: reason={reason}, playerWon={playerWon}, winningAction={winningActionId}, root={(root != null ? root.name : "<self>")}", UDA2.Logging.LogChannel.UI, this);
         }
 
         public void Hide()
         {
             ClearSpawnedVariants();
+            _fallbackLocationBackground = null;
 
             // Always hide the whole modal object to avoid leaving any overlay elements (e.g. TopHUD) active.
             if (root != null)
@@ -127,7 +131,7 @@ namespace Game.Battle.UI
             _onClosed = null;
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            Debug.Log($"[BattleOutcomeAnimationModal] FinalizeClose from={from}, hasCallback={(cb != null)}", this);
+            UDA2.Logging.Logger.LogInfo($"[BattleOutcomeAnimationModal] FinalizeClose from={from}, hasCallback={(cb != null)}", UDA2.Logging.LogChannel.UI, this);
 #endif
 
             cb?.Invoke();
@@ -277,23 +281,65 @@ namespace Game.Battle.UI
             var resolvedSourceLocationId = !string.IsNullOrWhiteSpace(sourceLocationId)
                 ? sourceLocationId
                 : save?.sceneState?.pendingBattle?.locationId;
+            var normalizedLocationId = NormalizeLocationId(resolvedLocationId);
+            var normalizedSourceLocationId = NormalizeLocationId(resolvedSourceLocationId);
+
+            string locationFallbackDebug;
+            Sprite resolvedLocationFallbackSprite;
+            if (string.IsNullOrEmpty(normalizedLocationId) && _fallbackLocationBackground != null)
+            {
+                resolvedLocationFallbackSprite = _fallbackLocationBackground;
+                locationFallbackDebug = "Location fallback: normalized location id is empty and context fallback sprite is present -> using context fallback.";
+            }
+            else
+            {
+                resolvedLocationFallbackSprite = presentationCatalog.ResolveLocationFallbackSprite(
+                    normalizedLocationId,
+                    normalizedSourceLocationId,
+                    _fallbackLocationBackground,
+                    out locationFallbackDebug);
+            }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (enablePresentationDebugLogs)
+            {
+                UDA2.Logging.Logger.LogInfo(
+                    $"[BattleOutcomeAnimationModal] Context: reason={reason}, enemyId='{resolvedEnemyId}', locationIdRaw='{resolvedLocationId}', sourceLocationIdRaw='{resolvedSourceLocationId}', locationIdNorm='{normalizedLocationId}', sourceLocationIdNorm='{normalizedSourceLocationId}', fallbackFromContext='{(_fallbackLocationBackground != null ? _fallbackLocationBackground.name : "<null>")}', resolvedFallback='{(resolvedLocationFallbackSprite != null ? resolvedLocationFallbackSprite.name : "<null>")}'",
+                    UDA2.Logging.LogChannel.UI,
+                    this);
+
+                if (!string.IsNullOrWhiteSpace(locationFallbackDebug))
+                    UDA2.Logging.Logger.LogInfo("[BattleOutcomeAnimationModal] " + locationFallbackDebug, UDA2.Logging.LogChannel.UI, this);
+            }
+#endif
 
             var variants = presentationCatalog.ResolveVariants(
                 reason,
                 resolvedEnemyId,
-                resolvedLocationId,
-                resolvedSourceLocationId,
+                normalizedLocationId,
+                normalizedSourceLocationId,
                 save,
                 debugLogs: enablePresentationDebugLogs,
                 out var debugReport);
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (enablePresentationDebugLogs && !string.IsNullOrWhiteSpace(debugReport))
-                Debug.Log("[BattleOutcomeAnimationModal] Resolve debug:\n" + debugReport, this);
+                UDA2.Logging.Logger.LogInfo("[BattleOutcomeAnimationModal] Resolve debug:\n" + debugReport, UDA2.Logging.LogChannel.UI, this);
 #endif
 
             if (variants == null || variants.Count == 0)
             {
+                if (outcomeImage != null)
+                {
+                    outcomeImage.sprite = resolvedLocationFallbackSprite;
+                    outcomeImage.enabled = outcomeImage.sprite != null;
+                }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                if (enablePresentationDebugLogs)
+                    UDA2.Logging.Logger.LogInfo($"[BattleOutcomeAnimationModal] Final sprite source: fallback (no variants). sprite='{(resolvedLocationFallbackSprite != null ? resolvedLocationFallbackSprite.name : "<null>")}'", UDA2.Logging.LogChannel.UI, this);
+#endif
+
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 if (enablePresentationDebugLogs)
                     Debug.LogWarning($"[BattleOutcomeAnimationModal] No variants matched. reason={reason}, enemyId='{resolvedEnemyId}', locationId='{resolvedLocationId}', sourceLocationId='{resolvedSourceLocationId}'", this);
@@ -304,6 +350,17 @@ namespace Game.Battle.UI
             var selected = SelectWeightedVariant(variants);
             if (selected == null)
             {
+                if (outcomeImage != null)
+                {
+                    outcomeImage.sprite = resolvedLocationFallbackSprite;
+                    outcomeImage.enabled = outcomeImage.sprite != null;
+                }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                if (enablePresentationDebugLogs)
+                    UDA2.Logging.Logger.LogInfo($"[BattleOutcomeAnimationModal] Final sprite source: fallback (weighted selection returned null). sprite='{(resolvedLocationFallbackSprite != null ? resolvedLocationFallbackSprite.name : "<null>")}'", UDA2.Logging.LogChannel.UI, this);
+#endif
+
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 if (enablePresentationDebugLogs)
                     Debug.LogWarning("[BattleOutcomeAnimationModal] Variant list exists, but weighted selection returned null.", this);
@@ -314,16 +371,27 @@ namespace Game.Battle.UI
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (enablePresentationDebugLogs)
             {
-                Debug.Log(
+                UDA2.Logging.Logger.LogInfo(
                     $"[BattleOutcomeAnimationModal] Selected variant: id='{selected.id}', hasSprite={selected.sprite != null}, hasAnimatedPrefab={selected.animatedPrefab != null}, hasPlayerAnimation={selected.playerAnimation != null}, hasEnemyAnimation={selected.enemyAnimation != null}, weight={selected.weight}",
+                    UDA2.Logging.LogChannel.UI,
                     this);
             }
 #endif
 
             if (outcomeImage != null)
             {
-                outcomeImage.sprite = selected.sprite;
-                outcomeImage.enabled = selected.sprite != null;
+                var variantSprite = presentationCatalog.UseVariantSpriteOverrides ? selected.sprite : null;
+                var resolvedSprite = variantSprite != null ? variantSprite : resolvedLocationFallbackSprite;
+                outcomeImage.sprite = resolvedSprite;
+                outcomeImage.enabled = resolvedSprite != null;
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                if (enablePresentationDebugLogs)
+                {
+                    var source = variantSprite != null ? "variant" : "fallback";
+                    UDA2.Logging.Logger.LogInfo($"[BattleOutcomeAnimationModal] Final sprite source: {source}. sprite='{(resolvedSprite != null ? resolvedSprite.name : "<null>")}', variantSprite='{(variantSprite != null ? variantSprite.name : "<null>")}', fallbackSprite='{(resolvedLocationFallbackSprite != null ? resolvedLocationFallbackSprite.name : "<null>")}', useVariantSpriteOverrides={presentationCatalog.UseVariantSpriteOverrides}", UDA2.Logging.LogChannel.UI, this);
+                }
+#endif
             }
 
             ClearSpawnedVariants();
@@ -381,6 +449,18 @@ namespace Game.Battle.UI
             }
 
             return variants[0];
+        }
+
+        private static string NormalizeLocationId(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return string.Empty;
+
+            var value = id.Trim();
+            if (string.Equals(value, "location", StringComparison.OrdinalIgnoreCase))
+                return string.Empty;
+
+            return value;
         }
 
         private void ClearSpawnedVariants()

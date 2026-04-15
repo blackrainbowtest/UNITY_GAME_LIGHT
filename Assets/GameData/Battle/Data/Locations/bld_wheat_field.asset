@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4c1cb433589eb04789a7dde4718d663, type: 3}
   m_Name: bld_wheat_field
   m_EditorClassIdentifier: UDA2.Battle::Game.Battle.BattleLocationData
-  id: location
+  id: bld_wheat_field
   background: {fileID: 21300000, guid: 573d5f30a18b68f4b9ed49dece63eb13, type: 3}
   musicCue: {fileID: 11400000, guid: 358a24f3722d2eb419cf471bc7369a90, type: 2}
   music: {fileID: 8300000, guid: 350bd2fd7853b3549b10bdebeb042988, type: 3}

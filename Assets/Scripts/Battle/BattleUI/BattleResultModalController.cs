@@ -88,7 +88,7 @@ namespace Game.Battle.UI
             transform.SetAsLastSibling();
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            Debug.Log($"[BattleResultModal] Show called. Won={data.PlayerWon}, Gold={data.GoldGained}, Items={(data.Items != null ? data.Items.Count : 0)}", this);
+            UDA2.Logging.Logger.LogInfo($"[BattleResultModal] Show called. Won={data.PlayerWon}, Gold={data.GoldGained}, Items={(data.Items != null ? data.Items.Count : 0)}", UDA2.Logging.LogChannel.UI, this);
 #endif
 
             ApplyLocalizedTitle(data);

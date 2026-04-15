@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: UDA2.Battle::Game.Battle.UI.BattleOutcomePresentationCatalogAsset
   enemyGroups:
   - enemy: {fileID: 0}
-    anyEnemy: 1
-    enemyIdOverride: wheat_rat
+    anyEnemy: 0
+    enemyIdOverride: slaver
     rules:
     - outcome: 0
       entries:
@@ -28,31 +28,23 @@ MonoBehaviour:
         presentation:
           variants:
           - id: 
-            sprite: {fileID: 21300000, guid: 8ce922dc753d0344996aafb7369087ca, type: 3}
+            sprite: {fileID: 0}
             animatedPrefab: {fileID: 0}
             playerAnimation: {fileID: 11400000, guid: d606a4a9ca385a247a8af77be5eb9785, type: 2}
             enemyAnimation: {fileID: 11400000, guid: 26ad8df7ebfa7e6459f108987f926d04, type: 2}
             weight: 0
-  - enemy: {fileID: 0}
-    anyEnemy: 0
-    enemyIdOverride: wheat_rat
-    rules:
-    - outcome: 0
-      entries:
-      - filter:
-          anyLocation: 0
-          locationId: dld_farm
-          priority: 0
-        match:
-          conditions: []
-        presentation:
-          variants:
-          - id: 
-            sprite: {fileID: 21300000, guid: 8ce922dc753d0344996aafb7369087ca, type: 3}
-            animatedPrefab: {fileID: 0}
-            playerAnimation: {fileID: 11400000, guid: d606a4a9ca385a247a8af77be5eb9785, type: 2}
-            enemyAnimation: {fileID: 11400000, guid: c40e7b43227f8d244bd4e76c18766184, type: 2}
-            weight: 0
+    - outcome: 1
+      entries: []
+    - outcome: 4
+      entries: []
+    - outcome: 3
+      entries: []
+    - outcome: 2
+      entries: []
+    - outcome: 5
+      entries: []
+    - outcome: 6
+      entries: []
   - enemy: {fileID: 0}
     anyEnemy: 0
     enemyIdOverride: slime
@@ -68,14 +60,26 @@ MonoBehaviour:
         presentation:
           variants:
           - id: 
-            sprite: {fileID: 21300000, guid: 8ce922dc753d0344996aafb7369087ca, type: 3}
+            sprite: {fileID: 0}
             animatedPrefab: {fileID: 0}
             playerAnimation: {fileID: 11400000, guid: d606a4a9ca385a247a8af77be5eb9785, type: 2}
             enemyAnimation: {fileID: 11400000, guid: 26ad8df7ebfa7e6459f108987f926d04, type: 2}
             weight: 0
+    - outcome: 1
+      entries: []
+    - outcome: 4
+      entries: []
+    - outcome: 3
+      entries: []
+    - outcome: 2
+      entries: []
+    - outcome: 5
+      entries: []
+    - outcome: 6
+      entries: []
   - enemy: {fileID: 0}
     anyEnemy: 0
-    enemyIdOverride: slaver
+    enemyIdOverride: wheat_rat
     rules:
     - outcome: 0
       entries:
@@ -88,11 +92,161 @@ MonoBehaviour:
         presentation:
           variants:
           - id: 
-            sprite: {fileID: 21300000, guid: 8ce922dc753d0344996aafb7369087ca, type: 3}
+            sprite: {fileID: 0}
             animatedPrefab: {fileID: 0}
             playerAnimation: {fileID: 11400000, guid: d606a4a9ca385a247a8af77be5eb9785, type: 2}
-            enemyAnimation: {fileID: 11400000, guid: 26ad8df7ebfa7e6459f108987f926d04, type: 2}
+            enemyAnimation: {fileID: 11400000, guid: c40e7b43227f8d244bd4e76c18766184, type: 2}
             weight: 0
+    - outcome: 1
+      entries: []
+    - outcome: 4
+      entries: []
+    - outcome: 3
+      entries: []
+    - outcome: 2
+      entries: []
+    - outcome: 5
+      entries: []
+    - outcome: 6
+      entries: []
+  - enemy: {fileID: 0}
+    anyEnemy: 1
+    enemyIdOverride: wheat_rat
+    rules:
+    - outcome: 0
+      entries:
+      - filter:
+          anyLocation: 1
+          locationId: 
+          priority: 0
+        match:
+          conditions: []
+        presentation:
+          variants:
+          - id: 
+            sprite: {fileID: 0}
+            animatedPrefab: {fileID: 0}
+            playerAnimation: {fileID: 11400000, guid: d606a4a9ca385a247a8af77be5eb9785, type: 2}
+            enemyAnimation: {fileID: 0}
+            weight: 0
+    - outcome: 1
+      entries:
+      - filter:
+          anyLocation: 1
+          locationId: 
+          priority: 0
+        match:
+          conditions: []
+        presentation:
+          variants:
+          - id: 
+            sprite: {fileID: 0}
+            animatedPrefab: {fileID: 0}
+            playerAnimation: {fileID: 11400000, guid: 42332c2efd95504409d8e839cdc2e935, type: 2}
+            enemyAnimation: {fileID: 0}
+            weight: 0
+    - outcome: 4
+      entries:
+      - filter:
+          anyLocation: 1
+          locationId: 
+          priority: 0
+        match:
+          conditions: []
+        presentation:
+          variants:
+          - id: 
+            sprite: {fileID: 0}
+            animatedPrefab: {fileID: 0}
+            playerAnimation: {fileID: 11400000, guid: eed8ec64e3f5bad48889ee5cf51c6a7e, type: 2}
+            enemyAnimation: {fileID: 0}
+            weight: 0
+    - outcome: 3
+      entries:
+      - filter:
+          anyLocation: 1
+          locationId: 
+          priority: 0
+        match:
+          conditions: []
+        presentation:
+          variants:
+          - id: 
+            sprite: {fileID: 0}
+            animatedPrefab: {fileID: 0}
+            playerAnimation: {fileID: 11400000, guid: 82d09574c605080489b88caebb25360e, type: 2}
+            enemyAnimation: {fileID: 0}
+            weight: 0
+    - outcome: 2
+      entries:
+      - filter:
+          anyLocation: 1
+          locationId: 
+          priority: 0
+        match:
+          conditions: []
+        presentation:
+          variants:
+          - id: 
+            sprite: {fileID: 0}
+            animatedPrefab: {fileID: 0}
+            playerAnimation: {fileID: 11400000, guid: 6e4b41bdf396830479fda428ec39c372, type: 2}
+            enemyAnimation: {fileID: 0}
+            weight: 0
+    - outcome: 5
+      entries:
+      - filter:
+          anyLocation: 1
+          locationId: 
+          priority: 0
+        match:
+          conditions: []
+        presentation:
+          variants:
+          - id: 
+            sprite: {fileID: 0}
+            animatedPrefab: {fileID: 0}
+            playerAnimation: {fileID: 11400000, guid: dfe52acf0e7448447ac1725add6de629, type: 2}
+            enemyAnimation: {fileID: 0}
+            weight: 0
+    - outcome: 6
+      entries:
+      - filter:
+          anyLocation: 1
+          locationId: 
+          priority: 0
+        match:
+          conditions: []
+        presentation:
+          variants:
+          - id: 
+            sprite: {fileID: 0}
+            animatedPrefab: {fileID: 0}
+            playerAnimation: {fileID: 11400000, guid: bd6b6b228f40df74c92619b668951180, type: 2}
+            enemyAnimation: {fileID: 0}
+            weight: 0
+  locationBackgrounds:
+  - anyLocation: 0
+    location: {fileID: 11400000, guid: 37a23eeef45d6b447980d80f9034fa07, type: 2}
+    locationId: bld_farm
+    sprite: {fileID: 21300000, guid: 8ce922dc753d0344996aafb7369087ca, type: 3}
+  - anyLocation: 0
+    location: {fileID: 11400000, guid: 886828ee12c959740863dc2baf8c0257, type: 2}
+    locationId: bld_firstfight
+    sprite: {fileID: 21300000, guid: efbc47c1bd6bb3c47b2d478daaced3fb, type: 3}
+  - anyLocation: 0
+    location: {fileID: 11400000, guid: cfef7089487e958488d46967838e8cb4, type: 2}
+    locationId: bld_river
+    sprite: {fileID: 21300000, guid: 8778e1ca706b6294a87d48c83266d64d, type: 3}
+  - anyLocation: 0
+    location: {fileID: 11400000, guid: 2819cae22b2ce284a9f65d58837eb053, type: 2}
+    locationId: bld_valley
+    sprite: {fileID: 21300000, guid: 0df61aeea20354c47ba9b9dc64ba803b, type: 3}
+  - anyLocation: 0
+    location: {fileID: 11400000, guid: cff25e083f1085142b10ca57c043502c, type: 2}
+    locationId: bld_wheat_field
+    sprite: {fileID: 21300000, guid: 573d5f30a18b68f4b9ed49dece63eb13, type: 3}
+  useVariantSpriteOverrides: 0
   fallbackVariants:
   - id: 
     sprite: {fileID: 21300000, guid: 063f1459767457641ba74cd6c5f86b2f, type: 3}

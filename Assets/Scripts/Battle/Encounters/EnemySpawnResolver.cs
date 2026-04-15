@@ -1,4 +1,5 @@
 using UnityEngine;
+using Logger = UDA2.Logging.Logger;
 
 namespace Game.Battle
 {
@@ -109,6 +110,14 @@ namespace Game.Battle
 
             resolvedEnemyLevel = Random.Range(minLevel, maxLevel + 1);
             resolvedEnemyRankTier = Random.Range(minRank, maxRank + 1);
+
+            Logger.LogInfo(
+                $"[Battle][SpawnResolver] table={table.name}, selected enemy name={resolvedEnemy.enemyName}, id={resolvedEnemy.id}, " +
+                $"level={resolvedEnemyLevel}, rankTier={resolvedEnemyRankTier}, " +
+                $"allowedActions={(resolvedEnemy.allowedActions != null && resolvedEnemy.allowedActions.Length > 0 ? string.Join(", ", resolvedEnemy.allowedActions) : "<default fallback>")}",
+                UDA2.Logging.LogChannel.AI);
+            Logger.FlushToFile();
+
             return true;
         }
 

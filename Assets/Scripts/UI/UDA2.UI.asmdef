@@ -5,6 +5,7 @@
     "UDA2.Animations",
     "UDA2.Core",
     "UDA2.Audio",
+    "UDA2.Logging",
     "UDA2.SceneFlow",
     "UDA2.Localization",
     "UDA2.SaveSystem",

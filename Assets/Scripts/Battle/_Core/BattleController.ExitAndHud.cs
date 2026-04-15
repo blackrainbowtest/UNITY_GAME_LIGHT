@@ -66,6 +66,9 @@ namespace Game.Battle
                 ? true
                 : UDA2.Core.SettingsContext.Current.showBattleResultModal;
 
+            // Stop location-level audio loops/coroutines so playlists cannot restart during result UI.
+            environmentController?.StopLocationAudioRoutines();
+
             // Battle is over: stop battle music immediately.
             if (UDA2.Audio.AudioManager.Instance != null)
             {
@@ -274,7 +277,8 @@ namespace Game.Battle
                         hideOnClose: false,
                         enemyId: context?.Enemy != null ? ResolveEnemyId(context.Enemy) : null,
                         locationId: context?.Location != null ? context.Location.id : null,
-                        sourceLocationId: context?.SourceLocationId);
+                        sourceLocationId: context?.SourceLocationId,
+                        fallbackLocationBackground: context?.Location != null ? context.Location.background : null);
                 else
                     ShowResultsOrExit();
             }

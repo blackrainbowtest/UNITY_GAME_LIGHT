@@ -2,6 +2,7 @@ using System;
 using Game.Battle;
 using Game.Progression;
 using UDA2.SceneFlow;
+using Logger = UDA2.Logging.Logger;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -118,33 +119,25 @@ namespace Game.Dungeon
                 if (binding == null || binding.button == null)
                     continue;
 
-                binding.button.onClick.RemoveListener(OnAnyButtonClicked);
-                binding.button.onClick.AddListener(OnAnyButtonClicked);
+                var localBinding = binding;
+                binding.button.onClick.AddListener(() => OnLocationButtonClicked(localBinding));
             }
         }
 
-        private void OnAnyButtonClicked()
+        private void OnLocationButtonClicked(ButtonBinding binding)
         {
-            // Find which button fired.
-            var clicked = UnityEngine.EventSystems.EventSystem.current?.currentSelectedGameObject;
-            if (clicked == null)
+            if (binding == null)
                 return;
 
-            if (buttons == null)
-                return;
+            var buttonName = binding.button != null ? binding.button.name : "<null>";
+            var locationName = binding.location != null ? binding.location.name : "<null>";
+            var locationId = binding.location != null ? binding.location.id : "<null>";
 
-            for (int i = 0; i < buttons.Length; i++)
-            {
-                var binding = buttons[i];
-                if (binding == null || binding.button == null || binding.location == null)
-                    continue;
+            Logger.LogInfo(
+                $"[Dungeon] Location button clicked button='{buttonName}' location='{locationName}' id='{locationId}'",
+                UDA2.Logging.LogChannel.AI);
 
-                if (binding.button.gameObject == clicked)
-                {
-                    TryStartLocation(binding);
-                    return;
-                }
-            }
+            TryStartLocation(binding);
         }
 
         public void RefreshInteractable()
@@ -239,7 +232,7 @@ namespace Game.Dungeon
                 return;
             }
 
-            if (!TryResolveEncounter(location, out var battleLocation, out var enemy, out var enemyLevel, out var enemyRankTier))
+            if (!TryResolveEncounter(location, playerRank, playerLevel, out var battleLocation, out var enemy, out var enemyLevel, out var enemyRankTier))
                 return;
 
             // Ensure we have a save container so pending battle can be restored after reloads.
@@ -286,6 +279,8 @@ namespace Game.Dungeon
 
         private static bool TryResolveEncounter(
             DungeonLocationDefinition location,
+            AdventurerRank playerRank,
+            int playerLevel,
             out BattleLocationData resolvedBattleLocation,
             out EnemyData resolvedEnemy,
             out int resolvedEnemyLevel,
@@ -356,11 +351,27 @@ namespace Game.Dungeon
             resolvedBattleLocation = chosen.battleLocation;
 
             var resolver = new EnemySpawnResolver();
+
+            // Clamp encounter bounds by current player progression to prevent out-of-tier early spawns.
+            var effectiveMinLevel = Mathf.Max(1, location.minEnemyLevel);
+            var effectiveMaxLevel = Mathf.Clamp(playerLevel, effectiveMinLevel, location.maxEnemyLevel);
+
+            var locationMinRank = (int)location.minEnemyRank;
+            var locationMaxRank = (int)location.maxEnemyRank;
+            var effectiveMaxRank = Mathf.Clamp((int)playerRank, locationMinRank, locationMaxRank);
+
             var constraints = new EnemySpawnConstraints(
-                location.minEnemyLevel,
-                location.maxEnemyLevel,
-                (int)location.minEnemyRank,
-                (int)location.maxEnemyRank);
+                effectiveMinLevel,
+                effectiveMaxLevel,
+                locationMinRank,
+                effectiveMaxRank);
+
+            Logger.LogInfo(
+                $"[Dungeon] Resolve encounter location='{location.name}' playerLevel={playerLevel} playerRank={(int)playerRank} " +
+                $"locationBounds(level={location.minEnemyLevel}-{location.maxEnemyLevel}, rank={(int)location.minEnemyRank}-{(int)location.maxEnemyRank}) " +
+                $"effectiveBounds(level={effectiveMinLevel}-{effectiveMaxLevel}, rank={locationMinRank}-{effectiveMaxRank})",
+                UDA2.Logging.LogChannel.AI);
+            Logger.FlushToFile();
 
             if (!resolver.Resolve(chosen.enemyTable, constraints, out resolvedEnemy, out resolvedEnemyLevel, out resolvedEnemyRankTier))
             {
