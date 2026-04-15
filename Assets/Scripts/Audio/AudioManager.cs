@@ -496,21 +496,67 @@ namespace UDA2.Audio
         }
 
         // Battle-cues should always follow the SFX bus/slider regardless of cue category.
-        public void PlayBattleCueAsSfx(AudioCue cue)
+        public void PlayBattleCueAsSfx(AudioCue cue, float volumeScale = 1f)
         {
             if (cue == null || cue.Clip == null)
                 return;
 
-            float pitch = cue.PitchRange.x;
-            if (cue.PitchRange.y > cue.PitchRange.x)
-                pitch = UnityEngine.Random.Range(cue.PitchRange.x, cue.PitchRange.y);
+            float pitch = GetRandomCuePitch(cue);
 
-            PlaySfx(cue.Clip, cue.DefaultVolume, pitch);
+            float scaledVolume = Mathf.Clamp01(cue.DefaultVolume) * Mathf.Clamp01(volumeScale);
+            PlaySfx(cue.Clip, scaledVolume, pitch);
 
-            UDA2.Logging.Logger.LogInfo($"[BattleAudio] PlayBattleCueAsSfx clip='{cue.Clip.name}' cueKey='{cue.Key}' defaultVol={cue.DefaultVolume:0.###} sfxMaster={sfxVolume:0.###} pitch={pitch:0.###}", UDA2.Logging.LogChannel.Audio);
+            UDA2.Logging.Logger.LogInfo($"[BattleAudio] PlayBattleCueAsSfx clip='{cue.Clip.name}' cueKey='{cue.Key}' defaultVol={cue.DefaultVolume:0.###} volumeScale={Mathf.Clamp01(volumeScale):0.###} sfxMaster={sfxVolume:0.###} pitch={pitch:0.###}", UDA2.Logging.LogChannel.Audio);
 
             if (sfxVolume <= 0.01f)
                 Debug.LogWarning("[BattleAudio] SFX master volume is near zero. Battle cues may be inaudible.");
+        }
+
+        public void ConfigureAsSfxSource(AudioSource source)
+        {
+            if (source == null)
+                return;
+
+            source.outputAudioMixerGroup = sfxGroup;
+            source.playOnAwake = false;
+            source.loop = false;
+            source.spatialBlend = 0f;
+        }
+
+        public bool PlayBattleCueOnSource(AudioCue cue, AudioSource source, bool restartIfAlreadyPlaying = true, float volumeScale = 1f)
+        {
+            if (cue == null || cue.Clip == null || source == null)
+                return false;
+
+            if (!restartIfAlreadyPlaying && source.isPlaying && source.clip == cue.Clip)
+                return true;
+
+            ConfigureAsSfxSource(source);
+
+            source.Stop();
+            source.clip = cue.Clip;
+            source.pitch = GetRandomCuePitch(cue);
+            source.volume = GetScaledSfxVolume(Mathf.Clamp01(cue.DefaultVolume) * Mathf.Clamp01(volumeScale));
+            source.Play();
+            return true;
+        }
+
+        public float GetScaledSfxVolume(float baseVolume)
+        {
+            return Mathf.Clamp01(baseVolume) * sfxVolume;
+        }
+
+        public float GetRandomCuePitch(AudioCue cue)
+        {
+            if (cue == null)
+                return 1f;
+
+            float min = cue.PitchRange.x;
+            float max = cue.PitchRange.y;
+            if (max > min)
+                return UnityEngine.Random.Range(min, max);
+
+            return min;
         }
 
         /* ===================== MUSIC ===================== */

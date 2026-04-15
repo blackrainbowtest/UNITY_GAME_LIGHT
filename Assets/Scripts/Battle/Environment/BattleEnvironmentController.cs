@@ -26,7 +26,11 @@ namespace Game.Battle
 
             ApplyBackground(location);
             ApplyMusic(location);
-            ApplyAmbient(location);
+            // FIXME: disable battle ambient playback.
+            StopAmbientRoutines();
+            var am = AudioManager.Instance;
+            if (am != null)
+                am.StopAmbient();
         }
 
         public void StopLocationAudioRoutines()

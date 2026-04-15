@@ -96,6 +96,25 @@ namespace Game.Battle.Visual
         }
 
         [System.Serializable]
+        public struct AnimationCueConfig
+        {
+            [Tooltip("Animation type this cue belongs to.")]
+            public BattleVisualAnimId animId;
+
+            [Tooltip("Optional specific variation asset. If set, this cue is used only when that exact IdleAnimation is played.")]
+            public IdleAnimation animation;
+
+            [Tooltip("SFX cue to play for this animation start.")]
+            public AudioCue cue;
+
+            [Tooltip("Frame for cue playback (1 = immediately). <=0 means immediate.")]
+            public int cueAtFrame;
+
+            [Tooltip("If enabled, this cue is looped continuously while this animation state is active.")]
+            public bool loopWhileStateActive;
+        }
+
+        [System.Serializable]
         public struct SpellProjectileConfig
         {
             [Tooltip("Prefab to spawn as projectile. Should have BattleSpellProjectile component (or it will be added at runtime).")]
@@ -161,6 +180,10 @@ namespace Game.Battle.Visual
         public AudioCue hitCue;
         [Tooltip("Sound played when this character receives a LustHit. Falls back to hitCue if empty.")]
         public AudioCue lustHitCue;
+
+        [Header("Animation Audio (Optional)")]
+        [Tooltip("Per-animation SFX. Use Animation field to assign different sounds for specific variations (e.g. each idle variant).")]
+        public AnimationCueConfig[] animationCues;
 
         [Header("Attacks")]
         [Tooltip("Optional variations for Fast Attack.")]
@@ -332,6 +355,50 @@ namespace Game.Battle.Visual
                 return lustHitCue != null ? lustHitCue : hitCue;
 
             return hitCue;
+        }
+
+        public bool TryGetAnimationCue(BattleVisualAnimId animId, IdleAnimation animation, out AudioCue cue, out int cueAtFrame, out bool loopWhileStateActive)
+        {
+            cue = null;
+            cueAtFrame = -1;
+            loopWhileStateActive = false;
+
+            if (animationCues == null || animationCues.Length == 0)
+                return false;
+
+            // Prefer exact variation match first.
+            for (int i = animationCues.Length - 1; i >= 0; i--)
+            {
+                var entry = animationCues[i];
+                if (entry.animId != animId)
+                    continue;
+
+                if (entry.animation == null || entry.animation != animation)
+                    continue;
+
+                cue = entry.cue;
+                cueAtFrame = entry.cueAtFrame;
+                loopWhileStateActive = entry.loopWhileStateActive;
+                return cue != null;
+            }
+
+            // Fallback: generic by animId.
+            for (int i = animationCues.Length - 1; i >= 0; i--)
+            {
+                var entry = animationCues[i];
+                if (entry.animId != animId)
+                    continue;
+
+                if (entry.animation != null)
+                    continue;
+
+                cue = entry.cue;
+                cueAtFrame = entry.cueAtFrame;
+                loopWhileStateActive = entry.loopWhileStateActive;
+                return cue != null;
+            }
+
+            return false;
         }
 
         public bool TryGetProjectileConfig(BattleVisualAnimId id, out SpellProjectileConfig config)
