@@ -116,10 +116,10 @@ MonoBehaviour:
     - cueAtFrame: 4
       selectionMode: 1
       cueIndex: 0
-    - cueAtFrame: 5
+    - cueAtFrame: 7
       selectionMode: 1
       cueIndex: 1
-    - cueAtFrame: 4
+    - cueAtFrame: 11
       selectionMode: 1
       cueIndex: 2
     loopWhileStateActive: 0
