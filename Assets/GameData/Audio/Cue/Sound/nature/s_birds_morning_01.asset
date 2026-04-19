@@ -16,4 +16,5 @@ MonoBehaviour:
   key: birds_morning
   clip: {fileID: 8300000, guid: 207ea07eb9cf80844a8795f3de34f2ad, type: 3}
   defaultVolume: 1
+  volumeScale: 0.5
   pitchRange: {x: 1, y: 1}

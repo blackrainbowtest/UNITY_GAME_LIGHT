@@ -73,6 +73,7 @@ namespace Game.Battle
             if (UDA2.Audio.AudioManager.Instance != null)
             {
                 UDA2.Audio.AudioManager.Instance.StopMusic();
+                UDA2.Audio.AudioManager.Instance.StopCharacterAndCombat();
             }
 
             if (playerWon && reason == BattleFinishReason.Defeat)

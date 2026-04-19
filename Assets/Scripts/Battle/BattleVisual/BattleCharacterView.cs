@@ -20,28 +20,28 @@ namespace Game.Battle.Visual
         private System.Action currentOneShotFinished;
 
 
-        [Header("Rendering")]
+        [Header("Рендер")]
         [SerializeField] private SpriteRenderer spriteRenderer;
         [SerializeField] private bool flipX;
 
-        [Header("Animations")]
+        [Header("Анимации")]
         [SerializeField] private SpriteFrameAnimator animator;
         [SerializeField] private IdleAnimation idleAnimation;
         [SerializeField] private bool randomizeIdle;
         [SerializeField] private IdleAnimation[] idleVariations;
-        [Header("Ambient Idle (Optional)")]
-        [Tooltip("If enabled, idleVariations[0] is used as the default idle loop, and idleVariations[1..] are treated as ambient idles that play occasionally (then return to default idle).")]
+        [Header("Фоновый Idle (Опционально)")]
+        [Tooltip("Если включено, idleVariations[0] используется как основной idle-цикл, а idleVariations[1..] считаются фоновыми idle и проигрываются время от времени (с возвратом к основному idle).")]
         [SerializeField] private bool useAmbientIdle;
-        [Tooltip("How often (seconds) to attempt playing an ambient idle while looping default idle.")]
+        [Tooltip("Как часто (в секундах) пытаться запускать фоновый idle во время основного idle-цикла.")]
         [SerializeField, Min(0.1f)] private float ambientIdleIntervalSeconds = 4f;
-        [Tooltip("Additional volume scale for configured non-combat animation cues (idle/state sounds).")]
+        [Tooltip("Дополнительный коэффициент громкости для настроенных небоевых звуков анимаций (idle/state).")]
         [SerializeField, Range(0f, 1f)] private float configuredAnimationCueVolumeScale = 0.15f;
         [SerializeField] private bool avoidImmediateIdleRepeat = true;
         [SerializeField, Min(1)] private int minIdleVariationRepeats = 1;
         [SerializeField, Min(1)] private int maxIdleVariationRepeats = 1;
         [SerializeField] private Sprite[] idleFrames;
 
-        [Header("Visual Profile (Optional)")]
+        [Header("Визуальный Профиль (Опционально)")]
         [SerializeField] private CharacterVisualProfile visualProfile;
         [SerializeField] private string outfitId = "outfit_01";
 
@@ -691,10 +691,10 @@ namespace Game.Battle.Visual
             if (outfit == null)
                 return;
 
-            if (!outfit.TryGetAnimationCue(animId, animation, out var cue, out var cueAtFrame, out var loopWhileStateActive))
+            if (!outfit.TryGetAnimationCueEvents(animId, animation, out var cueEvents, out var loopWhileStateActive))
                 return;
 
-            if (cue == null || cue.Clip == null)
+            if (cueEvents == null || cueEvents.Length == 0)
                 return;
 
             if (AudioManager.Instance == null)
@@ -702,6 +702,10 @@ namespace Game.Battle.Visual
 
             if (loopWhileStateActive)
             {
+                var cue = cueEvents[0].cue;
+                if (cue == null || cue.Clip == null)
+                    return;
+
                 StartLoopedAnimationCue(animId, cue);
                 return;
             }
@@ -710,21 +714,29 @@ namespace Game.Battle.Visual
                 StopLoopedAnimationCue();
 
             var token = ++animationCueToken;
-            int frameToPlay = cueAtFrame <= 0 ? 1 : cueAtFrame;
 
-            if (animation != null && animation.FrameCount > 0)
-                frameToPlay = Mathf.Clamp(frameToPlay, 1, animation.FrameCount);
-
-            if (frameToPlay <= 1 || animation == null || animation.FrameRate <= 0f)
+            for (int i = 0; i < cueEvents.Length; i++)
             {
-                if (token == animationCueToken)
-                    AudioManager.Instance.PlayBattleCueAsSfx(cue, configuredAnimationCueVolumeScale, AudioManager.BattleCueRoute.Character);
+                var cue = cueEvents[i].cue;
+                if (cue == null || cue.Clip == null)
+                    continue;
 
-                return;
+                int frameToPlay = cueEvents[i].cueAtFrame <= 0 ? 1 : cueEvents[i].cueAtFrame;
+
+                if (animation != null && animation.FrameCount > 0)
+                    frameToPlay = Mathf.Clamp(frameToPlay, 1, animation.FrameCount);
+
+                if (frameToPlay <= 1 || animation == null || animation.FrameRate <= 0f)
+                {
+                    if (token == animationCueToken)
+                        AudioManager.Instance.PlayBattleCueAsSfx(cue, configuredAnimationCueVolumeScale, AudioManager.BattleCueRoute.Character);
+
+                    continue;
+                }
+
+                float delay = (frameToPlay - 1) / animation.FrameRate;
+                StartCoroutine(PlayConfiguredCueAfterDelay(cue, delay, token));
             }
-
-            float delay = (frameToPlay - 1) / animation.FrameRate;
-            StartCoroutine(PlayConfiguredCueAfterDelay(cue, delay, token));
         }
 
         private void EnsureLoopedAnimationCueSource()

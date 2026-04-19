@@ -248,7 +248,7 @@ namespace UDA2.Audio
                         : Mathf.Max(0f, group.panSweepDuration);
                 }
 
-                am.PlayAmbient(cue.Clip, cue.DefaultVolume, pitch, panStart, panEnd, panSweepDuration);
+                am.PlayAmbient(cue.Clip, cue.EffectiveVolume, pitch, panStart, panEnd, panSweepDuration);
 
                 durationSeconds = clipDuration;
                 return true;

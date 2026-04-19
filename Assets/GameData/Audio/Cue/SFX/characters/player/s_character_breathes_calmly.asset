@@ -16,4 +16,5 @@ MonoBehaviour:
   key: m_character_breathes_calmly
   clip: {fileID: 8300000, guid: 3fb807300bc8e2343b1b6b6e7e247754, type: 3}
   defaultVolume: 1
+  volumeScale: 0.5
   pitchRange: {x: 1, y: 1}

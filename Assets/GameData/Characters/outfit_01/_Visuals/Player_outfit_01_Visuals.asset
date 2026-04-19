@@ -27,65 +27,101 @@ MonoBehaviour:
   - attackAnimId: 2
     hitAtFrame: 9
     actionCue: {fileID: 11400000, guid: 75338fbe9ed473a41b68334b13793c21, type: 2}
+    actionCues: []
     actionCueAtFrame: 0
+    actionCueEvents: []
     useLustHit: 0
   - attackAnimId: 3
     hitAtFrame: 3
     actionCue: {fileID: 0}
+    actionCues: []
     actionCueAtFrame: 0
+    actionCueEvents: []
     useLustHit: 0
   - attackAnimId: 4
     hitAtFrame: 5
     actionCue: {fileID: 0}
+    actionCues: []
     actionCueAtFrame: 0
+    actionCueEvents: []
     useLustHit: 0
   - attackAnimId: 11
     hitAtFrame: 5
     actionCue: {fileID: 0}
+    actionCues: []
     actionCueAtFrame: 0
+    actionCueEvents: []
     useLustHit: 0
   - attackAnimId: 12
     hitAtFrame: 5
     actionCue: {fileID: 0}
+    actionCues: []
     actionCueAtFrame: 0
+    actionCueEvents: []
     useLustHit: 0
   - attackAnimId: 13
     hitAtFrame: -1
     actionCue: {fileID: 0}
+    actionCues: []
     actionCueAtFrame: 0
+    actionCueEvents: []
     useLustHit: 0
   - attackAnimId: 14
     hitAtFrame: 5
     actionCue: {fileID: 0}
+    actionCues: []
     actionCueAtFrame: 0
+    actionCueEvents: []
     useLustHit: 0
   - attackAnimId: 20
     hitAtFrame: 5
     actionCue: {fileID: 0}
+    actionCues: []
     actionCueAtFrame: 0
+    actionCueEvents: []
     useLustHit: 1
   - attackAnimId: 21
     hitAtFrame: 5
     actionCue: {fileID: 0}
+    actionCues: []
     actionCueAtFrame: 0
+    actionCueEvents: []
     useLustHit: 1
   - attackAnimId: 22
     hitAtFrame: 5
     actionCue: {fileID: 0}
+    actionCues: []
     actionCueAtFrame: 0
+    actionCueEvents: []
     useLustHit: 1
   - attackAnimId: 23
     hitAtFrame: 5
     actionCue: {fileID: 0}
+    actionCues: []
     actionCueAtFrame: 0
+    actionCueEvents: []
     useLustHit: 1
   hitCue: {fileID: 0}
   lustHitCue: {fileID: 0}
   animationCues:
   - animId: 0
-    animation: {fileID: 0}
-    cue: {fileID: 11400000, guid: 533c8cb47cbedfe43907132f079b6b84, type: 2}
+    animation: {fileID: 11400000, guid: 248f85fff92dcc24d9a743e9bcbe5977, type: 2}
+    cue: {fileID: 11400000, guid: 595e65a5d5165df41bb0a3e735f03ea5, type: 2}
+    cues:
+    - {fileID: 11400000, guid: 595e65a5d5165df41bb0a3e735f03ea5, type: 2}
+    - {fileID: 11400000, guid: 7a5b990b72438d4478115f69c475582e, type: 2}
+    - {fileID: 11400000, guid: cb9b1ed261193bd4f89efdf26e159e7a, type: 2}
     cueAtFrame: 4
+    cueEvents:
+    - cueAtFrame: 4
+      selectionMode: 1
+      cueIndex: 0
+    - cueAtFrame: 5
+      selectionMode: 1
+      cueIndex: 1
+    - cueAtFrame: 4
+      selectionMode: 1
+      cueIndex: 2
     loopWhileStateActive: 0
   fastAttackVariations:
   - {fileID: 11400000, guid: 74deed90e6bed1547ae16a2a6fe73e31, type: 2}

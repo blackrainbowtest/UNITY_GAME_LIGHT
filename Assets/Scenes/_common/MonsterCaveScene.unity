@@ -3314,7 +3314,7 @@ MonoBehaviour:
     panSweepOverClipDuration: 0
     panSweepDuration: 0
   - name: river_sound
-    randomLoop: 0
+    randomLoop: 1
     intervalSeconds: {x: 0, y: 0}
     cues:
     - {fileID: 11400000, guid: c78eb7ac7df64f64288f614965e0692c, type: 2}

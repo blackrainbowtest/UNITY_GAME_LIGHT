@@ -22,7 +22,20 @@ MonoBehaviour:
   hitTimings:
   - attackAnimId: 2
     hitAtFrame: 8
+    actionCue: {fileID: 0}
+    actionCueAtFrame: 0
     useLustHit: 0
+  hitCue: {fileID: 0}
+  lustHitCue: {fileID: 0}
+  animationCues:
+  - animId: 0
+    animation: {fileID: 0}
+    cue: {fileID: 11400000, guid: 713240a90e74f5d4aa403719c68da99f, type: 2}
+    cues:
+    - {fileID: 11400000, guid: b6a8ec90077d9404a90813aed15dfa72, type: 2}
+    - {fileID: 11400000, guid: 713240a90e74f5d4aa403719c68da99f, type: 2}
+    cueAtFrame: 0
+    loopWhileStateActive: 1
   fastAttackVariations:
   - {fileID: 11400000, guid: 31d88954ea990ea4da5c9d7cdc67bc1f, type: 2}
   normalAttackVariations: []

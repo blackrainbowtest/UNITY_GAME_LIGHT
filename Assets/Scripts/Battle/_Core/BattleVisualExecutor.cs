@@ -142,25 +142,32 @@ namespace Game.Battle
 
             int hitAtFrame = 1;
             bool useLustHit = false;
-            AudioCue actionCue = null;
-            int actionCueAtFrame = -1;
+            OutfitVisuals.ResolvedCueEvent[] actionCueEvents = null;
+            bool[] actionCuePlayed = null;
             if (attackerOutfit != null && attackerOutfit.TryGetHitTiming(attackerAnimId, out var hitTiming))
             {
                 hitAtFrame = hitTiming.hitAtFrame;
                 useLustHit = hitTiming.useLustHit;
-                actionCue = hitTiming.actionCue;
-                actionCueAtFrame = hitTiming.actionCueAtFrame;
+
+                if (attackerOutfit.TryGetHitActionCueEvents(attackerAnimId, out var resolvedActionCueEvents)
+                    && resolvedActionCueEvents != null
+                    && resolvedActionCueEvents.Length > 0)
+                {
+                    actionCueEvents = resolvedActionCueEvents;
+                    actionCuePlayed = new bool[actionCueEvents.Length];
+                }
             }
 
             // Convenience fallback: if one basic attack cue is missing, reuse the sibling one.
             // This keeps attack SFX audible when only FastAttack or only NormalAttack timing is configured.
-            if (actionCue == null && TryGetBasicAttackCueFallback(attackerOutfit, attackerAnimId, out var fallbackCue, out var fallbackCueFrame))
+            if ((actionCueEvents == null || actionCueEvents.Length == 0)
+                && TryGetBasicAttackCueFallback(attackerOutfit, attackerAnimId, out var fallbackCueEvents)
+                && fallbackCueEvents != null
+                && fallbackCueEvents.Length > 0)
             {
-                actionCue = fallbackCue;
-                actionCueAtFrame = fallbackCueFrame;
+                actionCueEvents = fallbackCueEvents;
+                actionCuePlayed = new bool[actionCueEvents.Length];
             }
-
-            bool actionCuePlayed = false;
 
             bool projectileSpawned = false;
             bool targetHitTriggered = false;
@@ -190,27 +197,42 @@ namespace Game.Battle
                 if (id != attackerAnimId)
                     return;
 
-                if (!actionCuePlayed && actionCue != null)
+                if (actionCueEvents != null && actionCueEvents.Length > 0)
                 {
-                    int frameToPlay = actionCueAtFrame > 0 ? actionCueAtFrame : hitAtFrame;
-                    if (anim != null && anim.FrameCount > 0 && frameToPlay > anim.FrameCount)
-                        frameToPlay = anim.FrameCount;
+                    for (int i = 0; i < actionCueEvents.Length; i++)
+                    {
+                        if (actionCuePlayed[i])
+                            continue;
 
-                    if (frameToPlay <= 1 || anim == null || anim.FrameRate <= 0f)
-                    {
-                        PlayCue(actionCue, $"action:{attackerAnimId}:immediate");
-                        actionCuePlayed = true;
-                    }
-                    else
-                    {
-                        float delay = (frameToPlay - 1) / anim.FrameRate;
-                        attackerView.StartCoroutine(
-                            PlayCueAfterDelay(
-                                actionCue,
-                                delay,
-                                $"action:{attackerAnimId}:frame:{frameToPlay}",
-                                () => !actionCuePlayed,
-                                () => actionCuePlayed = true));
+                        var cue = actionCueEvents[i].cue;
+                        if (cue == null || cue.Clip == null)
+                            continue;
+
+                        int frameToPlay = actionCueEvents[i].cueAtFrame > 0 ? actionCueEvents[i].cueAtFrame : hitAtFrame;
+                        if (anim != null && anim.FrameCount > 0 && frameToPlay > anim.FrameCount)
+                            frameToPlay = anim.FrameCount;
+
+                        int cueIndex = i;
+                        if (frameToPlay <= 1 || anim == null || anim.FrameRate <= 0f)
+                        {
+                            PlayCue(cue, $"action:{attackerAnimId}:immediate:{cueIndex}");
+                            actionCuePlayed[cueIndex] = true;
+                        }
+                        else
+                        {
+                            float delay = (frameToPlay - 1) / anim.FrameRate;
+                            attackerView.StartCoroutine(
+                                PlayCueAfterDelay(
+                                    cue,
+                                    delay,
+                                    $"action:{attackerAnimId}:frame:{frameToPlay}:{cueIndex}",
+                                    () => actionCuePlayed != null && cueIndex >= 0 && cueIndex < actionCuePlayed.Length && !actionCuePlayed[cueIndex],
+                                    () =>
+                                    {
+                                        if (actionCuePlayed != null && cueIndex >= 0 && cueIndex < actionCuePlayed.Length)
+                                            actionCuePlayed[cueIndex] = true;
+                                    }));
+                        }
                     }
                 }
 
@@ -278,11 +300,7 @@ namespace Game.Battle
                 targetHitTriggered = true;
                 targetFinished = false;
 
-                if (!actionCuePlayed && actionCue != null)
-                {
-                    PlayCue(actionCue, $"action-fallback-at-hit:{attackerAnimId}");
-                    actionCuePlayed = true;
-                }
+                TryPlayFirstPendingActionCueFallback();
 
                 if (targetOutfit != null)
                     PlayCue(targetOutfit.GetReceivedHitCue(targetHitAnimId), $"target-hit:{targetHitAnimId}");
@@ -328,6 +346,26 @@ namespace Game.Battle
             }
 
             attackerView.OnOneShotStarted -= HandleOneShotStarted;
+
+            void TryPlayFirstPendingActionCueFallback()
+            {
+                if (actionCueEvents == null || actionCueEvents.Length == 0 || actionCuePlayed == null)
+                    return;
+
+                for (int i = 0; i < actionCueEvents.Length; i++)
+                {
+                    if (actionCuePlayed[i])
+                        continue;
+
+                    var cue = actionCueEvents[i].cue;
+                    if (cue == null || cue.Clip == null)
+                        continue;
+
+                    PlayCue(cue, $"action-fallback-at-hit:{attackerAnimId}:{i}");
+                    actionCuePlayed[i] = true;
+                    return;
+                }
+            }
         }
 
         private static void PlayCue(AudioCue cue, string context)
@@ -358,7 +396,7 @@ namespace Game.Battle
             if (LogBattleCuePlayback)
             {
                 Logger.LogInfo(
-                    $"[BattleAudio] Play cue as SFX. context={context}, cueKey={cue.Key}, category={cue.Category}, defaultVol={cue.DefaultVolume:0.###}, sfxMaster={AudioManager.Instance.SfxVolume01:0.###}");
+                    $"[BattleAudio] Play cue as SFX. context={context}, cueKey={cue.Key}, category={cue.Category}, defaultVol={cue.DefaultVolume:0.###}, cueScale={cue.VolumeScale:0.###}, effectiveVol={cue.EffectiveVolume:0.###}, sfxMaster={AudioManager.Instance.SfxVolume01:0.###}");
             }
         }
 
@@ -432,11 +470,9 @@ namespace Game.Battle
         private static bool TryGetBasicAttackCueFallback(
             OutfitVisuals outfit,
             BattleVisualAnimId currentAttack,
-            out AudioCue cue,
-            out int cueAtFrame)
+            out OutfitVisuals.ResolvedCueEvent[] cueEvents)
         {
-            cue = null;
-            cueAtFrame = -1;
+            cueEvents = null;
 
             if (outfit == null)
                 return false;
@@ -449,11 +485,12 @@ namespace Game.Battle
             else
                 return false;
 
-            if (!outfit.TryGetHitTiming(fallbackAttack, out var timing) || timing.actionCue == null)
+            if (!outfit.TryGetHitActionCueEvents(fallbackAttack, out var resolvedCueEvents)
+                || resolvedCueEvents == null
+                || resolvedCueEvents.Length == 0)
                 return false;
 
-            cue = timing.actionCue;
-            cueAtFrame = timing.actionCueAtFrame;
+            cueEvents = resolvedCueEvents;
             return true;
         }
     }

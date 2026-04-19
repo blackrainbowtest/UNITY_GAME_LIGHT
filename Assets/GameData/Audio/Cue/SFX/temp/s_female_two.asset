@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 22f6c14606e17d94992cb0f37bfd3389, type: 3}
-  m_Name: s_rain_fall_01
+  m_Name: s_female_two
   m_EditorClassIdentifier: UDA2.Audio::UDA2.Audio.AudioCue
-  category: 3
-  key: rain_fall
-  clip: {fileID: 8300000, guid: 7a77047813cad1b47b7e7f08b8a4a23c, type: 3}
+  category: 1
+  key: m_female_two
+  clip: {fileID: 8300000, guid: dad80cc654d20d54ebb325a7c16c4f82, type: 3}
   defaultVolume: 1
-  volumeScale: 0.5
+  volumeScale: 1
   pitchRange: {x: 1, y: 1}
