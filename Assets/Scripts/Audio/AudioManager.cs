@@ -544,11 +544,6 @@ namespace UDA2.Audio
             float scaledVolume = cue.EffectiveVolume * Mathf.Clamp01(volumeScale) * routeScale;
             scaledVolume = ApplyBattleRouteCeiling(route, scaledVolume);
             PlaySfx(cue.Clip, scaledVolume, pitch, ResolveBattleCueGroup(route));
-
-            UDA2.Logging.Logger.LogInfo($"[BattleAudio] PlayBattleCueAsSfx clip='{cue.Clip.name}' cueKey='{cue.Key}' defaultVol={cue.DefaultVolume:0.###} cueScale={cue.VolumeScale:0.###} effectiveVol={cue.EffectiveVolume:0.###} volumeScale={Mathf.Clamp01(volumeScale):0.###} routeScale={routeScale:0.###} route={route} sfxMaster={sfxVolume:0.###} pitch={pitch:0.###}", UDA2.Logging.LogChannel.Audio);
-
-            if (sfxVolume <= 0.01f)
-                Debug.LogWarning("[BattleAudio] SFX master volume is near zero. Battle cues may be inaudible.");
         }
 
         public void ConfigureAsSfxSource(AudioSource source, BattleCueRoute route = BattleCueRoute.Sfx)

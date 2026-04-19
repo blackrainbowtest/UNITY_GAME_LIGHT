@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UDA2.Audio;
-using UDA2.Logging;
-using ULogger = UDA2.Logging.Logger;
 
 namespace Game.Battle.Visual
 {
@@ -46,9 +44,6 @@ namespace Game.Battle.Visual
         [Header("Визуальный Профиль (Опционально)")]
         [SerializeField] private CharacterVisualProfile visualProfile;
         [SerializeField] private string outfitId = "outfit_01";
-        [Header("Отладка Логов")]
-        [Tooltip("Если включено, в UDA лог пишутся смены анимаций и проигрывание звуков для этого персонажа.")]
-        [SerializeField] private bool logAnimationAudioTrace = true;
 
         private int idleToken;
         private int lastIdleVariationIndex = -1;
@@ -70,7 +65,6 @@ namespace Game.Battle.Visual
         private int loopedAnimationCueToken;
         private BattleVisualAnimId loopedAnimationCueAnimId;
         private AudioCue loopedAnimationCue;
-        private IdleAnimation loopedAnimationCueAnimation;
 
         private void Reset()
         {
@@ -133,7 +127,6 @@ namespace Game.Battle.Visual
                     currentLoopingIdleAnimation = only;
                     TryPlayConfiguredAnimationCue(BattleVisualAnimId.Idle, only);
                     animator.SetFramesPerSecond(only.FrameRate);
-                    LogAnimationStart(BattleVisualAnimId.Idle, only, "idle-loop-single");
                     animator.PlayLoop(only.FramesArray);
                     return;
                 }
@@ -147,7 +140,6 @@ namespace Game.Battle.Visual
                 animator.SetFramesPerSecond(fps);
 
             currentLoopingIdleAnimation = null;
-            LogAnimationStart(BattleVisualAnimId.Idle, null, "idle-loop-raw-frames");
             animator.PlayLoop(frames);
         }
 
@@ -168,7 +160,6 @@ namespace Game.Battle.Visual
             TryPlayConfiguredAnimationCue(BattleVisualAnimId.Idle, defaultIdleAnim);
             animator.SetFramesPerSecond(defaultIdleAnim.FrameRate);
             currentLoopingIdleAnimation = defaultIdleAnim;
-            LogAnimationStart(BattleVisualAnimId.Idle, defaultIdleAnim, "idle-loop-default");
             animator.PlayLoop(defaultIdleAnim.FramesArray);
 
             StartAmbientIdleLoop();
@@ -263,7 +254,6 @@ namespace Game.Battle.Visual
 
                 // Play ambient once, then return to default idle (or pending combat anim, if any).
                 animator.SetFramesPerSecond(ambient.FrameRate);
-                LogAnimationStart(BattleVisualAnimId.Idle, ambient, "idle-ambient-once");
                 animator.PlayOnce(ambient.FramesArray, finished: () =>
                 {
                     if (token != ambientIdleToken)
@@ -276,7 +266,6 @@ namespace Game.Battle.Visual
                     {
                         animator.SetFramesPerSecond(defaultIdleAnim.FrameRate);
                         currentLoopingIdleAnimation = defaultIdleAnim;
-                        LogAnimationStart(BattleVisualAnimId.Idle, defaultIdleAnim, "idle-loop-default-return");
                         animator.PlayLoop(defaultIdleAnim.FramesArray);
                     }
                     else
@@ -617,41 +606,12 @@ namespace Game.Battle.Visual
             }
 
             animator.SetFramesPerSecond(anim.FrameRate);
-            LogAnimationStart(animId, anim, "one-shot");
             animator.PlayOnce(
                 anim.FramesArray,
                 finished: () => HandleNonLoopFinished(animId),
                 impactFrameIndex: impactFrameIndex1Based,
                 onImpact: onImpact);
             return true;
-        }
-
-        private void LogAnimationStart(BattleVisualAnimId animId, IdleAnimation animation, string source)
-        {
-            if (!logAnimationAudioTrace)
-                return;
-
-            string animAssetName = animation != null ? animation.name : "<raw-frames>";
-            ULogger.LogInfo($"[BattleAnimTrace] anim={animId} asset={animAssetName} source={source}", LogChannel.Audio, this);
-        }
-
-        private void LogCuePlayback(BattleVisualAnimId animId, IdleAnimation animation, AudioCue cue, int frame, string mode)
-        {
-            if (!logAnimationAudioTrace)
-                return;
-
-            if (cue == null)
-                return;
-
-            string animAssetName = animation != null ? animation.name : "<raw-frames>";
-            string clipName = cue.Clip != null ? cue.Clip.name : "<null-clip>";
-            string cueKey = string.IsNullOrEmpty(cue.Key) ? "<no-key>" : cue.Key;
-            string frameText = frame > 0 ? frame.ToString() : "loop";
-
-            ULogger.LogInfo(
-                $"[BattleAnimTrace] sound anim={animId} asset={animAssetName} frame={frameText} mode={mode} cueKey={cueKey} clip={clipName}",
-                LogChannel.Audio,
-                this);
         }
 
         private bool HasAnyValidIdleVariation()
@@ -717,7 +677,6 @@ namespace Game.Battle.Visual
 
             animator.SetFramesPerSecond(anim.FrameRate);
             TryPlayConfiguredAnimationCue(BattleVisualAnimId.Idle, anim);
-            LogAnimationStart(BattleVisualAnimId.Idle, anim, "idle-variation-once");
             animator.PlayOnce(anim.FramesArray, finished: () =>
             {
                 if (token != idleToken)
@@ -796,16 +755,13 @@ namespace Game.Battle.Visual
                 if (frameToPlay <= 1 || animation == null || animation.FrameRate <= 0f)
                 {
                     if (token == animationCueToken)
-                    {
-                        LogCuePlayback(animId, animation, cue, frameToPlay, "immediate");
                         AudioManager.Instance.PlayBattleCueAsSfx(cue, configuredAnimationCueVolumeScale, AudioManager.BattleCueRoute.Character);
-                    }
 
                     continue;
                 }
 
                 float delay = (frameToPlay - 1) / animation.FrameRate;
-                StartCoroutine(PlayConfiguredCueAfterDelay(cue, delay, token, animId, animation, frameToPlay));
+                StartCoroutine(PlayConfiguredCueAfterDelay(cue, delay, token));
             }
         }
 
@@ -830,17 +786,12 @@ namespace Game.Battle.Visual
             EnsureLoopedAnimationCueSource();
 
             if (loopedAnimationCueRoutine != null && loopedAnimationCueAnimId == animId && loopedAnimationCue == cue)
-            {
-                // Same looped cue can be reused across idle variants; keep animation context fresh for tracing.
-                loopedAnimationCueAnimation = animation;
                 return;
-            }
 
             StopLoopedAnimationCue();
 
             loopedAnimationCueAnimId = animId;
             loopedAnimationCue = cue;
-            loopedAnimationCueAnimation = animation;
             int token = ++loopedAnimationCueToken;
             loopedAnimationCueRoutine = StartCoroutine(LoopedAnimationCueRoutine(token, cue));
         }
@@ -857,7 +808,6 @@ namespace Game.Battle.Visual
 
             loopedAnimationCueAnimId = BattleVisualAnimId.Idle;
             loopedAnimationCue = null;
-            loopedAnimationCueAnimation = null;
 
             if (loopedAnimationCueSource != null)
             {
@@ -873,7 +823,6 @@ namespace Game.Battle.Visual
                 if (AudioManager.Instance == null || cue == null || cue.Clip == null || loopedAnimationCueSource == null)
                     yield break;
 
-                LogCuePlayback(loopedAnimationCueAnimId, loopedAnimationCueAnimation, cue, frame: -1, mode: "loop-state");
                 AudioManager.Instance.PlayBattleCueOnSource(cue, loopedAnimationCueSource, restartIfAlreadyPlaying: true, volumeScale: configuredAnimationCueVolumeScale, route: AudioManager.BattleCueRoute.Character);
 
                 while (token == loopedAnimationCueToken && loopedAnimationCueSource != null && loopedAnimationCueSource.isPlaying)
@@ -886,7 +835,7 @@ namespace Game.Battle.Visual
             }
         }
 
-        private IEnumerator PlayConfiguredCueAfterDelay(AudioCue cue, float delay, int token, BattleVisualAnimId animId, IdleAnimation animation, int frameToPlay)
+        private IEnumerator PlayConfiguredCueAfterDelay(AudioCue cue, float delay, int token)
         {
             if (delay > 0f)
                 yield return new WaitForSeconds(delay);
@@ -897,7 +846,6 @@ namespace Game.Battle.Visual
             if (AudioManager.Instance == null)
                 yield break;
 
-            LogCuePlayback(animId, animation, cue, frameToPlay, "scheduled");
             AudioManager.Instance.PlayBattleCueAsSfx(cue, configuredAnimationCueVolumeScale, AudioManager.BattleCueRoute.Character);
         }
 

@@ -10,7 +10,7 @@ namespace Game.Battle
 {
     public sealed class BattleVisualExecutor
     {
-        private const bool LogBattleCuePlayback = true;
+        private const bool LogBattleCuePlayback = false;
 
         private readonly BattleCharacterView playerView;
         private readonly BattleCharacterView enemyView;
@@ -156,17 +156,6 @@ namespace Game.Battle
                     actionCueEvents = resolvedActionCueEvents;
                     actionCuePlayed = new bool[actionCueEvents.Length];
                 }
-            }
-
-            // Convenience fallback: if one basic attack cue is missing, reuse the sibling one.
-            // This keeps attack SFX audible when only FastAttack or only NormalAttack timing is configured.
-            if ((actionCueEvents == null || actionCueEvents.Length == 0)
-                && TryGetBasicAttackCueFallback(attackerOutfit, attackerAnimId, out var fallbackCueEvents)
-                && fallbackCueEvents != null
-                && fallbackCueEvents.Length > 0)
-            {
-                actionCueEvents = fallbackCueEvents;
-                actionCuePlayed = new bool[actionCueEvents.Length];
             }
 
             bool projectileSpawned = false;
@@ -371,33 +360,15 @@ namespace Game.Battle
         private static void PlayCue(AudioCue cue, string context)
         {
             if (cue == null)
-            {
-                if (LogBattleCuePlayback)
-                    Logger.LogInfo($"[BattleAudio] Skip cue (null). context={context}");
                 return;
-            }
 
             if (cue.Clip == null)
-            {
-                if (LogBattleCuePlayback)
-                    Logger.LogInfo($"[BattleAudio] Skip cue (clip null). context={context}, cueKey={cue.Key}");
                 return;
-            }
 
             if (AudioManager.Instance == null)
-            {
-                if (LogBattleCuePlayback)
-                    Logger.LogInfo($"[BattleAudio] Skip cue (AudioManager null). context={context}, cueKey={cue.Key}");
                 return;
-            }
 
             AudioManager.Instance.PlayBattleCueAsSfx(cue, volumeScale: 1f, route: AudioManager.BattleCueRoute.Combat);
-
-            if (LogBattleCuePlayback)
-            {
-                Logger.LogInfo(
-                    $"[BattleAudio] Play cue as SFX. context={context}, cueKey={cue.Key}, category={cue.Category}, defaultVol={cue.DefaultVolume:0.###}, cueScale={cue.VolumeScale:0.###}, effectiveVol={cue.EffectiveVolume:0.###}, sfxMaster={AudioManager.Instance.SfxVolume01:0.###}");
-            }
         }
 
         private static IEnumerator PlayCueAfterDelay(
@@ -467,31 +438,5 @@ namespace Game.Battle
             return false;
         }
 
-        private static bool TryGetBasicAttackCueFallback(
-            OutfitVisuals outfit,
-            BattleVisualAnimId currentAttack,
-            out OutfitVisuals.ResolvedCueEvent[] cueEvents)
-        {
-            cueEvents = null;
-
-            if (outfit == null)
-                return false;
-
-            BattleVisualAnimId fallbackAttack;
-            if (currentAttack == BattleVisualAnimId.NormalAttack)
-                fallbackAttack = BattleVisualAnimId.FastAttack;
-            else if (currentAttack == BattleVisualAnimId.FastAttack)
-                fallbackAttack = BattleVisualAnimId.NormalAttack;
-            else
-                return false;
-
-            if (!outfit.TryGetHitActionCueEvents(fallbackAttack, out var resolvedCueEvents)
-                || resolvedCueEvents == null
-                || resolvedCueEvents.Length == 0)
-                return false;
-
-            cueEvents = resolvedCueEvents;
-            return true;
-        }
     }
 }

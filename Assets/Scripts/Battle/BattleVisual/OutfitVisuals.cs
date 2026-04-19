@@ -54,6 +54,12 @@ namespace Game.Battle.Visual
 
             [Tooltip("Используется только в режиме точного выбора. Индекс 0-based в списке звуков.")]
             public int cueIndex;
+
+            [Tooltip("Используется только в режиме случайного выбора. Начальный индекс диапазона (0-based). 0 вместе с to=0 означает весь список.")]
+            public int cueIndexFrom;
+
+            [Tooltip("Используется только в режиме случайного выбора. Конечный индекс диапазона (0-based, включительно). 0 вместе с from=0 означает весь список.")]
+            public int cueIndexTo;
         }
 
         public struct ResolvedCueEvent
@@ -114,14 +120,8 @@ namespace Game.Battle.Visual
             [Tooltip("Кадр применения удара (1 = сразу в начале анимации). -1 отключает анимацию попадания цели.")]
             public int hitAtFrame;
 
-            [Tooltip("Необязательный звук действия во время анимации атакующего.")]
-            public AudioCue actionCue;
-
-            [Tooltip("Необязательный список звуков действия. Поддерживает случайный/точный выбор через actionCueEvents.")]
+            [Tooltip("Список звуков действия. Используется вместе с actionCueEvents (или случайно, если список событий пуст).")]
             public AudioCue[] actionCues;
-
-            [Tooltip("Кадр для actionCue (1 = сразу). <=0 использует hitAtFrame.")]
-            public int actionCueAtFrame;
 
             [Tooltip("Необязательный список событий звука. Каждое событие выбирает случайный/точный звук из actionCues и имеет свой кадр.")]
             public CueEventConfig[] actionCueEvents;
@@ -462,7 +462,7 @@ namespace Game.Battle.Visual
                 return false;
 
             int fallbackFrame = timing.hitAtFrame > 0 ? timing.hitAtFrame : 1;
-            return TryBuildResolvedCueEvents(timing.actionCue, timing.actionCues, timing.actionCueAtFrame, timing.actionCueEvents, fallbackFrame, out cueEvents);
+            return TryBuildResolvedCueEvents(null, timing.actionCues, legacyFrame: 0, timing.actionCueEvents, fallbackFrame, out cueEvents);
         }
 
         private static AudioCue PickRandomAnimationCue(AnimationCueConfig entry)
@@ -503,7 +503,13 @@ namespace Game.Battle.Visual
                 for (int i = 0; i < eventConfigs.Length; i++)
                 {
                     var cfg = eventConfigs[i];
-                    var cue = PickCueFromPool(legacyCue, cuePool, cfg.selectionMode, cfg.cueIndex);
+                    var cue = PickCueFromPool(
+                        legacyCue,
+                        cuePool,
+                        cfg.selectionMode,
+                        cfg.cueIndex,
+                        cfg.cueIndexFrom,
+                        cfg.cueIndexTo);
                     if (cue == null || cue.Clip == null)
                         continue;
 
@@ -513,7 +519,7 @@ namespace Game.Battle.Visual
             }
             else
             {
-                var cue = PickCueFromPool(legacyCue, cuePool, CueSelectionMode.RandomFromList, 0);
+                var cue = PickCueFromPool(legacyCue, cuePool, CueSelectionMode.RandomFromList, 0, 0, 0);
                 if (cue != null && cue.Clip != null)
                     list.Add(new ResolvedCueEvent { cue = cue, cueAtFrame = defaultFrame });
             }
@@ -525,7 +531,13 @@ namespace Game.Battle.Visual
             return true;
         }
 
-        private static AudioCue PickCueFromPool(AudioCue legacyCue, AudioCue[] cuePool, CueSelectionMode mode, int index)
+        private static AudioCue PickCueFromPool(
+            AudioCue legacyCue,
+            AudioCue[] cuePool,
+            CueSelectionMode mode,
+            int index,
+            int indexFrom,
+            int indexTo)
         {
             if (cuePool != null && cuePool.Length > 0)
             {
@@ -538,10 +550,30 @@ namespace Game.Battle.Visual
                 }
                 else
                 {
-                    int start = Random.Range(0, cuePool.Length);
-                    for (int i = 0; i < cuePool.Length; i++)
+                    int from = indexFrom;
+                    int to = indexTo;
+
+                    // 0..0 means full pool for convenience in inspector.
+                    if (from == 0 && to == 0)
                     {
-                        var chosen = cuePool[(start + i) % cuePool.Length];
+                        from = 0;
+                        to = cuePool.Length - 1;
+                    }
+
+                    from = Mathf.Clamp(from, 0, cuePool.Length - 1);
+                    to = Mathf.Clamp(to, 0, cuePool.Length - 1);
+                    if (to < from)
+                    {
+                        int temp = from;
+                        from = to;
+                        to = temp;
+                    }
+
+                    int rangeLength = (to - from) + 1;
+                    int start = Random.Range(0, rangeLength);
+                    for (int i = 0; i < rangeLength; i++)
+                    {
+                        var chosen = cuePool[from + ((start + i) % rangeLength)];
                         if (chosen != null && chosen.Clip != null)
                             return chosen;
                     }
