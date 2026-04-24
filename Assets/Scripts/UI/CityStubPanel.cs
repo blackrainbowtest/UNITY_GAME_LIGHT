@@ -26,9 +26,9 @@ public class CityStubPanel : MonoBehaviour
             }
 
             Debug.LogWarning(
-                $"[{nameof(CityStubPanel)}] SceneFlowManager.Instance is null. Falling back to SceneManager.LoadScene('{targetSceneName}')",
+                $"[{nameof(CityStubPanel)}] SceneFlowManager.Instance is null. Falling back to SceneManager.LoadSceneAsync('{targetSceneName}')",
                 this);
-            SceneManager.LoadScene(targetSceneName);
+            SceneManager.LoadSceneAsync(targetSceneName);
         }
     }
 }

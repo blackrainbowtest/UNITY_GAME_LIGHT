@@ -118,7 +118,7 @@ namespace Game.Dungeon
             if (SceneFlowManager.Instance != null)
                 SceneFlowManager.Instance.LoadScene(fightSceneName);
             else
-                SceneManager.LoadScene(fightSceneName);
+                SceneManager.LoadSceneAsync(fightSceneName);
         }
 
         private static bool HasAlivePlayer()

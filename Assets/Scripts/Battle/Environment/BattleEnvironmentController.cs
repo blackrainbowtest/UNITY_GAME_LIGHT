@@ -26,7 +26,11 @@ namespace Game.Battle
 
             ApplyBackground(location);
             ApplyMusic(location);
-            ApplyAmbient(location);
+            // FIXME: disable battle ambient playback.
+            StopAmbientRoutines();
+            var am = AudioManager.Instance;
+            if (am != null)
+                am.StopAmbient();
         }
 
         public void StopLocationAudioRoutines()
@@ -291,7 +295,7 @@ namespace Game.Battle
                         ? minPitch
                         : Random.Range(minPitch, maxPitch);
 
-                    am.PlayAmbient(cue.Clip, cue.DefaultVolume, pitch);
+                    am.PlayAmbient(cue.Clip, cue.EffectiveVolume, pitch);
                 }
 
                 return cue.Clip != null ? Mathf.Max(0f, cue.Clip.length) : 0f;

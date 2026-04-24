@@ -11,7 +11,7 @@ namespace UDA2.Bootstrap
             if (SceneFlowManager.Instance != null)
                 SceneFlowManager.Instance.LoadScene("SplashScene");
             else
-                UnityEngine.SceneManagement.SceneManager.LoadScene("SplashScene");
+                UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("SplashScene");
         }
     }
 }

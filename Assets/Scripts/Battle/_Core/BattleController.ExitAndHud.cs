@@ -73,6 +73,7 @@ namespace Game.Battle
             if (UDA2.Audio.AudioManager.Instance != null)
             {
                 UDA2.Audio.AudioManager.Instance.StopMusic();
+                UDA2.Audio.AudioManager.Instance.StopCharacterAndCombat();
             }
 
             if (playerWon && reason == BattleFinishReason.Defeat)
@@ -561,7 +562,7 @@ namespace Game.Battle
             if (UDA2.SceneFlow.SceneFlowManager.Instance != null)
                 UDA2.SceneFlow.SceneFlowManager.Instance.LoadScene(targetScene);
             else
-                UnityEngine.SceneManagement.SceneManager.LoadScene(targetScene);
+                UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(targetScene);
         }
 
         private bool ApplyPlayerResourcesToSave(SaveData save)

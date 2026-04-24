@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UDA2.Audio;
 
 namespace Game.Battle.Visual
 {
@@ -19,26 +20,28 @@ namespace Game.Battle.Visual
         private System.Action currentOneShotFinished;
 
 
-        [Header("Rendering")]
+        [Header("Рендер")]
         [SerializeField] private SpriteRenderer spriteRenderer;
         [SerializeField] private bool flipX;
 
-        [Header("Animations")]
+        [Header("Анимации")]
         [SerializeField] private SpriteFrameAnimator animator;
         [SerializeField] private IdleAnimation idleAnimation;
         [SerializeField] private bool randomizeIdle;
         [SerializeField] private IdleAnimation[] idleVariations;
-        [Header("Ambient Idle (Optional)")]
-        [Tooltip("If enabled, idleVariations[0] is used as the default idle loop, and idleVariations[1..] are treated as ambient idles that play occasionally (then return to default idle).")]
+        [Header("Фоновый Idle (Опционально)")]
+        [Tooltip("Если включено, idleVariations[0] используется как основной idle-цикл, а idleVariations[1..] считаются фоновыми idle и проигрываются время от времени (с возвратом к основному idle).")]
         [SerializeField] private bool useAmbientIdle;
-        [Tooltip("How often (seconds) to attempt playing an ambient idle while looping default idle.")]
+        [Tooltip("Как часто (в секундах) пытаться запускать фоновый idle во время основного idle-цикла.")]
         [SerializeField, Min(0.1f)] private float ambientIdleIntervalSeconds = 4f;
+        [Tooltip("Дополнительный коэффициент громкости для настроенных небоевых звуков анимаций (idle/state).")]
+        [SerializeField, Range(0f, 1f)] private float configuredAnimationCueVolumeScale = 0.15f;
         [SerializeField] private bool avoidImmediateIdleRepeat = true;
         [SerializeField, Min(1)] private int minIdleVariationRepeats = 1;
         [SerializeField, Min(1)] private int maxIdleVariationRepeats = 1;
         [SerializeField] private Sprite[] idleFrames;
 
-        [Header("Visual Profile (Optional)")]
+        [Header("Визуальный Профиль (Опционально)")]
         [SerializeField] private CharacterVisualProfile visualProfile;
         [SerializeField] private string outfitId = "outfit_01";
 
@@ -50,9 +53,18 @@ namespace Game.Battle.Visual
         private Coroutine ambientIdleRoutine;
         private int ambientIdleToken;
         private IdleAnimation defaultIdleAnim;
+        private IdleAnimation currentLoopingIdleAnimation;
         private List<IdleAnimation> ambientIdleBag;
         private int ambientIdleBagPos;
         private IdleAnimation lastAmbientIdlePlayed;
+        private int animationCueToken;
+        private BattleVisualAnimId lastConfiguredCueAnimId;
+        private IdleAnimation lastConfiguredCueAnimation;
+        private AudioSource loopedAnimationCueSource;
+        private Coroutine loopedAnimationCueRoutine;
+        private int loopedAnimationCueToken;
+        private BattleVisualAnimId loopedAnimationCueAnimId;
+        private AudioCue loopedAnimationCue;
 
         private void Reset()
         {
@@ -70,6 +82,8 @@ namespace Game.Battle.Visual
 
             if (animator != null)
                 animator.OnLooped += HandleAnimatorLooped;
+
+            EnsureLoopedAnimationCueSource();
         }
 
         private void OnDestroy()
@@ -110,6 +124,8 @@ namespace Game.Battle.Visual
                 var only = PickFirstValid(variations);
                 if (only != null)
                 {
+                    currentLoopingIdleAnimation = only;
+                    TryPlayConfiguredAnimationCue(BattleVisualAnimId.Idle, only);
                     animator.SetFramesPerSecond(only.FrameRate);
                     animator.PlayLoop(only.FramesArray);
                     return;
@@ -123,6 +139,7 @@ namespace Game.Battle.Visual
             if (fps > 0f)
                 animator.SetFramesPerSecond(fps);
 
+            currentLoopingIdleAnimation = null;
             animator.PlayLoop(frames);
         }
 
@@ -140,7 +157,9 @@ namespace Game.Battle.Visual
             // Build ambient pool from the rest of the list.
             EnsureAmbientBagInitialized(variations);
 
+            TryPlayConfiguredAnimationCue(BattleVisualAnimId.Idle, defaultIdleAnim);
             animator.SetFramesPerSecond(defaultIdleAnim.FrameRate);
+            currentLoopingIdleAnimation = defaultIdleAnim;
             animator.PlayLoop(defaultIdleAnim.FramesArray);
 
             StartAmbientIdleLoop();
@@ -231,6 +250,7 @@ namespace Game.Battle.Visual
                     continue;
 
                 lastAmbientIdlePlayed = ambient;
+                TryPlayConfiguredAnimationCue(BattleVisualAnimId.Idle, ambient);
 
                 // Play ambient once, then return to default idle (or pending combat anim, if any).
                 animator.SetFramesPerSecond(ambient.FrameRate);
@@ -245,6 +265,7 @@ namespace Game.Battle.Visual
                     if (defaultIdleAnim != null && defaultIdleAnim.IsValid())
                     {
                         animator.SetFramesPerSecond(defaultIdleAnim.FrameRate);
+                        currentLoopingIdleAnimation = defaultIdleAnim;
                         animator.PlayLoop(defaultIdleAnim.FramesArray);
                     }
                     else
@@ -457,6 +478,12 @@ namespace Game.Battle.Visual
                 ambientIdleRoutine = null;
             }
 
+            StopLoopedAnimationCue();
+            animationCueToken++;
+            lastConfiguredCueAnimId = BattleVisualAnimId.Idle;
+            lastConfiguredCueAnimation = null;
+            currentLoopingIdleAnimation = null;
+
             animator?.Stop();
         }
 
@@ -468,14 +495,17 @@ namespace Game.Battle.Visual
         private void HandleAnimatorLooped()
         {
             // Only trigger pending anim at a clean boundary of a looping clip (idle).
-            if (!hasPendingAnim)
-                return;
-
-            // If we are currently not looping anymore (race), ignore.
             if (animator == null || !animator.IsLooping)
                 return;
 
-            TryPlayPendingNow();
+            if (hasPendingAnim)
+            {
+                TryPlayPendingNow();
+                return;
+            }
+
+            if (currentLoopingIdleAnimation != null && currentLoopingIdleAnimation.IsValid())
+                TryPlayConfiguredAnimationCue(BattleVisualAnimId.Idle, currentLoopingIdleAnimation);
         }
 
         private void HandleNonLoopFinished(BattleVisualAnimId finishedId)
@@ -534,6 +564,8 @@ namespace Game.Battle.Visual
                 return true;
             }
 
+            StopLoopedAnimationCue();
+
             var anim = ResolveAnimationOrVariation(animId);
             if (anim == null || !anim.IsValid())
             {
@@ -555,6 +587,7 @@ namespace Game.Battle.Visual
             }
 
             OnOneShotStarted?.Invoke(animId, anim);
+            TryPlayConfiguredAnimationCue(animId, anim);
 
             currentOneShotAnimId = animId;
             currentOneShotFinished = finished;
@@ -643,6 +676,7 @@ namespace Game.Battle.Visual
             }
 
             animator.SetFramesPerSecond(anim.FrameRate);
+            TryPlayConfiguredAnimationCue(BattleVisualAnimId.Idle, anim);
             animator.PlayOnce(anim.FramesArray, finished: () =>
             {
                 if (token != idleToken)
@@ -660,6 +694,180 @@ namespace Game.Battle.Visual
                     PlayNextRandomIdle(token);
                 }
             });
+        }
+
+        private void TryPlayConfiguredAnimationCue(BattleVisualAnimId animId, IdleAnimation animation)
+        {
+            bool cueContextChanged = lastConfiguredCueAnimId != animId || lastConfiguredCueAnimation != animation;
+            if (cueContextChanged)
+            {
+                animationCueToken++;
+                lastConfiguredCueAnimId = animId;
+                lastConfiguredCueAnimation = animation;
+
+                // Cancel pending delayed cues and any looped state cue from previous animation context.
+                if (loopedAnimationCueRoutine != null)
+                    StopLoopedAnimationCue();
+            }
+
+            if (IsCombatAudioDrivenByExecutor(animId))
+                return;
+
+            var outfit = ResolveOutfitVisuals();
+            if (outfit == null)
+                return;
+
+            if (!outfit.TryGetAnimationCueEvents(animId, animation, out var cueEvents, out var loopWhileStateActive))
+                return;
+
+            if (cueEvents == null || cueEvents.Length == 0)
+                return;
+
+            if (AudioManager.Instance == null)
+                return;
+
+            int token = animationCueToken;
+
+            if (loopWhileStateActive)
+            {
+                var cue = cueEvents[0].cue;
+                if (cue == null || cue.Clip == null)
+                    return;
+
+                StartLoopedAnimationCue(animId, animation, cue);
+                return;
+            }
+
+            if (loopedAnimationCueRoutine != null)
+                StopLoopedAnimationCue();
+
+            for (int i = 0; i < cueEvents.Length; i++)
+            {
+                var cue = cueEvents[i].cue;
+                if (cue == null || cue.Clip == null)
+                    continue;
+
+                int frameToPlay = cueEvents[i].cueAtFrame <= 0 ? 1 : cueEvents[i].cueAtFrame;
+
+                if (animation != null && animation.FrameCount > 0)
+                    frameToPlay = Mathf.Clamp(frameToPlay, 1, animation.FrameCount);
+
+                if (frameToPlay <= 1 || animation == null || animation.FrameRate <= 0f)
+                {
+                    if (token == animationCueToken)
+                        AudioManager.Instance.PlayBattleCueAsSfx(cue, configuredAnimationCueVolumeScale, AudioManager.BattleCueRoute.Character);
+
+                    continue;
+                }
+
+                float delay = (frameToPlay - 1) / animation.FrameRate;
+                StartCoroutine(PlayConfiguredCueAfterDelay(cue, delay, token));
+            }
+        }
+
+        private void EnsureLoopedAnimationCueSource()
+        {
+            if (loopedAnimationCueSource != null)
+                return;
+
+            var go = new GameObject("LoopedAnimationCue");
+            go.transform.SetParent(transform, false);
+            loopedAnimationCueSource = go.AddComponent<AudioSource>();
+            loopedAnimationCueSource.playOnAwake = false;
+            loopedAnimationCueSource.loop = false;
+            loopedAnimationCueSource.spatialBlend = 0f;
+
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.ConfigureAsSfxSource(loopedAnimationCueSource);
+        }
+
+        private void StartLoopedAnimationCue(BattleVisualAnimId animId, IdleAnimation animation, AudioCue cue)
+        {
+            EnsureLoopedAnimationCueSource();
+
+            if (loopedAnimationCueRoutine != null && loopedAnimationCueAnimId == animId && loopedAnimationCue == cue)
+                return;
+
+            StopLoopedAnimationCue();
+
+            loopedAnimationCueAnimId = animId;
+            loopedAnimationCue = cue;
+            int token = ++loopedAnimationCueToken;
+            loopedAnimationCueRoutine = StartCoroutine(LoopedAnimationCueRoutine(token, cue));
+        }
+
+        private void StopLoopedAnimationCue()
+        {
+            loopedAnimationCueToken++;
+
+            if (loopedAnimationCueRoutine != null)
+            {
+                StopCoroutine(loopedAnimationCueRoutine);
+                loopedAnimationCueRoutine = null;
+            }
+
+            loopedAnimationCueAnimId = BattleVisualAnimId.Idle;
+            loopedAnimationCue = null;
+
+            if (loopedAnimationCueSource != null)
+            {
+                loopedAnimationCueSource.Stop();
+                loopedAnimationCueSource.clip = null;
+            }
+        }
+
+        private IEnumerator LoopedAnimationCueRoutine(int token, AudioCue cue)
+        {
+            while (token == loopedAnimationCueToken)
+            {
+                if (AudioManager.Instance == null || cue == null || cue.Clip == null || loopedAnimationCueSource == null)
+                    yield break;
+
+                AudioManager.Instance.PlayBattleCueOnSource(cue, loopedAnimationCueSource, restartIfAlreadyPlaying: true, volumeScale: configuredAnimationCueVolumeScale, route: AudioManager.BattleCueRoute.Character);
+
+                while (token == loopedAnimationCueToken && loopedAnimationCueSource != null && loopedAnimationCueSource.isPlaying)
+                    yield return null;
+
+                if (token != loopedAnimationCueToken)
+                    yield break;
+
+                yield return null;
+            }
+        }
+
+        private IEnumerator PlayConfiguredCueAfterDelay(AudioCue cue, float delay, int token)
+        {
+            if (delay > 0f)
+                yield return new WaitForSeconds(delay);
+
+            if (token != animationCueToken)
+                yield break;
+
+            if (AudioManager.Instance == null)
+                yield break;
+
+            AudioManager.Instance.PlayBattleCueAsSfx(cue, configuredAnimationCueVolumeScale, AudioManager.BattleCueRoute.Character);
+        }
+
+        private static bool IsCombatAudioDrivenByExecutor(BattleVisualAnimId animId)
+        {
+            switch (animId)
+            {
+                case BattleVisualAnimId.FastAttack:
+                case BattleVisualAnimId.NormalAttack:
+                case BattleVisualAnimId.HeavyAttack:
+                case BattleVisualAnimId.CounterAttack:
+                case BattleVisualAnimId.Cast:
+                case BattleVisualAnimId.FireSpell:
+                case BattleVisualAnimId.IceSpell:
+                case BattleVisualAnimId.HolySpell:
+                case BattleVisualAnimId.DarkSpell:
+                case BattleVisualAnimId.Hit:
+                case BattleVisualAnimId.LustHit:
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         private int PickIdleVariationIndex()

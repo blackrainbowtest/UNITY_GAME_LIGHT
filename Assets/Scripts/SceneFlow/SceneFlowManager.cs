@@ -18,6 +18,7 @@ public static SceneFlowManager Instance { get; private set; }
 
 [Header("Audio Sync")]
 [SerializeField] private bool waitForMusicBeforeHideLoading = true;
+[SerializeField] private bool preloadSceneMusicBeforeActivation = true;
 [SerializeField, Min(0f)] private float musicReadyTimeoutSeconds = 2f;
 [SerializeField] private bool skipMusicWaitIfSceneHasNoMusic = true;
 [SerializeField] private string[] skipMusicWaitForScenes = Array.Empty<string>();
@@ -137,21 +138,69 @@ float startedAt = Time.realtimeSinceStartup;
 _sceneReady = false;
 
 if (loadingScreen != null)
+{
 loadingScreen.Show();
+loadingScreen.SetProgress(0f);
+}
 
 float timer = 0f;
+TryPreloadSceneMusic(sceneName);
 var asyncOp = SceneManager.LoadSceneAsync(sceneName);
+if (asyncOp == null)
+{
+if (logLoadTimings)
+UDA2.Logging.Logger.LogInfo($"[SceneFlow] Failed to start async load for '{sceneName}'.");
+
+if (loadingScreen != null)
+loadingScreen.Hide();
+
+yield break;
+}
+
+asyncOp.allowSceneActivation = false;
 if (logLoadTimings)
 UDA2.Logging.Logger.LogInfo($"[SceneFlow] Begin load '{sceneName}'. minLoadingTime={minLoadingTime:0.###}");
 
-while (!asyncOp.isDone)
+while (asyncOp.progress < 0.9f)
 {
 timer += Time.unscaledDeltaTime;
+if (loadingScreen != null)
+{
+float streamProgress = Mathf.Clamp01(asyncOp.progress / 0.9f);
+loadingScreen.SetProgress(Mathf.Lerp(0f, 0.9f, streamProgress));
+}
+
 yield return null;
 }
 
 if (logLoadTimings)
 UDA2.Logging.Logger.LogInfo($"[SceneFlow] Async load finished for '{sceneName}' at {timer:0.###}s");
+
+float normalizedMin = minLoadingTime > 0f ? Mathf.Clamp01(timer / minLoadingTime) : 1f;
+while (normalizedMin < 1f)
+{
+timer += Time.unscaledDeltaTime;
+normalizedMin = minLoadingTime > 0f ? Mathf.Clamp01(timer / minLoadingTime) : 1f;
+
+if (loadingScreen != null)
+loadingScreen.SetProgress(Mathf.Lerp(0.9f, 0.95f, normalizedMin));
+
+yield return null;
+}
+
+if (loadingScreen != null)
+loadingScreen.SetProgress(0.95f);
+
+asyncOp.allowSceneActivation = true;
+while (!asyncOp.isDone)
+{
+timer += Time.unscaledDeltaTime;
+
+if (loadingScreen != null)
+loadingScreen.SetProgress(0.97f);
+
+yield return null;
+}
 
 bool shouldWaitForSceneReady = waitForSceneReadySignal && SceneHasReadySignalReceiver();
 
@@ -164,6 +213,10 @@ while (!_sceneReady && sceneReadyWaited < sceneReadyTimeout)
 {
 sceneReadyWaited += Time.unscaledDeltaTime;
 timer += Time.unscaledDeltaTime;
+
+if (loadingScreen != null)
+loadingScreen.SetProgress(0.98f);
+
 yield return null;
 }
 
@@ -183,15 +236,11 @@ else
 UDA2.Logging.Logger.LogInfo($"[SceneFlow] Scene ready wait skipped for '{sceneName}' (no ISceneReady receiver in scene).");
 }
 
-// дём, если минимальное время не прошло
-while (timer < minLoadingTime)
-{
-timer += Time.unscaledDeltaTime;
-yield return null;
-}
-
 if (logLoadTimings)
 UDA2.Logging.Logger.LogInfo($"[SceneFlow] Min loading time reached for '{sceneName}' at {timer:0.###}s");
+
+if (loadingScreen != null)
+loadingScreen.SetProgress(0.99f);
 
 yield return WaitForMusicReady(sceneName);
 
@@ -202,7 +251,10 @@ UDA2.Logging.Logger.LogInfo($"[SceneFlow] Hide loading for '{sceneName}'. total=
 }
 
 if (loadingScreen != null)
+{
+loadingScreen.SetProgress(1f);
 loadingScreen.Hide();
+}
 }
 
 private IEnumerator WaitForMusicReady(string sceneName)
@@ -257,7 +309,6 @@ private bool ShouldSkipMusicWait(string sceneName)
 {
 if (skipMusicWaitForScenes == null || skipMusicWaitForScenes.Length == 0)
 return false;
-
 for (int i = 0; i < skipMusicWaitForScenes.Length; i++)
 {
 var item = skipMusicWaitForScenes[i];
@@ -269,6 +320,37 @@ return true;
 }
 
 return false;
+}
+
+private void TryPreloadSceneMusic(string sceneName)
+{
+if (!preloadSceneMusicBeforeActivation)
+return;
+
+if (string.IsNullOrWhiteSpace(sceneName))
+return;
+
+if (!TryGetAudioManagerSingleton(out var audioManager))
+return;
+
+var method = audioManager.GetType().GetMethod(
+"PreloadSceneMusicAudioData",
+System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance,
+null,
+new[] { typeof(string) },
+null);
+
+if (method == null)
+return;
+
+try
+{
+method.Invoke(audioManager, new object[] { sceneName });
+}
+catch (Exception)
+{
+// Ignore prewarm failures to keep scene transitions robust.
+}
 }
 
 private static bool TryGetAudioManagerSingleton(out object audioManager)

@@ -175,7 +175,10 @@ namespace Game.Battle
             if (outcomeAnimationModal != null)
             {
                 if (audio != null)
+                {
+                    audio.StopCharacterAndCombat();
                     canRestoreBattleMusic = audio.TryGetCurrentMusicState(out battleMusicClip, out battleMusicTimeSeconds, out battleMusicLoop);
+                }
 
                 PlayOutcomeMusic(BattleFinishReason.EscapeFailed, allowLegacyFallback: false);
                 outcomeAnimationModal.Show(

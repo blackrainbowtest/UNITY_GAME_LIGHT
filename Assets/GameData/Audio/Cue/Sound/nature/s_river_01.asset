@@ -16,4 +16,5 @@ MonoBehaviour:
   key: river
   clip: {fileID: 8300000, guid: 3555415aa0307014f83170c4d57e979b, type: 3}
   defaultVolume: 1
+  volumeScale: 0.5
   pitchRange: {x: 1, y: 1}

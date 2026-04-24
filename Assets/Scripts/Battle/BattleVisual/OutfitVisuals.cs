@@ -27,50 +27,85 @@ namespace Game.Battle.Visual
     [CreateAssetMenu(menuName = "Game/Battle/Visuals/Outfit Visuals")]
     public sealed class OutfitVisuals : ScriptableObject
     {
+        public enum CueSelectionMode
+        {
+            [InspectorName("Случайный из списка")]
+            RandomFromList = 0,
+            [InspectorName("Точный из списка")]
+            SpecificFromList = 1,
+        }
+
         public enum StatusEffectTarget
         {
+            [InspectorName("Игрок")]
             Player = 0,
+            [InspectorName("Враг")]
             Enemy = 1
+        }
+
+        [System.Serializable]
+        public struct CueEventConfig
+        {
+            [Tooltip("Кадр, на котором должен проиграться звук (1 = сразу). <=0 использует кадр по умолчанию/legacy.")]
+            public int cueAtFrame;
+
+            [Tooltip("Режим выбора: случайный звук из списка или точный индекс.")]
+            public CueSelectionMode selectionMode;
+
+            [Tooltip("Используется только в режиме точного выбора. Индекс 0-based в списке звуков.")]
+            public int cueIndex;
+
+            [Tooltip("Используется только в режиме случайного выбора. Начальный индекс диапазона (0-based). 0 вместе с to=0 означает весь список.")]
+            public int cueIndexFrom;
+
+            [Tooltip("Используется только в режиме случайного выбора. Конечный индекс диапазона (0-based, включительно). 0 вместе с from=0 означает весь список.")]
+            public int cueIndexTo;
+        }
+
+        public struct ResolvedCueEvent
+        {
+            public AudioCue cue;
+            public int cueAtFrame;
         }
 
         [System.Serializable]
         public struct ActionStatusEffectConfig
         {
-            [Tooltip("Action that can apply this status.")]
+            [Tooltip("Действие, которое может наложить этот статус.")]
             public CombatActionId actionId;
 
-            [Tooltip("Status to apply.")]
+            [Tooltip("Статус для наложения.")]
             public StatusEffectId statusId;
 
-            [Tooltip("Who receives this status when action is executed.")]
+            [Tooltip("Кто получает статус при выполнении действия.")]
             public StatusEffectTarget target;
 
-            [Tooltip("Enable random duration instead of fixed turns.")]
+            [Tooltip("Использовать случайную длительность вместо фиксированной.")]
             public bool randomTurns;
 
             [Min(0)]
-            [Tooltip("Fixed duration in turns when Random Turns is disabled.")]
+            [Tooltip("Фиксированная длительность в ходах, когда случайная длительность выключена.")]
             public int turns;
 
             [Min(0)]
-            [Tooltip("Minimum duration in turns when Random Turns is enabled.")]
+            [Tooltip("Минимальная длительность в ходах при случайной длительности.")]
             public int randomTurnsMin;
 
             [Min(0)]
-            [Tooltip("Maximum duration in turns when Random Turns is enabled.")]
+            [Tooltip("Максимальная длительность в ходах при случайной длительности.")]
             public int randomTurnsMax;
         }
 
         [System.Serializable]
         public struct EscapeRunMotionConfig
         {
-            [Tooltip("If false, no movement is applied during successful escape animation.")]
+            [Tooltip("Если выключено, движение при успешном побеге не применяется.")]
             public bool enabled;
 
-            [Tooltip("Frame index (1-based) when movement to the left should start during successful escape animation.")]
+            [Tooltip("Кадр (1-based), с которого начинается движение влево при успешном побеге.")]
             [Min(1)] public int startAtFrame;
 
-            [Tooltip("Movement speed to the left in world units per second.")]
+            [Tooltip("Скорость движения влево в world units в секунду.")]
             [Min(0f)] public float speedLeftUnitsPerSecond;
 
             public bool IsEnabled => enabled && startAtFrame > 0 && speedLeftUnitsPerSecond > 0f;
@@ -79,20 +114,45 @@ namespace Game.Battle.Visual
         [System.Serializable]
         public struct HitTimingConfig
         {
-            [Tooltip("Attacker animation id (e.g. FastAttack, FireSpell, SeductionAct1, etc).")]
+            [Tooltip("ID анимации атакующего (например FastAttack, FireSpell, SeductionAct1 и т.д.).")]
             public BattleVisualAnimId attackAnimId;
 
-            [Tooltip("Frame when the hit should be applied (1 = immediately on animation start). Set -1 to ignore target hit animation.")]
+            [Tooltip("Кадр применения удара (1 = сразу в начале анимации). -1 отключает анимацию попадания цели.")]
             public int hitAtFrame;
 
-            [Tooltip("Optional action cue played during the attacker animation.")]
-            public AudioCue actionCue;
+            [Tooltip("Список звуков действия. Используется вместе с actionCueEvents (или случайно, если список событий пуст).")]
+            public AudioCue[] actionCues;
 
-            [Tooltip("Frame for actionCue (1 = immediately). <=0 means use hitAtFrame.")]
-            public int actionCueAtFrame;
+            [Tooltip("Необязательный список событий звука. Каждое событие выбирает случайный/точный звук из actionCues и имеет свой кадр.")]
+            public CueEventConfig[] actionCueEvents;
 
-            [Tooltip("If enabled, the target will play LustHit variations instead of Hit when the hit moment is reached.")]
+            [Tooltip("Если включено, цель проигрывает вариации LustHit вместо Hit в момент удара.")]
             public bool useLustHit;
+        }
+
+        [System.Serializable]
+        public struct AnimationCueConfig
+        {
+            [Tooltip("Тип анимации, к которой относится этот звук.")]
+            public BattleVisualAnimId animId;
+
+            [Tooltip("Необязательная конкретная вариация. Если задана, звук используется только для этой IdleAnimation.")]
+            public IdleAnimation animation;
+
+            [Tooltip("Звук SFX для старта этой анимации.")]
+            public AudioCue cue;
+
+            [Tooltip("Необязательный список звуков. Каждый раз выбирается случайный валидный звук (если список пуст/невалиден, используется поле Cue).")]
+            public AudioCue[] cues;
+
+            [Tooltip("Кадр воспроизведения звука (1 = сразу). <=0 тоже означает сразу.")]
+            public int cueAtFrame;
+
+            [Tooltip("Необязательный список событий звука. Каждое событие выбирает случайный/точный звук из Cues и имеет свой кадр.")]
+            public CueEventConfig[] cueEvents;
+
+            [Tooltip("Если включено, звук зацикливается, пока активен этот анимационный стейт.")]
+            public bool loopWhileStateActive;
         }
 
         [System.Serializable]
@@ -140,105 +200,109 @@ namespace Game.Battle.Visual
             }
         }
 
-        [Header("Identity")]
-        [Tooltip("Must match outfitId, e.g. 'outfit_01'.")]
+        [Header("Идентификация")]
+        [Tooltip("Должен совпадать с outfitId, например 'outfit_01'.")]
         public string outfitId = "outfit_01";
 
-        [Header("Animations")]
-        [Tooltip("Optional: if set, you can provide multiple idle animations (e.g. 3 idles). If list has 1 item, it's used as idle. If 2+ items, BattleCharacterView can randomize between them.")]
+        [Header("Анимации")]
+        [Tooltip("Опционально: можно задать несколько idle-анимаций (например 3). Если в списке 1 элемент, он используется как idle. Если 2+ элемента, BattleCharacterView может выбирать случайно.")]
         public IdleAnimation[] idleVariations;
-        [Tooltip("Optional variations for Hit.")]
+        [Tooltip("Опциональные вариации для Hit.")]
         public IdleAnimation[] hitVariations;
-        [Tooltip("Optional variations for LustHit (emotional hit).")]
+        [Tooltip("Опциональные вариации для LustHit (эмоциональное попадание).")]
         public IdleAnimation[] lustHitVariations;
 
-        [Header("Hit Timing")]
-        [Tooltip("Per-attack frame timing for when the target hit animation should start. If an entry is missing, defaults to frame 1 (immediate) and physical Hit.")]
+        [Header("Тайминг Удара")]
+        [Tooltip("Покадровый тайминг для старта анимации попадания цели. Если записи нет, используется кадр 1 (сразу) и обычный Hit.")]
         public HitTimingConfig[] hitTimings;
 
-        [Header("Hit Audio (Optional)")]
-        [Tooltip("Sound played when this character receives a regular Hit.")]
+        [Header("Звук Попадания (Опционально)")]
+        [Tooltip("Звук, который проигрывается, когда персонаж получает обычный Hit.")]
         public AudioCue hitCue;
-        [Tooltip("Sound played when this character receives a LustHit. Falls back to hitCue if empty.")]
+        [Tooltip("Звук, который проигрывается при LustHit. Если пусто, используется hitCue.")]
         public AudioCue lustHitCue;
 
-        [Header("Attacks")]
-        [Tooltip("Optional variations for Fast Attack.")]
+        [Header("Звуки Анимаций (Опционально)")]
+        [Tooltip("SFX на анимацию. Используйте поле Animation, чтобы назначать разные звуки для конкретных вариаций (например для каждого idle-варианта).")]
+        public AnimationCueConfig[] animationCues;
+
+        [Header("Атаки")]
+        [Tooltip("Опциональные вариации для Fast Attack.")]
         public IdleAnimation[] fastAttackVariations;
-        [Tooltip("Optional variations for Normal Attack.")]
+        [Tooltip("Опциональные вариации для Normal Attack.")]
         public IdleAnimation[] normalAttackVariations;
-        [Tooltip("Optional variations for Heavy Attack.")]
+        [Tooltip("Опциональные вариации для Heavy Attack.")]
         public IdleAnimation[] heavyAttackVariations;
-        [Tooltip("Optional variations for Counter Attack.")]
+        [Tooltip("Опциональные вариации для Counter Attack.")]
         public IdleAnimation[] counterAttackVariations;
 
-        [Header("Magic")]
-        [Tooltip("Optional variations for generic Cast (fallback for spells if specific spell animation is not set).")]
+        [Header("Магия")]
+        [Tooltip("Опциональные вариации для общего Cast (fallback для заклинаний, если спец-анимация не задана).")]
         public IdleAnimation[] castVariations;
-        [Tooltip("Optional variations for Fire Spell.")]
+        [Tooltip("Опциональные вариации для Fire Spell.")]
         public IdleAnimation[] fireSpellVariations;
-        [Tooltip("Optional variations for Ice Spell.")]
+        [Tooltip("Опциональные вариации для Ice Spell.")]
         public IdleAnimation[] iceSpellVariations;
-        [Tooltip("Optional variations for Holy Spell.")]
+        [Tooltip("Опциональные вариации для Holy Spell.")]
         public IdleAnimation[] holySpellVariations;
-        [Tooltip("Optional variations for Dark Spell.")]
+        [Tooltip("Опциональные вариации для Dark Spell.")]
         public IdleAnimation[] darkSpellVariations;
 
-        [Header("Magic Projectiles (Optional)")]
-        [Tooltip("Projectile settings for generic Cast (also used as fallback for spells if their projectile is not set).")]
+        [Header("Магические Снаряды (Опционально)")]
+        [Tooltip("Настройки снаряда для общего Cast (также fallback для заклинаний, если их снаряд не задан).")]
         public SpellProjectileConfig castProjectile;
-        [Tooltip("Projectile settings for Fire Spell.")]
+        [Tooltip("Настройки снаряда для Fire Spell.")]
         public SpellProjectileConfig fireSpellProjectile;
-        [Tooltip("Projectile settings for Ice Spell.")]
+        [Tooltip("Настройки снаряда для Ice Spell.")]
         public SpellProjectileConfig iceSpellProjectile;
-        [Tooltip("Projectile settings for Holy Spell.")]
+        [Tooltip("Настройки снаряда для Holy Spell.")]
         public SpellProjectileConfig holySpellProjectile;
-        [Tooltip("Projectile settings for Dark Spell.")]
+        [Tooltip("Настройки снаряда для Dark Spell.")]
         public SpellProjectileConfig darkSpellProjectile;
 
-        [Header("Action Status Effects (Optional)")]
-        [Tooltip("Per-action status effects. Supports multiple statuses per action with fixed or random duration and target side selection.")]
+        [Header("Статусы Действий (Опционально)")]
+        [Tooltip("Статусы на действие. Поддерживает несколько статусов на одно действие, фиксированную или случайную длительность и выбор стороны цели.")]
         public ActionStatusEffectConfig[] actionStatusEffects;
 
-        [Header("Seduction")]
-        [Tooltip("Optional variations for Seduction Act 1.")]
+        [Header("Соблазнение")]
+        [Tooltip("Опциональные вариации для Seduction Act 1.")]
         public IdleAnimation[] seductionAct1Variations;
-        [Tooltip("Optional variations for Seduction Act 2.")]
+        [Tooltip("Опциональные вариации для Seduction Act 2.")]
         public IdleAnimation[] seductionAct2Variations;
-        [Tooltip("Optional variations for Seduction Act 3.")]
+        [Tooltip("Опциональные вариации для Seduction Act 3.")]
         public IdleAnimation[] seductionAct3Variations;
-        [Tooltip("Optional variations for Seduction Act 4.")]
+        [Tooltip("Опциональные вариации для Seduction Act 4.")]
         public IdleAnimation[] seductionAct4Variations;
 
-        [Header("Actions")]
-        [Tooltip("Optional variations for Inventory.")]
+        [Header("Действия")]
+        [Tooltip("Опциональные вариации для Inventory.")]
         public IdleAnimation[] actionAct1Variations;
-        [Tooltip("Optional variations for Run.")]
+        [Tooltip("Опциональные вариации для Run.")]
         public IdleAnimation[] actionAct2Variations;
-        [Tooltip("Optional variations for Give up.")]
+        [Tooltip("Опциональные вариации для Give up.")]
         public IdleAnimation[] actionAct3Variations;
-        [Tooltip("Optional variations for Skip.")]
+        [Tooltip("Опциональные вариации для Skip.")]
         public IdleAnimation[] actionAct4Variations;
-        [Tooltip("Optional variations for Action fail (e.g. failed escape).")]
+        [Tooltip("Опциональные вариации для Action fail (например неудачный побег).")]
         public IdleAnimation[] actionActFailVariations;
-        [Tooltip("Optional movement config for successful Run (Escape).")]
+        [Tooltip("Опциональные настройки движения для успешного Run (Escape).")]
         public EscapeRunMotionConfig escapeRunMotion;
 
-        [Header("Inventory")]
-        [Tooltip("Inventory open animation. If empty, fallback is Inventory variation [0].")]
+        [Header("Инвентарь")]
+        [Tooltip("Анимация открытия инвентаря. Если пусто, fallback = Inventory variation [0].")]
         public IdleAnimation[] inventoryOpenVariations;
-        [Tooltip("Inventory search/loop animation. If empty, fallback is Inventory variation [1].")]
+        [Tooltip("Анимация поиска/цикла инвентаря. Если пусто, fallback = Inventory variation [1].")]
         public IdleAnimation[] inventorySearchVariations;
-        [Tooltip("Inventory close animation. If empty, fallback is Inventory variation [2].")]
+        [Tooltip("Анимация закрытия инвентаря. Если пусто, fallback = Inventory variation [2].")]
         public IdleAnimation[] inventoryCloseVariations;
 
-        [Header("Optional")]
-        [Tooltip("Optional variations for Block.")]
+        [Header("Дополнительно")]
+        [Tooltip("Опциональные вариации для Block.")]
         public IdleAnimation[] blockVariations;
         [FormerlySerializedAs("deathVariations")]
-        [Tooltip("Optional variations for Lose (normal defeat/surrender/failed escape).")]
+        [Tooltip("Опциональные вариации для Lose (обычное поражение/сдача/неудачный побег).")]
         public IdleAnimation[] loseVariations;
-        [Tooltip("Optional variations for LustLose (defeat by LP).")]
+        [Tooltip("Опциональные вариации для LustLose (поражение по LP).")]
         public IdleAnimation[] lustLoseVariations;
 
         private void OnValidate()
@@ -332,6 +396,191 @@ namespace Game.Battle.Visual
                 return lustHitCue != null ? lustHitCue : hitCue;
 
             return hitCue;
+        }
+
+        public bool TryGetAnimationCue(BattleVisualAnimId animId, IdleAnimation animation, out AudioCue cue, out int cueAtFrame, out bool loopWhileStateActive)
+        {
+            cue = null;
+            cueAtFrame = -1;
+            loopWhileStateActive = false;
+
+            if (!TryGetAnimationCueEvents(animId, animation, out var events, out loopWhileStateActive))
+                return false;
+
+            if (events == null || events.Length == 0)
+                return false;
+
+            cue = events[0].cue;
+            cueAtFrame = events[0].cueAtFrame;
+            return cue != null;
+        }
+
+        public bool TryGetAnimationCueEvents(BattleVisualAnimId animId, IdleAnimation animation, out ResolvedCueEvent[] cueEvents, out bool loopWhileStateActive)
+        {
+            cueEvents = null;
+            loopWhileStateActive = false;
+
+            if (animationCues == null || animationCues.Length == 0)
+                return false;
+
+            // Prefer exact variation match first.
+            for (int i = animationCues.Length - 1; i >= 0; i--)
+            {
+                var entry = animationCues[i];
+                if (entry.animId != animId)
+                    continue;
+
+                if (entry.animation == null || entry.animation != animation)
+                    continue;
+
+                loopWhileStateActive = entry.loopWhileStateActive;
+                return TryBuildResolvedCueEvents(entry.cue, entry.cues, entry.cueAtFrame, entry.cueEvents, fallbackFrame: 1, out cueEvents);
+            }
+
+            // Fallback: generic by animId.
+            for (int i = animationCues.Length - 1; i >= 0; i--)
+            {
+                var entry = animationCues[i];
+                if (entry.animId != animId)
+                    continue;
+
+                if (entry.animation != null)
+                    continue;
+
+                loopWhileStateActive = entry.loopWhileStateActive;
+                return TryBuildResolvedCueEvents(entry.cue, entry.cues, entry.cueAtFrame, entry.cueEvents, fallbackFrame: 1, out cueEvents);
+            }
+
+            return false;
+        }
+
+        public bool TryGetHitActionCueEvents(BattleVisualAnimId attackAnimId, out ResolvedCueEvent[] cueEvents)
+        {
+            cueEvents = null;
+
+            if (!TryGetHitTiming(attackAnimId, out var timing))
+                return false;
+
+            int fallbackFrame = timing.hitAtFrame > 0 ? timing.hitAtFrame : 1;
+            return TryBuildResolvedCueEvents(null, timing.actionCues, legacyFrame: 0, timing.actionCueEvents, fallbackFrame, out cueEvents);
+        }
+
+        private static AudioCue PickRandomAnimationCue(AnimationCueConfig entry)
+        {
+            if (entry.cues != null && entry.cues.Length > 0)
+            {
+                int start = Random.Range(0, entry.cues.Length);
+                for (int i = 0; i < entry.cues.Length; i++)
+                {
+                    var candidate = entry.cues[(start + i) % entry.cues.Length];
+                    if (candidate != null && candidate.Clip != null)
+                        return candidate;
+                }
+            }
+
+            if (entry.cue != null && entry.cue.Clip != null)
+                return entry.cue;
+
+            return null;
+        }
+
+        private static bool TryBuildResolvedCueEvents(
+            AudioCue legacyCue,
+            AudioCue[] cuePool,
+            int legacyFrame,
+            CueEventConfig[] eventConfigs,
+            int fallbackFrame,
+            out ResolvedCueEvent[] resolved)
+        {
+            resolved = null;
+
+            var list = new System.Collections.Generic.List<ResolvedCueEvent>(4);
+
+            int defaultFrame = legacyFrame > 0 ? legacyFrame : (fallbackFrame > 0 ? fallbackFrame : 1);
+
+            if (eventConfigs != null && eventConfigs.Length > 0)
+            {
+                for (int i = 0; i < eventConfigs.Length; i++)
+                {
+                    var cfg = eventConfigs[i];
+                    var cue = PickCueFromPool(
+                        legacyCue,
+                        cuePool,
+                        cfg.selectionMode,
+                        cfg.cueIndex,
+                        cfg.cueIndexFrom,
+                        cfg.cueIndexTo);
+                    if (cue == null || cue.Clip == null)
+                        continue;
+
+                    int frame = cfg.cueAtFrame > 0 ? cfg.cueAtFrame : defaultFrame;
+                    list.Add(new ResolvedCueEvent { cue = cue, cueAtFrame = frame });
+                }
+            }
+            else
+            {
+                var cue = PickCueFromPool(legacyCue, cuePool, CueSelectionMode.RandomFromList, 0, 0, 0);
+                if (cue != null && cue.Clip != null)
+                    list.Add(new ResolvedCueEvent { cue = cue, cueAtFrame = defaultFrame });
+            }
+
+            if (list.Count == 0)
+                return false;
+
+            resolved = list.ToArray();
+            return true;
+        }
+
+        private static AudioCue PickCueFromPool(
+            AudioCue legacyCue,
+            AudioCue[] cuePool,
+            CueSelectionMode mode,
+            int index,
+            int indexFrom,
+            int indexTo)
+        {
+            if (cuePool != null && cuePool.Length > 0)
+            {
+                if (mode == CueSelectionMode.SpecificFromList)
+                {
+                    int idx = Mathf.Clamp(index, 0, cuePool.Length - 1);
+                    var chosen = cuePool[idx];
+                    if (chosen != null && chosen.Clip != null)
+                        return chosen;
+                }
+                else
+                {
+                    int from = indexFrom;
+                    int to = indexTo;
+
+                    // 0..0 means full pool for convenience in inspector.
+                    if (from == 0 && to == 0)
+                    {
+                        from = 0;
+                        to = cuePool.Length - 1;
+                    }
+
+                    from = Mathf.Clamp(from, 0, cuePool.Length - 1);
+                    to = Mathf.Clamp(to, 0, cuePool.Length - 1);
+                    if (to < from)
+                    {
+                        int temp = from;
+                        from = to;
+                        to = temp;
+                    }
+
+                    int rangeLength = (to - from) + 1;
+                    int start = Random.Range(0, rangeLength);
+                    for (int i = 0; i < rangeLength; i++)
+                    {
+                        var chosen = cuePool[from + ((start + i) % rangeLength)];
+                        if (chosen != null && chosen.Clip != null)
+                            return chosen;
+                    }
+                }
+            }
+
+            return (legacyCue != null && legacyCue.Clip != null) ? legacyCue : null;
         }
 
         public bool TryGetProjectileConfig(BattleVisualAnimId id, out SpellProjectileConfig config)

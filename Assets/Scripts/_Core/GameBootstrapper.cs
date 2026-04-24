@@ -61,7 +61,7 @@ namespace UDA2.Core
             if (SceneFlowManager.Instance != null)
                 SceneFlowManager.Instance.LoadScene(mainSceneName);
             else
-                SceneManager.LoadScene(mainSceneName);
+                SceneManager.LoadSceneAsync(mainSceneName);
         }
 
 		private void OnDestroy()

@@ -1339,6 +1339,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UDA2.Audio.AudioManager
   sceneMusicConfig: {fileID: 11400000, guid: c52a8c7d32c3a93459dd395d00562080, type: 2}
   audioMixer: {fileID: 24100000, guid: 7fceed4f37ee3674580a19ca2d65ba88, type: 2}
+  sliderMinDb: -40
+  sliderCurve: 1
+  sfxSliderMinDb: -80
   musicSource: {fileID: 534730535}
   musicGroup: {fileID: 3983095001128603496, guid: 7fceed4f37ee3674580a19ca2d65ba88, type: 2}
   defaultMusicFadeInSeconds: 0.3
@@ -1351,6 +1354,8 @@ MonoBehaviour:
   ambientGroup: {fileID: 562173477765542952, guid: 7fceed4f37ee3674580a19ca2d65ba88, type: 2}
   ambientPoolSize: 6
   ambientParent: {fileID: 0}
+  ambientGlobalVolumeScale: 0.35
+  ambientCeilingDb: -20
   uiSource: {fileID: 1285300810}
   uiGroup: {fileID: -4760300794720278208, guid: 7fceed4f37ee3674580a19ca2d65ba88, type: 2}
   uiClickCue: {fileID: 11400000, guid: 124d178aab3834441a6ce5eecdaf64c0, type: 2}
@@ -1360,6 +1365,12 @@ MonoBehaviour:
   environmentGroup: {fileID: -2872186668715118254, guid: 7fceed4f37ee3674580a19ca2d65ba88, type: 2}
   combatSource: {fileID: 2134735459}
   combatGroup: {fileID: -8719219180021408520, guid: 7fceed4f37ee3674580a19ca2d65ba88, type: 2}
+  battleSfxRouteVolumeScale: 1
+  battleCharacterRouteVolumeScale: 0.4
+  battleEnvironmentRouteVolumeScale: 0.55
+  battleCombatRouteVolumeScale: 1
+  battleCharacterCeilingDb: -20
+  battleCombatCeilingDb: -10
 --- !u!1 &1829219094
 GameObject:
   m_ObjectHideFlags: 0

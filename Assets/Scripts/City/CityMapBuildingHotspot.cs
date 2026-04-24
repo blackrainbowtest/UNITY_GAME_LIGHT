@@ -74,7 +74,7 @@ namespace UDA2.City
                 return;
             }
 
-            SceneManager.LoadScene(targetSceneName);
+            SceneManager.LoadSceneAsync(targetSceneName);
         }
     }
 }
