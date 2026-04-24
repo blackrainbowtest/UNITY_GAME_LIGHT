@@ -562,7 +562,7 @@ namespace Game.Battle
             if (UDA2.SceneFlow.SceneFlowManager.Instance != null)
                 UDA2.SceneFlow.SceneFlowManager.Instance.LoadScene(targetScene);
             else
-                UnityEngine.SceneManagement.SceneManager.LoadScene(targetScene);
+                UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(targetScene);
         }
 
         private bool ApplyPlayerResourcesToSave(SaveData save)

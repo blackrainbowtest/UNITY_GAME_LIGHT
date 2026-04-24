@@ -275,7 +275,7 @@ public class IntroController : MonoBehaviour
         }
         else
         {
-            UnityEngine.SceneManagement.SceneManager.LoadScene(firstFightSceneName);
+            UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(firstFightSceneName);
         }
     }
 }

@@ -498,6 +498,36 @@ namespace UDA2.Audio
             return false;
         }
 
+        public void PreloadSceneMusicAudioData(string sceneName)
+        {
+            if (nextSceneMusicCue != null && nextSceneMusicCue.Clip != null)
+            {
+                nextSceneMusicCue.Clip.LoadAudioData();
+                return;
+            }
+
+            if (sceneMusicConfig == null || string.IsNullOrWhiteSpace(sceneName))
+                return;
+
+            if (!sceneMusicConfig.TryGet(sceneName, out var entry))
+                return;
+
+            if (entry.musicCue != null && entry.musicCue.Clip != null)
+                entry.musicCue.Clip.LoadAudioData();
+
+            if (entry.playlist == null || entry.playlist.Length == 0)
+                return;
+
+            for (int i = 0; i < entry.playlist.Length; i++)
+            {
+                var cue = entry.playlist[i];
+                if (cue == null || cue.Clip == null)
+                    continue;
+
+                cue.Clip.LoadAudioData();
+            }
+        }
+
         public void Play(AudioCue cue)
         {
             if (cue == null || cue.Clip == null)

@@ -184,7 +184,7 @@ namespace UDA2.UI.SaveLoad
                     if (UDA2.SceneFlow.SceneFlowManager.Instance != null)
                         UDA2.SceneFlow.SceneFlowManager.Instance.LoadScene(targetScene);
                     else
-                        UnityEngine.SceneManagement.SceneManager.LoadScene(targetScene);
+                        UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(targetScene);
                     Close();
                 }
             }

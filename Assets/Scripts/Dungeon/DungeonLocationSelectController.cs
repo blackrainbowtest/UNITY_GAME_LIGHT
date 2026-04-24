@@ -274,7 +274,7 @@ namespace Game.Dungeon
             if (SceneFlowManager.Instance != null)
                 SceneFlowManager.Instance.LoadScene(location.fightSceneName);
             else
-                SceneManager.LoadScene(location.fightSceneName);
+                SceneManager.LoadSceneAsync(location.fightSceneName);
         }
 
         private static bool TryResolveEncounter(

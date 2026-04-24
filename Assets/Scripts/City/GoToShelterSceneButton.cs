@@ -44,7 +44,7 @@ namespace UDA2.City
                 return;
             }
 
-            SceneManager.LoadScene(targetScene);
+            SceneManager.LoadSceneAsync(targetScene);
         }
 
         private void UpdateInteractable()
