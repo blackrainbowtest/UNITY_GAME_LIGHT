@@ -59,6 +59,7 @@ namespace UDA2.Audio
 
         [Header("Behavior")]
         [SerializeField] private bool playOnEnable = true;
+        [SerializeField] private bool useSceneLoadTaskQueue = true;
 
         [Tooltip("Deprecated. Music cues are always ignored in ambient groups.")]
         [SerializeField] private bool allowMusicCues;
@@ -85,10 +86,13 @@ namespace UDA2.Audio
 
         private Coroutine[] groupRoutines;
         private Coroutine delayedPlayRoutine;
+        private bool queuedStartPending;
 
         private void OnEnable()
         {
-            if (playOnEnable)
+            queuedStartPending = playOnEnable && useSceneLoadTaskQueue;
+
+            if (playOnEnable && !queuedStartPending)
                 delayedPlayRoutine = StartCoroutine(PlayNextFrameRoutine());
         }
 
@@ -101,6 +105,23 @@ namespace UDA2.Audio
             }
 
             Stop();
+            queuedStartPending = false;
+        }
+
+        // Reflection fallback for SceneFlowManager to avoid hard asmdef dependency on UDA2.SceneFlow.
+        public bool TryCreateSceneLoadTask(out string taskName, out float taskWeight, out IEnumerator taskRoutine)
+        {
+            taskName = null;
+            taskWeight = 0f;
+            taskRoutine = null;
+
+            if (!queuedStartPending)
+                return false;
+
+            taskName = $"Ambient:{name}";
+            taskWeight = 0.35f;
+            taskRoutine = BuildQueuedStartRoutine();
+            return true;
         }
 
         private IEnumerator PlayNextFrameRoutine()
@@ -111,6 +132,20 @@ namespace UDA2.Audio
                 yield return PreloadAmbientClipsRoutine();
 
             delayedPlayRoutine = null;
+
+            if (enabled && gameObject.activeInHierarchy)
+                Play();
+        }
+
+        private IEnumerator BuildQueuedStartRoutine()
+        {
+            queuedStartPending = false;
+
+            if (!enabled || !gameObject.activeInHierarchy)
+                yield break;
+
+            if (preloadAmbientAudioData)
+                yield return PreloadAmbientClipsRoutine();
 
             if (enabled && gameObject.activeInHierarchy)
                 Play();

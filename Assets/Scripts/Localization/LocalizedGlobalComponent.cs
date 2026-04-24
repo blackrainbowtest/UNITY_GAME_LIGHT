@@ -98,6 +98,12 @@ public sealed class LocalizedGlobalComponent : MonoBehaviour
         if (manageFont)
             HandleFontChanged();
 
+        if (LocalizationLoadGate.IsDeferring)
+        {
+            LocalizationLoadGate.Register(this);
+            return;
+        }
+
         if (!initialTextApplied && deferFirstUpdateFrames > 0)
         {
             if (deferredUpdateRoutine != null)
@@ -113,6 +119,7 @@ public sealed class LocalizedGlobalComponent : MonoBehaviour
     private void OnDisable()
     {
         UDA2.Core.SettingsContext.OnLanguageChanged -= HandleLanguageChanged;
+        LocalizationLoadGate.Unregister(this);
 
         if (deferredUpdateRoutine != null)
         {
