@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &214163869720930883
 GameObject:
@@ -391,7 +391,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2815803999270632759}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.UI::LocalizedTextSetter
   key: skills
@@ -405,7 +405,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2815803999270632759}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.Localization::LocalizedTextComponent
   textKey: skills
@@ -1147,7 +1147,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4546072149787664822}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.UI::LocalizedTextSetter
   key: profile
@@ -1161,7 +1161,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4546072149787664822}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.Localization::LocalizedTextComponent
   textKey: profile
@@ -1689,7 +1689,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5265763018836032958}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.UI::LocalizedTextSetter
   key: status
@@ -1703,7 +1703,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5265763018836032958}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.Localization::LocalizedTextComponent
   textKey: status
@@ -1893,7 +1893,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6217073357766693755}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.UI::LocalizedTextSetter
   key: inventory
@@ -1907,7 +1907,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6217073357766693755}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.Localization::LocalizedTextComponent
   textKey: inventory
@@ -2171,3 +2171,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a366efd922b1e6744be5efc61867eff0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.UI::UDA2.UI.UIButtonSound
+

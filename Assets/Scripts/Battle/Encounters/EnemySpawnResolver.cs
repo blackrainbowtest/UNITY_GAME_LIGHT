@@ -116,7 +116,6 @@ namespace Game.Battle
                 $"level={resolvedEnemyLevel}, rankTier={resolvedEnemyRankTier}, " +
                 $"allowedActions={(resolvedEnemy.allowedActions != null && resolvedEnemy.allowedActions.Length > 0 ? string.Join(", ", resolvedEnemy.allowedActions) : "<default fallback>")}",
                 UDA2.Logging.LogChannel.AI);
-            Logger.FlushToFile();
 
             return true;
         }

@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &153638598736815753
 GameObject:
@@ -493,7 +493,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3343112756375434476}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
   textKey: no
@@ -507,7 +507,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3343112756375434476}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
   key: no
@@ -659,7 +659,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3526432599217145059}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
   key: yes
@@ -673,7 +673,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3526432599217145059}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
   textKey: yes
@@ -1001,7 +1001,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5922869119528894871}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
   key: question_save
@@ -1015,7 +1015,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5922869119528894871}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
   textKey: question_save
@@ -1125,3 +1125,4 @@ MonoBehaviour:
   questionText: {fileID: 2743053304905546330}
   yesButton: {fileID: 1892977136372330329}
   noButton: {fileID: 8763037982035359497}
+

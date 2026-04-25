@@ -457,12 +457,12 @@ namespace UDA2.UI.Shelter
 
             if (!string.IsNullOrWhiteSpace(currentStructureLevelKey))
             {
-                var setter = currentStructureLevelText.GetComponent<LocalizedTextSetter>();
-                if (setter != null)
+                var localized = currentStructureLevelText.GetComponent<LocalizedGlobalComponent>();
+                if (localized != null)
                 {
-                    setter.key = currentStructureLevelKey;
-                    setter.SetFormatArgs(CurrentStructureLevel);
-                    setter.UpdateText();
+                    localized.Key = currentStructureLevelKey;
+                    localized.SetFormatArgs(CurrentStructureLevel);
+                    localized.UpdateText();
                     return;
                 }
             }

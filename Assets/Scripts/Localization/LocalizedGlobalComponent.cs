@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Unified localization component.
@@ -16,6 +17,8 @@ public sealed class LocalizedGlobalComponent : MonoBehaviour
 {
     [Header("Key")]
     [SerializeField] private string key;
+    [FormerlySerializedAs("textKey")]
+    [SerializeField] private string legacyTextKey;
 
     [Header("Formatting")]
     [Tooltip("Optional formatting arguments for templates with {0}, {1}, ...")] 
@@ -25,12 +28,20 @@ public sealed class LocalizedGlobalComponent : MonoBehaviour
     [SerializeField] private bool manageFont = true;
     [SerializeField] private FontType fontType = FontType.Body;
 
+    [Header("Target (optional)")]
+    [Tooltip("Optional explicit target. If empty, TMP_Text on this GameObject is used.")]
+    [SerializeField] private TMP_Text targetText;
+
     [Header("Startup")]
     [SerializeField, Min(0)] private int deferFirstUpdateFrames = 0;
 
     private TMP_Text tmpText;
     private bool loggedMissingProvider;
     private object[] cachedArgs;
+    private object[] cachedStringArgs;
+    private bool cachedStringArgsDirty = true;
+    private string normalizedKey;
+    private bool normalizedKeyDirty = true;
     private bool initialTextApplied;
     private Coroutine deferredUpdateRoutine;
 
@@ -39,7 +50,11 @@ public sealed class LocalizedGlobalComponent : MonoBehaviour
         get => key;
         set
         {
+            if (string.Equals(key, value, StringComparison.Ordinal))
+                return;
+
             key = value;
+            normalizedKeyDirty = true;
             UpdateText();
         }
     }
@@ -50,15 +65,26 @@ public sealed class LocalizedGlobalComponent : MonoBehaviour
         UpdateText();
     }
 
+    // Legacy API parity with LocalizedTextSetter.
+    public void SetFormatArgs(params object[] args)
+    {
+        SetArgs(args);
+    }
+
     public void ClearArgs()
     {
+        if (cachedArgs == null)
+            return;
+
         cachedArgs = null;
         UpdateText();
     }
 
     private void Awake()
     {
-        tmpText = GetComponent<TMP_Text>();
+        tmpText = ResolveTargetText();
+        normalizedKeyDirty = true;
+        cachedStringArgsDirty = true;
 
         // Prevent double-driving if old localization components are present.
         // IMPORTANT: don't reference those types directly to avoid asmdef coupling.
@@ -164,7 +190,7 @@ public sealed class LocalizedGlobalComponent : MonoBehaviour
             return;
 
         if (tmpText == null)
-            tmpText = GetComponent<TMP_Text>();
+            tmpText = ResolveTargetText();
 
         var font = FontManager.GetFont(fontType);
         if (font != null && tmpText != null)
@@ -189,12 +215,13 @@ public sealed class LocalizedGlobalComponent : MonoBehaviour
     public void UpdateText(string lang)
     {
         if (tmpText == null)
-            tmpText = GetComponent<TMP_Text>();
+            tmpText = ResolveTargetText();
 
         if (tmpText == null)
             return;
 
-        if (string.IsNullOrWhiteSpace(key))
+        var keyToUse = GetNormalizedKey();
+        if (string.IsNullOrEmpty(keyToUse))
             return;
 
         var provider = UIStringsProvider.Instance;
@@ -203,14 +230,14 @@ public sealed class LocalizedGlobalComponent : MonoBehaviour
             if (!loggedMissingProvider)
             {
                 loggedMissingProvider = true;
-                Debug.LogWarning($"[LocalizedGlobalComponent] UIStringsProvider.Instance is null when updating key '{key}' on '{gameObject.name}'.", this);
+                Debug.LogWarning($"[LocalizedGlobalComponent] UIStringsProvider.Instance is null when updating key '{keyToUse}' on '{gameObject.name}'.", this);
             }
             return;
         }
 
         loggedMissingProvider = false;
 
-        var template = provider.Get(key.Trim(), lang);
+        var template = provider.Get(keyToUse, lang);
         var args = ResolveArgs();
 
         if (args != null && args.Length > 0)
@@ -225,7 +252,9 @@ public sealed class LocalizedGlobalComponent : MonoBehaviour
             }
         }
 
-        tmpText.text = template;
+        if (!string.Equals(tmpText.text, template, StringComparison.Ordinal))
+            tmpText.text = template;
+
         initialTextApplied = true;
     }
 
@@ -237,10 +266,52 @@ public sealed class LocalizedGlobalComponent : MonoBehaviour
         if (stringArgs == null || stringArgs.Length == 0)
             return null;
 
-        var arr = new object[stringArgs.Length];
-        for (int i = 0; i < stringArgs.Length; i++)
-            arr[i] = stringArgs[i] ?? string.Empty;
+        if (!cachedStringArgsDirty && cachedStringArgs != null && cachedStringArgs.Length == stringArgs.Length)
+            return cachedStringArgs;
 
-        return arr;
+        cachedStringArgs = new object[stringArgs.Length];
+        for (int i = 0; i < stringArgs.Length; i++)
+            cachedStringArgs[i] = stringArgs[i] ?? string.Empty;
+
+        cachedStringArgsDirty = false;
+        return cachedStringArgs;
+    }
+
+    private string GetNormalizedKey()
+    {
+        if (!normalizedKeyDirty)
+            return normalizedKey;
+
+        var sourceKey = string.IsNullOrWhiteSpace(key) ? legacyTextKey : key;
+        normalizedKey = string.IsNullOrWhiteSpace(sourceKey) ? string.Empty : sourceKey.Trim();
+        normalizedKeyDirty = false;
+        return normalizedKey;
+    }
+
+    private TMP_Text ResolveTargetText()
+    {
+        if (targetText != null)
+            return targetText;
+
+        return GetComponent<TMP_Text>();
+    }
+
+    public static void UpdateAllInHierarchy(GameObject root)
+    {
+        if (root == null)
+            return;
+
+        var components = root.GetComponentsInChildren<LocalizedGlobalComponent>(true);
+        for (int i = 0; i < components.Length; i++)
+            components[i].UpdateText();
+    }
+
+    private void OnValidate()
+    {
+        normalizedKeyDirty = true;
+        cachedStringArgsDirty = true;
+
+        if (Application.isPlaying && isActiveAndEnabled)
+            UpdateText();
     }
 }

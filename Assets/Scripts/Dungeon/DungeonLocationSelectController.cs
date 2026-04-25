@@ -40,6 +40,7 @@ namespace Game.Dungeon
         [SerializeField] private bool useSceneLoadTaskQueue = true;
 
         private Coroutine deferredRefreshRoutine;
+        private bool isStartingBattle;
 
         private void Awake()
         {
@@ -219,6 +220,9 @@ namespace Game.Dungeon
             if (binding == null)
                 return;
 
+            if (isStartingBattle)
+                return;
+
             if (!HasAlivePlayer())
             {
                 Debug.LogWarning("[Dungeon] Cannot start battle: player HP is 0. Restore HP before entering battle.");
@@ -287,8 +291,18 @@ namespace Game.Dungeon
                 save.player.SetSceneName(location.fightSceneName);
 
             // Load FightScene.
+            isStartingBattle = true;
             if (SceneFlowManager.Instance != null)
-                SceneFlowManager.Instance.LoadScene(location.fightSceneName);
+                SceneFlowManager.Instance.LoadScene(
+                    location.fightSceneName,
+                    new SceneTransitionData
+                    {
+                        SkipSceneLoadTasks = true,
+                        SkipSceneReadyWait = true,
+                        SkipMusicWait = true,
+                        DisableFakeProgressEnvelope = true
+                    },
+                    0f);
             else
                 SceneManager.LoadSceneAsync(location.fightSceneName);
         }
@@ -387,7 +401,6 @@ namespace Game.Dungeon
                 $"locationBounds(level={location.minEnemyLevel}-{location.maxEnemyLevel}, rank={(int)location.minEnemyRank}-{(int)location.maxEnemyRank}) " +
                 $"effectiveBounds(level={effectiveMinLevel}-{effectiveMaxLevel}, rank={locationMinRank}-{effectiveMaxRank})",
                 UDA2.Logging.LogChannel.AI);
-            Logger.FlushToFile();
 
             if (!resolver.Resolve(chosen.enemyTable, constraints, out resolvedEnemy, out resolvedEnemyLevel, out resolvedEnemyRankTier))
             {

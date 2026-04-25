@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &131264649716320114
 GameObject:
@@ -3640,7 +3640,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8910393718194511598}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.UI::LocalizedTextSetter
   key: day
@@ -3654,7 +3654,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8910393718194511598}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.Localization::LocalizedTextComponent
   textKey: day
@@ -3827,7 +3827,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8913398804808973523}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.UI::LocalizedTextSetter
   key: time
@@ -3841,7 +3841,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8913398804808973523}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.Localization::LocalizedTextComponent
   textKey: time
@@ -4044,3 +4044,4 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+

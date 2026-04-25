@@ -47,24 +47,17 @@ namespace UDA2.UI.Common
 
         private void ApplyQuestionLocalization(string key)
         {
-            var setter = questionText.GetComponent<LocalizedTextSetter>();
-            if (setter != null)
+            var localized = questionText != null ? questionText.GetComponent<LocalizedGlobalComponent>() : null;
+            if (localized != null)
             {
-                setter.key = key;
-                setter.UpdateText();
+                localized.Key = key;
+                localized.ClearArgs();
+                localized.UpdateText();
             }
             else
                 questionText.text = key;
-            var comp = questionText.GetComponent<LocalizedTextComponent>();
-            if (comp != null)
-            {
-                comp.textKey = key;
-                comp.UpdateText();
-                
-            }
-            else
-                questionText.text = key;
-            return ;
+
+            return;
         }
 
         private void HandleYes()

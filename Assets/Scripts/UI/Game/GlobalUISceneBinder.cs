@@ -60,12 +60,14 @@ namespace UDA2.UI.Game
         private void OnEnable()
         {
             SceneManager.sceneLoaded += HandleSceneLoaded;
+            SceneFlowManager.TransitionStateChanged += HandleTransitionStateChanged;
             RequestApplyForScene(SceneManager.GetActiveScene());
         }
 
         private void OnDisable()
         {
             SceneManager.sceneLoaded -= HandleSceneLoaded;
+            SceneFlowManager.TransitionStateChanged -= HandleTransitionStateChanged;
 
             if (applyRoutine != null)
             {
@@ -77,6 +79,11 @@ namespace UDA2.UI.Game
         private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             RequestApplyForScene(scene);
+        }
+
+        private void HandleTransitionStateChanged(bool _)
+        {
+            RequestApplyForScene(SceneManager.GetActiveScene());
         }
 
         public void CollectLoadTasks(List<SceneLoadTask> tasks)
@@ -149,7 +156,7 @@ namespace UDA2.UI.Game
             var config = FindSceneConfig(scene);
 
             bool uiVisible = config != null;
-            ApplyGlobalVisibility(uiVisible);
+            ApplyGlobalVisibility(uiVisible && !SceneFlowManager.IsTransitionInProgress);
 
             bool showTime = config != null ? config.ShowTime : defaultShowTime;
             bool showProfile = config != null ? config.ShowProfile : defaultShowProfile;

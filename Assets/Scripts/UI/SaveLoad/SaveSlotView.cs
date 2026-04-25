@@ -292,21 +292,15 @@ namespace UDA2.UI.SaveLoad
 
         private void SetSlotTitleKey(string key)
         {
-            var setter = slotTitle != null ? slotTitle.GetComponent<LocalizedTextSetter>() : null;
-            if (setter != null)
+            var localized = slotTitle != null ? slotTitle.GetComponent<LocalizedGlobalComponent>() : null;
+            if (localized != null)
             {
-                setter.key = key;
-                setter.UpdateText();
+                localized.Key = key;
+                localized.ClearArgs();
+                localized.UpdateText();
             }
 
-            var comp = slotTitle != null ? slotTitle.GetComponent<LocalizedTextComponent>() : null;
-            if (comp != null)
-            {
-                comp.textKey = key;
-                comp.UpdateText();
-            }
-
-            // Hard fallback (also protects from miswired LocalizedTextSetter.targetText)
+            // Hard fallback protects from missing localization wiring.
             if (slotTitle != null)
                 slotTitle.text = TryGetUiString(key);
         }

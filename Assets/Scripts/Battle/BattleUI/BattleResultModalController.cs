@@ -120,30 +120,23 @@ namespace Game.Battle.UI
             // Prefer 'lose', fallback to legacy 'loes' (your CSV currently has *loes;).
             var key = data.PlayerWon ? "victory" : "lose";
 
-            var setter = titleText.GetComponent<LocalizedTextSetter>();
-            if (setter != null)
+            var localized = titleText.GetComponent<LocalizedGlobalComponent>();
+            if (localized != null)
             {
-                setter.key = key;
-                setter.targetText = titleText;
-                setter.UpdateText();
+                localized.Key = key;
+                localized.ClearArgs();
+                localized.UpdateText();
 
                 // If 'lose' isn't in localization, try legacy key.
                 if (!data.PlayerWon && string.Equals(titleText.text, key, StringComparison.OrdinalIgnoreCase))
                 {
-                    setter.key = "loes";
-                    setter.UpdateText();
+                    localized.Key = "loes";
+                    localized.UpdateText();
                 }
             }
 
-            var comp = titleText.GetComponent<LocalizedTextComponent>();
-            if (comp != null)
-            {
-                comp.textKey = data.PlayerWon ? "victory" : "loes";
-                comp.UpdateText();
-            }
-
             // Hard fallback (protects against missing localization wiring)
-            if (setter == null && comp == null)
+            if (localized == null)
                 titleText.text = data.PlayerWon ? "Victory" : "Defeat";
         }
 
