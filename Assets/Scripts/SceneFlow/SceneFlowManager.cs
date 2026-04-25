@@ -2,6 +2,7 @@
 using UnityEngine.SceneManagement;
 using System.Collections;
 using System;
+using System.Collections.Generic;
 
 namespace UDA2.SceneFlow
 {
@@ -31,6 +32,17 @@ public static SceneFlowManager Instance { get; private set; }
 [SerializeField] private bool waitForSceneReadySignal = true;
 [Tooltip("Maximum wait for NotifySceneReady. After timeout, loader continues.")]
 [SerializeField, Min(0f)] private float sceneReadyTimeoutSeconds = 1.5f;
+
+[Header("Staged Scene Tasks")]
+[SerializeField] private bool runSceneLoadTasks = true;
+[SerializeField, Range(0f, 1f)] private float loadProgressStart = 0.03f;
+[SerializeField, Range(0f, 1f)] private float loadProgressStreamEnd = 0.90f;
+[SerializeField, Range(0f, 1f)] private float loadProgressMinTimeEnd = 0.94f;
+[SerializeField, Range(0f, 1f)] private float loadProgressActivationEnd = 0.96f;
+[SerializeField, Range(0f, 1f)] private float loadProgressTasksEnd = 0.985f;
+[SerializeField, Range(0f, 1f)] private float loadProgressSceneReadyEnd = 0.99f;
+[SerializeField, Range(0f, 1f)] private float loadProgressMusicEnd = 0.995f;
+[SerializeField, Min(0.01f)] private float runningTaskProgressSpeed = 0.6f;
 
 private bool _sceneReady;
 private ILoadingScreen loadingScreen;
@@ -140,7 +152,7 @@ _sceneReady = false;
 if (loadingScreen != null)
 {
 loadingScreen.Show();
-loadingScreen.SetProgress(0f);
+loadingScreen.SetProgress(Mathf.Clamp01(loadProgressStart));
 }
 
 float timer = 0f;
@@ -167,7 +179,7 @@ timer += Time.unscaledDeltaTime;
 if (loadingScreen != null)
 {
 float streamProgress = Mathf.Clamp01(asyncOp.progress / 0.9f);
-loadingScreen.SetProgress(Mathf.Lerp(0f, 0.9f, streamProgress));
+loadingScreen.SetProgress(Mathf.Lerp(loadProgressStart, loadProgressStreamEnd, streamProgress));
 }
 
 yield return null;
@@ -183,13 +195,15 @@ timer += Time.unscaledDeltaTime;
 normalizedMin = minLoadingTime > 0f ? Mathf.Clamp01(timer / minLoadingTime) : 1f;
 
 if (loadingScreen != null)
-loadingScreen.SetProgress(Mathf.Lerp(0.9f, 0.95f, normalizedMin));
+loadingScreen.SetProgress(Mathf.Lerp(loadProgressStreamEnd, loadProgressMinTimeEnd, normalizedMin));
 
 yield return null;
 }
 
 if (loadingScreen != null)
-loadingScreen.SetProgress(0.95f);
+loadingScreen.SetProgress(loadProgressMinTimeEnd);
+
+TrySetLocalizationLoadGateDeferring(true);
 
 asyncOp.allowSceneActivation = true;
 while (!asyncOp.isDone)
@@ -197,10 +211,13 @@ while (!asyncOp.isDone)
 timer += Time.unscaledDeltaTime;
 
 if (loadingScreen != null)
-loadingScreen.SetProgress(0.97f);
+loadingScreen.SetProgress(loadProgressActivationEnd);
 
 yield return null;
 }
+
+yield return ExecuteSceneLoadTasks(sceneName);
+TrySetLocalizationLoadGateDeferring(false);
 
 bool shouldWaitForSceneReady = waitForSceneReadySignal && SceneHasReadySignalReceiver();
 
@@ -215,7 +232,7 @@ sceneReadyWaited += Time.unscaledDeltaTime;
 timer += Time.unscaledDeltaTime;
 
 if (loadingScreen != null)
-loadingScreen.SetProgress(0.98f);
+loadingScreen.SetProgress(loadProgressSceneReadyEnd);
 
 yield return null;
 }
@@ -240,7 +257,7 @@ if (logLoadTimings)
 UDA2.Logging.Logger.LogInfo($"[SceneFlow] Min loading time reached for '{sceneName}' at {timer:0.###}s");
 
 if (loadingScreen != null)
-loadingScreen.SetProgress(0.99f);
+loadingScreen.SetProgress(loadProgressMusicEnd);
 
 yield return WaitForMusicReady(sceneName);
 
@@ -254,6 +271,160 @@ if (loadingScreen != null)
 {
 loadingScreen.SetProgress(1f);
 loadingScreen.Hide();
+}
+}
+
+private IEnumerator ExecuteSceneLoadTasks(string sceneName)
+{
+if (!runSceneLoadTasks)
+yield break;
+
+var tasks = CollectSceneLoadTasks();
+if (tasks.Count == 0)
+yield break;
+
+float totalWeight = 0f;
+for (int i = 0; i < tasks.Count; i++)
+totalWeight += tasks[i].Weight;
+
+if (totalWeight <= 0f)
+yield break;
+
+float completedWeight = 0f;
+for (int i = 0; i < tasks.Count; i++)
+{
+var task = tasks[i];
+float taskVisualProgress = 0f;
+IEnumerator routine = null;
+
+try
+{
+routine = task.Run();
+}
+catch (Exception ex)
+{
+if (logLoadTimings)
+UDA2.Logging.Logger.LogInfo($"[SceneFlow] Load task '{task.Name}' init failed for '{sceneName}': {ex.Message}");
+}
+
+if (routine != null)
+{
+while (true)
+{
+bool moved;
+object yielded;
+try
+{
+moved = routine.MoveNext();
+yielded = moved ? routine.Current : null;
+}
+catch (Exception ex)
+{
+if (logLoadTimings)
+UDA2.Logging.Logger.LogInfo($"[SceneFlow] Load task '{task.Name}' execution failed for '{sceneName}': {ex.Message}");
+break;
+}
+
+if (!moved)
+break;
+
+taskVisualProgress = Mathf.MoveTowards(taskVisualProgress, 1f, Mathf.Max(0.01f, runningTaskProgressSpeed) * Time.unscaledDeltaTime);
+UpdateTaskQueueProgress(completedWeight + task.Weight * taskVisualProgress, totalWeight);
+yield return yielded;
+}
+}
+
+completedWeight += task.Weight;
+UpdateTaskQueueProgress(completedWeight, totalWeight);
+yield return null;
+}
+}
+
+private void UpdateTaskQueueProgress(float completedWeight, float totalWeight)
+{
+if (loadingScreen == null || totalWeight <= 0f)
+return;
+
+float normalized = Mathf.Clamp01(completedWeight / totalWeight);
+loadingScreen.SetProgress(Mathf.Lerp(loadProgressActivationEnd, loadProgressTasksEnd, normalized));
+}
+
+private List<SceneLoadTask> CollectSceneLoadTasks()
+{
+var tasks = new List<SceneLoadTask>();
+
+for (int s = 0; s < SceneManager.sceneCount; s++)
+{
+var scene = SceneManager.GetSceneAt(s);
+if (!scene.IsValid() || !scene.isLoaded)
+continue;
+
+var roots = scene.GetRootGameObjects();
+for (int i = 0; i < roots.Length; i++)
+{
+var root = roots[i];
+if (root == null)
+continue;
+
+var behaviours = root.GetComponentsInChildren<MonoBehaviour>(true);
+for (int j = 0; j < behaviours.Length; j++)
+{
+if (behaviours[j] is ISceneLoadTaskProvider provider)
+{
+try
+{
+provider.CollectLoadTasks(tasks);
+}
+catch (Exception ex)
+{
+if (logLoadTimings)
+UDA2.Logging.Logger.LogInfo($"[SceneFlow] CollectLoadTasks failed in '{behaviours[j].name}': {ex.Message}");
+}
+
+continue;
+}
+
+TryCollectLoadTaskViaReflection(behaviours[j], tasks);
+}
+}
+}
+
+return tasks;
+}
+
+private void TryCollectLoadTaskViaReflection(MonoBehaviour behaviour, List<SceneLoadTask> tasks)
+{
+if (behaviour == null || tasks == null)
+return;
+
+var method = behaviour.GetType().GetMethod(
+"TryCreateSceneLoadTask",
+System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance,
+null,
+new[] { typeof(string).MakeByRefType(), typeof(float).MakeByRefType(), typeof(IEnumerator).MakeByRefType() },
+null);
+
+if (method == null || method.ReturnType != typeof(bool))
+return;
+
+var args = new object[] { null, 0f, null };
+try
+{
+var okObj = method.Invoke(behaviour, args);
+if (okObj is not bool ok || !ok)
+return;
+
+if (args[2] is not IEnumerator routine || routine == null)
+return;
+
+var name = args[0] as string;
+float weight = args[1] is float w ? w : 0.25f;
+tasks.Add(new SceneLoadTask(name, weight, () => routine));
+}
+catch (Exception ex)
+{
+if (logLoadTimings)
+UDA2.Logging.Logger.LogInfo($"[SceneFlow] Reflection load-task failed in '{behaviour.name}': {ex.Message}");
 }
 }
 
@@ -350,6 +521,32 @@ method.Invoke(audioManager, new object[] { sceneName });
 catch (Exception)
 {
 // Ignore prewarm failures to keep scene transitions robust.
+}
+}
+
+private static void TrySetLocalizationLoadGateDeferring(bool isDeferring)
+{
+var type = Type.GetType("LocalizationLoadGate, UDA2.Localization");
+if (type == null)
+return;
+
+var methodName = isDeferring ? "BeginDeferring" : "EndDeferring";
+var method = type.GetMethod(
+methodName,
+System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static,
+null,
+Type.EmptyTypes,
+null);
+
+if (method == null)
+return;
+
+try
+{
+method.Invoke(null, null);
+}
+catch (Exception)
+{
 }
 }
 

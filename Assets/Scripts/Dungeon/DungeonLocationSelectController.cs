@@ -6,10 +6,11 @@ using Logger = UDA2.Logging.Logger;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 namespace Game.Dungeon
 {
-    public sealed class DungeonLocationSelectController : MonoBehaviour
+    public sealed class DungeonLocationSelectController : MonoBehaviour, ISceneLoadTaskProvider
     {
         [Serializable]
         public sealed class ButtonBinding
@@ -36,6 +37,7 @@ namespace Game.Dungeon
 
         [Header("Startup")]
         [SerializeField, Min(0)] private int deferFirstRefreshFrames = 1;
+        [SerializeField] private bool useSceneLoadTaskQueue = true;
 
         private Coroutine deferredRefreshRoutine;
 
@@ -74,10 +76,24 @@ namespace Game.Dungeon
 
         private void OnEnable()
         {
+            if (useSceneLoadTaskQueue && SceneFlowManager.Instance != null)
+                return;
+
             if (deferredRefreshRoutine != null)
                 StopCoroutine(deferredRefreshRoutine);
 
             deferredRefreshRoutine = StartCoroutine(DeferredFirstRefreshRoutine());
+        }
+
+        public void CollectLoadTasks(List<SceneLoadTask> tasks)
+        {
+            if (!useSceneLoadTaskQueue || tasks == null)
+                return;
+
+            tasks.Add(new SceneLoadTask(
+                name: "Dungeon.RefreshInteractable",
+                weight: 0.25f,
+                runnerFactory: DeferredFirstRefreshRoutine));
         }
 
         private System.Collections.IEnumerator DeferredFirstRefreshRoutine()

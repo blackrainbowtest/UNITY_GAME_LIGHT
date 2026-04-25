@@ -1,11 +1,14 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Collections;
+using System.Collections.Generic;
+using UDA2.SceneFlow;
 
 namespace UDA2.UI.Game
 {
     [DisallowMultipleComponent]
-    public sealed class GlobalUISceneBinder : MonoBehaviour
+    public sealed class GlobalUISceneBinder : MonoBehaviour, ISceneLoadTaskProvider
     {
         [Header("Global Visibility")]
         [SerializeField] private CanvasGroup globalVisibilityGroup;
@@ -34,6 +37,13 @@ namespace UDA2.UI.Game
         [SerializeField] private bool defaultShowQuestList = false;
         [SerializeField] private bool defaultShowInspectEye = false;
 
+        [Header("Performance")]
+        [SerializeField, Min(0)] private int stagedApplyDelayFrames = 1;
+        [SerializeField] private bool useSceneLoadTaskQueue = true;
+        [SerializeField, Min(1)] private int localizationWarmupBatchSize = 24;
+
+        private Coroutine applyRoutine;
+
         private void Awake()
         {
             if (globalVisibilityGroup == null)
@@ -50,17 +60,86 @@ namespace UDA2.UI.Game
         private void OnEnable()
         {
             SceneManager.sceneLoaded += HandleSceneLoaded;
-            ApplyForScene(SceneManager.GetActiveScene());
+            RequestApplyForScene(SceneManager.GetActiveScene());
         }
 
         private void OnDisable()
         {
             SceneManager.sceneLoaded -= HandleSceneLoaded;
+
+            if (applyRoutine != null)
+            {
+                StopCoroutine(applyRoutine);
+                applyRoutine = null;
+            }
         }
 
         private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
         {
+            RequestApplyForScene(scene);
+        }
+
+        public void CollectLoadTasks(List<SceneLoadTask> tasks)
+        {
+            if (!useSceneLoadTaskQueue || tasks == null)
+                return;
+
+            tasks.Add(new SceneLoadTask(
+                name: "GlobalUI.ApplyScene",
+                weight: 0.35f,
+                runnerFactory: BuildApplySceneTask));
+
+            if (LocalizationLoadGate.IsDeferring || LocalizationLoadGate.HasPending)
+            {
+                tasks.Add(new SceneLoadTask(
+                    name: "GlobalUI.LocalizationWarmup",
+                    weight: 0.65f,
+                    runnerFactory: BuildLocalizationWarmupTask));
+            }
+        }
+
+        private void RequestApplyForScene(Scene scene)
+        {
+            if (applyRoutine != null)
+                StopCoroutine(applyRoutine);
+
+            applyRoutine = StartCoroutine(ApplyForSceneRoutine(scene));
+        }
+
+        private System.Collections.IEnumerator ApplyForSceneRoutine(Scene scene)
+        {
+            int frames = Mathf.Max(0, stagedApplyDelayFrames);
+            while (frames > 0)
+            {
+                frames--;
+                yield return null;
+            }
+
             ApplyForScene(scene);
+            applyRoutine = null;
+        }
+
+        private IEnumerator BuildApplySceneTask()
+        {
+            int frames = Mathf.Max(0, stagedApplyDelayFrames);
+            while (frames > 0)
+            {
+                frames--;
+                yield return null;
+            }
+
+            ApplyForScene(SceneManager.GetActiveScene());
+        }
+
+        private IEnumerator BuildLocalizationWarmupTask()
+        {
+            int batchSize = Mathf.Max(1, localizationWarmupBatchSize);
+
+            while (LocalizationLoadGate.HasPending)
+            {
+                LocalizationLoadGate.DrainBatch(batchSize);
+                yield return null;
+            }
         }
 
         private void ApplyForScene(Scene scene)
