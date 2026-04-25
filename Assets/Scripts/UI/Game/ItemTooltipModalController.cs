@@ -224,9 +224,9 @@ namespace UDA2.UI.Game
             if (t == null)
                 return;
 
-            var setter = t.GetComponent<LocalizedTextSetter>();
-            if (setter != null && setter.enabled)
-                setter.enabled = false;
+            var localized = t.GetComponent<LocalizedGlobalComponent>();
+            if (localized != null && localized.enabled)
+                localized.enabled = false;
         }
 
         private void ApplyTitleAndDescription(
@@ -270,23 +270,13 @@ namespace UDA2.UI.Game
             if (string.IsNullOrWhiteSpace(resolved) || resolved == key)
                 return false;
 
-            var setter = text.GetComponent<LocalizedTextSetter>();
-            if (setter != null)
+            var localized = text.GetComponent<LocalizedGlobalComponent>();
+            if (localized != null)
             {
-                setter.enabled = true;
-                setter.key = key;
-                if (setter.targetText == null)
-                    setter.targetText = text;
-                setter.UpdateText(lang);
-                return true;
-            }
-
-            var component = text.GetComponent<LocalizedTextComponent>();
-            if (component != null)
-            {
-                component.enabled = true;
-                component.textKey = key;
-                component.UpdateText();
+                localized.enabled = true;
+                localized.Key = key;
+                localized.ClearArgs();
+                localized.UpdateText(lang);
                 return true;
             }
 

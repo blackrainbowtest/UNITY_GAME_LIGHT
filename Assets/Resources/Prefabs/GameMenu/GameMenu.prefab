@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &9160541871442919
 GameObject:
@@ -147,7 +147,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 9160541871442919}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
   textKey: mainmenu
@@ -161,7 +161,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 9160541871442919}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
   key: mainmenu
@@ -531,7 +531,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1952386586478092508}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
   textKey: resume
@@ -545,7 +545,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1952386586478092508}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
   key: resume
@@ -1107,7 +1107,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5436668655086762670}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
   textKey: settings
@@ -1121,7 +1121,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5436668655086762670}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
   key: settings
@@ -1457,7 +1457,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6342299912948163705}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
   textKey: save_game
@@ -1471,7 +1471,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6342299912948163705}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
   key: save_game
@@ -1790,7 +1790,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6981299313244932311}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
   textKey: exit
@@ -1804,7 +1804,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6981299313244932311}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
   key: exit
@@ -1976,3 +1976,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a366efd922b1e6744be5efc61867eff0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UDA2.UI.UIButtonSound
+

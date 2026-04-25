@@ -166,12 +166,12 @@ namespace UDA2.UI.Game
             if (target == null || string.IsNullOrWhiteSpace(key))
                 return;
 
-            var setter = target.GetComponent<LocalizedTextSetter>();
-            if (setter != null)
+            var localized = target.GetComponent<LocalizedGlobalComponent>();
+            if (localized != null)
             {
-                setter.key = key;
-                setter.SetFormatArgs(args);
-                setter.UpdateText();
+                localized.Key = key;
+                localized.SetFormatArgs(args);
+                localized.UpdateText();
                 return;
             }
 

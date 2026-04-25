@@ -277,8 +277,6 @@ namespace Game.Battle
                     $"sp={context.Enemy.sp}/{context.Enemy.maxSp}, lp={context.Enemy.lp}/{context.Enemy.maxLp}, " +
                     $"allowedActions=[{allowedText}]",
                     UDA2.Logging.LogChannel.AI);
-
-                Logger.FlushToFile();
             }
 
             InitializeParticipants();

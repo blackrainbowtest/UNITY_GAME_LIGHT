@@ -96,17 +96,12 @@ namespace UDA2.UI.SaveLoad
             }
             RefreshSlots();
             // Guarantees correct header localization for current mode
-            var setter = headerText.GetComponent<LocalizedTextSetter>();
-            if (setter != null)
+            var localized = headerText != null ? headerText.GetComponent<LocalizedGlobalComponent>() : null;
+            if (localized != null)
             {
-                setter.key = mode == SaveLoadMode.Load ? "save_load_title_load" : "save_load_title_save";
-                setter.UpdateText();
-            }
-            var comp = headerText.GetComponent<LocalizedTextComponent>();
-            if (comp != null)
-            {
-                comp.textKey = mode == SaveLoadMode.Load ? "save_load_title_load" : "save_load_title_save";
-                comp.UpdateText();
+                localized.Key = mode == SaveLoadMode.Load ? "save_load_title_load" : "save_load_title_save";
+                localized.ClearArgs();
+                localized.UpdateText();
             }
         }
 

@@ -124,19 +124,12 @@ public class IntroController : MonoBehaviour
         // Localization via component
         if (loreText != null)
         {
-            // LocalizedTextSetter
-            var setter = loreText.GetComponent<LocalizedTextSetter>();
-            if (setter != null)
+            var localized = loreText.GetComponent<LocalizedGlobalComponent>();
+            if (localized != null)
             {
-                setter.key = frame.textKey;
-                setter.UpdateText(); // call without parameters
-            }
-            // LocalizedTextComponent
-            var comp = loreText.GetComponent<LocalizedTextComponent>();
-            if (comp != null)
-            {
-                comp.textKey = frame.textKey;
-                comp.UpdateText();
+                localized.Key = frame.textKey;
+                localized.ClearArgs();
+                localized.UpdateText();
             }
         }
 

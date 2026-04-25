@@ -31,6 +31,8 @@ namespace Game.Dungeon
         [Tooltip("If enabled, sets BattleExitContext to return to the current scene.")]
         [SerializeField] private bool returnToActiveSceneAfterBattle = true;
 
+        private bool isStartingBattle;
+
         private void Reset()
         {
             button = GetComponent<Button>();
@@ -54,6 +56,9 @@ namespace Game.Dungeon
 
         private void OnClick()
         {
+            if (isStartingBattle)
+                return;
+
             if (!HasAlivePlayer())
             {
                 Debug.LogWarning("[TempStartFightButton] Cannot start battle: player HP is 0. Restore HP before entering battle.");
@@ -115,8 +120,18 @@ namespace Game.Dungeon
             if (save?.player != null)
                 save.player.SetSceneName(fightSceneName);
 
+            isStartingBattle = true;
             if (SceneFlowManager.Instance != null)
-                SceneFlowManager.Instance.LoadScene(fightSceneName);
+                SceneFlowManager.Instance.LoadScene(
+                    fightSceneName,
+                    new SceneTransitionData
+                    {
+                        SkipSceneLoadTasks = true,
+                        SkipSceneReadyWait = true,
+                        SkipMusicWait = true,
+                        DisableFakeProgressEnvelope = true
+                    },
+                    0f);
             else
                 SceneManager.LoadSceneAsync(fightSceneName);
         }

@@ -16,6 +16,8 @@ void SetProgress(float progress);
     public class SceneFlowManager : MonoBehaviour
 {
 public static SceneFlowManager Instance { get; private set; }
+public static bool IsTransitionInProgress { get; private set; }
+public static event Action<bool> TransitionStateChanged;
 
 [Header("Audio Sync")]
 [SerializeField] private bool waitForMusicBeforeHideLoading = true;
@@ -35,6 +37,7 @@ public static SceneFlowManager Instance { get; private set; }
 
 [Header("Staged Scene Tasks")]
 [SerializeField] private bool runSceneLoadTasks = true;
+[SerializeField, Min(0f)] private float maxSingleLoadTaskSeconds = 1.5f;
 [SerializeField, Range(0f, 1f)] private float loadProgressStart = 0.03f;
 [SerializeField, Range(0f, 1f)] private float loadProgressStreamEnd = 0.90f;
 [SerializeField, Range(0f, 1f)] private float loadProgressMinTimeEnd = 0.94f;
@@ -44,9 +47,29 @@ public static SceneFlowManager Instance { get; private set; }
 [SerializeField, Range(0f, 1f)] private float loadProgressMusicEnd = 0.995f;
 [SerializeField, Min(0.01f)] private float runningTaskProgressSpeed = 0.6f;
 
+[Header("Fake Progress Envelope")]
+[SerializeField] private bool useFakeProgressEnvelope = true;
+[SerializeField, Range(0.10f, 0.15f)] private float fakePreloadEndMin = 0.10f;
+[SerializeField, Range(0.10f, 0.15f)] private float fakePreloadEndMax = 0.15f;
+[SerializeField, Min(0f)] private float fakePreloadDurationMin = 0.2f;
+[SerializeField, Min(0f)] private float fakePreloadDurationMax = 0.45f;
+[SerializeField, Range(0.90f, 0.95f)] private float fakeFinalizeStartMin = 0.90f;
+[SerializeField, Range(0.90f, 0.95f)] private float fakeFinalizeStartMax = 0.95f;
+[SerializeField, Min(0f)] private float fakeFinalizeDurationMin = 0.2f;
+[SerializeField, Min(0f)] private float fakeFinalizeDurationMax = 0.45f;
+
+[Header("Loading Screen Resolve")]
+[SerializeField, Min(0f)] private float loadingScreenResolveTimeoutSeconds = 0.75f;
+
+[Header("Deferred Localization")]
+[SerializeField] private bool drainDeferredLocalizationAfterActivation = true;
+[SerializeField, Min(1)] private int maxDeferredLocalizationPerFrame = 32;
+[SerializeField, Min(0f)] private float deferredLocalizationDrainTimeoutSeconds = 0.12f;
+
 private bool _sceneReady;
 private ILoadingScreen loadingScreen;
 private Coroutine _loadCoroutine;
+private float _progressCeilingBeforeFinalize = 1f;
 
 private void Awake()
 {
@@ -66,12 +89,16 @@ if (_loadCoroutine != null)
 StopCoroutine(_loadCoroutine);
 _loadCoroutine = null;
 }
+
+SetTransitionInProgress(false);
 }
 
 private void OnDestroy()
 {
 if (Instance == this)
 Instance = null;
+
+SetTransitionInProgress(false);
 }
 
 public void RegisterLoadingScreen(ILoadingScreen screen)
@@ -106,11 +133,15 @@ if (_loadCoroutine != null)
 StopCoroutine(_loadCoroutine);
 _loadCoroutine = null;
 }
+
+SetTransitionInProgress(true);
 _loadCoroutine = StartCoroutine(LoadSceneWithLoadingScreen(sceneName, data, minTime));
 }
 
 // овый flow: всегда через LoadingScene
 private IEnumerator LoadSceneWithLoadingScreen(string targetScene, SceneTransitionData data, float minLoadingTime)
+{
+try
 {
 // сли уже в LoadingScene, просто грузим целевую сцену
 if (SceneManager.GetActiveScene().name == LoadingSceneName)
@@ -128,11 +159,20 @@ yield return null;
 
 // 2. дём, пока LoadingScreenController зарегистрируется
 float waitTime = 0f;
-while (loadingScreen == null && waitTime < 5f) // fail-safe 5 сек
+float resolveTimeout = Mathf.Max(0f, loadingScreenResolveTimeoutSeconds);
+while (loadingScreen == null && waitTime < resolveTimeout)
 {
+TryResolveLoadingScreenFromActiveScene();
+
+if (loadingScreen != null)
+break;
+
 waitTime += Time.unscaledDeltaTime;
 yield return null;
 }
+
+if (loadingScreen == null)
+TryResolveLoadingScreenFromActiveScene();
 
 // 3. оказываем loading (на всякий случай)
 if (loadingScreen != null)
@@ -140,7 +180,28 @@ loadingScreen.Show();
 
 // 4. рузим целевую сцену с задержкой
 yield return StartCoroutine(LoadSceneRoutine(targetScene, data, minLoadingTime));
+}
+finally
+{
 _loadCoroutine = null;
+SetTransitionInProgress(false);
+}
+}
+
+private static void SetTransitionInProgress(bool isInProgress)
+{
+if (IsTransitionInProgress == isInProgress)
+return;
+
+IsTransitionInProgress = isInProgress;
+
+try
+{
+TransitionStateChanged?.Invoke(isInProgress);
+}
+catch (Exception)
+{
+}
 }
 
 // бычная загрузка целевой сцены с ожиданием ready и минимального времени
@@ -148,11 +209,43 @@ private IEnumerator LoadSceneRoutine(string sceneName, SceneTransitionData data,
 {
 float startedAt = Time.realtimeSinceStartup;
 _sceneReady = false;
+bool useFakeProgressForTransition = useFakeProgressEnvelope && !(data != null && data.DisableFakeProgressEnvelope);
+
+float progressCeiling = loadProgressMusicEnd;
+if (loadingScreen != null && useFakeProgressForTransition)
+{
+float fakeStartMin = Mathf.Min(fakeFinalizeStartMin, fakeFinalizeStartMax);
+float fakeStartMax = Mathf.Max(fakeFinalizeStartMin, fakeFinalizeStartMax);
+progressCeiling = UnityEngine.Random.Range(fakeStartMin, fakeStartMax);
+}
+
+progressCeiling = Mathf.Clamp01(progressCeiling);
+_progressCeilingBeforeFinalize = progressCeiling;
 
 if (loadingScreen != null)
 {
 loadingScreen.Show();
-loadingScreen.SetProgress(Mathf.Clamp01(loadProgressStart));
+loadingScreen.SetProgress(0f);
+}
+
+float realStreamStartProgress = Mathf.Clamp01(loadProgressStart);
+if (loadingScreen != null && useFakeProgressForTransition)
+{
+float fakePreloadMin = Mathf.Min(fakePreloadEndMin, fakePreloadEndMax);
+float fakePreloadMax = Mathf.Max(fakePreloadEndMin, fakePreloadEndMax);
+float fakePreloadTarget = UnityEngine.Random.Range(fakePreloadMin, fakePreloadMax);
+fakePreloadTarget = Mathf.Clamp(fakePreloadTarget, 0f, loadProgressStreamEnd);
+
+float fakePreDurationMin = Mathf.Min(fakePreloadDurationMin, fakePreloadDurationMax);
+float fakePreDurationMax = Mathf.Max(fakePreloadDurationMin, fakePreloadDurationMax);
+float fakePreDuration = UnityEngine.Random.Range(fakePreDurationMin, fakePreDurationMax);
+
+yield return SimulateProgress(0f, fakePreloadTarget, fakePreDuration);
+realStreamStartProgress = Mathf.Max(realStreamStartProgress, fakePreloadTarget);
+}
+else if (loadingScreen != null)
+{
+loadingScreen.SetProgress(realStreamStartProgress);
 }
 
 float timer = 0f;
@@ -179,7 +272,7 @@ timer += Time.unscaledDeltaTime;
 if (loadingScreen != null)
 {
 float streamProgress = Mathf.Clamp01(asyncOp.progress / 0.9f);
-loadingScreen.SetProgress(Mathf.Lerp(loadProgressStart, loadProgressStreamEnd, streamProgress));
+loadingScreen.SetProgress(Mathf.Lerp(realStreamStartProgress, loadProgressStreamEnd, streamProgress));
 }
 
 yield return null;
@@ -195,13 +288,13 @@ timer += Time.unscaledDeltaTime;
 normalizedMin = minLoadingTime > 0f ? Mathf.Clamp01(timer / minLoadingTime) : 1f;
 
 if (loadingScreen != null)
-loadingScreen.SetProgress(Mathf.Lerp(loadProgressStreamEnd, loadProgressMinTimeEnd, normalizedMin));
+loadingScreen.SetProgress(Mathf.Lerp(loadProgressStreamEnd, Mathf.Min(loadProgressMinTimeEnd, progressCeiling), normalizedMin));
 
 yield return null;
 }
 
 if (loadingScreen != null)
-loadingScreen.SetProgress(loadProgressMinTimeEnd);
+loadingScreen.SetProgress(Mathf.Min(loadProgressMinTimeEnd, progressCeiling));
 
 TrySetLocalizationLoadGateDeferring(true);
 
@@ -211,15 +304,17 @@ while (!asyncOp.isDone)
 timer += Time.unscaledDeltaTime;
 
 if (loadingScreen != null)
-loadingScreen.SetProgress(loadProgressActivationEnd);
+loadingScreen.SetProgress(Mathf.Min(loadProgressActivationEnd, progressCeiling));
 
 yield return null;
 }
 
-yield return ExecuteSceneLoadTasks(sceneName);
+yield return ExecuteSceneLoadTasks(sceneName, data);
 TrySetLocalizationLoadGateDeferring(false);
+yield return DrainDeferredLocalizationUpdates();
 
-bool shouldWaitForSceneReady = waitForSceneReadySignal && SceneHasReadySignalReceiver();
+bool skipSceneReadyWait = data != null && data.SkipSceneReadyWait;
+bool shouldWaitForSceneReady = waitForSceneReadySignal && !skipSceneReadyWait && SceneHasReadySignalReceiver();
 
 if (shouldWaitForSceneReady)
 {
@@ -232,7 +327,7 @@ sceneReadyWaited += Time.unscaledDeltaTime;
 timer += Time.unscaledDeltaTime;
 
 if (loadingScreen != null)
-loadingScreen.SetProgress(loadProgressSceneReadyEnd);
+loadingScreen.SetProgress(Mathf.Min(loadProgressSceneReadyEnd, progressCeiling));
 
 yield return null;
 }
@@ -257,9 +352,9 @@ if (logLoadTimings)
 UDA2.Logging.Logger.LogInfo($"[SceneFlow] Min loading time reached for '{sceneName}' at {timer:0.###}s");
 
 if (loadingScreen != null)
-loadingScreen.SetProgress(loadProgressMusicEnd);
+loadingScreen.SetProgress(Mathf.Min(loadProgressMusicEnd, progressCeiling));
 
-yield return WaitForMusicReady(sceneName);
+yield return WaitForMusicReady(sceneName, data);
 
 if (logLoadTimings)
 {
@@ -269,14 +364,27 @@ UDA2.Logging.Logger.LogInfo($"[SceneFlow] Hide loading for '{sceneName}'. total=
 
 if (loadingScreen != null)
 {
-loadingScreen.SetProgress(1f);
-loadingScreen.Hide();
+if (useFakeProgressForTransition)
+{
+float fakeFinalizeDurationMinValue = Mathf.Min(fakeFinalizeDurationMin, fakeFinalizeDurationMax);
+float fakeFinalizeDurationMaxValue = Mathf.Max(fakeFinalizeDurationMin, fakeFinalizeDurationMax);
+float fakeFinalizeDuration = UnityEngine.Random.Range(fakeFinalizeDurationMinValue, fakeFinalizeDurationMaxValue);
+yield return SimulateProgress(progressCeiling, 1f, fakeFinalizeDuration);
 }
+else
+{
+loadingScreen.SetProgress(1f);
 }
 
-private IEnumerator ExecuteSceneLoadTasks(string sceneName)
+loadingScreen.Hide();
+}
+
+_progressCeilingBeforeFinalize = 1f;
+}
+
+private IEnumerator ExecuteSceneLoadTasks(string sceneName, SceneTransitionData data)
 {
-if (!runSceneLoadTasks)
+if (!runSceneLoadTasks || (data != null && data.SkipSceneLoadTasks))
 yield break;
 
 var tasks = CollectSceneLoadTasks();
@@ -309,8 +417,22 @@ UDA2.Logging.Logger.LogInfo($"[SceneFlow] Load task '{task.Name}' init failed fo
 
 if (routine != null)
 {
+float taskStartedAt = Time.realtimeSinceStartup;
+float taskTimeout = Mathf.Max(0f, maxSingleLoadTaskSeconds);
+
 while (true)
 {
+if (taskTimeout > 0f)
+{
+float taskElapsed = Time.realtimeSinceStartup - taskStartedAt;
+if (taskElapsed >= taskTimeout)
+{
+if (logLoadTimings)
+UDA2.Logging.Logger.LogInfo($"[SceneFlow] Load task '{task.Name}' timed out for '{sceneName}' after {taskElapsed:0.###}s. Continuing load.");
+break;
+}
+}
+
 bool moved;
 object yielded;
 try
@@ -340,13 +462,68 @@ yield return null;
 }
 }
 
+private void TryResolveLoadingScreenFromActiveScene()
+{
+if (loadingScreen != null)
+return;
+
+var scene = SceneManager.GetActiveScene();
+if (!scene.IsValid() || !scene.isLoaded)
+return;
+
+var roots = scene.GetRootGameObjects();
+for (int i = 0; i < roots.Length; i++)
+{
+var root = roots[i];
+if (root == null)
+continue;
+
+var candidates = root.GetComponentsInChildren<MonoBehaviour>(true);
+for (int j = 0; j < candidates.Length; j++)
+{
+if (candidates[j] is ILoadingScreen screen)
+{
+loadingScreen = screen;
+return;
+}
+}
+}
+}
+
 private void UpdateTaskQueueProgress(float completedWeight, float totalWeight)
 {
 if (loadingScreen == null || totalWeight <= 0f)
 return;
 
 float normalized = Mathf.Clamp01(completedWeight / totalWeight);
-loadingScreen.SetProgress(Mathf.Lerp(loadProgressActivationEnd, loadProgressTasksEnd, normalized));
+float tasksTarget = Mathf.Lerp(loadProgressActivationEnd, loadProgressTasksEnd, normalized);
+loadingScreen.SetProgress(Mathf.Min(tasksTarget, _progressCeilingBeforeFinalize));
+}
+
+private IEnumerator SimulateProgress(float from, float to, float durationSeconds)
+{
+if (loadingScreen == null)
+yield break;
+
+float start = Mathf.Clamp01(from);
+float end = Mathf.Clamp01(to);
+
+if (durationSeconds <= 0f || Mathf.Approximately(start, end))
+{
+loadingScreen.SetProgress(end);
+yield break;
+}
+
+float elapsed = 0f;
+while (elapsed < durationSeconds)
+{
+elapsed += Time.unscaledDeltaTime;
+float t = Mathf.Clamp01(elapsed / durationSeconds);
+loadingScreen.SetProgress(Mathf.Lerp(start, end, t));
+yield return null;
+}
+
+loadingScreen.SetProgress(end);
 }
 
 private List<SceneLoadTask> CollectSceneLoadTasks()
@@ -428,8 +605,11 @@ UDA2.Logging.Logger.LogInfo($"[SceneFlow] Reflection load-task failed in '{behav
 }
 }
 
-private IEnumerator WaitForMusicReady(string sceneName)
+private IEnumerator WaitForMusicReady(string sceneName, SceneTransitionData data)
 {
+if (data != null && data.SkipMusicWait)
+yield break;
+
 if (!waitForMusicBeforeHideLoading)
 yield break;
 
@@ -547,6 +727,74 @@ method.Invoke(null, null);
 }
 catch (Exception)
 {
+}
+}
+
+private IEnumerator DrainDeferredLocalizationUpdates()
+{
+if (!drainDeferredLocalizationAfterActivation)
+yield break;
+
+var type = Type.GetType("LocalizationLoadGate, UDA2.Localization");
+if (type == null)
+yield break;
+
+var hasPendingProperty = type.GetProperty(
+"HasPending",
+System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static,
+null,
+typeof(bool),
+Type.EmptyTypes,
+null);
+
+var drainBatchMethod = type.GetMethod(
+"DrainBatch",
+System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static,
+null,
+new[] { typeof(int) },
+null);
+
+if (hasPendingProperty == null || drainBatchMethod == null)
+yield break;
+
+int batchSize = Mathf.Max(1, maxDeferredLocalizationPerFrame);
+float timeout = Mathf.Max(0f, deferredLocalizationDrainTimeoutSeconds);
+float startedAt = Time.realtimeSinceStartup;
+
+while (true)
+{
+bool hasPending;
+try
+{
+var value = hasPendingProperty.GetValue(null, null);
+hasPending = value is bool b && b;
+}
+catch
+{
+yield break;
+}
+
+if (!hasPending)
+yield break;
+
+if (timeout > 0f && Time.realtimeSinceStartup - startedAt >= timeout)
+yield break;
+
+int drained;
+try
+{
+var value = drainBatchMethod.Invoke(null, new object[] { batchSize });
+drained = value is int count ? count : 0;
+}
+catch
+{
+yield break;
+}
+
+if (drained <= 0)
+yield break;
+
+yield return null;
 }
 }
 

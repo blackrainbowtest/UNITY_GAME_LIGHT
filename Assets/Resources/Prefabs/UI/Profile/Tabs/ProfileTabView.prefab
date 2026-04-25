@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &29315364322889813
 GameObject:
@@ -401,7 +401,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 493020486430680455}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.Localization::LocalizedTextComponent
   textKey: next
@@ -415,7 +415,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 493020486430680455}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.UI::LocalizedTextSetter
   key: next
@@ -738,7 +738,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 593054251411071503}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.Localization::LocalizedTextComponent
   textKey: lvl
@@ -752,7 +752,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 593054251411071503}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.UI::LocalizedTextSetter
   key: lvl
@@ -3742,7 +3742,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8263633706729610656}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.UI::LocalizedTextSetter
   key: exp
@@ -3756,7 +3756,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8263633706729610656}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.Localization::LocalizedTextComponent
   textKey: exo
@@ -4261,3 +4261,4 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+

@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!29 &1
 OcclusionCullingSettings:
@@ -532,7 +532,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 286207847}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
   textKey: yes
@@ -546,7 +546,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 286207847}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
   key: yes
@@ -1636,7 +1636,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1803332874}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
   textKey: no
@@ -1650,7 +1650,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1803332874}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
   key: no
@@ -1877,7 +1877,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1963124848}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
   textKey: INTRO_DIALOG_QUESTION
@@ -1891,7 +1891,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1963124848}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
   key: INTRO_DIALOG_QUESTION
@@ -2149,7 +2149,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1977987987}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 340e2f59e8342054ea0c83177be96b07, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
   textKey: 
@@ -2163,7 +2163,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1977987987}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
   key: 
@@ -2524,7 +2524,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2112118786}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87162c40596559f4b97d2c91b3ef9633, type: 3}
+  m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
   key: skip
@@ -2538,3 +2538,4 @@ SceneRoots:
   - {fileID: 1660760612}
   - {fileID: 1195406706}
   - {fileID: 53739056}
+

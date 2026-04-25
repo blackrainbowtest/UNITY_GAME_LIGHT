@@ -19,8 +19,6 @@ public static class LocalizationLoadGate
     public static void EndDeferring()
     {
         _isDeferring = false;
-        Pending.Clear();
-        PendingIds.Clear();
     }
 
     public static void Register(LocalizedGlobalComponent component)

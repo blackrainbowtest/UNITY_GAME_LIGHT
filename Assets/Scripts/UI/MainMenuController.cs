@@ -10,7 +10,7 @@ namespace UDA2.UI
         private void OnEnable()
         {
             // Force update all localized texts in the menu when it becomes active
-            LocalizedTextSetter.UpdateAllInHierarchy(gameObject);
+            LocalizedGlobalComponent.UpdateAllInHierarchy(gameObject);
         }
 
         private void Awake()
@@ -20,7 +20,7 @@ namespace UDA2.UI
         private void Start()
         {
             // Force update all localized texts at scene start
-            LocalizedTextSetter.UpdateAllInHierarchy(gameObject);
+            LocalizedGlobalComponent.UpdateAllInHierarchy(gameObject);
         }
 
         public void OnNewGamePressed()
