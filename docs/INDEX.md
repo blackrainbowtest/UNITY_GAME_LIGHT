@@ -1,4 +1,4 @@
-> **Game Version:** 0.0.198
+> **Game Version:** 0.0.340
 
 # UDA2 Documentation Index
 
@@ -22,6 +22,7 @@
 ## Common / Core
 - [Common API Reference](common/COMMON_API_REFERENCE.md)
 - [Guild Runtime API](common/GUILD_RUNTIME_API.md)
+- [Loader System](common/LOADER_SYSTEM.md)
 
 ## Проект
 - [Roadmap](project/ROADMAP.md)

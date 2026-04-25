@@ -118,13 +118,13 @@ _sceneReady = true;
 }
 
 
-private const float DefaultMinLoadingTime = 1.0f; // по умолчанию 1 секунда
+private const float DefaultMinLoadingTime = 1.0f; // Default minimum loading duration.
 
 
-// мя вашей сцены загрузки
+// Name of the dedicated loading scene.
 private const string LoadingSceneName = "LoadingScene";
 
-// ерегрузка с минимальным временем загрузки
+// Public API: load a scene with optional transition data and minimum loading time.
 public void LoadScene(string sceneName, SceneTransitionData data = null, float? minLoadingTime = null)
 {
 float minTime = minLoadingTime ?? DefaultMinLoadingTime;
@@ -134,30 +134,40 @@ StopCoroutine(_loadCoroutine);
 _loadCoroutine = null;
 }
 
-SetTransitionInProgress(true);
 _loadCoroutine = StartCoroutine(LoadSceneWithLoadingScreen(sceneName, data, minTime));
 }
 
-// овый flow: всегда через LoadingScene
+// Transition flow: always route through LoadingScene.
 private IEnumerator LoadSceneWithLoadingScreen(string targetScene, SceneTransitionData data, float minLoadingTime)
 {
 try
 {
-// сли уже в LoadingScene, просто грузим целевую сцену
+// If we are already in LoadingScene, continue directly with the target load routine.
 if (SceneManager.GetActiveScene().name == LoadingSceneName)
 {
+SetTransitionInProgress(true);
 yield return StartCoroutine(LoadSceneRoutine(targetScene, data, minLoadingTime));
 yield break;
 }
 
-// 1. агружаем LoadingScene
+// 1) Load LoadingScene first.
 _sceneReady = false;
 loadingScreen = null;
 AsyncOperation loadingOp = SceneManager.LoadSceneAsync(LoadingSceneName);
+if (loadingOp == null)
+{
+if (logLoadTimings)
+UDA2.Logging.Logger.LogInfo($"[SceneFlow] Failed to load '{LoadingSceneName}'. Falling back to direct load for '{targetScene}'.");
+
+SetTransitionInProgress(true);
+yield return StartCoroutine(LoadSceneRoutine(targetScene, data, minLoadingTime));
+yield break;
+}
+
 while (!loadingOp.isDone)
 yield return null;
 
-// 2. дём, пока LoadingScreenController зарегистрируется
+// 2) Wait for LoadingScreenController registration.
 float waitTime = 0f;
 float resolveTimeout = Mathf.Max(0f, loadingScreenResolveTimeoutSeconds);
 while (loadingScreen == null && waitTime < resolveTimeout)
@@ -174,11 +184,11 @@ yield return null;
 if (loadingScreen == null)
 TryResolveLoadingScreenFromActiveScene();
 
-// 3. оказываем loading (на всякий случай)
-if (loadingScreen != null)
-loadingScreen.Show();
+// Hide global UI only when loader scene is active (or loader is already available),
+// so player never sees a blank gap before loading visuals appear.
+SetTransitionInProgress(true);
 
-// 4. рузим целевую сцену с задержкой
+// 3) Load the target scene with staged progress and waits.
 yield return StartCoroutine(LoadSceneRoutine(targetScene, data, minLoadingTime));
 }
 finally
@@ -204,7 +214,7 @@ catch (Exception)
 }
 }
 
-// бычная загрузка целевой сцены с ожиданием ready и минимального времени
+// Core target scene loading routine with staged waits and optional synchronization gates.
 private IEnumerator LoadSceneRoutine(string sceneName, SceneTransitionData data, float minLoadingTime)
 {
 float startedAt = Time.realtimeSinceStartup;
