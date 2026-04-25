@@ -15,6 +15,9 @@ EditorBuildSettings:
     path: Assets/Scenes/LoadingScene.unity
     guid: 66379c014f5f6aa4a847635f65226999
   - enabled: 1
+    path: Assets/Scenes/DisclaimerScene.unity
+    guid: 471145838d21b4247a56abd835cb621b
+  - enabled: 1
     path: Assets/Scenes/MainMenuScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
