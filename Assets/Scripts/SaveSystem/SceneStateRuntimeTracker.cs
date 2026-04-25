@@ -61,6 +61,16 @@ namespace UDA2.SaveSystem
             if (string.Equals(from.name, "LoadingScene", StringComparison.Ordinal))
                 return;
 
+            // Battle scenes must never participate in back-navigation history:
+            //   - Entering battle (to=Battle): don't overwrite previousSceneName so the
+            //     back button in any scene after battle still points to the pre-battle scene.
+            //   - Exiting battle (from=Battle): don't record FightScene as the previous scene
+            //     so the back button in MonsterCave/city never routes the player into a fight.
+            if (SceneCategoryResolver.GetCategory(from.name) == SceneCategory.Battle)
+                return;
+            if (SceneCategoryResolver.GetCategory(to.name) == SceneCategory.Battle)
+                return;
+
             save.sceneState.previousSceneName = from.name;
         }
 

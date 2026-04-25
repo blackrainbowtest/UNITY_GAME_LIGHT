@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 using System.Collections;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace UDA2.SceneFlow
 {
@@ -59,7 +61,6 @@ public static event Action<bool> TransitionStateChanged;
 [SerializeField, Min(0f)] private float fakeFinalizeDurationMax = 0.45f;
 
 [Header("Loading Screen Resolve")]
-[SerializeField, Min(0f)] private float loadingScreenResolveTimeoutSeconds = 0.75f;
 
 [Header("Deferred Localization")]
 [SerializeField] private bool drainDeferredLocalizationAfterActivation = true;
@@ -70,6 +71,76 @@ private bool _sceneReady;
 private ILoadingScreen loadingScreen;
 private Coroutine _loadCoroutine;
 private float _progressCeilingBeforeFinalize = 1f;
+private AsyncOperation _pendingUnloadOp;
+private bool _loadingScreenVisible;
+private float _loadingScreenBootstrapProgress = -1f;
+
+// Background preloaded scenes: scene name -> suspended AsyncOperation (allowSceneActivation=false).
+// Scenes loaded here sit in memory at 90%, ready to activate instantly.
+private readonly Dictionary<string, AsyncOperation> _preloadedScenes = new();
+private readonly Dictionary<string, Coroutine> _preloadRoutines = new();
+
+// Instant fullscreen black cover shown the moment a transition begins.
+// It hides the source scene immediately while LoadingScene is still loading,
+// eliminating the 2-3 second window where the player sees the old scene.
+// Auto-created in Awake if not assigned via Inspector.
+[Header("Transition Cover")]
+[Tooltip("Optional: assign a CanvasGroup on a fullscreen black panel. Auto-created at runtime if left empty.")]
+[SerializeField] private CanvasGroup transitionCoverGroup;
+
+// --- Cached reflection delegates (resolved once in Awake) ---
+// Avoids repeated Type.GetType / GetMethod / GetField / GetProperty calls
+// on every scene transition and every frame during music-wait loops.
+private Action _locBeginDeferring;
+private Action _locEndDeferring;
+private Func<bool> _locHasPending;
+private Func<int, int> _locDrainBatch;
+private Func<object> _audioGetInstance;
+private Func<object, bool> _audioIsMusicPlaying;
+private Func<object, string, bool> _audioWillPlayMusicForScene;
+private Action<object, string> _audioPreloadSceneMusic;
+
+private void BuildReflectionCache()
+{
+    // Localization gate
+    var locType = Type.GetType("LocalizationLoadGate, UDA2.Localization");
+    if (locType != null)
+    {
+        var mBegin = locType.GetMethod("BeginDeferring", BindingFlags.Public | BindingFlags.Static, null, Type.EmptyTypes, null);
+        if (mBegin != null) _locBeginDeferring = (Action)Delegate.CreateDelegate(typeof(Action), mBegin, false);
+
+        var mEnd = locType.GetMethod("EndDeferring", BindingFlags.Public | BindingFlags.Static, null, Type.EmptyTypes, null);
+        if (mEnd != null) _locEndDeferring = (Action)Delegate.CreateDelegate(typeof(Action), mEnd, false);
+
+        var pHas = locType.GetProperty("HasPending", BindingFlags.Public | BindingFlags.Static, null, typeof(bool), Type.EmptyTypes, null);
+        if (pHas != null) { var getter = pHas.GetGetMethod(); _locHasPending = (Func<bool>)Delegate.CreateDelegate(typeof(Func<bool>), getter, false); }
+
+        var mDrain = locType.GetMethod("DrainBatch", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(int) }, null);
+        if (mDrain != null) _locDrainBatch = (Func<int, int>)Delegate.CreateDelegate(typeof(Func<int, int>), mDrain, false);
+    }
+
+    // AudioManager
+    var audioType = Type.GetType("UDA2.Audio.AudioManager, UDA2.Audio");
+    if (audioType != null)
+    {
+        var fInstance = audioType.GetField("Instance", BindingFlags.Public | BindingFlags.Static);
+        if (fInstance != null) _audioGetInstance = () => fInstance.GetValue(null);
+
+        var pPlaying = audioType.GetProperty("IsMusicPlaying", BindingFlags.Public | BindingFlags.Instance);
+        if (pPlaying != null) { var g = pPlaying.GetGetMethod(); _audioIsMusicPlaying = obj => (bool)(g.Invoke(obj, null) ?? false); }
+
+        var mWill = audioType.GetMethod("WillPlayMusicForScene", BindingFlags.Public | BindingFlags.Instance, null, new[] { typeof(string) }, null);
+        if (mWill != null) _audioWillPlayMusicForScene = (obj, s) => (bool)(mWill.Invoke(obj, new object[] { s }) ?? false);
+
+        var mPreload = audioType.GetMethod("PreloadSceneMusicAudioData", BindingFlags.Public | BindingFlags.Instance, null, new[] { typeof(string) }, null);
+        if (mPreload != null) _audioPreloadSceneMusic = (obj, s) => mPreload.Invoke(obj, new object[] { s });
+    }
+}
+
+// The single EventSystem and AudioListener that live in DDOL.
+// Duplicates from loaded scenes are removed in OnAnySceneLoaded.
+private EventSystem _ddolEventSystem;
+private AudioListener _ddolAudioListener;
 
 private void Awake()
 {
@@ -80,6 +151,131 @@ return;
 }
 Instance = this;
 DontDestroyOnLoad(gameObject);
+EnsureTransitionCover();
+EnsureEventSystem();
+EnsureAudioListener();
+BuildReflectionCache();
+SceneManager.sceneLoaded += OnAnySceneLoaded;
+// Load LoadingScene once and keep it alive in DDOL for the entire session.
+// It is never unloaded — we simply Show/Hide it each transition.
+StartCoroutine(EnsureLoadingSceneLoaded());
+}
+private bool _loadingSceneReady;
+
+/// Loads LoadingScene additively once at startup and keeps it loaded forever.
+/// It is never unloaded — we simply Show/Hide the loader UI each transition.
+/// DontDestroyOnLoad is NOT used: keeping it as a named scene lets us
+/// SetActiveScene on it during transitions.
+private IEnumerator EnsureLoadingSceneLoaded()
+{
+    // Already loaded (e.g. editor play-from-loading-scene).
+    var existing = SceneManager.GetSceneByName(LoadingSceneName);
+    if (existing.IsValid() && existing.isLoaded)
+    {
+        TryResolveLoadingScreen();
+        if (!IsTransitionInProgress && loadingScreen != null)
+            loadingScreen.Hide();
+        _loadingSceneReady = true;
+        yield break;
+    }
+
+    // Prevent "There can be only one active Event System" during startup
+    // additive load of LoadingScene. It will be re-enabled in OnAnySceneLoaded.
+    SetDdolSingletonsActive(false);
+    var op = SceneManager.LoadSceneAsync(LoadingSceneName, LoadSceneMode.Additive);
+    if (op == null)
+    {
+        SetDdolSingletonsActive(true);
+        if (logLoadTimings)
+            UDA2.Logging.Logger.LogInfo("[SceneFlow] Could not load LoadingScene at startup.");
+        yield break;
+    }
+
+    while (!op.isDone)
+        yield return null;
+
+    TryResolveLoadingScreen();
+    if (!IsTransitionInProgress && loadingScreen != null)
+        loadingScreen.Hide();
+    _loadingSceneReady = true;
+    if (logLoadTimings)
+        UDA2.Logging.Logger.LogInfo("[SceneFlow] LoadingScene loaded (persistent, never unloaded).");
+}
+
+private void TryResolveLoadingScreen()
+{
+    if (loadingScreen != null) return;
+    TryResolveLoadingScreenFromActiveScene();
+    if (loadingScreen == null)
+    {
+        var scene = SceneManager.GetSceneByName(LoadingSceneName);
+        if (scene.IsValid() && scene.isLoaded)
+        {
+            foreach (var root in scene.GetRootGameObjects())
+            {
+                var candidates = root.GetComponentsInChildren<MonoBehaviour>(true);
+                for (int i = 0; i < candidates.Length; i++)
+                {
+                    if (candidates[i] is ILoadingScreen screen)
+                    {
+                        loadingScreen = screen;
+                        break;
+                    }
+                }
+
+                if (loadingScreen != null)
+                    break;
+            }
+        }
+    }
+
+    if (loadingScreen == null && logLoadTimings)
+        UDA2.Logging.Logger.LogInfo("[SceneFlow] ILoadingScreen not found after resolve attempts.");
+}
+
+private void EnsureTransitionCover()
+{
+if (transitionCoverGroup != null)
+return;
+
+var coverGo = new GameObject("[TransitionCover]");
+coverGo.transform.SetParent(transform, false);
+
+var canvas = coverGo.AddComponent<Canvas>();
+canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+canvas.sortingOrder = 9999; // Always on top.
+
+coverGo.AddComponent<UnityEngine.UI.CanvasScaler>();
+
+var panelGo = new GameObject("Panel");
+panelGo.transform.SetParent(coverGo.transform, false);
+var rt = panelGo.AddComponent<RectTransform>();
+rt.anchorMin = Vector2.zero;
+rt.anchorMax = Vector2.one;
+rt.offsetMin = Vector2.zero;
+rt.offsetMax = Vector2.zero;
+var img = panelGo.AddComponent<UnityEngine.UI.Image>();
+img.color = Color.black;
+img.raycastTarget = true;
+
+transitionCoverGroup = coverGo.AddComponent<CanvasGroup>();
+transitionCoverGroup.alpha = 0f;
+transitionCoverGroup.blocksRaycasts = false;
+transitionCoverGroup.interactable = false;
+}
+
+private void ShowTransitionCover()
+{
+if (transitionCoverGroup == null) return;
+transitionCoverGroup.alpha = 1f;
+transitionCoverGroup.blocksRaycasts = true;
+}
+
+private void HideTransitionCover()
+{
+if (transitionCoverGroup == null) return;
+transitionCoverGroup.alpha = 0f;
+transitionCoverGroup.blocksRaycasts = false;
 }
 
 private void OnDisable()
@@ -96,25 +292,197 @@ SetTransitionInProgress(false);
 private void OnDestroy()
 {
 if (Instance == this)
+{
 Instance = null;
+SceneManager.sceneLoaded -= OnAnySceneLoaded;
+}
 
 SetTransitionInProgress(false);
+}
+
+/// Finds the existing EventSystem in the bootstrap scene and moves it to DDOL.
+/// If none exists, the first one encountered in OnAnySceneLoaded will be promoted.
+private void EnsureEventSystem()
+{
+_ddolEventSystem = FindFirstObjectByType<EventSystem>();
+if (_ddolEventSystem != null)
+    DontDestroyOnLoad(_ddolEventSystem.gameObject);
+}
+
+/// Creates a dedicated AudioListener on this DDOL object.
+/// All AudioListeners found in loaded scenes are destroyed (component only,
+/// not the GameObject) in OnAnySceneLoaded, so only this one remains active.
+private void EnsureAudioListener()
+{
+_ddolAudioListener = GetComponent<AudioListener>();
+if (_ddolAudioListener == null)
+    _ddolAudioListener = gameObject.AddComponent<AudioListener>();
+
+// Remove any AudioListeners already present in the current scene.
+var existing = FindObjectsByType<AudioListener>(FindObjectsSortMode.None);
+foreach (var al in existing)
+    if (al != _ddolAudioListener)
+        Destroy(al);
+}
+
+/// Called by Unity after every scene load.
+/// Removes duplicate EventSystems and AudioListeners from the newly loaded scene
+/// so Unity never sees more than one of each active simultaneously.
+private void OnAnySceneLoaded(Scene scene, LoadSceneMode mode)
+{
+var roots = scene.GetRootGameObjects();
+
+// --- EventSystem deduplication ---
+foreach (var root in roots)
+{
+    foreach (var es in root.GetComponentsInChildren<EventSystem>(true))
+    {
+        if (_ddolEventSystem == null || !_ddolEventSystem)
+        {
+            // No DDOL EventSystem yet — promote this one.
+            _ddolEventSystem = es;
+            DontDestroyOnLoad(es.gameObject);
+        }
+        else
+        {
+            // Disable the component only — never destroy the GameObject.
+            // Destroying es.gameObject risks wiping other components on the
+            // same object (e.g. LoadingScreenController on a shared root).
+            es.enabled = false;
+        }
+    }
+}
+
+// --- AudioListener deduplication ---
+// Disable the component only (never destroy it) so we don't risk removing
+// things like Camera or CanvasRenderer from the same GameObject.
+foreach (var root in roots)
+    foreach (var al in root.GetComponentsInChildren<AudioListener>(true))
+        al.enabled = false;
+
+// Re-enable the DDOL singletons now that all duplicates are cleaned up.
+SetDdolSingletonsActive(true);
+}
+
+/// Temporarily disables or re-enables the DDOL EventSystem only.
+/// Must be called BEFORE every additive scene activation so that Unity does not
+/// see two active EventSystems at once (which fires an OnEnable warning).
+/// AudioListener is intentionally excluded: disabling it creates a "no audio
+/// listeners" gap; the brief "2 listeners" warning from a duplicate is harmless
+/// and disappears as soon as OnAnySceneLoaded destroys the scene copy.
+private void SetDdolSingletonsActive(bool active)
+{
+    if (_ddolEventSystem != null)
+        _ddolEventSystem.enabled = active;
 }
 
 public void RegisterLoadingScreen(ILoadingScreen screen)
 {
 loadingScreen = screen;
+
+// LoadingScene is persistent; keep it hidden outside real transitions
+// so startup scenes like Splash/MainMenu are not occluded.
+if (!IsTransitionInProgress && loadingScreen != null)
+{
+    loadingScreen.Hide();
+    _loadingScreenVisible = false;
+}
 }
 
 public void UnregisterLoadingScreen(ILoadingScreen screen)
 {
 if (loadingScreen == screen)
+{
+_loadingScreenVisible = false;
 loadingScreen = null;
+}
 }
 
 public void NotifySceneReady()
 {
 _sceneReady = true;
+}
+
+// --- Background Preloading API ---
+
+/// <summary>
+/// Starts loading <paramref name="sceneName"/> in the background using Additive mode
+/// with allowSceneActivation=false. The scene sits at 90% in memory, ready to
+/// activate instantly when LoadScene() is called for the same name.
+/// Safe to call multiple times for the same scene — only one load runs at a time.
+/// Typical usage: call from the scene the player is likely to leave next
+/// (e.g. MonsterCaveScene calls PreloadScene("FightScene") on Awake).
+/// </summary>
+public void PreloadScene(string sceneName)
+{
+if (string.IsNullOrWhiteSpace(sceneName)) return;
+if (_preloadedScenes.ContainsKey(sceneName)) return;  // already loaded or loading
+if (_preloadRoutines.ContainsKey(sceneName)) return;
+
+var routine = StartCoroutine(BackgroundPreloadRoutine(sceneName));
+_preloadRoutines[sceneName] = routine;
+}
+
+/// <summary>
+/// Cancels and discards a background preload if it is still in progress.
+/// Scenes already at 90% cannot be truly cancelled by Unity — they will be
+/// unloaded via UnloadSceneAsync instead.
+/// </summary>
+public void CancelPreload(string sceneName)
+{
+if (string.IsNullOrWhiteSpace(sceneName)) return;
+
+if (_preloadRoutines.TryGetValue(sceneName, out var routine))
+{
+if (routine != null) StopCoroutine(routine);
+_preloadRoutines.Remove(sceneName);
+}
+
+if (_preloadedScenes.TryGetValue(sceneName, out var op))
+{
+_preloadedScenes.Remove(sceneName);
+// Scene is Additive and suspended — we must activate then immediately unload.
+SetDdolSingletonsActive(false);
+op.allowSceneActivation = true;
+StartCoroutine(UnloadAfterActivation(sceneName));
+}
+}
+
+private IEnumerator UnloadAfterActivation(string sceneName)
+{
+// Wait one frame for activation to complete, then unload.
+yield return null;
+yield return null;
+var scene = SceneManager.GetSceneByName(sceneName);
+if (scene.IsValid() && scene.isLoaded)
+SceneManager.UnloadSceneAsync(scene);
+}
+
+private IEnumerator BackgroundPreloadRoutine(string sceneName)
+{
+// Load additively with activation suspended — Unity loads assets in background
+// threads up to 90% without touching the main scene.
+var op = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+if (op == null)
+{
+_preloadRoutines.Remove(sceneName);
+yield break;
+}
+
+op.allowSceneActivation = false;
+
+if (logLoadTimings)
+UDA2.Logging.Logger.LogInfo($"[SceneFlow] Background preload started: '{sceneName}'");
+
+// Yield until Unity has loaded all assets (progress reaches 0.9 = 90%).
+while (op.progress < 0.9f)
+yield return null;
+
+_preloadedScenes[sceneName] = op;
+_preloadRoutines.Remove(sceneName);
+
+if (logLoadTimings)
+UDA2.Logging.Logger.LogInfo($"[SceneFlow] Background preload ready: '{sceneName}'");
 }
 
 
@@ -146,53 +514,85 @@ try
 if (SceneManager.GetActiveScene().name == LoadingSceneName)
 {
 SetTransitionInProgress(true);
+ShowTransitionCover();
 yield return StartCoroutine(LoadSceneRoutine(targetScene, data, minLoadingTime));
 yield break;
 }
 
-// 1) Load LoadingScene first.
+// Signal transition start immediately: hide global UI and show instant black cover
+// in the same frame as the click, before any scene loading begins.
+SetTransitionInProgress(true);
+ShowTransitionCover();
+
+bool useFakeProgressForTransition = useFakeProgressEnvelope && !(data != null && data.DisableFakeProgressEnvelope);
+
+// LoadingScene is always alive in DDOL — just wait for it if startup load is
+// still in progress (very unlikely after the first few frames).
+while (!_loadingSceneReady)
+    yield return null;
+
 _sceneReady = false;
-loadingScreen = null;
-AsyncOperation loadingOp = SceneManager.LoadSceneAsync(LoadingSceneName);
-if (loadingOp == null)
-{
-if (logLoadTimings)
-UDA2.Logging.Logger.LogInfo($"[SceneFlow] Failed to load '{LoadingSceneName}'. Falling back to direct load for '{targetScene}'.");
+string sourceSceneName = SceneManager.GetActiveScene().name;
 
-SetTransitionInProgress(true);
-yield return StartCoroutine(LoadSceneRoutine(targetScene, data, minLoadingTime));
-yield break;
-}
-
-while (!loadingOp.isDone)
-yield return null;
-
-// 2) Wait for LoadingScreenController registration.
-float waitTime = 0f;
-float resolveTimeout = Mathf.Max(0f, loadingScreenResolveTimeoutSeconds);
-while (loadingScreen == null && waitTime < resolveTimeout)
-{
-TryResolveLoadingScreenFromActiveScene();
-
-if (loadingScreen != null)
-break;
-
-waitTime += Time.unscaledDeltaTime;
-yield return null;
-}
-
+// Resolve loadingScreen from the persistent DDOL LoadingScene.
 if (loadingScreen == null)
-TryResolveLoadingScreenFromActiveScene();
+    TryResolveLoadingScreen();
 
-// Hide global UI only when loader scene is active (or loader is already available),
-// so player never sees a blank gap before loading visuals appear.
-SetTransitionInProgress(true);
+// Show loader immediately BEFORE source-scene unload/target-scene load,
+// so the player sees loading UI instead of a frozen black cover.
+if (loadingScreen != null)
+{
+    loadingScreen.Show();
+    _loadingScreenVisible = true;
+    loadingScreen.SetProgress(0f);
 
-// 3) Load the target scene with staged progress and waits.
+    if (useFakeProgressForTransition)
+    {
+        float preMin = Mathf.Min(fakePreloadEndMin, fakePreloadEndMax);
+        float preMax = Mathf.Max(fakePreloadEndMin, fakePreloadEndMax);
+        float bootstrapTarget = Mathf.Clamp01(UnityEngine.Random.Range(preMin, preMax));
+        yield return SimulateProgress(0f, bootstrapTarget, 0.15f);
+        _loadingScreenBootstrapProgress = bootstrapTarget;
+    }
+    else
+    {
+        _loadingScreenBootstrapProgress = Mathf.Clamp01(loadProgressStart);
+        loadingScreen.SetProgress(_loadingScreenBootstrapProgress);
+    }
+
+    // Loader is visible now, so remove the hard black cover.
+    HideTransitionCover();
+}
+
+SetDdolSingletonsActive(false);
+
+// Make LoadingScene the active scene so audio, lighting and new objects
+// belong to it while the transition runs.
+var loadingScene = SceneManager.GetSceneByName(LoadingSceneName);
+if (loadingScene.IsValid())
+    SceneManager.SetActiveScene(loadingScene);
+
+// 3) Asynchronously unload the source scene.
+//    UnloadSceneAsync is truly async: OnDestroy calls are spread across frames,
+//    so the loading screen continues to render and animate without freezing.
+//    We do NOT yield on it — unload runs in the background while the loader is visible.
+if (logLoadTimings)
+UDA2.Logging.Logger.LogInfo($"[SceneFlow] Unloading source scene '{sourceSceneName}' async.");
+var unloadOp = SceneManager.UnloadSceneAsync(sourceSceneName, UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
+if (unloadOp == null && logLoadTimings)
+    UDA2.Logging.Logger.LogInfo($"[SceneFlow] UnloadSceneAsync returned null for '{sourceSceneName}' — scene may not be loaded.");
+// Fire-and-forget: target scene load starts immediately, unload runs in parallel.
+
+// 4) Load the target scene with staged progress and waits.
+// Pass the unload op so LoadSceneRoutine can wait for MonsterCave/source scene to
+// finish unloading before activating the target scene (avoids Single-mode freeze).
+_pendingUnloadOp = unloadOp;
 yield return StartCoroutine(LoadSceneRoutine(targetScene, data, minLoadingTime));
+// LoadingScene stays loaded in DDOL — no unload needed.
 }
 finally
 {
+HideTransitionCover();
 _loadCoroutine = null;
 SetTransitionInProgress(false);
 }
@@ -215,11 +615,22 @@ catch (Exception)
 }
 
 // Core target scene loading routine with staged waits and optional synchronization gates.
+// If a background preload exists for sceneName, its suspended AsyncOperation is reused
+// instead of starting a fresh load — the scene is already at 90% in memory.
 private IEnumerator LoadSceneRoutine(string sceneName, SceneTransitionData data, float minLoadingTime)
 {
 float startedAt = Time.realtimeSinceStartup;
 _sceneReady = false;
 bool useFakeProgressForTransition = useFakeProgressEnvelope && !(data != null && data.DisableFakeProgressEnvelope);
+
+// Consume preloaded op if available — skip the async load entirely.
+bool hadPreload = _preloadedScenes.TryGetValue(sceneName, out var preloadedOp);
+if (hadPreload)
+{
+_preloadedScenes.Remove(sceneName);
+if (logLoadTimings)
+UDA2.Logging.Logger.LogInfo($"[SceneFlow] Using preloaded scene: '{sceneName}'");
+}
 
 float progressCeiling = loadProgressMusicEnd;
 if (loadingScreen != null && useFakeProgressForTransition)
@@ -232,25 +643,38 @@ progressCeiling = UnityEngine.Random.Range(fakeStartMin, fakeStartMax);
 progressCeiling = Mathf.Clamp01(progressCeiling);
 _progressCeilingBeforeFinalize = progressCeiling;
 
-if (loadingScreen != null)
+float realStreamStartProgress = Mathf.Clamp01(loadProgressStart);
+if (_loadingScreenBootstrapProgress >= 0f)
 {
-loadingScreen.Show();
-loadingScreen.SetProgress(0f);
+realStreamStartProgress = Mathf.Max(realStreamStartProgress, _loadingScreenBootstrapProgress);
+_loadingScreenBootstrapProgress = -1f;
 }
 
-float realStreamStartProgress = Mathf.Clamp01(loadProgressStart);
+if (loadingScreen != null)
+{
+// Loader is ready to take over - hide the instant black cover so the
+// loader UI (with background art, progress bar, etc.) is visible.
+HideTransitionCover();
+if (!_loadingScreenVisible)
+{
+loadingScreen.Show();
+_loadingScreenVisible = true;
+}
+loadingScreen.SetProgress(realStreamStartProgress);
+}
+
 if (loadingScreen != null && useFakeProgressForTransition)
 {
 float fakePreloadMin = Mathf.Min(fakePreloadEndMin, fakePreloadEndMax);
 float fakePreloadMax = Mathf.Max(fakePreloadEndMin, fakePreloadEndMax);
 float fakePreloadTarget = UnityEngine.Random.Range(fakePreloadMin, fakePreloadMax);
-fakePreloadTarget = Mathf.Clamp(fakePreloadTarget, 0f, loadProgressStreamEnd);
+fakePreloadTarget = Mathf.Clamp(fakePreloadTarget, realStreamStartProgress, loadProgressStreamEnd);
 
 float fakePreDurationMin = Mathf.Min(fakePreloadDurationMin, fakePreloadDurationMax);
 float fakePreDurationMax = Mathf.Max(fakePreloadDurationMin, fakePreloadDurationMax);
 float fakePreDuration = UnityEngine.Random.Range(fakePreDurationMin, fakePreDurationMax);
 
-yield return SimulateProgress(0f, fakePreloadTarget, fakePreDuration);
+yield return SimulateProgress(realStreamStartProgress, fakePreloadTarget, fakePreDuration);
 realStreamStartProgress = Mathf.Max(realStreamStartProgress, fakePreloadTarget);
 }
 else if (loadingScreen != null)
@@ -260,15 +684,32 @@ loadingScreen.SetProgress(realStreamStartProgress);
 
 float timer = 0f;
 TryPreloadSceneMusic(sceneName);
-var asyncOp = SceneManager.LoadSceneAsync(sceneName);
+
+// Use preloaded op if available (scene already at 90% in memory),
+// otherwise start a fresh async load.
+AsyncOperation asyncOp;
+if (hadPreload && preloadedOp != null)
+{
+asyncOp = preloadedOp;
+// Scene is already fully loaded in the background — jump straight to minTime wait.
+timer = minLoadingTime; // treat load as instantly done
+if (loadingScreen != null)
+loadingScreen.SetProgress(loadProgressStreamEnd);
+if (logLoadTimings)
+UDA2.Logging.Logger.LogInfo($"[SceneFlow] Preloaded scene '{sceneName}' activated instantly.");
+}
+else
+{
+asyncOp = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
 if (asyncOp == null)
 {
 if (logLoadTimings)
 UDA2.Logging.Logger.LogInfo($"[SceneFlow] Failed to start async load for '{sceneName}'.");
-
 if (loadingScreen != null)
+{
 loadingScreen.Hide();
-
+_loadingScreenVisible = false;
+}
 yield break;
 }
 
@@ -284,12 +725,12 @@ if (loadingScreen != null)
 float streamProgress = Mathf.Clamp01(asyncOp.progress / 0.9f);
 loadingScreen.SetProgress(Mathf.Lerp(realStreamStartProgress, loadProgressStreamEnd, streamProgress));
 }
-
 yield return null;
 }
 
 if (logLoadTimings)
 UDA2.Logging.Logger.LogInfo($"[SceneFlow] Async load finished for '{sceneName}' at {timer:0.###}s");
+}
 
 float normalizedMin = minLoadingTime > 0f ? Mathf.Clamp01(timer / minLoadingTime) : 1f;
 while (normalizedMin < 1f)
@@ -308,6 +749,21 @@ loadingScreen.SetProgress(Mathf.Min(loadProgressMinTimeEnd, progressCeiling));
 
 TrySetLocalizationLoadGateDeferring(true);
 
+// Wait for the source scene to finish unloading before activating the target scene.
+// Without this, Single-mode activation would encounter remaining source scene objects
+// and destroy them synchronously, causing the exact freeze we're trying to avoid.
+if (_pendingUnloadOp != null)
+{
+while (!_pendingUnloadOp.isDone)
+{
+if (loadingScreen != null)
+loadingScreen.SetProgress(Mathf.Min(loadProgressActivationEnd * 0.5f, progressCeiling));
+yield return null;
+}
+_pendingUnloadOp = null;
+}
+
+SetDdolSingletonsActive(false);
 asyncOp.allowSceneActivation = true;
 while (!asyncOp.isDone)
 {
@@ -318,6 +774,13 @@ loadingScreen.SetProgress(Mathf.Min(loadProgressActivationEnd, progressCeiling))
 
 yield return null;
 }
+
+// Make the newly loaded scene the active scene so that:
+// a) the next transition captures the correct sourceSceneName via GetActiveScene();
+// b) lighting, skybox and audio sources belong to the right scene.
+var activatedScene = SceneManager.GetSceneByName(sceneName);
+if (activatedScene.IsValid() && activatedScene.isLoaded)
+    SceneManager.SetActiveScene(activatedScene);
 
 yield return ExecuteSceneLoadTasks(sceneName, data);
 TrySetLocalizationLoadGateDeferring(false);
@@ -387,6 +850,7 @@ loadingScreen.SetProgress(1f);
 }
 
 loadingScreen.Hide();
+_loadingScreenVisible = false;
 }
 
 _progressCeilingBeforeFinalize = 1f;
@@ -685,86 +1149,22 @@ return false;
 
 private void TryPreloadSceneMusic(string sceneName)
 {
-if (!preloadSceneMusicBeforeActivation)
-return;
-
-if (string.IsNullOrWhiteSpace(sceneName))
-return;
-
-if (!TryGetAudioManagerSingleton(out var audioManager))
-return;
-
-var method = audioManager.GetType().GetMethod(
-"PreloadSceneMusicAudioData",
-System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance,
-null,
-new[] { typeof(string) },
-null);
-
-if (method == null)
-return;
-
-try
-{
-method.Invoke(audioManager, new object[] { sceneName });
-}
-catch (Exception)
-{
-// Ignore prewarm failures to keep scene transitions robust.
-}
+if (!preloadSceneMusicBeforeActivation || string.IsNullOrWhiteSpace(sceneName)) return;
+if (_audioGetInstance == null || _audioPreloadSceneMusic == null) return;
+try { var mgr = _audioGetInstance(); if (mgr != null) _audioPreloadSceneMusic(mgr, sceneName); }
+catch { }
 }
 
 private static void TrySetLocalizationLoadGateDeferring(bool isDeferring)
 {
-var type = Type.GetType("LocalizationLoadGate, UDA2.Localization");
-if (type == null)
-return;
-
-var methodName = isDeferring ? "BeginDeferring" : "EndDeferring";
-var method = type.GetMethod(
-methodName,
-System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static,
-null,
-Type.EmptyTypes,
-null);
-
-if (method == null)
-return;
-
-try
-{
-method.Invoke(null, null);
-}
-catch (Exception)
-{
-}
+if (Instance == null) return;
+try { (isDeferring ? Instance._locBeginDeferring : Instance._locEndDeferring)?.Invoke(); }
+catch (Exception) { }
 }
 
 private IEnumerator DrainDeferredLocalizationUpdates()
 {
-if (!drainDeferredLocalizationAfterActivation)
-yield break;
-
-var type = Type.GetType("LocalizationLoadGate, UDA2.Localization");
-if (type == null)
-yield break;
-
-var hasPendingProperty = type.GetProperty(
-"HasPending",
-System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static,
-null,
-typeof(bool),
-Type.EmptyTypes,
-null);
-
-var drainBatchMethod = type.GetMethod(
-"DrainBatch",
-System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static,
-null,
-new[] { typeof(int) },
-null);
-
-if (hasPendingProperty == null || drainBatchMethod == null)
+if (!drainDeferredLocalizationAfterActivation || _locHasPending == null || _locDrainBatch == null)
 yield break;
 
 int batchSize = Mathf.Max(1, maxDeferredLocalizationPerFrame);
@@ -774,109 +1174,59 @@ float startedAt = Time.realtimeSinceStartup;
 while (true)
 {
 bool hasPending;
-try
-{
-var value = hasPendingProperty.GetValue(null, null);
-hasPending = value is bool b && b;
-}
-catch
-{
-yield break;
-}
+try { hasPending = _locHasPending(); }
+catch { yield break; }
 
-if (!hasPending)
-yield break;
-
-if (timeout > 0f && Time.realtimeSinceStartup - startedAt >= timeout)
-yield break;
+if (!hasPending) yield break;
+if (timeout > 0f && Time.realtimeSinceStartup - startedAt >= timeout) yield break;
 
 int drained;
-try
-{
-var value = drainBatchMethod.Invoke(null, new object[] { batchSize });
-drained = value is int count ? count : 0;
-}
-catch
-{
-yield break;
-}
+try { drained = _locDrainBatch(batchSize); }
+catch { yield break; }
 
-if (drained <= 0)
-yield break;
-
+if (drained <= 0) yield break;
 yield return null;
 }
 }
 
-private static bool TryGetAudioManagerSingleton(out object audioManager)
+private bool TryGetAudioManagerSingleton(out object audioManager)
 {
 audioManager = null;
-
-var type = System.Type.GetType("UDA2.Audio.AudioManager, UDA2.Audio");
-if (type == null)
-return false;
-
-var instanceField = type.GetField("Instance", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
-if (instanceField == null)
-return false;
-
-audioManager = instanceField.GetValue(null);
+if (_audioGetInstance == null) return false;
+try { audioManager = _audioGetInstance(); }
+catch { return false; }
 return audioManager != null;
 }
 
-private static bool IsMusicPlaying(object audioManager)
+private bool IsMusicPlaying(object audioManager)
 {
-if (audioManager == null)
-return false;
-
-var property = audioManager.GetType().GetProperty("IsMusicPlaying", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-if (property == null || property.PropertyType != typeof(bool))
-return false;
-
-var value = property.GetValue(audioManager);
-return value is bool isPlaying && isPlaying;
+if (audioManager == null || _audioIsMusicPlaying == null) return false;
+try { return _audioIsMusicPlaying(audioManager); }
+catch { return false; }
 }
 
-private static bool WillPlayMusicForScene(object audioManager, string sceneName)
+private bool WillPlayMusicForScene(object audioManager, string sceneName)
 {
-if (audioManager == null)
-return false;
-
-var method = audioManager.GetType().GetMethod(
-"WillPlayMusicForScene",
-System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance,
-null,
-new[] { typeof(string) },
-null);
-
-if (method == null)
-return false;
-
-var result = method.Invoke(audioManager, new object[] { sceneName });
-return result is bool hasMusic && hasMusic;
+if (audioManager == null || _audioWillPlayMusicForScene == null) return false;
+try { return _audioWillPlayMusicForScene(audioManager, sceneName); }
+catch { return false; }
 }
 
 private static bool SceneHasReadySignalReceiver()
 {
 var scene = SceneManager.GetActiveScene();
-if (!scene.IsValid() || !scene.isLoaded)
-return false;
+if (!scene.IsValid() || !scene.isLoaded) return false;
 
 var roots = scene.GetRootGameObjects();
 for (int i = 0; i < roots.Length; i++)
 {
-var root = roots[i];
-if (root == null)
-continue;
-
-var behaviours = root.GetComponentsInChildren<MonoBehaviour>(true);
+var behaviours = roots[i]?.GetComponentsInChildren<MonoBehaviour>(true);
+if (behaviours == null) continue;
 for (int j = 0; j < behaviours.Length; j++)
 {
-if (behaviours[j] is ISceneReady)
-return true;
+if (behaviours[j] is ISceneReady) return true;
 }
 }
-
 return false;
 }
 }

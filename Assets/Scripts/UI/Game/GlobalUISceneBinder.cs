@@ -81,9 +81,25 @@ namespace UDA2.UI.Game
             RequestApplyForScene(scene);
         }
 
-        private void HandleTransitionStateChanged(bool _)
+        private void HandleTransitionStateChanged(bool isInProgress)
         {
-            RequestApplyForScene(SceneManager.GetActiveScene());
+            if (isInProgress)
+            {
+                // Transition just started: hide global UI immediately in this frame
+                // with no coroutine delay, so UI is gone before the loader appears.
+                if (applyRoutine != null)
+                {
+                    StopCoroutine(applyRoutine);
+                    applyRoutine = null;
+                }
+                ApplyForScene(SceneManager.GetActiveScene());
+            }
+            else
+            {
+                // Transition ended: re-apply with normal staged delay to let
+                // the new scene settle before revealing the global UI.
+                RequestApplyForScene(SceneManager.GetActiveScene());
+            }
         }
 
         public void CollectLoadTasks(List<SceneLoadTask> tasks)

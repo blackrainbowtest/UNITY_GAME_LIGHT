@@ -21,6 +21,10 @@ namespace UDA2.UI
         [SerializeField] private bool smoothProgress = true;
         [SerializeField, Min(0f)] private float smoothProgressSpeed = 8f;
 
+        [Header("Render Order")]
+        [SerializeField] private bool forceTopMostCanvas = true;
+        [SerializeField] private int topMostSortingOrder = 20000;
+
         [Header("Tooltip")]
         [SerializeField] private TMP_Text tooltipText;
         [Tooltip("If set, keys will be taken from this UIStringsData (all keys).")]
@@ -87,6 +91,8 @@ namespace UDA2.UI
         {
             gameObject.SetActive(true);
 
+            EnsureTopMostRenderOrder();
+
             _displayedProgress = 0f;
             _targetProgress = 0f;
             ApplyProgressVisual(0f);
@@ -123,6 +129,26 @@ namespace UDA2.UI
         public void ShowPreviousTooltip()
         {
             ChangeTooltip(-1, true);
+        }
+
+        private void EnsureTopMostRenderOrder()
+        {
+            if (!forceTopMostCanvas)
+                return;
+
+            var canvases = GetComponentsInChildren<Canvas>(true);
+            int order = topMostSortingOrder;
+
+            for (int i = 0; i < canvases.Length; i++)
+            {
+                var canvas = canvases[i];
+                if (canvas == null || !canvas.isRootCanvas)
+                    continue;
+
+                canvas.overrideSorting = true;
+                canvas.sortingOrder = order;
+                order += 1;
+            }
         }
 
         private void ApplyRandomBackground()
