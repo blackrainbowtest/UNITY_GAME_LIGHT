@@ -29,7 +29,25 @@ public static event Action<bool> TransitionStateChanged;
 [SerializeField] private string[] skipMusicWaitForScenes = Array.Empty<string>();
 
 [Header("Debug")]
-[SerializeField] private bool logLoadTimings;
+    [Tooltip("Log scene flow diagnostics (transition timings, preload, loader visibility) to the custom Logger.\nDisable in release builds to reduce I/O on player devices.")]
+    [SerializeField] private bool logLoadTimings;
+
+    /// <summary>
+    /// Other scripts can read this to decide whether to emit [SceneFlow] diagnostics.
+    /// Controlled by the 'Log Load Timings' checkbox on SceneFlowManager in the Inspector.
+    /// </summary>
+    public static bool IsFlowLoggingEnabled => Instance != null && Instance.logLoadTimings;
+
+    [Tooltip("Warm up shaders once at startup while the loading screen is visible.\n" +
+             "If 'Shader Variants To Warmup' is assigned — warms only those variants (fast).\n" +
+             "Otherwise calls Shader.WarmupAllShaders() — warms everything (slower).")]
+    [SerializeField] private bool warmupShadersAtStartup = true;
+
+    [Tooltip("Optional ShaderVariantCollection to warm up at startup.\n" +
+             "Create via Window \u2192 Analysis \u2192 Shader Variant Collection,\n" +
+             "then play through FightScene in Editor to record used variants.\n" +
+             "If empty and warmupShadersAtStartup is enabled, all shaders are warmed as fallback.")]
+    [SerializeField] private ShaderVariantCollection shaderVariantsToWarmup;
 
 [Header("Scene Ready Sync")]
 [Tooltip("If true, waits for NotifySceneReady signal from scene scripts.")]
@@ -74,11 +92,9 @@ private float _progressCeilingBeforeFinalize = 1f;
 private AsyncOperation _pendingUnloadOp;
 private bool _loadingScreenVisible;
 private float _loadingScreenBootstrapProgress = -1f;
+private float _transitionStartedAt = -1f; // realtimeSinceStartup at LoadScene call
 
-// Background preloaded scenes: scene name -> suspended AsyncOperation (allowSceneActivation=false).
-// Scenes loaded here sit in memory at 90%, ready to activate instantly.
-private readonly Dictionary<string, AsyncOperation> _preloadedScenes = new();
-private readonly Dictionary<string, Coroutine> _preloadRoutines = new();
+
 
 // Instant fullscreen black cover shown the moment a transition begins.
 // It hides the source scene immediately while LoadingScene is still loading,
@@ -200,6 +216,32 @@ private IEnumerator EnsureLoadingSceneLoaded()
     _loadingSceneReady = true;
     if (logLoadTimings)
         UDA2.Logging.Logger.LogInfo("[SceneFlow] LoadingScene loaded (persistent, never unloaded).");
+
+    // Pre-compile shader variants while the loading screen is visible.
+    // Without this, first activation of FightScene freezes the main thread
+    // for tens of seconds on some devices (shader compilation on demand).
+    if (warmupShadersAtStartup)
+    {
+        float warmupStart = UnityEngine.Time.realtimeSinceStartup;
+        if (shaderVariantsToWarmup != null)
+        {
+            // Warm only the recorded variants — fast and precise.
+            if (logLoadTimings)
+                UDA2.Logging.Logger.LogInfo($"[SceneFlow] Shader warmup (collection: {shaderVariantsToWarmup.name})...");
+            shaderVariantsToWarmup.WarmUp();
+        }
+        else
+        {
+            // Fallback: warm ALL shaders. Slower but requires no setup.
+            if (logLoadTimings)
+                UDA2.Logging.Logger.LogInfo("[SceneFlow] Shader warmup (all shaders)...");
+            Shader.WarmupAllShaders();
+        }
+        float warmupDuration = UnityEngine.Time.realtimeSinceStartup - warmupStart;
+        if (logLoadTimings)
+            UDA2.Logging.Logger.LogInfo($"[SceneFlow] Shader warmup done in {warmupDuration:0.000}s");
+        yield return null;
+    }
 }
 
 private void TryResolveLoadingScreen()
@@ -403,88 +445,6 @@ public void NotifySceneReady()
 _sceneReady = true;
 }
 
-// --- Background Preloading API ---
-
-/// <summary>
-/// Starts loading <paramref name="sceneName"/> in the background using Additive mode
-/// with allowSceneActivation=false. The scene sits at 90% in memory, ready to
-/// activate instantly when LoadScene() is called for the same name.
-/// Safe to call multiple times for the same scene — only one load runs at a time.
-/// Typical usage: call from the scene the player is likely to leave next
-/// (e.g. MonsterCaveScene calls PreloadScene("FightScene") on Awake).
-/// </summary>
-public void PreloadScene(string sceneName)
-{
-if (string.IsNullOrWhiteSpace(sceneName)) return;
-if (_preloadedScenes.ContainsKey(sceneName)) return;  // already loaded or loading
-if (_preloadRoutines.ContainsKey(sceneName)) return;
-
-var routine = StartCoroutine(BackgroundPreloadRoutine(sceneName));
-_preloadRoutines[sceneName] = routine;
-}
-
-/// <summary>
-/// Cancels and discards a background preload if it is still in progress.
-/// Scenes already at 90% cannot be truly cancelled by Unity — they will be
-/// unloaded via UnloadSceneAsync instead.
-/// </summary>
-public void CancelPreload(string sceneName)
-{
-if (string.IsNullOrWhiteSpace(sceneName)) return;
-
-if (_preloadRoutines.TryGetValue(sceneName, out var routine))
-{
-if (routine != null) StopCoroutine(routine);
-_preloadRoutines.Remove(sceneName);
-}
-
-if (_preloadedScenes.TryGetValue(sceneName, out var op))
-{
-_preloadedScenes.Remove(sceneName);
-// Scene is Additive and suspended — we must activate then immediately unload.
-SetDdolSingletonsActive(false);
-op.allowSceneActivation = true;
-StartCoroutine(UnloadAfterActivation(sceneName));
-}
-}
-
-private IEnumerator UnloadAfterActivation(string sceneName)
-{
-// Wait one frame for activation to complete, then unload.
-yield return null;
-yield return null;
-var scene = SceneManager.GetSceneByName(sceneName);
-if (scene.IsValid() && scene.isLoaded)
-SceneManager.UnloadSceneAsync(scene);
-}
-
-private IEnumerator BackgroundPreloadRoutine(string sceneName)
-{
-// Load additively with activation suspended — Unity loads assets in background
-// threads up to 90% without touching the main scene.
-var op = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
-if (op == null)
-{
-_preloadRoutines.Remove(sceneName);
-yield break;
-}
-
-op.allowSceneActivation = false;
-
-if (logLoadTimings)
-UDA2.Logging.Logger.LogInfo($"[SceneFlow] Background preload started: '{sceneName}'");
-
-// Yield until Unity has loaded all assets (progress reaches 0.9 = 90%).
-while (op.progress < 0.9f)
-yield return null;
-
-_preloadedScenes[sceneName] = op;
-_preloadRoutines.Remove(sceneName);
-
-if (logLoadTimings)
-UDA2.Logging.Logger.LogInfo($"[SceneFlow] Background preload ready: '{sceneName}'");
-}
-
 
 private const float DefaultMinLoadingTime = 1.0f; // Default minimum loading duration.
 
@@ -521,6 +481,7 @@ yield break;
 
 // Signal transition start immediately: hide global UI and show instant black cover
 // in the same frame as the click, before any scene loading begins.
+_transitionStartedAt = Time.realtimeSinceStartup;
 SetTransitionInProgress(true);
 ShowTransitionCover();
 
@@ -534,6 +495,9 @@ while (!_loadingSceneReady)
 _sceneReady = false;
 string sourceSceneName = SceneManager.GetActiveScene().name;
 
+if (logLoadTimings)
+    UDA2.Logging.Logger.LogInfo($"[SceneFlow] Transition: '{sourceSceneName}' → '{targetScene}' | t=+0.000s");
+
 // Resolve loadingScreen from the persistent DDOL LoadingScene.
 if (loadingScreen == null)
     TryResolveLoadingScreen();
@@ -545,6 +509,8 @@ if (loadingScreen != null)
     loadingScreen.Show();
     _loadingScreenVisible = true;
     loadingScreen.SetProgress(0f);
+    if (logLoadTimings)
+        UDA2.Logging.Logger.LogInfo($"[SceneFlow] Loader shown for '{targetScene}' at +{(Time.realtimeSinceStartup - _transitionStartedAt):0.000}s");
 
     if (useFakeProgressForTransition)
     {
@@ -558,6 +524,9 @@ if (loadingScreen != null)
     {
         _loadingScreenBootstrapProgress = Mathf.Clamp01(loadProgressStart);
         loadingScreen.SetProgress(_loadingScreenBootstrapProgress);
+        // Wait two frames: one to render the loader, one for double-buffer safety.
+        yield return null;
+        yield return null;
     }
 
     // Loader is visible now, so remove the hard black cover.
@@ -577,7 +546,7 @@ if (loadingScene.IsValid())
 //    so the loading screen continues to render and animate without freezing.
 //    We do NOT yield on it — unload runs in the background while the loader is visible.
 if (logLoadTimings)
-UDA2.Logging.Logger.LogInfo($"[SceneFlow] Unloading source scene '{sourceSceneName}' async.");
+    UDA2.Logging.Logger.LogInfo($"[SceneFlow] Unload start: '{sourceSceneName}' at +{(Time.realtimeSinceStartup - _transitionStartedAt):0.000}s");
 var unloadOp = SceneManager.UnloadSceneAsync(sourceSceneName, UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
 if (unloadOp == null && logLoadTimings)
     UDA2.Logging.Logger.LogInfo($"[SceneFlow] UnloadSceneAsync returned null for '{sourceSceneName}' — scene may not be loaded.");
@@ -615,22 +584,11 @@ catch (Exception)
 }
 
 // Core target scene loading routine with staged waits and optional synchronization gates.
-// If a background preload exists for sceneName, its suspended AsyncOperation is reused
-// instead of starting a fresh load — the scene is already at 90% in memory.
 private IEnumerator LoadSceneRoutine(string sceneName, SceneTransitionData data, float minLoadingTime)
 {
 float startedAt = Time.realtimeSinceStartup;
 _sceneReady = false;
 bool useFakeProgressForTransition = useFakeProgressEnvelope && !(data != null && data.DisableFakeProgressEnvelope);
-
-// Consume preloaded op if available — skip the async load entirely.
-bool hadPreload = _preloadedScenes.TryGetValue(sceneName, out var preloadedOp);
-if (hadPreload)
-{
-_preloadedScenes.Remove(sceneName);
-if (logLoadTimings)
-UDA2.Logging.Logger.LogInfo($"[SceneFlow] Using preloaded scene: '{sceneName}'");
-}
 
 float progressCeiling = loadProgressMusicEnd;
 if (loadingScreen != null && useFakeProgressForTransition)
@@ -685,20 +643,7 @@ loadingScreen.SetProgress(realStreamStartProgress);
 float timer = 0f;
 TryPreloadSceneMusic(sceneName);
 
-// Use preloaded op if available (scene already at 90% in memory),
-// otherwise start a fresh async load.
 AsyncOperation asyncOp;
-if (hadPreload && preloadedOp != null)
-{
-asyncOp = preloadedOp;
-// Scene is already fully loaded in the background — jump straight to minTime wait.
-timer = minLoadingTime; // treat load as instantly done
-if (loadingScreen != null)
-loadingScreen.SetProgress(loadProgressStreamEnd);
-if (logLoadTimings)
-UDA2.Logging.Logger.LogInfo($"[SceneFlow] Preloaded scene '{sceneName}' activated instantly.");
-}
-else
 {
 asyncOp = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
 if (asyncOp == null)
@@ -832,7 +777,8 @@ yield return WaitForMusicReady(sceneName, data);
 if (logLoadTimings)
 {
 float total = Time.realtimeSinceStartup - startedAt;
-UDA2.Logging.Logger.LogInfo($"[SceneFlow] Hide loading for '{sceneName}'. total={total:0.###}s");
+float totalFromClick = _transitionStartedAt >= 0f ? Time.realtimeSinceStartup - _transitionStartedAt : total;
+UDA2.Logging.Logger.LogInfo($"[SceneFlow] Transition done: '{sceneName}' | load={total:0.000}s | total={totalFromClick:0.000}s (from click)");
 }
 
 if (loadingScreen != null)

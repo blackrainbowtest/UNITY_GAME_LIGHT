@@ -49,6 +49,10 @@ namespace Game.Dungeon
             ApplyLocationButtonAlpha();
         }
 
+        private void Start()
+        {
+        }
+
         private void OnDisable()
         {
             if (deferredRefreshRoutine != null)
@@ -56,6 +60,10 @@ namespace Game.Dungeon
                 StopCoroutine(deferredRefreshRoutine);
                 deferredRefreshRoutine = null;
             }
+        }
+
+        private void OnDestroy()
+        {
         }
 
         private void ApplyLocationButtonAlpha()
@@ -271,25 +279,14 @@ namespace Game.Dungeon
             if (location.returnToActiveSceneAfterBattle)
                 BattleExitContext.SetReturnToActiveScene();
 
-            // Mark pending battle so saves/autosaves can restore battle contexts.
-            var save = GameState.Instance != null ? GameState.Instance.CurrentSave : null;
-            if (save != null && save.sceneState != null && save.sceneState.pendingBattle != null)
-            {
-                var pending = save.sceneState.pendingBattle;
-                pending.isPending = true;
-                pending.battleSceneName = location.fightSceneName;
-                pending.battleMode = "Normal";
-                pending.returnSceneName = location.returnToActiveSceneAfterBattle ? SceneManager.GetActiveScene().name : null;
-                pending.enemyDifficulty = "Normal";
-                pending.enemyId = enemy != null ? enemy.id : null;
-                // Keep source world location id (dld_*) for outcome presentation matching.
-                pending.locationId = location != null ? location.id : null;
-            }
-
             // Note: save.player.sceneName is updated automatically by SceneStateRuntimeTracker
             // when FightScene becomes active. No need to set it here.
+            // pendingBattle is intentionally NOT written here: saves happen only after
+            // victory / defeat / escape, so a crash during battle does not persist the fight.
 
             // Load FightScene.
+            if (SceneFlowManager.IsFlowLoggingEnabled)
+                Logger.LogInfo($"[Dungeon] Battle start: '{UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}' → '{location.fightSceneName}'");
             isStartingBattle = true;
             if (SceneFlowManager.Instance != null)
                 SceneFlowManager.Instance.LoadScene(
