@@ -8,7 +8,7 @@ namespace UDA2.City
     [RequireComponent(typeof(Button))]
     public sealed class BackToPreviousSceneButton : MonoBehaviour
     {
-        [Tooltip("Used when previous/main scene is not available in save.")]
+        [Tooltip("Scene to open when pressing Back.")]
         [SerializeField] private string fallbackSceneName = "StartCityScene";
 
         private Button _button;
@@ -58,18 +58,6 @@ namespace UDA2.City
         private string ResolveTargetSceneName()
         {
             string currentSceneName = SceneManager.GetActiveScene().name;
-            var save = global::GameState.Instance.CurrentSave;
-
-            if (save != null && save.sceneState != null)
-            {
-                var previous = save.sceneState.previousSceneName;
-                if (!string.IsNullOrEmpty(previous) && !string.Equals(previous, currentSceneName, System.StringComparison.Ordinal))
-                    return previous;
-
-                var lastMain = save.sceneState.lastMainSceneName;
-                if (!string.IsNullOrEmpty(lastMain) && !string.Equals(lastMain, currentSceneName, System.StringComparison.Ordinal))
-                    return lastMain;
-            }
 
             if (!string.IsNullOrEmpty(fallbackSceneName) && !string.Equals(fallbackSceneName, currentSceneName, System.StringComparison.Ordinal))
                 return fallbackSceneName;

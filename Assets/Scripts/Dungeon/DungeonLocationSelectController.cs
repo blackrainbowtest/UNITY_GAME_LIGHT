@@ -286,9 +286,8 @@ namespace Game.Dungeon
                 pending.locationId = location != null ? location.id : null;
             }
 
-            // Keep SaveData's current scene name aligned with the transition.
-            if (save?.player != null)
-                save.player.SetSceneName(location.fightSceneName);
+            // Note: save.player.sceneName is updated automatically by SceneStateRuntimeTracker
+            // when FightScene becomes active. No need to set it here.
 
             // Load FightScene.
             isStartingBattle = true;
