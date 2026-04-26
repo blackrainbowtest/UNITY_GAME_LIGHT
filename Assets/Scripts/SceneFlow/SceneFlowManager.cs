@@ -492,6 +492,16 @@ bool useFakeProgressForTransition = useFakeProgressEnvelope && !(data != null &&
 while (!_loadingSceneReady)
     yield return null;
 
+// Defensive guard: _loadingSceneReady can become stale if LoadingScene was
+// unloaded externally. Ensure it is actually loaded before we use it.
+var loadingScene = SceneManager.GetSceneByName(LoadingSceneName);
+if (!loadingScene.IsValid() || !loadingScene.isLoaded)
+{
+    _loadingSceneReady = false;
+    yield return StartCoroutine(EnsureLoadingSceneLoaded());
+    loadingScene = SceneManager.GetSceneByName(LoadingSceneName);
+}
+
 _sceneReady = false;
 string sourceSceneName = SceneManager.GetActiveScene().name;
 
@@ -537,9 +547,10 @@ SetDdolSingletonsActive(false);
 
 // Make LoadingScene the active scene so audio, lighting and new objects
 // belong to it while the transition runs.
-var loadingScene = SceneManager.GetSceneByName(LoadingSceneName);
-if (loadingScene.IsValid())
+if (loadingScene.IsValid() && loadingScene.isLoaded)
     SceneManager.SetActiveScene(loadingScene);
+else if (logLoadTimings)
+    UDA2.Logging.Logger.LogWarning($"[SceneFlow] LoadingScene is not loaded during transition to '{targetScene}'. Skipping SetActiveScene.");
 
 // 3) Asynchronously unload the source scene.
 //    UnloadSceneAsync is truly async: OnDestroy calls are spread across frames,
