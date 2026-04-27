@@ -1,4 +1,4 @@
-> **Game Version:** 0.0.344
+> **Game Version:** 0.0.345
 
 # Development Roadmap
 
