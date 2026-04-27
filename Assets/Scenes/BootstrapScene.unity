@@ -844,12 +844,38 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UDA2.SceneFlow.SceneFlowManager
   waitForMusicBeforeHideLoading: 1
+  preloadSceneMusicBeforeActivation: 1
   musicReadyTimeoutSeconds: 1
   skipMusicWaitIfSceneHasNoMusic: 1
   skipMusicWaitForScenes: []
-  logLoadTimings: 0
+  logLoadTimings: 1
+  warmupShadersAtStartup: 1
+  shaderVariantsToWarmup: {fileID: 20000000, guid: 385ea22f5f7c275448c4ce2608c4f50d, type: 2}
   waitForSceneReadySignal: 1
   sceneReadyTimeoutSeconds: 1.5
+  runSceneLoadTasks: 1
+  maxSingleLoadTaskSeconds: 1.5
+  loadProgressStart: 0.03
+  loadProgressStreamEnd: 0.9
+  loadProgressMinTimeEnd: 0.94
+  loadProgressActivationEnd: 0.96
+  loadProgressTasksEnd: 0.985
+  loadProgressSceneReadyEnd: 0.99
+  loadProgressMusicEnd: 0.995
+  runningTaskProgressSpeed: 0.6
+  useFakeProgressEnvelope: 1
+  fakePreloadEndMin: 0.1
+  fakePreloadEndMax: 0.15
+  fakePreloadDurationMin: 0.2
+  fakePreloadDurationMax: 0.45
+  fakeFinalizeStartMin: 0.9
+  fakeFinalizeStartMax: 0.95
+  fakeFinalizeDurationMin: 0.2
+  fakeFinalizeDurationMax: 0.45
+  drainDeferredLocalizationAfterActivation: 1
+  maxDeferredLocalizationPerFrame: 32
+  deferredLocalizationDrainTimeoutSeconds: 0.12
+  transitionCoverGroup: {fileID: 0}
 --- !u!1 &1285300809
 GameObject:
   m_ObjectHideFlags: 0
