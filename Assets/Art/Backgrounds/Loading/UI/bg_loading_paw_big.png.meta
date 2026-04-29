@@ -1,10 +1,22 @@
 fileFormatVersion: 2
-guid: ca6c211efa6963b4bb3e6325f7a8a1a5
+guid: 67ca5a1fa89c8454c8fd4a2389cd9322
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3086724087587425319
-    second: loading_001_0
+      213: -6845638088032135432
+    second: bg_loading_paw_big_0
+  - first:
+      213: 5500841156333255190
+    second: bg_loading_paw_big_1
+  - first:
+      213: 5193286551880534252
+    second: bg_loading_paw_big_2
+  - first:
+      213: 2602115351597117612
+    second: bg_loading_paw_big_3
+  - first:
+      213: 6677650658638383248
+    second: bg_loading_paw_big_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,13 +138,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: loading_001_0
+      name: bg_loading_paw_big_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
-        width: 1024
-        height: 1024
+        y: 44
+        width: 32
+        height: 42
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +153,96 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9d3b5b7ebc0c925d0800000000000000
-      internalID: -3086724087587425319
+      spriteID: 8f6d5fdbd686ff0a0800000000000000
+      internalID: -6845638088032135432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_loading_paw_big_1
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 79
+        width: 34
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61ab71113e9e65c40800000000000000
+      internalID: 5500841156333255190
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_loading_paw_big_2
+      rect:
+        serializedVersion: 2
+        x: 69
+        y: 79
+        width: 34
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce807ad8a92421840800000000000000
+      internalID: 5193286551880534252
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_loading_paw_big_3
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 44
+        width: 31
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ca0798c20229c1420800000000000000
+      internalID: 2602115351597117612
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_loading_paw_big_4
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 0
+        width: 87
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0984b42f4e7cbac50800000000000000
+      internalID: 6677650658638383248
       vertices: []
       indices: 
       edges: []
@@ -161,7 +261,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      loading_001_0: -3086724087587425319
+      bg_loading_paw_big_0: -6845638088032135432
+      bg_loading_paw_big_1: 5500841156333255190
+      bg_loading_paw_big_2: 5193286551880534252
+      bg_loading_paw_big_3: 2602115351597117612
+      bg_loading_paw_big_4: 6677650658638383248
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

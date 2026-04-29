@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: ca6c211efa6963b4bb3e6325f7a8a1a5
+guid: 4b987d46497069c42bb86af469193430
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3086724087587425319
-    second: loading_001_0
+      213: -3459651549006898494
+    second: bg_loading_dark_shadow_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: loading_001_0
+      name: bg_loading_dark_shadow_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1024
-        height: 1024
+        width: 889
+        height: 1080
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9d3b5b7ebc0c925d0800000000000000
-      internalID: -3086724087587425319
+      spriteID: 2ca50d60f39dcffc0800000000000000
+      internalID: -3459651549006898494
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      loading_001_0: -3086724087587425319
+      bg_loading_dark_shadow_0: -3459651549006898494
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
