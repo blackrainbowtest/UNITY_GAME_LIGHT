@@ -53,20 +53,10 @@ namespace Game.Dungeon
                 Debug.LogError("[TempStartFightButton] Button reference is missing.");
             }
 
-            // Start background preloading FightScene immediately when this button
-            // becomes active — the player is likely to click it soon.
-            // The scene loads quietly at low priority in the background (up to 90%),
-            // so when the player actually clicks, activation is near-instant.
-            if (!string.IsNullOrEmpty(fightSceneName) && SceneFlowManager.Instance != null)
-                SceneFlowManager.Instance.PreloadScene(fightSceneName);
         }
 
         private void OnDestroy()
         {
-            // If the player leaves the scene without starting a battle,
-            // release the preloaded FightScene from memory.
-            if (!isStartingBattle && !string.IsNullOrEmpty(fightSceneName) && SceneFlowManager.Instance != null)
-                SceneFlowManager.Instance.CancelPreload(fightSceneName);
         }
 
         private void OnClick()
@@ -118,22 +108,10 @@ namespace Game.Dungeon
             if (returnToActiveSceneAfterBattle)
                 BattleExitContext.SetReturnToActiveScene();
 
-            // Mark pending battle so Load can reconstruct contexts.
-            var save = GameState.Instance != null ? GameState.Instance.CurrentSave : null;
-            if (save != null && save.sceneState != null && save.sceneState.pendingBattle != null)
-            {
-                var pending = save.sceneState.pendingBattle;
-                pending.isPending = true;
-                pending.battleSceneName = fightSceneName;
-                pending.battleMode = "Normal";
-                pending.returnSceneName = returnToActiveSceneAfterBattle ? SceneManager.GetActiveScene().name : null;
-                pending.enemyDifficulty = "Normal";
-                pending.enemyId = resolvedEnemy != null ? resolvedEnemy.id : null;
-                pending.locationId = location != null ? location.id : null;
-            }
-
             // Note: save.player.sceneName is updated automatically by SceneStateRuntimeTracker
             // when FightScene becomes active. No need to set it here.
+            // pendingBattle is intentionally NOT written here: saves happen only after
+            // victory / defeat / escape, so a crash during battle does not persist the fight.
 
             isStartingBattle = true;
             if (SceneFlowManager.Instance != null)

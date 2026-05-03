@@ -352,6 +352,12 @@ namespace UDA2.Audio
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
+            // LoadingScene is a persistent UI overlay loaded additively at startup and
+            // kept alive for the entire session. It is NOT a gameplay scene, so it must
+            // never reset scene sounds or trigger music changes.
+            if (scene.name == "LoadingScene")
+                return;
+
             StopSceneSounds();
             ApplySceneMusic(scene);
         }

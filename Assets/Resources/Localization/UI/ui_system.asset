@@ -69,14 +69,6 @@ MonoBehaviour:
       text: Skip
     - languageCode: fr
       text: Passer
-  - key: loading
-    entries:
-    - languageCode: ru
-      text: "\u0417\u0430\u0433\u0440\u0443\u0437\u043A\u0430..."
-    - languageCode: en
-      text: Loading...
-    - languageCode: fr
-      text: Chargement...
   - key: confirm_overwrite_save
     entries:
     - languageCode: ru
@@ -138,4 +130,47 @@ MonoBehaviour:
       text: 'Level: {0}'
     - languageCode: fr
       text: 'Niveau: {0}'
+  - key: loading
+    entries:
+    - languageCode: ru
+      text: "\u0417\u0410\u0413\u0420\u0423\u0417\u041A\u0410"
+    - languageCode: en
+      text: LOADING
+    - languageCode: fr
+      text: CHARGEMENT
+  - key: loading...
+    entries:
+    - languageCode: ru
+      text: "\u0417\u0430\u0433\u0440\u0443\u0437\u043A\u0430..."
+    - languageCode: en
+      text: Loading...
+    - languageCode: fr
+      text: Chargement...
+  - key: pls_wait
+    entries:
+    - languageCode: ru
+      text: "\u041F\u043E\u0436\u0430\u043B\u0443\u0439\u0441\u0442\u0430, \u043F\u043E\u0434\u043E\u0436\u0434\u0438\u0442\u0435..."
+    - languageCode: en
+      text: Please wait...
+    - languageCode: fr
+      text: Veuillez patienter...
+  - key: hitin
+    entries:
+    - languageCode: ru
+      text: "\u041F\u041E\u0414\u0421\u041A\u0410\u0417\u041A\u0410"
+    - languageCode: en
+      text: HINT
+    - languageCode: fr
+      text: ASTUCE
+  - key: off_hitins
+    entries:
+    - languageCode: ru
+      text: "\u041F\u043E\u0434\u0441\u043A\u0430\u0437\u043A\u0438 \u043C\u043E\u0436\u043D\u043E
+        \u043E\u0442\u043A\u043B\u044E\u0447\u0438\u0442\u044C \u0432 \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0430\u0445
+        \u0438\u0433\u0440\u044B."
+    - languageCode: en
+      text: Hints can be turned off in the game settings.
+    - languageCode: fr
+      text: "Les astuces peuvent \xEAtre d\xE9sactiv\xE9es dans les param\xE8tres
+        du jeu."
   sourceCsvName: ui_system

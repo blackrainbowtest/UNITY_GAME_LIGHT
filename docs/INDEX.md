@@ -1,4 +1,4 @@
-> **Game Version:** 0.0.340
+> **Game Version:** 0.0.345
 
 # UDA2 Documentation Index
 
