@@ -58,6 +58,11 @@ namespace UDA2.UI.Game
                 _slot.Clicked -= HandleClicked;
                 _slot.LongPressed -= HandleLongPressed;
             }
+
+            // If the source slot/trigger is being disabled (panel close, view rebuild),
+            // force-close tooltip so overlay can't keep blocking scene input.
+            if (ItemTooltip.IsVisible)
+                ItemTooltip.Hide();
         }
 
         public void SetMode(TriggerMode newMode)
@@ -104,12 +109,10 @@ namespace UDA2.UI.Game
             if (slot == null || string.IsNullOrWhiteSpace(slot.ItemId))
                 return;
 
-            var m = ResolveMode();
-            if (m == TriggerMode.InventoryOrStorage)
-            {
-                // Inventory/storage click behavior is intentionally a stub for now.
+            // In inventory/storage: clicking does something else (equip, use, move).
+            // In other contexts (e.g. shop preview, reward screen): click shows tooltip.
+            if (ResolveMode() == TriggerMode.InventoryOrStorage)
                 return;
-            }
 
             ItemTooltip.Show(ResolveDatabase(), slot.ItemId, screenPos);
         }
@@ -119,10 +122,7 @@ namespace UDA2.UI.Game
             if (slot == null || string.IsNullOrWhiteSpace(slot.ItemId))
                 return;
 
-            var m = ResolveMode();
-            if (m != TriggerMode.InventoryOrStorage)
-                return;
-
+            // Long-press always shows the item detail tooltip regardless of mode.
             ItemTooltip.Show(ResolveDatabase(), slot.ItemId, screenPos);
         }
     }

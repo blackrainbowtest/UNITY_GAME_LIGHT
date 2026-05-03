@@ -13420,7 +13420,6 @@ MonoBehaviour:
   hudController: {fileID: 1889949562}
   modalsRoot: {fileID: 1962314100}
   resultModal: {fileID: 1403937741582167887, guid: 033955e8b7a96964f9a163578c80cb49, type: 3}
-  outcomeAnimationModal: {fileID: 7779633668407957838, guid: 83c613707bf1e8b4295ed7a824751d8e, type: 3}
   statusCatalog: {fileID: 11400000, guid: fdbe505f022f72049bb0ac404c7daffa, type: 2}
   playerView: {fileID: 1816342352}
   enemyView: {fileID: 625450547}
@@ -13446,6 +13445,7 @@ MonoBehaviour:
   victoryByLpResultMusicCue: {fileID: 11400000, guid: 8cbf29d1c6b607d4d9fb1cec7e66144d, type: 2}
   defeatByLpResultMusicCue: {fileID: 11400000, guid: 5d84e3593dca67f4ca2e54cdbf820a50, type: 2}
   escapeFailedModalMusicCue: {fileID: 11400000, guid: 8100249e867a4154e96628be07690c31, type: 2}
+  achievementCatalog: {fileID: 11400000, guid: a9f3b9a9e009c5648908646c445201c6, type: 2}
   playerCharacterWindowPrefab: {fileID: 5819298412677635782, guid: 58ce046522378304398939ad1289ac0b, type: 3}
   inventoryParentOverride: {fileID: 1962314100}
   itemDatabase: {fileID: 11400000, guid: ea48e7814522e8849a7792d9d32df653, type: 2}

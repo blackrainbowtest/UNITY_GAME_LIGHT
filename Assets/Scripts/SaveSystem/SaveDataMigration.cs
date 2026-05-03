@@ -39,6 +39,7 @@ public static class SaveDataMigration
         if (save.progress == null) { save.progress = new SaveData.Progress(); Mark("progress initialized"); }
         if (save.achievementStats == null) { save.achievementStats = new SaveData.AchievementStats(); Mark("achievementStats initialized"); }
         if (save.progress.guild == null) { save.progress.guild = new SaveData.GuildState(); Mark("progress.guild initialized"); }
+        if (save.progress.flags == null) { save.progress.flags = new System.Collections.Generic.Dictionary<string, bool>(); Mark("progress.flags initialized"); }
         if (save.time == null) { save.time = new SaveData.TimeState(); Mark("time initialized"); }
         if (save.sceneState == null) { save.sceneState = new SaveData.SceneState(); Mark("sceneState initialized"); }
         if (save.sceneState.pendingBattle == null) { save.sceneState.pendingBattle = new SaveData.PendingBattle(); Mark("sceneState.pendingBattle initialized"); }
@@ -48,6 +49,12 @@ public static class SaveDataMigration
         {
             save.achievementStats.mobKillsByEnemyId = new System.Collections.Generic.List<SaveData.MobKillEntry>();
             Mark("achievementStats.mobKillsByEnemyId initialized");
+        }
+
+        if (save.achievementStats.unlockedAchievementIds == null)
+        {
+            save.achievementStats.unlockedAchievementIds = new System.Collections.Generic.List<string>();
+            Mark("achievementStats.unlockedAchievementIds initialized");
         }
 
         if (save.achievementStats.realTimePlayedSeconds < 0)
@@ -110,6 +117,36 @@ public static class SaveDataMigration
             Mark("achievementStats.totalExpEarned clamped");
         }
 
+        if (save.achievementStats.totalBattleDurationSeconds < 0)
+        {
+            save.achievementStats.totalBattleDurationSeconds = 0;
+            Mark("achievementStats.totalBattleDurationSeconds clamped");
+        }
+
+        if (save.achievementStats.totalHpDamageDealtToEnemies < 0)
+        {
+            save.achievementStats.totalHpDamageDealtToEnemies = 0;
+            Mark("achievementStats.totalHpDamageDealtToEnemies clamped");
+        }
+
+        if (save.achievementStats.totalHpDamageTakenFromEnemies < 0)
+        {
+            save.achievementStats.totalHpDamageTakenFromEnemies = 0;
+            Mark("achievementStats.totalHpDamageTakenFromEnemies clamped");
+        }
+
+        if (save.achievementStats.totalLpDamageDealtToEnemies < 0)
+        {
+            save.achievementStats.totalLpDamageDealtToEnemies = 0;
+            Mark("achievementStats.totalLpDamageDealtToEnemies clamped");
+        }
+
+        if (save.achievementStats.totalLpDamageTakenFromEnemies < 0)
+        {
+            save.achievementStats.totalLpDamageTakenFromEnemies = 0;
+            Mark("achievementStats.totalLpDamageTakenFromEnemies clamped");
+        }
+
         if (save.meta.playTimeSeconds < 0)
         {
             save.meta.playTimeSeconds = 0;
@@ -124,6 +161,9 @@ public static class SaveDataMigration
 
         if (SanitizeMobKillList(save.achievementStats.mobKillsByEnemyId))
             Mark("achievementStats.mobKillsByEnemyId sanitized");
+
+        if (SanitizeQuestIdList(save.achievementStats.unlockedAchievementIds))
+            Mark("achievementStats.unlockedAchievementIds sanitized");
 
         if (save.progress.guild.activeQuestIds == null)
         {

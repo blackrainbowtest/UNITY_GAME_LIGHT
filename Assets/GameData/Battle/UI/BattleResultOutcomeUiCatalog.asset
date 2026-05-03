@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc78863d743093949b73cec99a3ead8b, type: 3}
+  m_Name: BattleResultOutcomeUiCatalog
+  m_EditorClassIdentifier: UDA2.Battle::Game.Battle.UI.BattleResultOutcomeUiCatalogAsset
+  outcomes:
+  - reason: 0
+    topSeparator: {fileID: 21300000, guid: 1ad29ee8f677b0a499419f7f52c2c66d, type: 3}
+    titleLocalizationKey: victory
+    useCustomTitleColor: 1
+    titleColor: {r: 0.4980392, g: 1, b: 0, a: 1}
+    leftTipVariants:
+    - localizationKey: victory_tip_01
+      useCustomColor: 1
+      color: {r: 0.9333334, g: 0.8666667, b: 0.509804, a: 1}
+    rightTipVariants:
+    - localizationKey: global_tip_01
+      useCustomColor: 1
+      color: {r: 0.9607844, g: 0.8705883, b: 0.7019608, a: 1}
+    leftTipLocalizationKeys: []
+    rightTipLocalizationKeys: []

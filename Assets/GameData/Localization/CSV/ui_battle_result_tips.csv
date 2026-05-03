@@ -1,0 +1,31 @@
+*key;ru;en;fr
+
+*victory;
+	Победа;
+	Victory;
+	Victoire;
+
+*defeat;
+	Поражение;
+	Defeat;
+	Défaite;
+
+*escape;
+	Побег;
+	Escape;
+	Fuite;
+
+*give_up;
+	Сдаться;
+	Give Up;
+	Abandonner;
+
+*victory_tip_01;
+	Вы одержали победу! Это было потрясающе!;
+	You achieved victory! That was amazing!;
+	Vous avez remporté la victoire ! C'était incroyable !;
+
+*global_tip_01;
+	Всегда следите за своим здоровьем и запасами. Они могут стать решающими в бою!;
+	Always keep an eye on your health and supplies. They can be crucial in battle!;
+	Surveillez toujours votre santé et vos fournitures. Ils peuvent être cruciaux dans la bataille !;

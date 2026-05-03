@@ -154,12 +154,6 @@ namespace Game.Battle
         {
             playerView?.SetAutoIdleFallbackEnabled(false);
 
-            var audio = UDA2.Audio.AudioManager.Instance;
-            bool canRestoreBattleMusic = false;
-            UnityEngine.AudioClip battleMusicClip = null;
-            float battleMusicTimeSeconds = 0f;
-            bool battleMusicLoop = false;
-
             var failAnimToPlay = escapeFailFallAnim == BattleVisualAnimId.ActionAct1
                 ? BattleVisualAnimId.ActionActFail
                 : escapeFailFallAnim;
@@ -171,30 +165,9 @@ namespace Game.Battle
 
             yield return EnsureVisualExecutor().PlayCharacterAnimAndWait(playerView, failAnimToPlay);
 
-            bool modalClosed = false;
-            if (outcomeAnimationModal != null)
-            {
-                if (audio != null)
-                {
-                    audio.StopCharacterAndCombat();
-                    canRestoreBattleMusic = audio.TryGetCurrentMusicState(out battleMusicClip, out battleMusicTimeSeconds, out battleMusicLoop);
-                }
-
-                PlayOutcomeMusic(BattleFinishReason.EscapeFailed, allowLegacyFallback: false);
-                outcomeAnimationModal.Show(
-                    BattleFinishReason.EscapeFailed,
-                    playerWon: false,
-                    winningActionId: null,
-                    onClosed: () => modalClosed = true,
-                    enemyId: context?.Enemy != null ? ResolveEnemyId(context.Enemy) : null,
-                    locationId: context?.Location != null ? context.Location.id : null,
-                    sourceLocationId: context?.SourceLocationId,
-                    fallbackLocationBackground: context?.Location != null ? context.Location.background : null);
-                while (!modalClosed)
-                    yield return null;
-            }
-
+            var preEscapeFailPenaltyState = combatState;
             combatState = escapeSystem.ApplyFailedEscapePenalty(context, combatState, escapeFailLpPenalty);
+            AccumulateBattleSummaryDelta(preEscapeFailPenaltyState, combatState);
             PushHudState();
 
             escapeFailedRoutine = null;
@@ -205,17 +178,6 @@ namespace Game.Battle
             {
                 FinishBattle(playerWon: false, reason: BattleFinishReason.DefeatByLp, winningActionId: null);
                 yield break;
-            }
-
-            if (canRestoreBattleMusic && battleMusicClip != null)
-            {
-                var currentAudio = UDA2.Audio.AudioManager.Instance;
-                currentAudio?.PlayMusicFromTime(
-                    battleMusicClip,
-                    battleMusicTimeSeconds,
-                    battleMusicLoop,
-                    EscapeFailedBattleMusicResumeFadeSeconds
-                );
             }
 
             // Escape failed modal path disables auto idle fallback while fail animation plays.

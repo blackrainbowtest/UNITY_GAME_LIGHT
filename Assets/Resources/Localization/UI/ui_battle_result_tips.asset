@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72b5dfd223e65a04db6c6ba1b78d3607, type: 3}
+  m_Name: ui_battle_result_tips
+  m_EditorClassIdentifier: UDA2.Localization::UIStringsData
+  strings:
+  - key: victory
+    entries:
+    - languageCode: ru
+      text: "\u041F\u043E\u0431\u0435\u0434\u0430"
+    - languageCode: en
+      text: Victory
+    - languageCode: fr
+      text: Victoire
+  - key: defeat
+    entries:
+    - languageCode: ru
+      text: "\u041F\u043E\u0440\u0430\u0436\u0435\u043D\u0438\u0435"
+    - languageCode: en
+      text: Defeat
+    - languageCode: fr
+      text: "D\xE9faite"
+  - key: escape
+    entries:
+    - languageCode: ru
+      text: "\u041F\u043E\u0431\u0435\u0433"
+    - languageCode: en
+      text: Escape
+    - languageCode: fr
+      text: Fuite
+  - key: give_up
+    entries:
+    - languageCode: ru
+      text: "\u0421\u0434\u0430\u0442\u044C\u0441\u044F"
+    - languageCode: en
+      text: Give Up
+    - languageCode: fr
+      text: Abandonner
+  - key: victory_tip_01
+    entries:
+    - languageCode: ru
+      text: "\u0412\u044B \u043E\u0434\u0435\u0440\u0436\u0430\u043B\u0438 \u043F\u043E\u0431\u0435\u0434\u0443!
+        \u042D\u0442\u043E \u0431\u044B\u043B\u043E \u043F\u043E\u0442\u0440\u044F\u0441\u0430\u044E\u0449\u0435!"
+    - languageCode: en
+      text: You achieved victory! That was amazing!
+    - languageCode: fr
+      text: "Vous avez remport\xE9 la victoire ! C'\xE9tait incroyable !"
+  - key: global_tip_01
+    entries:
+    - languageCode: ru
+      text: "\u0412\u0441\u0435\u0433\u0434\u0430 \u0441\u043B\u0435\u0434\u0438\u0442\u0435
+        \u0437\u0430 \u0441\u0432\u043E\u0438\u043C \u0437\u0434\u043E\u0440\u043E\u0432\u044C\u0435\u043C
+        \u0438 \u0437\u0430\u043F\u0430\u0441\u0430\u043C\u0438. \u041E\u043D\u0438
+        \u043C\u043E\u0433\u0443\u0442 \u0441\u0442\u0430\u0442\u044C \u0440\u0435\u0448\u0430\u044E\u0449\u0438\u043C\u0438
+        \u0432 \u0431\u043E\u044E!"
+    - languageCode: en
+      text: Always keep an eye on your health and supplies. They can be crucial in
+        battle!
+    - languageCode: fr
+      text: "Surveillez toujours votre sant\xE9 et vos fournitures. Ils peuvent \xEAtre
+        cruciaux dans la bataille !"
+  sourceCsvName: ui_battle_result_tips

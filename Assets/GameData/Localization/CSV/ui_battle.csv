@@ -1,4 +1,5 @@
 *key;ru;en;fr
+
 *btn_attack;
 	Атака;
 	Attack;
@@ -343,3 +344,23 @@
 	Ферма;
 	Farm;
 	Ferme;
+
+*battle_results_title;
+	ИТОГИ БОЯ;
+	BATTLE RESULTS;
+	RÉSULTATS DE LA BATAILLE;
+
+*time_in_battle_fmt;
+	Время в бою:;
+	Time in battle:;
+	Temps en combat:;
+
+*get_damage_fmt;
+	Полученный урон:;
+	Damage taken:;
+	Dégâts subis:;
+
+*dealt_damage_fmt;
+	Нанесённый урон:;
+	Damage dealt:;
+	Dégâts infligés:;

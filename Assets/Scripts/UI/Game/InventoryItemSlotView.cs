@@ -107,6 +107,11 @@ namespace UDA2.UI.Game
             _longPress.OnProgress += HandleLongPressProgress;
         }
 
+        public void RebindParentScrollRectFromHierarchy()
+        {
+            parentScrollRect = GetComponentInParent<ScrollRect>();
+        }
+
         private void Update()
         {
             if (!_isPointerDown || !enableInput)
@@ -129,6 +134,29 @@ namespace UDA2.UI.Game
                     _waitingToShowProgress = false;
                     LongPressProgressHud.Show(GetInstanceID(), _pointerDownPosition);
                 }
+            }
+        }
+
+        private void OnDisable()
+        {
+            _isPointerDown = false;
+            _canceledByScroll = false;
+            _wasLongPressed = false;
+            _waitingToShowProgress = false;
+            _progressShowTimer = 0f;
+
+            _longPress?.CancelPress();
+            if (showLongPressProgress)
+                LongPressProgressHud.End(GetInstanceID());
+        }
+
+        private void OnDestroy()
+        {
+            if (_longPress != null)
+            {
+                _longPress.OnCompleted -= HandleLongPressCompleted;
+                _longPress.OnCanceled -= HandleLongPressCanceled;
+                _longPress.OnProgress -= HandleLongPressProgress;
             }
         }
 
@@ -374,9 +402,6 @@ namespace UDA2.UI.Game
 
                 var moved = (eventData.position - _pointerDownPosition).sqrMagnitude;
                 if (moved > threshold * threshold)
-                    return;
-
-                if (eventData.dragging)
                     return;
             }
 
