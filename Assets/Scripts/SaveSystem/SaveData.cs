@@ -46,9 +46,39 @@ public class SaveData
         public int totalExpEarned;
 
         /// <summary>
+        /// Cumulative battle duration in seconds (sum of finished battles).
+        /// </summary>
+        public int totalBattleDurationSeconds;
+
+        /// <summary>
+        /// Cumulative HP damage dealt to enemies across battles.
+        /// </summary>
+        public int totalHpDamageDealtToEnemies;
+
+        /// <summary>
+        /// Cumulative HP damage taken by player across battles.
+        /// </summary>
+        public int totalHpDamageTakenFromEnemies;
+
+        /// <summary>
+        /// Cumulative LP damage dealt to enemies across battles.
+        /// </summary>
+        public int totalLpDamageDealtToEnemies;
+
+        /// <summary>
+        /// Cumulative LP damage taken by player across battles.
+        /// </summary>
+        public int totalLpDamageTakenFromEnemies;
+
+        /// <summary>
         /// Per-enemy kill counters for achievement checks.
         /// </summary>
         public List<MobKillEntry> mobKillsByEnemyId = new List<MobKillEntry>();
+
+        /// <summary>
+        /// IDs of unlocked achievements.
+        /// </summary>
+        public List<string> unlockedAchievementIds = new List<string>();
     }
 
     [Serializable]

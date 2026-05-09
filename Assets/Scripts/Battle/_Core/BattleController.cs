@@ -56,8 +56,6 @@ namespace Game.Battle
         [SerializeField] private Transform modalsRoot;
         [Tooltip("Battle results modal reference. Can be either a scene instance (Hierarchy) OR a prefab asset (Project). If a prefab is assigned, BattleController will instantiate it into the scene at runtime.")]
         [SerializeField] private BattleResultModalController resultModal;
-        [Tooltip("Outcome animation modal reference. Can be either a scene instance (Hierarchy) OR a prefab asset (Project). If a prefab is assigned, BattleController will instantiate it into the scene at runtime.")]
-        [SerializeField] private BattleOutcomeAnimationModalController outcomeAnimationModal;
         [Tooltip("Centralized status definitions (icons, localization keys, resource effects).")]
         [SerializeField] private BattleStatusCatalog statusCatalog;
         private bool warnedMissingStatusCatalog;
@@ -117,22 +115,10 @@ namespace Game.Battle
 #endif
             }
 
-            if (outcomeAnimationModal == null)
-            {
-#if UNITY_2023_1_OR_NEWER
-                outcomeAnimationModal = FindAnyObjectByType<BattleOutcomeAnimationModalController>(FindObjectsInactive.Include);
-#elif UNITY_2022_2_OR_NEWER
-                outcomeAnimationModal = FindAnyObjectByType<BattleOutcomeAnimationModalController>(FindObjectsInactive.Include);
-#else
-                outcomeAnimationModal = FindObjectOfType<BattleOutcomeAnimationModalController>(includeInactive: true);
-#endif
-            }
-
             // If a prefab-asset (Project) was accidentally assigned instead of a scene instance,
             // Unity will refuse parenting/spawning under it ("Prefab Asset" warnings).
             // Auto-instantiate such references into the battle scene Canvas.
             resultModal = EnsureSceneInstance(resultModal, "resultModal");
-            outcomeAnimationModal = EnsureSceneInstance(outcomeAnimationModal, "outcomeAnimationModal");
 
             if (statusCatalog == null && hudController != null)
                 statusCatalog = hudController.GetStatusCatalog();
@@ -234,6 +220,7 @@ namespace Game.Battle
 
             context = battleContext;
             battleStarted = true;
+            ResetBattleSummaryTracking();
             EnsureTurnSystem().Reset();
 
             combatEngine = new BattleCombatEngine();
@@ -487,8 +474,10 @@ namespace Game.Battle
                 allowEarlyFinishOnLethalTargetHit: playerLethalHit);
 
             // 2) Apply results after animation.
+            var preApplyState = combatState;
             combatState = ClampPlayerResourcesToMax(resolution.State);
             ApplyPostActionEffects(actionId, actorIsPlayer: true);
+            AccumulateBattleSummaryDelta(preApplyState, combatState);
 
             if (combatState.EnemyBlockArmor <= 0)
                 RemoveStatus(enemyStatuses, StatusEffectId.Block);
@@ -538,8 +527,10 @@ namespace Game.Battle
                     enemyResolution.State,
                     allowEarlyFinishOnLethalTargetHit: enemyLethalHit);
 
+                var preEnemyActionState = combatState;
                 combatState = ClampEnemyResourcesToMax(enemyResolution.State);
                 ApplyPostActionEffects(enemyActionId, actorIsPlayer: false);
+                AccumulateBattleSummaryDelta(preEnemyActionState, combatState);
 
                 // If block armor got fully consumed, remove the status icon immediately.
                 if (combatState.PlayerBlockArmor <= 0)

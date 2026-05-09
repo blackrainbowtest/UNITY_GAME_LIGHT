@@ -4,6 +4,7 @@ using System.Reflection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 namespace UDA2.UI.Game
 {
@@ -37,8 +38,13 @@ namespace UDA2.UI.Game
         [Tooltip("Base offset from the pointer position (in canvas local units).")]
         [SerializeField] private Vector2 pointerOffset = new Vector2(28f, -28f);
 
+        [Header("Input")]
+        [Tooltip("Ignore backdrop close for a short time after Show to avoid immediate close from the same tap/release.")]
+        [SerializeField, Min(0f)] private float backdropCloseArmingDelay = 0.12f;
+
         private UnityEngine.Object _itemDatabase;
         private string _itemId;
+        private float _ignoreBackdropCloseUntilUnscaledTime;
 
         private static readonly Dictionary<Type, MethodInfo> GetByIdCache = new Dictionary<Type, MethodInfo>(8);
         private static readonly Dictionary<(Type type, string name), PropertyInfo> PropCache = new Dictionary<(Type, string), PropertyInfo>(64);
@@ -57,7 +63,17 @@ namespace UDA2.UI.Game
         private void Awake()
         {
             if (backdropButton != null)
-                backdropButton.onClick.AddListener(Close);
+            {
+                // Use IPointerDownHandler (via catcher) instead of Button.onClick.
+                // This ensures the tooltip closes only on a NEW tap, not on the pointer-up
+                // that fires when the user releases their finger after the long-press.
+                backdropButton.onClick.RemoveAllListeners();
+
+                var catcher = backdropButton.GetComponent<ItemTooltipBackdropCloseCatcher>();
+                if (catcher == null)
+                    catcher = backdropButton.gameObject.AddComponent<ItemTooltipBackdropCloseCatcher>();
+                catcher.Bind(this);
+            }
         }
 
         private void OnDestroy()
@@ -69,9 +85,19 @@ namespace UDA2.UI.Game
         {
             _itemDatabase = itemDatabase;
             _itemId = string.IsNullOrWhiteSpace(itemId) ? string.Empty : itemId.Trim();
+            _ignoreBackdropCloseUntilUnscaledTime = Time.unscaledTime + Mathf.Max(0f, backdropCloseArmingDelay);
 
             ApplyData();
             PositionAt(screenPoint);
+        }
+
+        /// <summary>Called by ItemTooltipBackdropCloseCatcher on a fresh pointer-down.</summary>
+        public void OnBackdropPointerDown(PointerEventData eventData)
+        {
+            if (Time.unscaledTime < _ignoreBackdropCloseUntilUnscaledTime)
+                return;
+
+            Close();
         }
 
         public void Close()

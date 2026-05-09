@@ -56,6 +56,10 @@ namespace Game.Battle
         [Tooltip("Played when EscapeFailed outcome modal is opened (battle continues).")]
         [SerializeField] private AudioCue escapeFailedModalMusicCue;
 
+        [Header("Achievements (Optional)")]
+        [Tooltip("Catalog with achievement definitions and thresholds.")]
+        [SerializeField] private BattleAchievementCatalogAsset achievementCatalog;
+
         private void FinishBattle(bool playerWon, BattleFinishReason reason = BattleFinishReason.Defeat, CombatActionId? winningActionId = null)
         {
             battleStarted = false;
@@ -166,7 +170,22 @@ namespace Game.Battle
                 }
             }
 
-            RecordBattleStats(global::GameState.Instance?.CurrentSave, context, reason, goldGained, expGained);
+            int battleDurationSeconds = ResolveBattleDurationSeconds();
+            var newlyUnlockedAchievements = new System.Collections.Generic.List<string>(4);
+
+            RecordBattleStats(
+                global::GameState.Instance?.CurrentSave,
+                context,
+                reason,
+                goldGained,
+                expGained,
+                battleDurationSeconds,
+                _playerHpDamageDealtThisBattle,
+                _playerHpDamageTakenThisBattle,
+                _playerLpDamageDealtThisBattle,
+                _playerLpDamageTakenThisBattle,
+                achievementCatalog,
+                newlyUnlockedAchievements);
 
             var result = new BattleResultData(
                 playerWon: playerWon,
@@ -174,7 +193,13 @@ namespace Game.Battle
                 manaCrystalsGained: manaCrystalsGained,
                 demonCrystalsGained: demonCrystalsGained,
                 expGained: expGained,
-                items: itemsGained
+                items: itemsGained,
+                battleDurationSeconds: battleDurationSeconds,
+                playerHpDamageDealt: _playerHpDamageDealtThisBattle,
+                playerHpDamageTaken: _playerHpDamageTakenThisBattle,
+                playerLpDamageDealt: _playerLpDamageDealtThisBattle,
+                playerLpDamageTaken: _playerLpDamageTakenThisBattle,
+                newlyUnlockedAchievementIds: newlyUnlockedAchievements
             );
 
             void ShowResultsOrExit()
@@ -192,7 +217,15 @@ namespace Game.Battle
                     PlayOutcomeMusic(reason, allowLegacyFallback: true);
 
                     resultModal.SetItemDatabase(itemDatabase);
-                    resultModal.Show(result, ExitBattle);
+                    resultModal.SetAchievementCatalog(achievementCatalog);
+                    resultModal.Show(
+                        result,
+                        ExitBattle,
+                        reason,
+                        enemyId: context?.Enemy != null ? ResolveEnemyId(context.Enemy) : null,
+                        locationId: context?.Location != null ? context.Location.id : null,
+                        sourceLocationId: context?.SourceLocationId,
+                        fallbackLocationBackground: context?.Location != null ? context.Location.background : null);
                 }
                 else
                 {
@@ -200,88 +233,23 @@ namespace Game.Battle
                 }
             }
 
-            bool shouldShowOutcomeModal = reason == BattleFinishReason.Defeat
-                || reason == BattleFinishReason.Victory
-                || reason == BattleFinishReason.Surrender
-                || reason == BattleFinishReason.EscapeFailed
-                || reason == BattleFinishReason.EscapeSuccess
-                || reason == BattleFinishReason.DefeatByLp
-                || reason == BattleFinishReason.VictoryByLp;
+            bool shouldPlayEnemyDefeatAnim = playerWon &&
+                (reason == BattleFinishReason.Victory
+                || reason == BattleFinishReason.VictoryByLp);
 
-            if (shouldShowOutcomeModal && outcomeAnimationModal == null)
+            if (!shouldPlayEnemyDefeatAnim || enemyView == null)
             {
-                Logger.LogWarning($"[BattleController] Outcome modal should be shown for reason={reason}, but outcomeAnimationModal is null. Assign a prefab (Project) or a scene instance (Hierarchy) to BattleController.outcomeAnimationModal.");
-            }
-
-            if (outcomeAnimationModal != null && shouldShowOutcomeModal)
-            {
-                ShowOutcomeModalOrResultsWithOptionalEndAnimation();
+                ShowResultsOrExit();
             }
             else
             {
-                ShowOutcomeModalOrResultsWithOptionalEndAnimation();
-            }
-
-            void ShowOutcomeModalOrResultsWithOptionalEndAnimation()
-            {
-                bool shouldPlayPlayerLoseAnim = false;
-
-                bool shouldPlayEnemyDefeatAnim = playerWon &&
-                    (reason == BattleFinishReason.Victory
-                    || reason == BattleFinishReason.VictoryByLp);
-
-                if (!shouldPlayPlayerLoseAnim && !shouldPlayEnemyDefeatAnim)
-                {
-                    ShowOutcomeModalOrResults();
-                    return;
-                }
-
-                if (shouldPlayPlayerLoseAnim)
-                {
-                    if (playerView == null)
-                    {
-                        ShowOutcomeModalOrResults();
-                        return;
-                    }
-
-                    var loseAnimId = reason == BattleFinishReason.DefeatByLp
-                        ? Game.Battle.Visual.BattleVisualAnimId.LustLose
-                        : Game.Battle.Visual.BattleVisualAnimId.Lose;
-
-                    StartCoroutine(PlayEndAnimThenContinue(playerView, loseAnimId));
-                    return;
-                }
-
-                if (enemyView == null)
-                {
-                    ShowOutcomeModalOrResults();
-                    return;
-                }
-
                 StartCoroutine(PlayEndAnimThenContinue(enemyView, Game.Battle.Visual.BattleVisualAnimId.Death));
             }
 
             IEnumerator PlayEndAnimThenContinue(Game.Battle.Visual.BattleCharacterView view, Game.Battle.Visual.BattleVisualAnimId animId)
             {
                 yield return PlayCharacterAnimImmediateAndWait(view, animId);
-                ShowOutcomeModalOrResults();
-            }
-
-            void ShowOutcomeModalOrResults()
-            {
-                if (outcomeAnimationModal != null && shouldShowOutcomeModal)
-                    outcomeAnimationModal.Show(
-                        reason,
-                        playerWon,
-                        winningActionId,
-                        ShowResultsOrExit,
-                        hideOnClose: false,
-                        enemyId: context?.Enemy != null ? ResolveEnemyId(context.Enemy) : null,
-                        locationId: context?.Location != null ? context.Location.id : null,
-                        sourceLocationId: context?.SourceLocationId,
-                        fallbackLocationBackground: context?.Location != null ? context.Location.background : null);
-                else
-                    ShowResultsOrExit();
+                ShowResultsOrExit();
             }
         }
 
@@ -458,7 +426,19 @@ namespace Game.Battle
             list.Add(new SaveData.Item { itemId = itemId, count = count });
         }
 
-        private static void RecordBattleStats(SaveData save, BattleContext battleContext, BattleFinishReason reason, int goldGained, int expGained)
+        private static void RecordBattleStats(
+            SaveData save,
+            BattleContext battleContext,
+            BattleFinishReason reason,
+            int goldGained,
+            int expGained,
+            int battleDurationSeconds,
+            int playerHpDamageDealt,
+            int playerHpDamageTaken,
+            int playerLpDamageDealt,
+            int playerLpDamageTaken,
+            BattleAchievementCatalogAsset achievementCatalog,
+            System.Collections.Generic.ICollection<string> newlyUnlockedAchievementIds)
         {
             if (save == null)
                 return;
@@ -474,6 +454,21 @@ namespace Game.Battle
 
             if (expGained > 0)
                 stats.totalExpEarned = Mathf.Max(0, stats.totalExpEarned) + expGained;
+
+            if (battleDurationSeconds > 0)
+                stats.totalBattleDurationSeconds = Mathf.Max(0, stats.totalBattleDurationSeconds) + battleDurationSeconds;
+
+            if (playerHpDamageDealt > 0)
+                stats.totalHpDamageDealtToEnemies = Mathf.Max(0, stats.totalHpDamageDealtToEnemies) + playerHpDamageDealt;
+
+            if (playerHpDamageTaken > 0)
+                stats.totalHpDamageTakenFromEnemies = Mathf.Max(0, stats.totalHpDamageTakenFromEnemies) + playerHpDamageTaken;
+
+            if (playerLpDamageDealt > 0)
+                stats.totalLpDamageDealtToEnemies = Mathf.Max(0, stats.totalLpDamageDealtToEnemies) + playerLpDamageDealt;
+
+            if (playerLpDamageTaken > 0)
+                stats.totalLpDamageTakenFromEnemies = Mathf.Max(0, stats.totalLpDamageTakenFromEnemies) + playerLpDamageTaken;
 
             switch (reason)
             {
@@ -500,6 +495,9 @@ namespace Game.Battle
                     stats.escapesFailed = Mathf.Max(0, stats.escapesFailed) + 1;
                     break;
             }
+
+                    // Evaluate cumulative stat thresholds and mark unlocked battle achievements.
+                    Game.Progression.BattleAchievementService.EvaluateAndCollectNewUnlockIds(save, achievementCatalog, newlyUnlockedAchievementIds);
         }
 
         private static void RegisterEnemyKill(SaveData.AchievementStats stats, EnemyData enemy)

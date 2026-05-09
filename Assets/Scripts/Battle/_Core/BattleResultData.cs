@@ -43,6 +43,12 @@ namespace Game.Battle
         public int DemonCrystalsGained { get; }
         public int ExpGained { get; }
         public IReadOnlyList<ItemReward> Items { get; }
+        public int BattleDurationSeconds { get; }
+        public int PlayerHpDamageDealt { get; }
+        public int PlayerHpDamageTaken { get; }
+        public int PlayerLpDamageDealt { get; }
+        public int PlayerLpDamageTaken { get; }
+        public IReadOnlyList<string> NewlyUnlockedAchievementIds { get; }
 
         public BattleResultData(
             bool playerWon,
@@ -50,7 +56,13 @@ namespace Game.Battle
             int manaCrystalsGained,
             int demonCrystalsGained,
             int expGained,
-            IReadOnlyList<ItemReward> items)
+            IReadOnlyList<ItemReward> items,
+            int battleDurationSeconds = 0,
+            int playerHpDamageDealt = 0,
+            int playerHpDamageTaken = 0,
+            int playerLpDamageDealt = 0,
+            int playerLpDamageTaken = 0,
+            IReadOnlyList<string> newlyUnlockedAchievementIds = null)
         {
             PlayerWon = playerWon;
             GoldGained = goldGained;
@@ -58,6 +70,12 @@ namespace Game.Battle
             DemonCrystalsGained = demonCrystalsGained;
             ExpGained = expGained;
             Items = items;
+            BattleDurationSeconds = battleDurationSeconds;
+            PlayerHpDamageDealt = playerHpDamageDealt;
+            PlayerHpDamageTaken = playerHpDamageTaken;
+            PlayerLpDamageDealt = playerLpDamageDealt;
+            PlayerLpDamageTaken = playerLpDamageTaken;
+            NewlyUnlockedAchievementIds = newlyUnlockedAchievementIds;
         }
     }
 }

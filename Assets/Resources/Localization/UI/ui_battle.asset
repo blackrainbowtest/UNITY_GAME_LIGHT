@@ -632,4 +632,36 @@ MonoBehaviour:
       text: Farm
     - languageCode: fr
       text: Ferme
+  - key: battle_results_title
+    entries:
+    - languageCode: ru
+      text: "\u0418\u0422\u041E\u0413\u0418 \u0411\u041E\u042F"
+    - languageCode: en
+      text: BATTLE RESULTS
+    - languageCode: fr
+      text: "R\xC9SULTATS DE LA BATAILLE"
+  - key: time_in_battle_fmt
+    entries:
+    - languageCode: ru
+      text: "\u0412\u0440\u0435\u043C\u044F \u0432 \u0431\u043E\u044E:"
+    - languageCode: en
+      text: 'Time in battle:'
+    - languageCode: fr
+      text: 'Temps en combat:'
+  - key: get_damage_fmt
+    entries:
+    - languageCode: ru
+      text: "\u041F\u043E\u043B\u0443\u0447\u0435\u043D\u043D\u044B\u0439 \u0443\u0440\u043E\u043D:"
+    - languageCode: en
+      text: 'Damage taken:'
+    - languageCode: fr
+      text: "D\xE9g\xE2ts subis:"
+  - key: dealt_damage_fmt
+    entries:
+    - languageCode: ru
+      text: "\u041D\u0430\u043D\u0435\u0441\u0451\u043D\u043D\u044B\u0439 \u0443\u0440\u043E\u043D:"
+    - languageCode: en
+      text: 'Damage dealt:'
+    - languageCode: fr
+      text: "D\xE9g\xE2ts inflig\xE9s:"
   sourceCsvName: ui_battle
