@@ -219,7 +219,7 @@ MonoBehaviour:
     - languageCode: ru
       text: "\u0412\u044B \u0445\u043E\u0442\u0438\u0442\u0435 \u0432\u043C\u0435\u0448\u0430\u0442\u0441\u044F?"
     - languageCode: en
-      text: "\u0412\u044B \u0445\u043E\u0442\u0438\u0442\u0435 \u0432\u043C\u0435\u0448\u0430\u0442\u0441\u044F?"
+      text: Do you want to intervene?
     - languageCode: fr
-      text: "\u0412\u044B \u0445\u043E\u0442\u0438\u0442\u0435 \u0432\u043C\u0435\u0448\u0430\u0442\u0441\u044F?"
+      text: Vous souhaitez intervenir ?
   sourceCsvName: ui_intro_scene

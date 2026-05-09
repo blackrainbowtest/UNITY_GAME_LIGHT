@@ -74,6 +74,23 @@ public class SettingsController : MonoBehaviour, IMenuCloseHandler
             showBattleResultToggle.onValueChanged.AddListener(OnShowBattleResultChanged);
     }
 
+    // MISC-001 fix: отписка от UI events для предотвращения MissingReferenceException
+    private void OnDestroy()
+    {
+        if (languageDropdown != null)
+            languageDropdown.onValueChanged.RemoveListener(OnLanguageChanged);
+        if (musicSlider != null)
+            musicSlider.onValueChanged.RemoveListener(OnMusicVolumeChanged);
+        if (sfxSlider != null)
+            sfxSlider.onValueChanged.RemoveListener(OnSfxVolumeChanged);
+        if (uiSlider != null)
+            uiSlider.onValueChanged.RemoveListener(OnUiVolumeChanged);
+        if (vibrationToggle != null)
+            vibrationToggle.onValueChanged.RemoveListener(OnVibrationChanged);
+        if (showBattleResultToggle != null)
+            showBattleResultToggle.onValueChanged.RemoveListener(OnShowBattleResultChanged);
+    }
+
     // ===== OPEN / CLOSE =====
 
     public void Open()

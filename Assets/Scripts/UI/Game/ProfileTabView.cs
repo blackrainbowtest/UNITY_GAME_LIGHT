@@ -150,6 +150,13 @@ namespace UDA2.UI.Game
             return defaultCharacterSprite;
         }
 
+        // Cached reflection for itemDatabase — avoids per-slot GetMethod/GetProperty on every Refresh.
+        private static Type s_dbType;
+        private static MethodInfo s_getByIdMethod;
+        private static Type s_defType;
+        private static PropertyInfo s_displayNameProp;
+        private static PropertyInfo s_iconProp;
+
         private static bool TryResolveItemFromDatabase(UnityEngine.Object db, string itemId, out string displayName, out Sprite icon)
         {
             displayName = null;
@@ -161,20 +168,32 @@ namespace UDA2.UI.Game
             try
             {
                 var dbType = db.GetType();
-                var getById = dbType.GetMethod("GetById", BindingFlags.Instance | BindingFlags.Public);
-                if (getById == null)
+                if (s_dbType != dbType)
+                {
+                    s_dbType = dbType;
+                    s_getByIdMethod = dbType.GetMethod("GetById", BindingFlags.Instance | BindingFlags.Public);
+                    s_defType = null;
+                    s_displayNameProp = null;
+                    s_iconProp = null;
+                }
+
+                if (s_getByIdMethod == null)
                     return false;
 
-                var def = getById.Invoke(db, new object[] { itemId });
+                var def = s_getByIdMethod.Invoke(db, new object[] { itemId });
                 if (def == null)
                     return false;
 
                 var defType = def.GetType();
-                var displayNameProp = defType.GetProperty("DisplayName", BindingFlags.Instance | BindingFlags.Public);
-                var iconProp = defType.GetProperty("Icon", BindingFlags.Instance | BindingFlags.Public);
+                if (s_defType != defType)
+                {
+                    s_defType = defType;
+                    s_displayNameProp = defType.GetProperty("DisplayName", BindingFlags.Instance | BindingFlags.Public);
+                    s_iconProp = defType.GetProperty("Icon", BindingFlags.Instance | BindingFlags.Public);
+                }
 
-                displayName = displayNameProp != null ? displayNameProp.GetValue(def) as string : null;
-                icon = iconProp != null ? iconProp.GetValue(def) as Sprite : null;
+                displayName = s_displayNameProp != null ? s_displayNameProp.GetValue(def) as string : null;
+                icon = s_iconProp != null ? s_iconProp.GetValue(def) as Sprite : null;
 
                 if (string.IsNullOrEmpty(displayName))
                     displayName = itemId;

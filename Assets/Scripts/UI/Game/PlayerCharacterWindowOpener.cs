@@ -39,6 +39,12 @@ namespace UDA2.UI.Game
         {
             if (openButton != null)
                 openButton.onClick.RemoveListener(Open);
+
+            if (_closeHandler != null)
+            {
+                _closeHandler.OnMenuClosed -= HandleClosed;
+                _closeHandler = null;
+            }
         }
 
         public void Open()
