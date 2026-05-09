@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UDA2.SaveSystem.Guild;
 using UnityEngine;
 
@@ -275,12 +274,20 @@ namespace UDA2.UI.Guild
                 return new Dictionary<string, GuildQuestDefinitionAsset>(StringComparer.Ordinal);
             }
 
-            var map = boardConfig.questPool
-                .Where(q => q != null && !string.IsNullOrWhiteSpace(q.questId))
-                .GroupBy(q => q.questId.Trim(), StringComparer.Ordinal)
-                .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
+            var pool = boardConfig.questPool;
+            var map = new Dictionary<string, GuildQuestDefinitionAsset>(pool.Count, StringComparer.Ordinal);
+            for (int _i = 0; _i < pool.Count; _i++)
+            {
+                var q = pool[_i];
+                if (q == null || string.IsNullOrWhiteSpace(q.questId))
+                    continue;
 
-            LogDebug($"BuildQuestMap: pool={boardConfig.questPool.Count}, map={map.Count}");
+                var key = q.questId.Trim();
+                if (!map.ContainsKey(key))
+                    map[key] = q;
+            }
+
+            LogDebug($"BuildQuestMap: pool={pool.Count}, map={map.Count}");
             return map;
         }
 

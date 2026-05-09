@@ -1,4 +1,4 @@
-﻿%YAML 1.1
+%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!29 &1
 OcclusionCullingSettings:
@@ -535,8 +535,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
-  textKey: yes
+  key: 
+  legacyTextKey: yes
+  stringArgs: []
+  manageFont: 1
   fontType: 1
+  targetText: {fileID: 0}
+  deferFirstUpdateFrames: 0
 --- !u!114 &286207850
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -550,7 +555,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
   key: yes
+  legacyTextKey: 
+  stringArgs: []
+  manageFont: 1
+  fontType: 1
   targetText: {fileID: 286207851}
+  deferFirstUpdateFrames: 0
 --- !u!114 &286207851
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1639,8 +1649,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
-  textKey: no
+  key: 
+  legacyTextKey: no
+  stringArgs: []
+  manageFont: 1
   fontType: 1
+  targetText: {fileID: 0}
+  deferFirstUpdateFrames: 0
 --- !u!114 &1803332877
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1654,7 +1669,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
   key: no
+  legacyTextKey: 
+  stringArgs: []
+  manageFont: 1
+  fontType: 1
   targetText: {fileID: 1803332878}
+  deferFirstUpdateFrames: 0
 --- !u!114 &1803332878
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1880,8 +1900,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
-  textKey: INTRO_DIALOG_QUESTION
+  key: 
+  legacyTextKey: INTRO_DIALOG_QUESTION
+  stringArgs: []
+  manageFont: 1
   fontType: 1
+  targetText: {fileID: 0}
+  deferFirstUpdateFrames: 0
 --- !u!114 &1963124851
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1895,7 +1920,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
   key: INTRO_DIALOG_QUESTION
+  legacyTextKey: 
+  stringArgs: []
+  manageFont: 1
+  fontType: 1
   targetText: {fileID: 1963124852}
+  deferFirstUpdateFrames: 0
 --- !u!114 &1963124852
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2152,8 +2182,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextComponent
-  textKey: 
+  key: 
+  legacyTextKey: 
+  stringArgs: []
+  manageFont: 1
   fontType: 1
+  targetText: {fileID: 0}
+  deferFirstUpdateFrames: 0
 --- !u!114 &1977987992
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2167,7 +2202,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
   key: 
+  legacyTextKey: 
+  stringArgs: []
+  manageFont: 1
+  fontType: 1
   targetText: {fileID: 1977987989}
+  deferFirstUpdateFrames: 0
 --- !u!1 &2047425588
 GameObject:
   m_ObjectHideFlags: 0
@@ -2528,7 +2568,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextSetter
   key: skip
+  legacyTextKey: 
+  stringArgs: []
+  manageFont: 1
+  fontType: 1
   targetText: {fileID: 2112118788}
+  deferFirstUpdateFrames: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -2538,4 +2583,3 @@ SceneRoots:
   - {fileID: 1660760612}
   - {fileID: 1195406706}
   - {fileID: 53739056}
-

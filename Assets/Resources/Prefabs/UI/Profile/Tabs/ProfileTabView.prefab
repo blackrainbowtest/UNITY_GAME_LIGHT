@@ -1,4 +1,4 @@
-﻿%YAML 1.1
+%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &29315364322889813
 GameObject:
@@ -192,10 +192,10 @@ RectTransform:
   - {fileID: 120266927774524890}
   m_Father: {fileID: 7008990096101610403}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 315, y: -100}
-  m_SizeDelta: {x: 200, y: 200}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &463297438729086740
 GameObject:
@@ -228,10 +228,10 @@ RectTransform:
   - {fileID: 7620031064841597574}
   m_Father: {fileID: 8035605511586386786}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 105, y: -100}
-  m_SizeDelta: {x: 200, y: 200}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &493020486430680455
 GameObject:
@@ -404,8 +404,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.Localization::LocalizedTextComponent
-  textKey: next
+  key: 
+  legacyTextKey: next
+  stringArgs: []
+  manageFont: 1
   fontType: 1
+  targetText: {fileID: 0}
+  deferFirstUpdateFrames: 0
 --- !u!114 &890315258096688003
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -419,7 +424,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UDA2.UI::LocalizedTextSetter
   key: next
+  legacyTextKey: 
+  stringArgs: []
+  manageFont: 1
+  fontType: 1
   targetText: {fileID: 3573603922791994846}
+  deferFirstUpdateFrames: 0
 --- !u!1 &543778275462114372
 GameObject:
   m_ObjectHideFlags: 0
@@ -741,8 +751,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.Localization::LocalizedTextComponent
-  textKey: lvl
+  key: 
+  legacyTextKey: lvl
+  stringArgs: []
+  manageFont: 1
   fontType: 1
+  targetText: {fileID: 0}
+  deferFirstUpdateFrames: 0
 --- !u!114 &6465400075615809834
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -756,7 +771,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UDA2.UI::LocalizedTextSetter
   key: lvl
+  legacyTextKey: 
+  stringArgs: []
+  manageFont: 1
+  fontType: 1
   targetText: {fileID: 2950522790300484929}
+  deferFirstUpdateFrames: 0
 --- !u!1 &738129959386392605
 GameObject:
   m_ObjectHideFlags: 0
@@ -1042,10 +1062,10 @@ RectTransform:
   - {fileID: 3363655965358378560}
   m_Father: {fileID: 7008990096101610403}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 105, y: -100}
-  m_SizeDelta: {x: 200, y: 200}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &990155469775501547
 GameObject:
@@ -1554,10 +1574,10 @@ RectTransform:
   - {fileID: 3335151987373301128}
   m_Father: {fileID: 8035605511586386786}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 105, y: -310}
-  m_SizeDelta: {x: 200, y: 200}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2199709459649314253
 GameObject:
@@ -1742,10 +1762,10 @@ RectTransform:
   - {fileID: 6702183616655460338}
   m_Father: {fileID: 7008990096101610403}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 525, y: -100}
-  m_SizeDelta: {x: 200, y: 200}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &3388266142195219067
 GameObject:
@@ -2856,10 +2876,10 @@ RectTransform:
   - {fileID: 7214824525299450170}
   m_Father: {fileID: 8035605511586386786}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 315, y: -100}
-  m_SizeDelta: {x: 200, y: 200}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &6063369162586707143
 GameObject:
@@ -3533,10 +3553,10 @@ RectTransform:
   - {fileID: 4265864045247018615}
   m_Father: {fileID: 8035605511586386786}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 525, y: -100}
-  m_SizeDelta: {x: 200, y: 200}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &7996992176784198971
 GameObject:
@@ -3569,10 +3589,10 @@ RectTransform:
   - {fileID: 9178388661966807672}
   m_Father: {fileID: 8035605511586386786}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 315, y: -310}
-  m_SizeDelta: {x: 200, y: 200}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8263633706729610656
 GameObject:
@@ -3746,7 +3766,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UDA2.UI::LocalizedTextSetter
   key: exp
+  legacyTextKey: 
+  stringArgs: []
+  manageFont: 1
+  fontType: 1
   targetText: {fileID: 132385316590590327}
+  deferFirstUpdateFrames: 0
 --- !u!114 &1161263488704706187
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3759,8 +3784,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.Localization::LocalizedTextComponent
-  textKey: exo
+  key: 
+  legacyTextKey: exo
+  stringArgs: []
+  manageFont: 1
   fontType: 1
+  targetText: {fileID: 0}
+  deferFirstUpdateFrames: 0
 --- !u!1 &8327910182610888100
 GameObject:
   m_ObjectHideFlags: 0
@@ -3916,6 +3946,7 @@ MonoBehaviour:
   profileTabView: {fileID: 8928558628188443342}
   profileExperienceView: {fileID: 1599278598719601592}
   profileStatusView: {fileID: 0}
+  profileOverviewView: {fileID: 0}
   refreshOnEnable: 1
 --- !u!1 &8808631098876874415
 GameObject:
@@ -4181,10 +4212,10 @@ RectTransform:
   - {fileID: 6372705859815571803}
   m_Father: {fileID: 7008990096101610403}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 105, y: -310}
-  m_SizeDelta: {x: 200, y: 200}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &9210536001172168377
 GameObject:
@@ -4261,4 +4292,3 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
-

@@ -48,9 +48,36 @@ namespace UDA2.UI.Game
         [SerializeField] private bool showEmptySlots = true;
 
         private readonly List<InventoryItemSlotView> _spawned = new List<InventoryItemSlotView>(128);
+        private readonly List<Entry> _entries = new List<Entry>(128);
         private SortMode _sortMode = SortMode.ById;
 
         private readonly Dictionary<Button, ButtonVisualCache> _buttonVisualCache = new Dictionary<Button, ButtonVisualCache>(8);
+
+        // Cached reflection for itemDatabase — avoids per-slot GetMethod/GetProperty calls on every Refresh.
+        private static Type s_dbType;
+        private static MethodInfo s_getByIdMethod;
+        private static Type s_defType;
+        private static PropertyInfo s_iconProp;
+        private static PropertyInfo s_typeProp;
+        private static PropertyInfo s_rarityProp;
+
+        // Pre-allocated sort comparisons — no closure allocation per sort.
+        private static readonly Comparison<Entry> s_compareById =
+            (a, b) => string.Compare(a.itemId, b.itemId, StringComparison.OrdinalIgnoreCase);
+
+        private static readonly Comparison<Entry> s_compareByType = (a, b) =>
+        {
+            int cmp = CompareType(a.typeId, b.typeId);
+            if (cmp != 0) return cmp;
+            return string.Compare(a.itemId, b.itemId, StringComparison.OrdinalIgnoreCase);
+        };
+
+        private static readonly Comparison<Entry> s_compareByRarity = (a, b) =>
+        {
+            int cmp = CompareRarity(a.rarityId, b.rarityId);
+            if (cmp != 0) return cmp;
+            return string.Compare(a.itemId, b.itemId, StringComparison.OrdinalIgnoreCase);
+        };
 
         private void Awake()
         {
@@ -283,10 +310,10 @@ namespace UDA2.UI.Game
 
         private List<Entry> BuildEntries(SaveData.Inventory inv)
         {
-            var list = new List<Entry>();
+            _entries.Clear();
 
             if (inv == null || inv.items == null)
-                return list;
+                return _entries;
 
             for (int i = 0; i < inv.items.Count; i++)
             {
@@ -309,10 +336,10 @@ namespace UDA2.UI.Game
                 if (itemDatabase != null)
                     TryResolveItemFromDatabase(itemDatabase, entry.itemId, out entry.icon, out entry.typeId, out entry.rarityId);
 
-                list.Add(entry);
+                _entries.Add(entry);
             }
 
-            return list;
+            return _entries;
         }
 
         private void SortEntries(List<Entry> entries)
@@ -320,31 +347,12 @@ namespace UDA2.UI.Game
             if (entries == null)
                 return;
 
-            entries.Sort((a, b) =>
+            switch (_sortMode)
             {
-                int cmp;
-
-                switch (_sortMode)
-                {
-                    case SortMode.ByType:
-                        cmp = CompareType(a.typeId, b.typeId);
-                        if (cmp != 0) return cmp;
-                        cmp = string.Compare(a.itemId, b.itemId, StringComparison.OrdinalIgnoreCase);
-                        if (cmp != 0) return cmp;
-                        return 0;
-
-                    case SortMode.ByRarity:
-                        cmp = CompareRarity(a.rarityId, b.rarityId);
-                        if (cmp != 0) return cmp;
-                        cmp = string.Compare(a.itemId, b.itemId, StringComparison.OrdinalIgnoreCase);
-                        if (cmp != 0) return cmp;
-                        return 0;
-
-                    case SortMode.ById:
-                    default:
-                        return string.Compare(a.itemId, b.itemId, StringComparison.OrdinalIgnoreCase);
-                }
-            });
+                case SortMode.ByType:   entries.Sort(s_compareByType);   break;
+                case SortMode.ByRarity: entries.Sort(s_compareByRarity); break;
+                default:                entries.Sort(s_compareById);      break;
+            }
         }
 
         private void EnsureSlotInstances(int desired)
@@ -458,33 +466,45 @@ namespace UDA2.UI.Game
             try
             {
                 var dbType = db.GetType();
-                var getById = dbType.GetMethod("GetById", BindingFlags.Instance | BindingFlags.Public);
-                if (getById == null)
+                if (s_dbType != dbType)
+                {
+                    s_dbType = dbType;
+                    s_getByIdMethod = dbType.GetMethod("GetById", BindingFlags.Instance | BindingFlags.Public);
+                    s_defType = null;
+                    s_iconProp = null;
+                    s_typeProp = null;
+                    s_rarityProp = null;
+                }
+
+                if (s_getByIdMethod == null)
                     return false;
 
-                var def = getById.Invoke(db, new object[] { itemId });
+                var def = s_getByIdMethod.Invoke(db, new object[] { itemId });
                 if (def == null)
                     return false;
 
                 var defType = def.GetType();
-
-                var iconProp = defType.GetProperty("Icon", BindingFlags.Instance | BindingFlags.Public);
-                var typeProp = defType.GetProperty("Type", BindingFlags.Instance | BindingFlags.Public);
-                var rarityProp = defType.GetProperty("Rarity", BindingFlags.Instance | BindingFlags.Public);
-
-                if (iconProp != null)
-                    icon = iconProp.GetValue(def) as Sprite;
-
-                if (typeProp != null)
+                if (s_defType != defType)
                 {
-                    var t = typeProp.GetValue(def);
-                    typeId = t != null ? t.ToString() : null;
+                    s_defType = defType;
+                    s_iconProp = defType.GetProperty("Icon", BindingFlags.Instance | BindingFlags.Public);
+                    s_typeProp = defType.GetProperty("Type", BindingFlags.Instance | BindingFlags.Public);
+                    s_rarityProp = defType.GetProperty("Rarity", BindingFlags.Instance | BindingFlags.Public);
                 }
 
-                if (rarityProp != null)
+                if (s_iconProp != null)
+                    icon = s_iconProp.GetValue(def) as Sprite;
+
+                if (s_typeProp != null)
                 {
-                    var r = rarityProp.GetValue(def);
-                    rarityId = r != null ? r.ToString() : null;
+                    var t = s_typeProp.GetValue(def);
+                    typeId = t?.ToString();
+                }
+
+                if (s_rarityProp != null)
+                {
+                    var r = s_rarityProp.GetValue(def);
+                    rarityId = r?.ToString();
                 }
 
                 return true;

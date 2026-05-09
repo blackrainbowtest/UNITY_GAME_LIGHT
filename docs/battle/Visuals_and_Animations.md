@@ -1,4 +1,4 @@
-> **Game Version:** 0.0.345
+> **Game Version:** 0.0.354
 
 # Visuals & Animations
 

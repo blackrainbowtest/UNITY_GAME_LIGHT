@@ -239,6 +239,8 @@ namespace UDA2.UI.Game
 
         private Coroutine delayedLayoutRebuildRoutine;
         private float refreshTimer;
+        private int _cachedStatusEffectsCount;
+        private string _cachedStatusEffectsText;
 
         private void OnEnable()
         {
@@ -747,7 +749,13 @@ namespace UDA2.UI.Game
             if (player == null || player.statusEffects == null || player.statusEffects.Count == 0)
                 return GetLocalizedOrFallback(noStatusEffectsKey, noStatusEffectsText);
 
-            return string.Join(", ", player.statusEffects);
+            // Re-build only when the count changes — avoids string.Join allocation every second.
+            if (_cachedStatusEffectsText != null && _cachedStatusEffectsCount == player.statusEffects.Count)
+                return _cachedStatusEffectsText;
+
+            _cachedStatusEffectsCount = player.statusEffects.Count;
+            _cachedStatusEffectsText = string.Join(", ", player.statusEffects);
+            return _cachedStatusEffectsText;
         }
 
         private string GetRankText(SaveData.Progress progress)

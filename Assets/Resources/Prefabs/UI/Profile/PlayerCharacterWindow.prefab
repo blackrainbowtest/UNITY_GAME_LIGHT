@@ -1,4 +1,4 @@
-﻿%YAML 1.1
+%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &214163869720930883
 GameObject:
@@ -206,7 +206,7 @@ MonoBehaviour:
     tabViewPrefab: {fileID: 5044492533165708819, guid: e3375f5eac980af4ca56ec151308f452, type: 3}
   - tabId: 3
     tabButton: {fileID: 8608777027876807723}
-    tabViewPrefab: {fileID: 5044492533165708819, guid: af845992ef48b734396b3569f9b8dc29, type: 3}
+    tabViewPrefab: {fileID: 6063369162586707143, guid: e40b2e20f985720469c3398993b7afb2, type: 3}
   destroyOnClose: 1
   stretchRootToParent: 1
 --- !u!1 &2491470920480847214
@@ -395,7 +395,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UDA2.UI::LocalizedTextSetter
   key: skills
+  legacyTextKey: 
+  stringArgs: []
+  manageFont: 1
+  fontType: 1
   targetText: {fileID: 1861028931708933527}
+  deferFirstUpdateFrames: 0
 --- !u!114 &3602720641348408336
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -408,8 +413,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.Localization::LocalizedTextComponent
-  textKey: skills
+  key: 
+  legacyTextKey: skills
+  stringArgs: []
+  manageFont: 1
   fontType: 1
+  targetText: {fileID: 0}
+  deferFirstUpdateFrames: 0
 --- !u!1 &3031431479647004660
 GameObject:
   m_ObjectHideFlags: 0
@@ -1151,7 +1161,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UDA2.UI::LocalizedTextSetter
   key: profile
+  legacyTextKey: 
+  stringArgs: []
+  manageFont: 1
+  fontType: 1
   targetText: {fileID: 1957501448892454857}
+  deferFirstUpdateFrames: 0
 --- !u!114 &2797319872833525743
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1164,8 +1179,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.Localization::LocalizedTextComponent
-  textKey: profile
+  key: 
+  legacyTextKey: profile
+  stringArgs: []
+  manageFont: 1
   fontType: 1
+  targetText: {fileID: 0}
+  deferFirstUpdateFrames: 0
 --- !u!1 &4547998721775968948
 GameObject:
   m_ObjectHideFlags: 0
@@ -1693,7 +1713,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UDA2.UI::LocalizedTextSetter
   key: status
+  legacyTextKey: 
+  stringArgs: []
+  manageFont: 1
+  fontType: 1
   targetText: {fileID: 8157833364121482372}
+  deferFirstUpdateFrames: 0
 --- !u!114 &6229431466614575863
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1706,8 +1731,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.Localization::LocalizedTextComponent
-  textKey: status
+  key: 
+  legacyTextKey: status
+  stringArgs: []
+  manageFont: 1
   fontType: 1
+  targetText: {fileID: 0}
+  deferFirstUpdateFrames: 0
 --- !u!1 &5819298412677635782
 GameObject:
   m_ObjectHideFlags: 0
@@ -1897,7 +1927,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UDA2.UI::LocalizedTextSetter
   key: inventory
+  legacyTextKey: 
+  stringArgs: []
+  manageFont: 1
+  fontType: 1
   targetText: {fileID: 6257194148538145791}
+  deferFirstUpdateFrames: 0
 --- !u!114 &5154294886260284367
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1910,8 +1945,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e644c4e9a77a9a543892645291467c28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.Localization::LocalizedTextComponent
-  textKey: inventory
+  key: 
+  legacyTextKey: inventory
+  stringArgs: []
+  manageFont: 1
   fontType: 1
+  targetText: {fileID: 0}
+  deferFirstUpdateFrames: 0
 --- !u!1 &6909062686155958797
 GameObject:
   m_ObjectHideFlags: 0
@@ -2171,4 +2211,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a366efd922b1e6744be5efc61867eff0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UDA2.UI::UDA2.UI.UIButtonSound
-

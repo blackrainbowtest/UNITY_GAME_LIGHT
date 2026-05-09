@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UDA2.SaveSystem.Guild;
 using UnityEngine;
@@ -196,7 +195,13 @@ namespace UDA2.UI.Guild
             section.allowActions = allowActions;
             section.cachedQuests.Clear();
             if (quests != null)
-                section.cachedQuests.AddRange(quests.Where(q => q != null));
+            {
+                for (int _qi = 0; _qi < quests.Count; _qi++)
+                {
+                    if (quests[_qi] != null)
+                        section.cachedQuests.Add(quests[_qi]);
+                }
+            }
 
             var effectiveItemsPerPage = GetItemsPerPage(section);
             var totalCount = section.cachedQuests.Count;
@@ -261,13 +266,24 @@ namespace UDA2.UI.Guild
 
         private Dictionary<string, GuildQuestDefinitionAsset> BuildQuestMap()
         {
-            if (boardConfig == null || boardConfig.questPool == null)
-                return new Dictionary<string, GuildQuestDefinitionAsset>(StringComparer.Ordinal);
+            var map = new Dictionary<string, GuildQuestDefinitionAsset>(StringComparer.Ordinal);
 
-            return boardConfig.questPool
-                .Where(q => q != null && !string.IsNullOrWhiteSpace(q.questId))
-                .GroupBy(q => q.questId.Trim(), StringComparer.Ordinal)
-                .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
+            if (boardConfig == null || boardConfig.questPool == null)
+                return map;
+
+            var pool = boardConfig.questPool;
+            for (int i = 0; i < pool.Count; i++)
+            {
+                var q = pool[i];
+                if (q == null || string.IsNullOrWhiteSpace(q.questId))
+                    continue;
+
+                var key = q.questId.Trim();
+                if (!map.ContainsKey(key))
+                    map[key] = q;
+            }
+
+            return map;
         }
 
         private static List<GuildQuestDefinitionAsset> ResolveQuestList(IReadOnlyList<string> ids, Dictionary<string, GuildQuestDefinitionAsset> map)
