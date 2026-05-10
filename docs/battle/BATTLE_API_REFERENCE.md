@@ -1,4 +1,4 @@
-> **Game Version:** 0.0.354
+> **Game Version:** 0.0.355
 
 # Battle API Reference / Справочник Battle API
 

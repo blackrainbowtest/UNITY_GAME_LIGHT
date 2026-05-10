@@ -18,16 +18,21 @@ MonoBehaviour:
   outfitId: outfit_01
   visualProfile: {fileID: 11400000, guid: a28fc4b26c28f48419a41599ce7703c1, type: 2}
   idleAnimation: {fileID: 11400000, guid: d02574c760f5adb4a84460c70145226b, type: 2}
-  hp: 45
-  mp: 35
-  sp: 45
+  hp: 55
+  mp: 80
+  sp: 25
   lp: 0
-  maxHp: 45
-  maxMp: 35
-  maxSp: 45
-  maxLp: 100
-  attack: 8
+  maxHp: 55
+  maxMp: 80
+  maxSp: 25
+  maxLp: 50
+  attack: 9
   allowedActions: 15000000
+  healConsiderHpRatio: 0.8
+  holyPriorityHpRatioStage1: 0.8
+  holyPriorityHpRatioStage2: 0.5
+  holyPriorityHpRatioStage3: 0.3
+  nonHealActionsBetweenHeals: 2
   minSpawnLevel: 1
   maxSpawnLevel: 2
   minSpawnRankTier: 0

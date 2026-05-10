@@ -3,7 +3,78 @@
 	Завершить битву;
 	Finish a battle;
 	Terminer une bataille;
+
 *id_achievements_battle_finished_description;
 	Вы это сделали! Вы завершили битву.;
 	You did it! You finished a battle.;
 	Vous l'avez fait! Vous avez terminé une bataille.;
+
+*id_achievements_battle_finished_10_title;
+	Закалённый;
+	Battle Hardened;
+	Endurci;
+
+*id_achievements_battle_finished_10_description;
+	Завершите 10 битв.;
+	Finish 10 battles.;
+	Terminez 10 batailles.;
+
+*id_achievements_battle_finished_50_title;
+	Ветеран Гильдии;
+	Guild Veteran;
+	Vétéran de la Guilde;
+
+*id_achievements_battle_finished_50_description;
+	Завершите 50 битв.;
+	Finish 50 battles.;
+	Terminez 50 batailles.;
+
+*id_achievements_battle_finished_100_title;
+	Живая Легенда;
+	Living Legend;
+	Légende Vivante;
+
+*id_achievements_battle_finished_100_description;
+	Завершите 100 битв.;
+	Finish 100 battles.;
+	Terminez 100 batailles.;
+
+*id_achievements_escape_1_title;
+	Путь к спасению;
+	Path to Survival;
+	Chemin vers la survie;
+
+*id_achievements_escape_1_description;
+	Успешно сбегите из битвы.;
+	Successfully escape from a battle.;
+	Échappez avec succès à une bataille.;
+
+*id_achievements_escape_10_title;
+	Проворный беглец;
+	Swift Escape Artist;
+	Fugitif agile;
+
+*id_achievements_escape_10_description;
+	Успешно сбегите из битвы 10 раз.;
+	Successfully escape from battle 10 times.;
+	Échappez avec succès à une bataille 10 fois.;
+
+*id_achievements_escape_50_title;
+	Тень переулков;
+	Shadow of the Alleys;
+	Ombre des ruelles;
+
+*id_achievements_escape_50_description;
+	Успешно сбегите из битвы 50 раз.;
+	Successfully escape from battle 50 times.;
+	Échappez avec succès à une bataille 50 fois.;
+
+*id_achievements_escape_100_title;
+	Неуловимый;
+	Untouchable;
+	Insaisissable;
+
+*id_achievements_escape_100_description;
+	Успешно сбегите из битвы 100 раз.;
+	Successfully escape from battle 100 times.;
+	Échappez avec succès à une bataille 100 fois.;

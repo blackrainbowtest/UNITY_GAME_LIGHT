@@ -25,7 +25,17 @@
 	You achieved victory! That was amazing!;
 	Vous avez remporté la victoire ! C'était incroyable !;
 
+*defeat_tip_01;
+	Вы потерпели поражение... Но каждое поражение делает вас сильнее.;
+	You were defeated... But every defeat makes you stronger.;
+	Vous avez été vaincu... Mais chaque défaite vous rend plus fort.;
+
 *global_tip_01;
 	Всегда следите за своим здоровьем и запасами. Они могут стать решающими в бою!;
 	Always keep an eye on your health and supplies. They can be crucial in battle!;
 	Surveillez toujours votre santé et vos fournitures. Ils peuvent être cruciaux dans la bataille !;
+
+*global_tip_02;
+	Иногда отступление — лучший способ сохранить силы и вернуться более подготовленным.;
+	Sometimes retreating is the best way to preserve your strength and return better prepared.;
+	Parfois, battre en retraite est le meilleur moyen de préserver ses forces et de revenir mieux préparé.;

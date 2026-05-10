@@ -30,4 +30,120 @@ MonoBehaviour:
       text: You did it! You finished a battle.
     - languageCode: fr
       text: "Vous l'avez fait! Vous avez termin\xE9 une bataille."
+  - key: id_achievements_battle_finished_10_title
+    entries:
+    - languageCode: ru
+      text: "\u0417\u0430\u043A\u0430\u043B\u0451\u043D\u043D\u044B\u0439"
+    - languageCode: en
+      text: Battle Hardened
+    - languageCode: fr
+      text: Endurci
+  - key: id_achievements_battle_finished_10_description
+    entries:
+    - languageCode: ru
+      text: "\u0417\u0430\u0432\u0435\u0440\u0448\u0438\u0442\u0435 10 \u0431\u0438\u0442\u0432."
+    - languageCode: en
+      text: Finish 10 battles.
+    - languageCode: fr
+      text: Terminez 10 batailles.
+  - key: id_achievements_battle_finished_50_title
+    entries:
+    - languageCode: ru
+      text: "\u0412\u0435\u0442\u0435\u0440\u0430\u043D \u0413\u0438\u043B\u044C\u0434\u0438\u0438"
+    - languageCode: en
+      text: Guild Veteran
+    - languageCode: fr
+      text: "V\xE9t\xE9ran de la Guilde"
+  - key: id_achievements_battle_finished_50_description
+    entries:
+    - languageCode: ru
+      text: "\u0417\u0430\u0432\u0435\u0440\u0448\u0438\u0442\u0435 50 \u0431\u0438\u0442\u0432."
+    - languageCode: en
+      text: Finish 50 battles.
+    - languageCode: fr
+      text: Terminez 50 batailles.
+  - key: id_achievements_battle_finished_100_title
+    entries:
+    - languageCode: ru
+      text: "\u0416\u0438\u0432\u0430\u044F \u041B\u0435\u0433\u0435\u043D\u0434\u0430"
+    - languageCode: en
+      text: Living Legend
+    - languageCode: fr
+      text: "L\xE9gende Vivante"
+  - key: id_achievements_battle_finished_100_description
+    entries:
+    - languageCode: ru
+      text: "\u0417\u0430\u0432\u0435\u0440\u0448\u0438\u0442\u0435 100 \u0431\u0438\u0442\u0432."
+    - languageCode: en
+      text: Finish 100 battles.
+    - languageCode: fr
+      text: Terminez 100 batailles.
+  - key: id_achievements_escape_1_title
+    entries:
+    - languageCode: ru
+      text: "\u041F\u0443\u0442\u044C \u043A \u0441\u043F\u0430\u0441\u0435\u043D\u0438\u044E"
+    - languageCode: en
+      text: Path to Survival
+    - languageCode: fr
+      text: Chemin vers la survie
+  - key: id_achievements_escape_1_description
+    entries:
+    - languageCode: ru
+      text: "\u0423\u0441\u043F\u0435\u0448\u043D\u043E \u0441\u0431\u0435\u0433\u0438\u0442\u0435
+        \u0438\u0437 \u0431\u0438\u0442\u0432\u044B."
+    - languageCode: en
+      text: Successfully escape from a battle.
+    - languageCode: fr
+      text: "\xC9chappez avec succ\xE8s \xE0 une bataille."
+  - key: id_achievements_escape_10_title
+    entries:
+    - languageCode: ru
+      text: "\u041F\u0440\u043E\u0432\u043E\u0440\u043D\u044B\u0439 \u0431\u0435\u0433\u043B\u0435\u0446"
+    - languageCode: en
+      text: Swift Escape Artist
+    - languageCode: fr
+      text: Fugitif agile
+  - key: id_achievements_escape_10_description
+    entries:
+    - languageCode: ru
+      text: "\u0423\u0441\u043F\u0435\u0448\u043D\u043E \u0441\u0431\u0435\u0433\u0438\u0442\u0435
+        \u0438\u0437 \u0431\u0438\u0442\u0432\u044B 10 \u0440\u0430\u0437."
+    - languageCode: en
+      text: Successfully escape from battle 10 times.
+    - languageCode: fr
+      text: "\xC9chappez avec succ\xE8s \xE0 une bataille 10 fois."
+  - key: id_achievements_escape_50_title
+    entries:
+    - languageCode: ru
+      text: "\u0422\u0435\u043D\u044C \u043F\u0435\u0440\u0435\u0443\u043B\u043A\u043E\u0432"
+    - languageCode: en
+      text: Shadow of the Alleys
+    - languageCode: fr
+      text: Ombre des ruelles
+  - key: id_achievements_escape_50_description
+    entries:
+    - languageCode: ru
+      text: "\u0423\u0441\u043F\u0435\u0448\u043D\u043E \u0441\u0431\u0435\u0433\u0438\u0442\u0435
+        \u0438\u0437 \u0431\u0438\u0442\u0432\u044B 50 \u0440\u0430\u0437."
+    - languageCode: en
+      text: Successfully escape from battle 50 times.
+    - languageCode: fr
+      text: "\xC9chappez avec succ\xE8s \xE0 une bataille 50 fois."
+  - key: id_achievements_escape_100_title
+    entries:
+    - languageCode: ru
+      text: "\u041D\u0435\u0443\u043B\u043E\u0432\u0438\u043C\u044B\u0439"
+    - languageCode: en
+      text: Untouchable
+    - languageCode: fr
+      text: Insaisissable
+  - key: id_achievements_escape_100_description
+    entries:
+    - languageCode: ru
+      text: "\u0423\u0441\u043F\u0435\u0448\u043D\u043E \u0441\u0431\u0435\u0433\u0438\u0442\u0435
+        \u0438\u0437 \u0431\u0438\u0442\u0432\u044B 100 \u0440\u0430\u0437."
+    - languageCode: en
+      text: Successfully escape from battle 100 times.
+    - languageCode: fr
+      text: "\xC9chappez avec succ\xE8s \xE0 une bataille 100 fois."
   sourceCsvName: ui_achievements

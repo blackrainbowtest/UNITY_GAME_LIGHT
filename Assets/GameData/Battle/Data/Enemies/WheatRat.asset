@@ -19,15 +19,20 @@ MonoBehaviour:
   visualProfile: {fileID: 11400000, guid: 7cc4c0aaf010d2946910a8cd259d2ac7, type: 2}
   idleAnimation: {fileID: 11400000, guid: 3605d89060400fb4c8251984a6effc7c, type: 2}
   hp: 35
-  mp: 10
-  sp: 20
+  mp: 35
+  sp: 65
   lp: 0
   maxHp: 35
-  maxMp: 10
-  maxSp: 20
-  maxLp: 100
-  attack: 6
+  maxMp: 35
+  maxSp: 65
+  maxLp: 125
+  attack: 8
   allowedActions: 0000000015000000
+  healConsiderHpRatio: 0.8
+  holyPriorityHpRatioStage1: 0.8
+  holyPriorityHpRatioStage2: 0.5
+  holyPriorityHpRatioStage3: 0.3
+  nonHealActionsBetweenHeals: 2
   minSpawnLevel: 1
   maxSpawnLevel: 2
   minSpawnRankTier: 0

@@ -28,3 +28,18 @@ MonoBehaviour:
       color: {r: 0.9607844, g: 0.8705883, b: 0.7019608, a: 1}
     leftTipLocalizationKeys: []
     rightTipLocalizationKeys: []
+  - reason: 1
+    topSeparator: {fileID: 21300000, guid: 32eee107cbcd7fb4e810eccee7d02cba, type: 3}
+    titleLocalizationKey: defeat
+    useCustomTitleColor: 1
+    titleColor: {r: 0.8627452, g: 0.07843138, b: 0.2352941, a: 1}
+    leftTipVariants:
+    - localizationKey: defeat_tip_01
+      useCustomColor: 1
+      color: {r: 0.9333334, g: 0.8666667, b: 0.509804, a: 1}
+    rightTipVariants:
+    - localizationKey: global_tip_01
+      useCustomColor: 1
+      color: {r: 0.9607844, g: 0.8705883, b: 0.7019608, a: 1}
+    leftTipLocalizationKeys: []
+    rightTipLocalizationKeys: []

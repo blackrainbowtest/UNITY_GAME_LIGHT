@@ -20,3 +20,52 @@ MonoBehaviour:
     metric: 0
     threshold: 1
     enabled: 1
+  - id: id_achievements_battle_finished_10
+    titleLocalizationKey: id_achievements_battle_finished_10_title
+    descriptionLocalizationKey: id_achievements_battle_finished_10_description
+    icon: {fileID: 21300000, guid: bc8f955fc4d97e9479bc26357ac229c1, type: 3}
+    metric: 0
+    threshold: 10
+    enabled: 1
+  - id: id_achievements_battle_finished_50
+    titleLocalizationKey: id_achievements_battle_finished_50_title
+    descriptionLocalizationKey: id_achievements_battle_finished_50_description
+    icon: {fileID: 21300000, guid: d6c19a3517c250346ab982a41ac3d15b, type: 3}
+    metric: 0
+    threshold: 50
+    enabled: 1
+  - id: id_achievements_battle_finished_100
+    titleLocalizationKey: id_achievements_battle_finished_100_title
+    descriptionLocalizationKey: id_achievements_battle_finished_100_description
+    icon: {fileID: 21300000, guid: 33ea1445c1c3ca54c8b2c6ff3eac2e6b, type: 3}
+    metric: 0
+    threshold: 100
+    enabled: 1
+  - id: id_achievements_escape
+    titleLocalizationKey: id_achievements_escape_1_title
+    descriptionLocalizationKey: id_achievements_escape_1_description
+    icon: {fileID: 21300000, guid: ed64285a7c1efba47816fee0e4c7324d, type: 3}
+    metric: 3
+    threshold: 1
+    enabled: 1
+  - id: id_achievements_escape_10
+    titleLocalizationKey: id_achievements_escape_10_title
+    descriptionLocalizationKey: id_achievements_escape_10_description
+    icon: {fileID: 21300000, guid: a5226203440dd8849ada2e37c9dcee22, type: 3}
+    metric: 3
+    threshold: 1
+    enabled: 1
+  - id: id_achievements_escape_50
+    titleLocalizationKey: id_achievements_escape_50_title
+    descriptionLocalizationKey: id_achievements_escape_50_description
+    icon: {fileID: 21300000, guid: 13968994f812424419d665af285f3f51, type: 3}
+    metric: 3
+    threshold: 50
+    enabled: 1
+  - id: id_achievements_escape_100
+    titleLocalizationKey: id_achievements_escape_100_title
+    descriptionLocalizationKey: id_achievements_escape_100_description
+    icon: {fileID: 21300000, guid: 731678489db73c04da2551484d82d4ad, type: 3}
+    metric: 3
+    threshold: 100
+    enabled: 1
